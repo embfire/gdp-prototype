@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Segments - Guest Data Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        
+        .builder-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+        
+        .rule-group {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            background: #f9f9f9;
+            position: relative;
+        }
+        
+        .rule-row {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            background: white;
+            padding: var(--spacing-sm);
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .rule-operator {
+            background: var(--bg-sidebar);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            margin: var(--spacing-sm) 0 var(--spacing-sm) 40px;
+            width: fit-content;
+        }
+        
+        .source-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .select-input {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        
+        .segment-stats {
+            background: var(--bg-sidebar);
+            color: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            margin-top: var(--spacing-xl);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Header -->
+        <header class="header">
+            <div class="header-left">
+                <svg width="78" height="40" viewBox="0 0 78 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M39.4909 0H0V39.491H39.4909V0Z" fill="#2F3452"/>
+                    <path d="M19.4296 21.9438H16.5863L19.4296 17.8762V21.9438ZM9.51739 19.1926H7.93775V15.7569H9.38575C11.0312 15.7569 11.7552 16.2834 11.7552 17.455C11.7552 18.6266 11.018 19.1926 9.53055 19.1926M15.1646 18.6529C15.2436 18.2448 15.2831 17.8236 15.2831 17.4024C15.2831 15.441 14.309 13.7823 12.7425 13.0583C11.979 12.7029 10.8206 12.4923 9.28044 12.5055H4.39673V26.9723H7.93775V22.444H9.66219C11.1102 22.444 12.2291 22.1544 13.0847 21.6674L9.39891 26.9855H13.1111L14.5591 24.8925H19.4296V26.9855H22.9706V12.5186H19.4296L15.1646 18.6661V18.6529Z" fill="#F4F5FA"/>
+                    <path d="M29.4603 19.5875C29.2102 19.6797 29.0259 19.7323 28.6968 19.7586C28.0913 19.7981 26.9329 19.7718 26.9329 19.7718V15.7437H28.3546C28.7626 15.7437 29.1707 15.7964 29.5393 15.9675C29.9079 16.1255 30.2238 16.3756 30.4213 16.731C30.5661 16.9811 30.6319 17.2444 30.6582 17.5208C30.6845 17.8367 30.6582 18.1395 30.5661 18.4423C30.3949 19.0083 30 19.3769 29.4603 19.5875ZM30.6187 22.0491H30.6977C31.5007 21.878 32.2115 21.5357 32.8039 20.9697C33.3173 20.4958 33.6727 19.9166 33.9096 19.2584C34.0544 18.8635 34.1466 18.4554 34.1861 18.0342C34.265 17.1654 34.1597 16.2966 33.8306 15.4805C33.4884 14.6117 32.9355 13.9008 32.1589 13.3743C31.7376 13.0978 31.3032 12.9135 30.8293 12.7951C30.3949 12.6898 30 12.6108 29.4998 12.545C29.1181 12.5055 28.71 12.5055 28.71 12.5055H23.405V26.9723H26.946V22.2466L30.3291 26.9723H34.3177L30.6187 22.0491Z" fill="#F4F5FA"/>
+                    <path d="M34.3045 14.0851C34.1992 14.0851 34.0939 14.0719 34.0017 14.0193C33.9096 13.9666 33.8174 13.9271 33.7516 13.8482C33.6858 13.7692 33.62 13.6902 33.5805 13.5981C33.541 13.5059 33.5146 13.4006 33.5146 13.2953C33.5146 13.19 33.5278 13.0847 33.5805 12.9925C33.6331 12.9004 33.6726 12.8082 33.7516 12.7424C33.8174 12.6634 33.9096 12.6108 34.0017 12.5713C34.0939 12.5318 34.1992 12.5055 34.3045 12.5055C34.4098 12.5055 34.5151 12.5186 34.6072 12.5713C34.6994 12.6108 34.7915 12.6634 34.8573 12.7424C34.9232 12.8214 34.989 12.9004 35.0285 12.9925C35.068 13.0847 35.0943 13.19 35.0943 13.2953C35.0943 13.4006 35.0811 13.5059 35.0285 13.5981C34.989 13.6902 34.9363 13.7823 34.8573 13.8482C34.7915 13.9271 34.6994 13.9798 34.6072 14.0193C34.5151 14.0588 34.4098 14.0851 34.3045 14.0851ZM34.3045 13.9403C34.4229 13.9403 34.5282 13.914 34.6336 13.8482C34.7257 13.7955 34.8047 13.7165 34.8705 13.6112C34.9232 13.5191 34.9495 13.4006 34.9495 13.2821C34.9495 13.1637 34.9232 13.0583 34.8705 12.9662C34.8179 12.8741 34.7389 12.7951 34.6336 12.7293C34.5414 12.6766 34.4229 12.6371 34.3045 12.6371C34.186 12.6371 34.0807 12.6634 33.9754 12.7293C33.8701 12.7951 33.8043 12.8609 33.7384 12.9662C33.6858 13.0583 33.6463 13.1768 33.6463 13.2821C33.6463 13.3874 33.6726 13.5059 33.7384 13.6112C33.8043 13.7165 33.8701 13.7823 33.9754 13.8482C34.0807 13.914 34.186 13.9403 34.3045 13.9403ZM34.0412 13.677V12.9004H34.3835C34.4493 12.9004 34.5151 12.9267 34.5546 12.9794C34.6072 13.032 34.6336 13.0847 34.6336 13.1505C34.6336 13.2163 34.6204 13.2426 34.5941 13.2821C34.5677 13.3216 34.5282 13.3611 34.4888 13.3743L34.6336 13.677H34.5019L34.3703 13.4006H34.1728V13.677H34.0544H34.0412ZM34.1597 13.2821H34.3835C34.4229 13.2821 34.4493 13.269 34.4756 13.2426C34.5019 13.2163 34.5151 13.19 34.5151 13.1505C34.5151 13.111 34.5019 13.0715 34.4756 13.0583C34.4493 13.032 34.4098 13.0189 34.3835 13.0189H34.1597V13.2953V13.2821Z" fill="#F4F5FA"/>
+                    <path d="M70.4836 25.7455H69.3076V14.2255H73.7556C73.9796 14.2255 74.2756 14.2415 74.5636 14.2895C76.3636 14.5695 77.3716 16.0015 77.3716 17.8015C77.3716 19.5935 76.3556 21.0335 74.5636 21.3055C74.2756 21.3535 73.9716 21.3695 73.7556 21.3695H70.4836V25.7455ZM70.4836 15.3535V20.2495H73.7236C73.9156 20.2495 74.1956 20.2335 74.4356 20.1775C75.6196 19.9295 76.1636 18.8735 76.1636 17.8015C76.1636 16.7295 75.6196 15.6735 74.4356 15.4175C74.1956 15.3695 73.9156 15.3535 73.7236 15.3535H70.4836Z" fill="#2F3452"/>
+                    <path d="M62.0536 25.7455H58.5576V14.2255H62.0536C62.2936 14.2255 62.9816 14.2255 63.5336 14.2975C66.1576 14.6575 67.4856 17.0495 67.4856 19.9855C67.4856 22.9375 66.1576 25.3135 63.5336 25.6735C62.9976 25.7455 62.2776 25.7455 62.0536 25.7455ZM59.7736 15.3535V24.6175H62.0536C62.4856 24.6175 63.0456 24.5935 63.4136 24.5215C65.4296 24.1695 66.2376 22.2815 66.2376 19.9855C66.2376 17.6575 65.4136 15.8015 63.4136 15.4495C63.0456 15.3775 62.4696 15.3535 62.0536 15.3535H59.7736Z" fill="#2F3452"/>
+                    <path d="M51.8922 25.9855C48.6282 25.9855 46.6362 23.6335 46.6362 19.9855C46.6362 16.3615 48.5962 13.9935 51.8922 13.9935C54.3402 13.9935 55.8922 15.2335 56.5002 17.1615L55.3162 17.4495C54.8042 16.0415 53.6362 15.1295 51.9402 15.1295C49.2362 15.1135 47.9082 17.1055 47.8842 19.9855C47.8602 22.8655 49.2362 24.8415 51.9402 24.8575C54.4122 24.8655 55.5722 23.3375 55.6922 20.8815H53.0362V19.8735H56.9242C56.9482 20.1215 56.9562 20.4415 56.9562 20.5535C56.9562 23.6655 55.2762 25.9855 51.8922 25.9855Z" fill="#2F3452"/>
+                </svg>
+            </div>
+            <div class="header-right">
+                <a href="#" class="header-nav-item">
+                    <i class="ph ph-magnifying-glass"></i>
+                    Guests
+                </a>
+                <a href="#" class="header-nav-item">
+                    <i class="ph ph-lightbulb"></i>
+                    Support Portal
+                </a>
+                <a href="#" class="header-nav-item">
+                    <i class="ph ph-graduation-cap"></i>
+                    PAR Academy
+                </a>
+                <div style="width: 32px; height: 32px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-left: var(--spacing-sm);">
+                    <i class="ph ph-user"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-body">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <div class="nav-group">
+                        <a href="#" class="nav-item">
+                            <i class="ph ph-chart-line-up"></i>
+                            Trends
+                        </a>
+                    </div>
+
+                    <div class="nav-group">
+                        <div class="nav-group-title">Guests</div>
+                        <a href="index.html" class="nav-item">
+                            <i class="ph ph-layout"></i>
+                            Overview
+                        </a>
+                        <a href="profile.html" class="nav-item">
+                            <i class="ph ph-user-circle"></i>
+                            Profiles
+                        </a>
+                        <a href="segments.html" class="nav-item active">
+                            <i class="ph ph-users-three"></i>
+                            Segments
+                        </a>
+                        <a href="analytics.html" class="nav-item">
+                            <i class="ph ph-chart-bar"></i>
+                            Analytics
+                        </a>
+                    </div>
+
+                    <div class="nav-group">
+                        <div class="nav-group-title">Platform</div>
+                        <a href="#" class="nav-item">
+                            <i class="ph ph-database"></i>
+                            Data Sources
+                        </a>
+                        <a href="#" class="nav-item">
+                            <i class="ph ph-fingerprint"></i>
+                            Identity Resolution
+                            <span class="badge" style="background: rgba(255,255,255,0.1); margin-left: auto; font-size: 10px;">SOON</span>
+                        </a>
+                        <a href="#" class="nav-item">
+                            <i class="ph ph-export"></i>
+                            Data Export
+                            <span class="badge" style="background: rgba(255,255,255,0.1); margin-left: auto; font-size: 10px;">SOON</span>
+                        </a>
+                    </div>
+
+                    <div class="nav-group" style="margin-top: auto;">
+                        <a href="#" class="nav-item">
+                            <i class="ph ph-magnifying-glass"></i>
+                            Search
+                        </a>
+                        <a href="#" class="nav-item">
+                            <i class="ph ph-gear"></i>
+                            Settings
+                        </a>
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <div class="content-area">
+                    <!-- Segment List View -->
+                    <div id="segment-list">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xl);">
+                            <h1 style="font-size: 32px; font-weight: 800;">Segments</h1>
+                            <div style="display: flex; gap: var(--spacing-sm);">
+                                <button class="btn btn-secondary" onclick="document.getElementById('segment-list').style.display='none'; document.getElementById('segment-builder').style.display='block';">
+                                    <i class="ph ph-plus"></i> Create Segment
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card" style="padding: 0;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Segment Name</th>
+                                        <th>Description</th>
+                                        <th>Guest Count</th>
+                                        <th>Source Affinity</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="font-weight: 700;">Dormant High Spenders</td>
+                                        <td style="color: var(--text-subdued);">LTV > $500, Last order > 60 days ago</td>
+                                        <td>4,208</td>
+                                        <td>
+                                            <span class="badge badge-pos">POS</span>
+                                            <span class="badge badge-ordering">Ordering</span>
+                                        </td>
+                                        <td><span class="badge badge-success">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-pencil-simple"></i></button>
+                                            <button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-copy"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 700;">Breakfast Regulars</td>
+                                        <td style="color: var(--text-subdued);">Orders before 10 AM, min 2 visits/month</td>
+                                        <td>12,942</td>
+                                        <td>
+                                            <span class="badge badge-pos">POS</span>
+                                        </td>
+                                        <td><span class="badge badge-success">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-pencil-simple"></i></button>
+                                            <button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-copy"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 700;">Vegetarian Segment</td>
+                                        <td style="color: var(--text-subdued);">Orders with "Veggie" menu tags</td>
+                                        <td>8,115</td>
+                                        <td>
+                                            <span class="badge badge-ordering">Ordering</span>
+                                        </td>
+                                        <td><span class="badge badge-success">Active</span></td>
+                                        <td>
+                                            <button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-pencil-simple"></i></button>
+                                            <button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-copy"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Segment Builder View (Hidden by default) -->
+                    <div id="segment-builder" style="display: none;">
+                        <div class="builder-content">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--spacing-xl);">
+                                <h1 style="font-size: 28px; font-weight: 400;">Create segment</h1>
+                                <div style="display: flex; gap: var(--spacing-md); align-items: center;">
+                                    <button class="btn-link" style="font-size: 16px; font-weight: 400;">
+                                        <i class="ph ph-question" style="font-size: 24px;"></i> Help
+                                    </button>
+                                    <button class="btn btn-ai">
+                                        <i class="ph ph-sparkle"></i> Create with AI...
+                                    </button>
+                                    <button class="btn btn-secondary" style="padding: 8px;">
+                                        <i class="ph ph-dots-three-vertical"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: var(--spacing-xl); position: relative;">
+                                <!-- Template Link -->
+                                <button class="btn-link">
+                                    <i class="ph ph-clipboard-text"></i>
+                                    <span>Work from a template...</span>
+                                </button>
+
+                                <!-- Name Field -->
+                                <div style="width: 400px;">
+                                    <label style="display: block; font-weight: 800; font-size: 16px; margin-bottom: var(--spacing-xs);">Name</label>
+                                    <input type="text" placeholder="Segment name" style="width: 100%; padding: 8px 16px; border: 1px solid var(--border-color); border-radius: var(--border-radius); font-size: 16px; height: 40px;">
+                                </div>
+
+                                <!-- Meta Actions -->
+                                <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                                    <button class="btn-link">
+                                        <i class="ph ph-plus"></i>
+                                        <span>Add description</span>
+                                    </button>
+                                    <button class="btn-link">
+                                        <i class="ph ph-plus"></i>
+                                        <span>Add tag</span>
+                                    </button>
+                                </div>
+
+                                <hr style="border: none; border-top: 1px solid var(--border-color); margin: var(--spacing-sm) 0;">
+
+                                <div style="display: grid; grid-template-columns: 1fr 200px; gap: var(--spacing-xxl); align-items: start;">
+                                    <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+                                        <!-- Rule 1 -->
+                                        <div class="rule-block">
+                                            <div class="rule-header">
+                                                <div>
+                                                    <div class="rule-title">Rule 1</div>
+                                                    <div class="rule-meta">21,523 guests • 35.2% of all guests</div>
+                                                </div>
+                                                <button class="btn btn-secondary" style="padding: 4px; border: none; background: transparent;"><i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i></button>
+                                            </div>
+
+                                            <div class="rule-row-new">
+                                                <button class="btn-link" style="text-decoration: none; border-bottom: 2px solid var(--border-color); padding-bottom: 2px;">Guest type</button>
+                                                
+                                                <div class="select-pill">
+                                                    is <i class="ph ph-caret-down"></i>
+                                                </div>
+
+                                                <div class="btn-group">
+                                                    <button class="btn-group-item active">Loyalty</button>
+                                                    <button class="btn-group-item">Non-Loyalty</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Operator Toggles -->
+                                        <div class="btn-group" style="width: fit-content;">
+                                            <button class="btn-group-item active">And</button>
+                                            <button class="btn-group-item">Or</button>
+                                            <button class="btn-group-item">Exclude</button>
+                                        </div>
+
+                                        <!-- Rule 2 -->
+                                        <div class="rule-block">
+                                            <div class="rule-header">
+                                                <div>
+                                                    <div class="rule-title">Rule 2</div>
+                                                    <div class="rule-meta">3,022 guests • 4.26% of all guests</div>
+                                                </div>
+                                                <button class="btn btn-secondary" style="padding: 4px; border: none; background: transparent;"><i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i></button>
+                                            </div>
+
+                                            <div class="rule-row-new">
+                                                <button class="btn-link" style="text-decoration: none; border-bottom: 2px solid var(--border-color); padding-bottom: 2px;">Menu Item</button>
+                                                
+                                                <div class="select-pill">
+                                                    Double Delight Burger <i class="ph ph-x" style="font-size: 14px; margin-left: 8px;"></i> <i class="ph ph-caret-down"></i>
+                                                </div>
+
+                                                <div class="select-pill">
+                                                    with modifiers <i class="ph ph-caret-down"></i>
+                                                </div>
+
+                                                <div class="select-pill">
+                                                    <div class="chip">Pickles</div>
+                                                    <div class="chip">Lettuce</div>
+                                                    <i class="ph ph-caret-down" style="margin-left: 8px;"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button class="btn-link">
+                                            <i class="ph ph-plus"></i>
+                                            <span>Add another rule</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Sticky Side Stats -->
+                                    <div class="callout-box" style="position: sticky; top: var(--spacing-md);">
+                                        <div style="font-size: 14px; color: var(--text-subdued); margin-bottom: 4px;">Total segment count</div>
+                                        <div style="font-size: 28px; font-weight: 800; margin-bottom: 4px;">1,021</div>
+                                        <div style="font-size: 12px; margin-bottom: var(--spacing-lg);">1.9% of all guests</div>
+                                        
+                                        <button class="btn-link" style="text-decoration: underline; font-weight: 400;">Calculate</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Save Bar -->
+                            <div class="action-bar">
+                                <div style="display: flex; gap: var(--spacing-lg); align-items: center; width: 1128px; margin: 0 auto;">
+                                    <button class="btn btn-accent" style="padding: 8px 32px; font-size: 16px;">Save</button>
+                                    <button class="btn-link" style="text-decoration: none; font-weight: 400; text-decoration: underline;" onclick="document.getElementById('segment-list').style.display='block'; document.getElementById('segment-builder').style.display='none';">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
