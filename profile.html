@@ -7,98 +7,231 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        
-        .profile-header {
+        .profile-nav-top {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .btn-back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--text-normal);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .profile-header-main {
+            display: flex;
+            align-items: center;
             gap: var(--spacing-lg);
             margin-bottom: var(--spacing-xl);
         }
-        
-        .profile-avatar {
+
+        .profile-avatar-img {
             width: 80px;
             height: 80px;
-            background: #eee;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 16px;
+            object-fit: cover;
+            background: #fce4ec;
+        }
+
+        .profile-name-area {
+            flex: 1;
+        }
+
+        .profile-name-area h1 {
             font-size: 32px;
-            font-weight: 800;
-            color: var(--text-subdued);
+            font-weight: 400;
+            margin-bottom: 4px;
         }
-        
-        .profile-info h1 {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: var(--spacing-xs);
-        }
-        
-        .profile-meta {
+
+        .identity-tags {
             display: flex;
-            gap: var(--spacing-md);
-            color: var(--text-subdued);
-            font-size: 14px;
+            gap: 8px;
         }
-        
-        .tab-nav {
+
+        .identity-tag {
+            background: #f4f4f4;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 12px;
+            color: var(--text-subdued);
+        }
+
+        .contact-info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .contact-col-label {
+            font-size: 12px;
+            color: var(--text-subdued);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .contact-col-value {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .contact-col-more {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-normal);
+        }
+
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .metric-card-bikky {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+        }
+
+        .metric-card-label {
+            font-size: 13px;
+            color: var(--text-subdued);
+            margin-bottom: 12px;
+        }
+
+        .metric-card-value {
+            font-size: 28px;
+            font-weight: 400;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .metric-detail-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .metric-detail-label {
+            color: var(--text-subdued);
+        }
+
+        .metric-detail-value {
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .tabs-container {
             display: flex;
             gap: var(--spacing-lg);
             border-bottom: 1px solid var(--border-color);
             margin-bottom: var(--spacing-lg);
         }
-        
-        .tab-item {
-            padding: var(--spacing-md) 0;
+
+        .tab-btn {
+            padding: 12px 0;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-family: inherit;
             font-size: 14px;
             font-weight: 600;
             color: var(--text-subdued);
-            text-decoration: none;
-            border-bottom: 2px solid transparent;
+            cursor: pointer;
         }
-        
-        .tab-item.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
+
+        .tab-btn.active {
+            color: var(--text-normal);
+            border-bottom-color: var(--text-normal);
         }
-        
-        .timeline {
-            position: relative;
-            padding-left: 32px;
+
+        .timeline-layout {
+            display: grid;
+            grid-template-columns: 1fr 240px;
+            gap: var(--spacing-xxl);
         }
-        
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 7px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: var(--border-color);
+
+        .timeline-event {
+            display: grid;
+            grid-template-columns: 120px 40px 80px 1fr;
+            align-items: center;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid #f9f9f9;
         }
-        
-        .timeline-item {
-            position: relative;
-            margin-bottom: var(--spacing-xl);
+
+        .event-date {
+            font-size: 13px;
+            color: var(--text-subdued);
         }
-        
-        .timeline-dot {
-            position: absolute;
-            left: -32px;
-            top: 4px;
-            width: 16px;
-            height: 16px;
-            background: var(--bg-card);
-            border: 3px solid var(--primary-color);
+
+        .event-icon {
+            width: 32px;
+            height: 32px;
+            background: #f4f4f4;
             border-radius: 50%;
-            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-subdued);
         }
-        
-        .timeline-content {
-            background: var(--bg-card);
+
+        .event-time {
+            font-size: 13px;
+            color: var(--text-subdued);
+        }
+
+        .event-desc {
+            font-size: 14px;
+        }
+
+        .order-details-card {
+            background: #fcfcfc;
             border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             padding: var(--spacing-md);
+            margin-top: 8px;
+            margin-left: 240px;
+        }
+
+        .guest-status-box {
+            position: sticky;
+            top: 24px;
+        }
+
+        .status-header {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-subdued);
+            margin-bottom: 12px;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: #f0fdf4;
+            color: #166534;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
         }
     </style>
 </head>
@@ -201,133 +334,187 @@
             <!-- Main Content -->
             <main class="main-content">
                 <div class="content-area">
-                    <div class="profile-header">
-                        <div class="profile-avatar">DM</div>
-                        <div class="profile-info">
-                            <h1>Daniela Morales</h1>
-                            <div class="profile-meta">
-                                <span><i class="ph ph-envelope"></i> daniela.m@example.com</span>
-                                <span><i class="ph ph-phone"></i> (555) 123-4567</span>
-                                <span><i class="ph ph-map-pin"></i> Chicago, IL</span>
-                            </div>
-                            <div style="margin-top: var(--spacing-sm); display: flex; gap: var(--spacing-sm);">
-                                <span class="badge badge-pos">POS</span>
-                                <span class="badge badge-ordering">Ordering</span>
-                                <span class="badge badge-loyalty">Loyalty</span>
-                            </div>
-                        </div>
-                        <div style="margin-left: auto; text-align: right;">
-                            <div style="font-size: 12px; color: var(--text-subdued); margin-bottom: 4px;">LIFETIME VALUE</div>
-                            <div style="font-size: 24px; font-weight: 800;">$2,482.50</div>
-                            <div class="badge badge-success" style="margin-top: 8px;">Top 5% Guest</div>
+                    <!-- Top Navigation -->
+                    <div class="profile-nav-top">
+                        <a href="index.html" class="btn-back">
+                            <i class="ph ph-arrow-left"></i>
+                            All guests
+                        </a>
+                        <div style="display: flex; gap: var(--spacing-md); color: var(--text-subdued);">
+                            <i class="ph ph-download-simple" style="font-size: 20px; cursor: pointer;"></i>
+                            <i class="ph ph-question" style="font-size: 20px; cursor: pointer;"></i>
+                            <i class="ph ph-dots-three" style="font-size: 20px; cursor: pointer;"></i>
                         </div>
                     </div>
 
-                    <nav class="tab-nav">
-                        <a href="#" class="tab-item active">Overview</a>
-                        <a href="#" class="tab-item">Activity Timeline</a>
-                        <a href="#" class="tab-item">Data Sources</a>
-                        <a href="#" class="tab-item">Preferences</a>
-                    </nav>
-
-                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--spacing-lg);">
-                        <!-- Profile Details -->
-                        <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
-                            <div class="card">
-                                <div class="card-title">Key Insights</div>
-                                <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
-                                    <div>
-                                        <div style="font-size: 12px; color: var(--text-subdued); font-weight: 700;">FAVORITE DAYPART</div>
-                                        <div style="font-size: 16px; font-weight: 600;">Lunch (12:30 PM)</div>
-                                    </div>
-                                    <div>
-                                        <div style="font-size: 12px; color: var(--text-subdued); font-weight: 700;">AVERAGE ORDER</div>
-                                        <div style="font-size: 16px; font-weight: 600;">$32.40</div>
-                                    </div>
-                                    <div>
-                                        <div style="font-size: 12px; color: var(--text-subdued); font-weight: 700;">ORDER FREQUENCY</div>
-                                        <div style="font-size: 16px; font-weight: 600;">Every 12 days</div>
-                                    </div>
-                                    <div>
-                                        <div style="font-size: 12px; color: var(--text-subdued); font-weight: 700;">TOP CATEGORY</div>
-                                        <div style="font-size: 16px; font-weight: 600;">Chicken Sandwiches</div>
-                                    </div>
-                                </div>
+                    <!-- Profile Header -->
+                    <div class="profile-header-main">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150" alt="Isabella Chen" class="profile-avatar-img">
+                        <div class="profile-name-area">
+                            <h1>Isabella Chen</h1>
+                            <div class="status-pill">
+                                <div class="status-dot"></div>
+                                Monthly guest
                             </div>
+                        </div>
+                    </div>
 
-                            <div class="card">
-                                <div class="card-title">Loyalty Status</div>
-                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
-                                    <div style="width: 48px; height: 48px; background: #ffd700; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px;">
-                                        <i class="ph ph-crown"></i>
-                                    </div>
-                                    <div>
-                                        <div style="font-weight: 800;">Gold Member</div>
-                                        <div style="font-size: 14px; color: var(--text-subdued);">1,450 Points</div>
-                                    </div>
-                                </div>
-                                <div style="margin-top: var(--spacing-md);">
-                                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
-                                        <span>To Platinum</span>
-                                        <span>550 points needed</span>
-                                    </div>
-                                    <div style="width: 100%; height: 6px; background: #eee; border-radius: 3px;">
-                                        <div style="width: 72%; height: 100%; background: #ffd700; border-radius: 3px;"></div>
-                                    </div>
-                                </div>
+                    <!-- Contact Info Grid -->
+                    <div class="contact-info-grid">
+                        <div>
+                            <div class="contact-col-label">Credit card</div>
+                            <div class="contact-col-value">Visa-4242</div>
+                            <div class="contact-col-more">+2 more</div>
+                        </div>
+                        <div>
+                            <div class="contact-col-label">Email</div>
+                            <div class="contact-col-value">isabella.c@example.com</div>
+                            <div class="contact-col-more">+1 more</div>
+                        </div>
+                        <div>
+                            <div class="contact-col-label">Phone</div>
+                            <div class="contact-col-value">(555) 012-3456</div>
+                            <div class="contact-col-more">+2 more</div>
+                        </div>
+                        <div>
+                            <div class="contact-col-label">Address</div>
+                            <div class="contact-col-value">123 Maple St, Apt 4B...</div>
+                            <div class="contact-col-more">+1 more</div>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Row -->
+                    <div class="metrics-row">
+                        <div class="metric-card-bikky">
+                            <div class="metric-card-label">Status</div>
+                            <div class="metric-card-value">Monthly</div>
+                            <div class="metric-detail-row">
+                                <span class="metric-detail-label">Guest for</span>
+                                <span class="metric-detail-value">2 years</span>
+                            </div>
+                            <div class="metric-detail-row">
+                                <span class="metric-detail-label">Lifecycle stage</span>
+                                <span class="metric-detail-value">At-Risk</span>
+                            </div>
+                            <div class="metric-detail-row">
+                                <span class="metric-detail-label">Order frequency</span>
+                                <span class="metric-detail-value">Monthly</span>
                             </div>
                         </div>
 
-                        <!-- Activity Timeline Mock -->
-                        <div class="card">
-                            <div class="card-title">Recent Activity</div>
-                            <div class="timeline">
-                                <div class="timeline-item">
-                                    <div class="timeline-dot"></div>
-                                    <div class="timeline-content">
-                                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                            <span style="font-weight: 700;">Mobile Order #4829</span>
-                                            <span style="font-size: 12px; color: var(--text-subdued);">Today, 12:42 PM</span>
-                                        </div>
-                                        <div style="font-size: 14px; margin-bottom: 8px;">2x Fire Chicken Sandwich, 1x Large Fries</div>
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <span style="font-weight: 800;">$24.50</span>
-                                            <span class="badge badge-ordering">ORDERING</span>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="metric-card-bikky">
+                            <div class="metric-card-label">Total orders</div>
+                            <div class="metric-card-value">48</div>
+                            <div class="metric-detail-row">
+                                <span class="metric-detail-label">Last ordered</span>
+                                <span class="metric-detail-value">12 days ago</span>
+                            </div>
+                            <div class="metric-detail-row">
+                                <span class="metric-detail-label">Sources</span>
+                                <span class="metric-detail-value">POS, Web</span>
+                            </div>
+                            <div class="metric-detail-row">
+                                <span class="metric-detail-label">Locations</span>
+                                <span class="metric-detail-value">Atlanta, GA, +1</span>
+                            </div>
+                        </div>
 
-                                <div class="timeline-item">
-                                    <div class="timeline-dot" style="border-color: var(--success);"></div>
-                                    <div class="timeline-content">
-                                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                            <span style="font-weight: 700;">Loyalty Reward Redeemed</span>
-                                            <span style="font-size: 12px; color: var(--text-subdued);">Jan 12, 6:15 PM</span>
-                                        </div>
-                                        <div style="font-size: 14px; margin-bottom: 8px;">Redeemed "Free Side" with 500 points</div>
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <span style="font-weight: 800;">- 500 pts</span>
-                                            <span class="badge badge-loyalty">LOYALTY</span>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="metric-card-bikky">
+                            <div class="metric-card-label">Lifetime value</div>
+                            <div class="metric-card-value">$1,240.50</div>
+                            <div class="metric-detail-row">
+                                <span class="metric-detail-label">Avg check size</span>
+                                <span class="metric-detail-value">$25.84</span>
+                            </div>
+                            <div class="metric-detail-row">
+                                <span class="metric-detail-label">Avg order size</span>
+                                <span class="metric-detail-value">2.1 items</span>
+                            </div>
+                            <div class="metric-detail-row">
+                                <span class="metric-detail-label">Favorite daypart</span>
+                                <span class="metric-detail-value">Dinner</span>
+                            </div>
+                        </div>
 
-                                <div class="timeline-item">
-                                    <div class="timeline-dot" style="border-color: #1976d2;"></div>
-                                    <div class="timeline-content">
-                                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                            <span style="font-weight: 700;">In-Store Purchase</span>
-                                            <span style="font-size: 12px; color: var(--text-subdued);">Jan 10, 1:05 PM</span>
-                                        </div>
-                                        <div style="font-size: 14px; margin-bottom: 8px;">Location: Downtown Chicago #04</div>
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <span style="font-weight: 800;">$18.20</span>
-                                            <span class="badge badge-pos">POS</span>
-                                        </div>
-                                    </div>
+                        <div class="metric-card-bikky">
+                            <div class="metric-card-label">Loyalty member</div>
+                            <div class="metric-card-value">Yes</div>
+                            <div class="metric-detail-row">
+                                <span class="metric-detail-label">Tier status</span>
+                                <span class="metric-detail-value">Platinum</span>
+                            </div>
+                            <div class="metric-detail-row">
+                                <span class="metric-detail-label">Points balance</span>
+                                <span class="metric-detail-value">2,450</span>
+                            </div>
+                            <div class="metric-detail-row">
+                                <span class="metric-detail-label">Offers redeemed</span>
+                                <span class="metric-detail-value">12</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="tabs-container">
+                        <button class="tab-btn active">All events</button>
+                        <button class="tab-btn">Orders</button>
+                        <button class="tab-btn">Offers</button>
+                        <button class="tab-btn">Loyalty</button>
+                        <button class="tab-btn">Emails</button>
+                        <button class="tab-btn">Texts</button>
+                    </div>
+
+                    <!-- Timeline Layout -->
+                    <div class="timeline-layout">
+                        <div class="timeline-events-list">
+                            <div class="timeline-event">
+                                <div class="event-date">Thu May 23, 2024</div>
+                                <div class="event-icon"><i class="ph ph-envelope-open" style="color: #5a55e3;"></i></div>
+                                <div class="event-time">9:15 AM</div>
+                                <div class="event-desc">Email opened: "Your Weekly Favorites are Waiting"</div>
+                            </div>
+
+                            <div class="timeline-event">
+                                <div class="event-date">Tue May 21, 2024</div>
+                                <div class="event-icon"><i class="ph ph-award" style="color: #f8931c;"></i></div>
+                                <div class="event-time">1:42 PM</div>
+                                <div class="event-desc">Tier status changed to "Platinum"</div>
+                            </div>
+
+                            <div class="timeline-event">
+                                <div class="event-date">Tue May 21, 2024</div>
+                                <div class="event-icon"><i class="ph ph-currency-dollar" style="color: #3dc1af;"></i></div>
+                                <div class="event-time">1:36 PM</div>
+                                <div class="event-desc">Placed order #48 at the Midtown Atlanta location (POS)</div>
+                            </div>
+
+                            <div class="timeline-event">
+                                <div class="event-date">Sun May 19, 2024</div>
+                                <div class="event-icon"><i class="ph ph-device-mobile" style="color: #5a55e3;"></i></div>
+                                <div class="event-time">6:42 PM</div>
+                                <div class="event-desc">Placed order #47 via <strong>PAR Ordering</strong></div>
+                            </div>
+
+                            <!-- Order Details Card -->
+                            <div class="order-details-card" style="margin-bottom: var(--spacing-lg);">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 600;">
+                                    <span>Mobile Order for Pickup for $28.50</span>
+                                </div>
+                                <div style="font-size: 14px; color: var(--text-subdued);">
+                                    1 x Fire Chicken Burger $14.00<br>
+                                    1 x Large Waffle Fries $6.50<br>
+                                    1 x Strawberry Milkshake $8.00
                                 </div>
                             </div>
-                            <button class="btn btn-secondary" style="width: 100%; margin-top: var(--spacing-md);">View full history</button>
+
+                            <div class="timeline-event">
+                                <div class="event-date">Fri May 17, 2024</div>
+                                <div class="event-icon"><i class="ph ph-paper-plane-tilt"></i></div>
+                                <div class="event-time">11:00 AM</div>
+                                <div class="event-desc">Email delivered: "New Menu Items available at Midtown Atlanta"</div>
+                            </div>
+                        </div>
+
                         </div>
                     </div>
                 </div>
