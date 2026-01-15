@@ -31,12 +31,17 @@
             margin-bottom: var(--spacing-xl);
         }
 
-        .profile-avatar-img {
+        .profile-avatar-placeholder-large {
             width: 80px;
             height: 80px;
             border-radius: 16px;
-            object-fit: cover;
-            background: #fce4ec;
+            background: var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-subdued);
+            font-size: 40px;
+            flex-shrink: 0;
         }
 
         .profile-name-area {
@@ -47,19 +52,6 @@
             font-size: 32px;
             font-weight: 400;
             margin-bottom: 4px;
-        }
-
-        .identity-tags {
-            display: flex;
-            gap: 8px;
-        }
-
-        .identity-tag {
-            background: #f4f4f4;
-            padding: 4px 12px;
-            border-radius: 100px;
-            font-size: 12px;
-            color: var(--text-subdued);
         }
 
         .contact-info-grid {
@@ -161,18 +153,6 @@
             gap: var(--spacing-xxl);
         }
 
-        .guest-status-box {
-            position: sticky;
-            top: 24px;
-        }
-
-        .status-header {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-subdued);
-            margin-bottom: 12px;
-        }
-
         .status-pill {
             display: inline-flex;
             align-items: center;
@@ -200,7 +180,7 @@
             <div class="header-left">
                 <svg width="205" height="40" viewBox="0 0 205 40" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M39.4909 0H0V39.491H39.4909V0Z" fill="#2F3452"/>
-<path d="M193.472 25.8655H192.214V16.6855H193.336V17.6545C193.906 16.9065 194.832 16.439 195.92 16.439C197.127 16.439 198.105 16.983 198.598 17.986C199.133 17.017 200.153 16.439 201.377 16.439C203.23 16.439 204.429 17.663 204.429 19.601L204.42 25.8655H203.171L203.179 19.839C203.179 18.4195 202.295 17.561 201.088 17.561C200.043 17.561 198.946 18.2325 198.946 19.941L198.938 25.8655H203.171L203.179 19.839C203.179 18.4195 202.295 17.561 201.088 17.561C200.043 17.561 198.946 18.2325 198.946 19.941L198.938 25.8655H197.705L197.714 19.924C197.714 18.462 196.864 17.561 195.597 17.561C194.322 17.561 193.472 18.5045 193.472 19.941V25.8655Z" fill="#2F3452"/>
+<path d="M193.472 25.8655H192.214V16.6855H193.336V17.6545C193.906 16.9065 194.832 16.439 195.92 16.439C197.127 16.439 198.105 16.983 198.598 17.986C199.133 17.017 200.153 16.439 201.377 16.439C203.23 16.439 204.429 17.663 204.429 19.601L204.42 25.8655H203.171L203.179 19.839C203.179 18.4195 202.295 17.561 201.088 17.561C200.043 17.561 198.946 18.2325 198.946 19.941L198.938 25.8655H197.705L197.714 19.924C197.714 18.462 196.864 17.561 195.597 17.561C194.322 17.561 193.472 18.5045 193.472 19.941V25.8655Z" fill="#2F3452"/>
 <path d="M187.346 25.8655H186.097V16.6855H187.219V18.139C187.414 17.7905 187.669 17.493 187.933 17.289C188.655 16.66 189.803 16.4815 190.61 16.6855V17.8585C189.93 17.697 189.08 17.731 188.417 18.275C187.499 18.9975 187.346 20.1875 187.346 21.284V25.8655Z" fill="#2F3452"/>
 <path d="M179.87 26.1205C177.133 26.1205 175.526 24.1145 175.526 21.267C175.526 18.377 177.184 16.4305 179.87 16.4305C182.624 16.4305 184.222 18.428 184.222 21.267C184.222 24.157 182.59 26.1205 179.87 26.1205ZM179.87 24.922C181.91 24.922 182.896 23.4345 182.896 21.267C182.896 19.057 181.893 17.629 179.87 17.629C177.813 17.629 176.852 19.125 176.852 21.267C176.852 23.477 177.881 24.922 179.87 24.922Z" fill="#2F3452"/>
 <path d="M172.501 25.8655H171.251V17.7565H169.662V16.6855H171.251V16.0055C171.251 15.3 171.319 14.586 171.821 14.042C172.373 13.4385 173.13 13.3705 173.835 13.3705H175.008V14.4245H173.92C172.968 14.4245 172.501 14.875 172.501 15.8695V16.6855H175.008V17.7565H172.501V25.8655Z" fill="#2F3452"/>
@@ -325,12 +305,14 @@
 
                     <!-- Profile Header -->
                     <div class="profile-header-main">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150" alt="Marcus Thompson" class="profile-avatar-img">
+                        <div class="profile-avatar-placeholder-large">
+                            <i class="ph ph-user"></i>
+                        </div>
                         <div class="profile-name-area">
-                            <h1>Marcus Thompson</h1>
+                            <h1>Isabella Chen</h1>
                             <div class="status-pill">
                                 <div class="status-dot"></div>
-                                Active member
+                                Occasional guest
                             </div>
                         </div>
                     </div>
@@ -339,23 +321,23 @@
                     <div class="contact-info-grid">
                         <div>
                             <div class="contact-col-label">Credit card</div>
-                            <div class="contact-col-value">Amex-8901</div>
-                            <div class="contact-col-more">+3 more</div>
+                            <div class="contact-col-value">Visa-4242</div>
+                            <div class="contact-col-more">+2 more</div>
                         </div>
                         <div>
                             <div class="contact-col-label">Email</div>
-                            <div class="contact-col-value">marcus.t@example.com</div>
-                            <div class="contact-col-more">+2 more</div>
-                        </div>
-                        <div>
-                            <div class="contact-col-label">Phone</div>
-                            <div class="contact-col-value">(555) 234-5678</div>
+                            <div class="contact-col-value">isabella.c@example.com</div>
                             <div class="contact-col-more">+1 more</div>
                         </div>
                         <div>
-                            <div class="contact-col-label">Address</div>
-                            <div class="contact-col-value">456 Oak Ave, Suite 12...</div>
+                            <div class="contact-col-label">Phone</div>
+                            <div class="contact-col-value">(555) 012-3456</div>
                             <div class="contact-col-more">+2 more</div>
+                        </div>
+                        <div>
+                            <div class="contact-col-label">Address</div>
+                            <div class="contact-col-value">123 Maple St, Apt 4B...</div>
+                            <div class="contact-col-more">+1 more</div>
                         </div>
                     </div>
 
@@ -363,69 +345,69 @@
                     <div class="metrics-row">
                         <div class="metric-card-bikky">
                             <div class="metric-card-label">Status</div>
-                            <div class="metric-card-value">Weekly</div>
+                            <div class="metric-card-value">Occasional</div>
                             <div class="metric-detail-row">
-                                <span class="metric-detail-label">Member for</span>
-                                <span class="metric-detail-value">3 years</span>
+                                <span class="metric-detail-label">Guest for</span>
+                                <span class="metric-detail-value">2 years</span>
                             </div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Lifecycle stage</span>
-                                <span class="metric-detail-value">Active</span>
+                                <span class="metric-detail-value">At-Risk</span>
                             </div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Order frequency</span>
-                                <span class="metric-detail-value">Weekly</span>
+                                <span class="metric-detail-value">Monthly</span>
                             </div>
                         </div>
 
                         <div class="metric-card-bikky">
                             <div class="metric-card-label">Total orders</div>
-                            <div class="metric-card-value">67</div>
+                            <div class="metric-card-value">48</div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Last ordered</span>
-                                <span class="metric-detail-value">2 hours ago</span>
+                                <span class="metric-detail-value">12 days ago</span>
                             </div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Sources</span>
-                                <span class="metric-detail-value">Punchh, POS</span>
+                                <span class="metric-detail-value">POS, Web</span>
                             </div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Locations</span>
-                                <span class="metric-detail-value">Atlanta, GA, +2</span>
+                                <span class="metric-detail-value">Atlanta, GA, +1</span>
                             </div>
                         </div>
 
                         <div class="metric-card-bikky">
                             <div class="metric-card-label">Lifetime value</div>
-                            <div class="metric-card-value">$3,428.50</div>
+                            <div class="metric-card-value">$1,240.50</div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Avg check size</span>
-                                <span class="metric-detail-value">$51.17</span>
+                                <span class="metric-detail-value">$25.84</span>
                             </div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Avg order size</span>
-                                <span class="metric-detail-value">3.2 items</span>
+                                <span class="metric-detail-value">2.1 items</span>
                             </div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Favorite daypart</span>
-                                <span class="metric-detail-value">Lunch</span>
+                                <span class="metric-detail-value">Dinner</span>
                             </div>
                         </div>
 
                         <div class="metric-card-bikky">
-                            <div class="metric-card-label">Loyalty member</div>
-                            <div class="metric-card-value">Yes</div>
+                            <div class="metric-card-label">Identity Resolution</div>
+                            <div class="metric-card-value">Matched</div>
                             <div class="metric-detail-row">
-                                <span class="metric-detail-label">Tier status</span>
-                                <span class="metric-detail-value">Gold</span>
+                                <span class="metric-detail-label">Matched by</span>
+                                <span class="metric-detail-value">Credit Card</span>
                             </div>
                             <div class="metric-detail-row">
-                                <span class="metric-detail-label">Points balance</span>
-                                <span class="metric-detail-value">3,428</span>
+                                <span class="metric-detail-label">Profiles unified</span>
+                                <span class="metric-detail-value">2 (Web + POS)</span>
                             </div>
                             <div class="metric-detail-row">
-                                <span class="metric-detail-label">Offers redeemed</span>
-                                <span class="metric-detail-value">18</span>
+                                <span class="metric-detail-label">Loyalty member</span>
+                                <span class="metric-detail-value">No</span>
                             </div>
                         </div>
                     </div>
@@ -435,8 +417,6 @@
                         <button class="tab-btn active">All events</button>
                         <button class="tab-btn">Orders</button>
                         <button class="tab-btn">Offers</button>
-                        <button class="tab-btn">Loyalty</button>
-                        <button class="tab-btn">Reservations</button>
                         <button class="tab-btn">Emails</button>
                         <button class="tab-btn">Texts</button>
                     </div>
@@ -445,89 +425,97 @@
                     <div class="timeline-layout">
                         <div class="timeline-events-list">
                             <div class="timeline-event">
-                                <div class="event-date">Today</div>
-                                <div class="event-icon"><i class="ph ph-currency-dollar" style="color: #3dc1af;"></i></div>
-                                <div class="event-time">11:42 AM</div>
-                                <div class="event-desc">Placed order #67 at Buckhead location (POS) - $54.20</div>
-                            </div>
-
-                            <!-- Order Details Card -->
-                            <div class="order-details-card" style="margin-bottom: var(--spacing-lg);">
-                                <div class="order-details-header">
-                                    <span>POS Order for Dine-in - $54.20</span>
-                                </div>
-                                <div class="order-details-items">
-                                    1 x Classic Burger $12.50<br>
-                                    1 x Truffle Fries $8.50<br>
-                                    1 x Draft Beer $9.00<br>
-                                    1 x NY Cheesecake $10.00<br>
-                                    Tax & Tip $14.20
-                                </div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Today</div>
-                                <div class="event-icon"><i class="ph ph-star" style="color: #f8931c;"></i></div>
-                                <div class="event-time">11:42 AM</div>
-                                <div class="event-desc">Earned 54 points</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Wed Jan 08, 2026</div>
+                                <div class="event-date">Thu May 23, 2024</div>
                                 <div class="event-icon"><i class="ph ph-envelope-open" style="color: #5a55e3;"></i></div>
-                                <div class="event-time">8:20 AM</div>
-                                <div class="event-desc">Email opened: "Your Gold Member Benefits Await"</div>
+                                <div class="event-time">9:15 AM</div>
+                                <div class="event-desc">Email opened: "Your Weekly Favorites are Waiting"</div>
                             </div>
 
                             <div class="timeline-event">
-                                <div class="event-date">Mon Jan 06, 2026</div>
-                                <div class="event-icon"><i class="ph ph-award" style="color: #f8931c;"></i></div>
-                                <div class="event-time">2:15 PM</div>
-                                <div class="event-desc">Tier status upgraded to "Gold"</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Mon Jan 06, 2026</div>
-                                <div class="event-icon"><i class="ph ph-device-mobile" style="color: #5a55e3;"></i></div>
-                                <div class="event-time">12:30 PM</div>
-                                <div class="event-desc">Placed order #66 via <strong>Punchh App</strong></div>
+                                <div class="event-date">Tue May 21, 2024</div>
+                                <div class="event-icon"><i class="ph ph-currency-dollar" style="color: #3dc1af;"></i></div>
+                                <div class="event-time">1:36 PM</div>
+                                <div class="event-desc">Placed order #48 at the Midtown Atlanta location (POS)</div>
                             </div>
 
                             <!-- Order Details Card -->
                             <div class="order-details-card" style="margin-bottom: var(--spacing-lg);">
                                 <div class="order-details-header">
-                                    <span>Mobile Order for Delivery - $42.80</span>
+                                    <span>POS Order for Dine-in - $32.40</span>
                                 </div>
                                 <div class="order-details-items">
-                                    2 x Fire Chicken Sandwich $28.00<br>
-                                    1 x Sweet Potato Fries $7.50<br>
-                                    1 x Large Lemonade $4.50<br>
-                                    Delivery fee $2.80
+                                    1 x BBQ Bacon Burger $16.50<br>
+                                    1 x Onion Rings $6.50<br>
+                                    1 x Craft Soda $4.50<br>
+                                    Tax & Tip $4.90
                                 </div>
                             </div>
 
                             <div class="timeline-event">
-                                <div class="event-date">Fri Jan 03, 2026</div>
-                                <div class="event-icon"><i class="ph ph-gift" style="color: #f8931c;"></i></div>
-                                <div class="event-time">1:10 PM</div>
-                                <div class="event-desc">Redeemed offer: "Free Side with Entree Purchase"</div>
+                                <div class="event-date">Sun May 19, 2024</div>
+                                <div class="event-icon"><i class="ph ph-device-mobile" style="color: #5a55e3;"></i></div>
+                                <div class="event-time">6:42 PM</div>
+                                <div class="event-desc">Placed order #47 via <strong>PAR Ordering</strong> (Web App)</div>
+                            </div>
+
+                            <!-- Order Details Card -->
+                            <div class="order-details-card" style="margin-bottom: var(--spacing-lg);">
+                                <div class="order-details-header">
+                                    <span>Web Order for Pickup - $28.50</span>
+                                </div>
+                                <div class="order-details-items">
+                                    1 x Fire Chicken Burger $14.00<br>
+                                    1 x Large Waffle Fries $6.50<br>
+                                    1 x Strawberry Milkshake $8.00
+                                </div>
                             </div>
 
                             <div class="timeline-event">
-                                <div class="event-date">Thu Jan 02, 2026</div>
+                                <div class="event-date">Fri May 17, 2024</div>
                                 <div class="event-icon"><i class="ph ph-paper-plane-tilt"></i></div>
-                                <div class="event-time">9:00 AM</div>
-                                <div class="event-desc">Email delivered: "New Year, New Menu Items!"</div>
+                                <div class="event-time">11:00 AM</div>
+                                <div class="event-desc">Email delivered: "New Menu Items available at Midtown Atlanta"</div>
                             </div>
 
                             <div class="timeline-event">
-                                <div class="event-date">Sun Dec 29, 2025</div>
+                                <div class="event-date">Wed May 8, 2024</div>
                                 <div class="event-icon"><i class="ph ph-chat-circle-text" style="color: #f8931c;"></i></div>
-                                <div class="event-time">11:45 AM</div>
-                                <div class="event-desc">SMS sent: "You're only 150 points away from Gold status!"</div>
+                                <div class="event-time">2:30 PM</div>
+                                <div class="event-desc">SMS sent: "Thanks for your order! Earn rewards on your next visit."</div>
                             </div>
-                        </div>
 
+                            <div class="timeline-event">
+                                <div class="event-date">Tue Apr 23, 2024</div>
+                                <div class="event-icon"><i class="ph ph-currency-dollar" style="color: #3dc1af;"></i></div>
+                                <div class="event-time">7:18 PM</div>
+                                <div class="event-desc">Placed order #46 via Web App</div>
+                            </div>
+
+                            <!-- Order Details Card -->
+                            <div class="order-details-card" style="margin-bottom: var(--spacing-lg);">
+                                <div class="order-details-header">
+                                    <span>Web Order for Pickup - $18.20</span>
+                                </div>
+                                <div class="order-details-items">
+                                    1 x Veggie Burger $13.50<br>
+                                    1 x Small Lemonade $3.50<br>
+                                    Tax $1.20
+                                </div>
+                            </div>
+
+                            <div class="timeline-event">
+                                <div class="event-date">Sun Mar 10, 2024</div>
+                                <div class="event-icon"><i class="ph ph-link" style="color: #9aa4ff;"></i></div>
+                                <div class="event-time">3:22 PM</div>
+                                <div class="event-desc"><strong>Identity Resolution:</strong> Unified Web App profile with POS profile via credit card match</div>
+                            </div>
+
+                            <div class="timeline-event">
+                                <div class="event-date">Thu Jan 18, 2024</div>
+                                <div class="event-icon"><i class="ph ph-user-plus" style="color: #60696c;"></i></div>
+                                <div class="event-time">12:45 PM</div>
+                                <div class="event-desc"><strong>First interaction:</strong> Guest profile created from Web App order</div>
+                            </div>
                         </div>
                     </div>
                 </div>

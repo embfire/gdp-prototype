@@ -3,193 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guest Profile - Guest Data Platform</title>
+    <title>Guest Profiles - Guest Data Platform</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        .profile-nav-top {
+        .profiles-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .btn-back {
-            display: flex;
             align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--text-normal);
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .profile-header-main {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-lg);
             margin-bottom: var(--spacing-xl);
         }
 
-        .profile-avatar-img {
-            width: 80px;
-            height: 80px;
-            border-radius: 16px;
-            object-fit: cover;
-            background: #fce4ec;
-        }
-
-        .profile-name-area {
-            flex: 1;
-        }
-
-        .profile-name-area h1 {
-            font-size: 32px;
-            font-weight: 400;
-            margin-bottom: 4px;
-        }
-
-        .identity-tags {
+        .search-bar {
             display: flex;
-            gap: 8px;
+            align-items: center;
+            gap: var(--spacing-md);
+            flex: 1;
+            max-width: 500px;
         }
 
-        .identity-tag {
-            background: #f4f4f4;
+        .search-input {
+            flex: 1;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: 2px solid var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .filters-bar {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .guest-cell {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .guest-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .guest-avatar-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-subdued);
+            font-size: 20px;
+        }
+
+        .guest-name {
+            font-weight: 600;
+        }
+
+        .loyalty-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             padding: 4px 12px;
             border-radius: 100px;
             font-size: 12px;
-            color: var(--text-subdued);
-        }
-
-        .contact-info-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: var(--spacing-xl);
-            margin-bottom: var(--spacing-xl);
-            padding-bottom: var(--spacing-lg);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .contact-col-label {
-            font-size: 12px;
-            color: var(--text-subdued);
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .contact-col-value {
-            font-size: 15px;
-            margin-bottom: 4px;
-        }
-
-        .contact-col-more {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-normal);
-        }
-
-        .metrics-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .metric-card-bikky {
-            background: white;
-            box-shadow: var(--card-shadow);
-            border-radius: 12px;
-            padding: var(--spacing-lg);
-        }
-
-        .metric-card-label {
-            font-size: 13px;
-            color: var(--text-subdued);
-            margin-bottom: 12px;
-        }
-
-        .metric-card-value {
-            font-size: 28px;
-            font-weight: 400;
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .metric-detail-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            margin-bottom: 12px;
-        }
-
-        .metric-detail-label {
-            color: var(--text-subdued);
-        }
-
-        .metric-detail-value {
-            font-weight: 500;
-            text-align: right;
-        }
-
-        .tabs-container {
-            display: flex;
-            gap: var(--spacing-lg);
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .tab-btn {
-            padding: 12px 0;
-            background: none;
-            border: none;
-            border-bottom: 2px solid transparent;
-            font-family: inherit;
-            font-size: 14px;
             font-weight: 600;
+        }
+
+        .loyalty-badge.member {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .loyalty-badge.non-member {
+            background: #f4f4f4;
             color: var(--text-subdued);
+        }
+
+        .table-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        tbody tr {
             cursor: pointer;
+            transition: background-color 0.2s;
         }
 
-        .tab-btn.active {
-            color: var(--text-normal);
-            border-bottom-color: var(--text-normal);
-        }
-
-        .timeline-layout {
-            display: grid;
-            grid-template-columns: 1fr 240px;
-            gap: var(--spacing-xxl);
-        }
-
-        .guest-status-box {
-            position: sticky;
-            top: 24px;
-        }
-
-        .status-header {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-subdued);
-            margin-bottom: 12px;
-        }
-
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
-            background: #f0fdf4;
-            color: #166534;
-            border-radius: 100px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            background: #22c55e;
-            border-radius: 50%;
+        tbody tr:hover {
+            background-color: rgba(90, 85, 227, 0.05);
         }
     </style>
 </head>
@@ -200,7 +113,7 @@
             <div class="header-left">
                 <svg width="205" height="40" viewBox="0 0 205 40" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M39.4909 0H0V39.491H39.4909V0Z" fill="#2F3452"/>
-<path d="M193.472 25.8655H192.214V16.6855H193.336V17.6545C193.906 16.9065 194.832 16.439 195.92 16.439C197.127 16.439 198.105 16.983 198.598 17.986C199.133 17.017 200.153 16.439 201.377 16.439C203.23 16.439 204.429 17.663 204.429 19.601L204.42 25.8655H203.171L203.179 19.839C203.179 18.4195 202.295 17.561 201.088 17.561C200.043 17.561 198.946 18.2325 198.946 19.941L198.938 25.8655H203.171L203.179 19.839C203.179 18.4195 202.295 17.561 201.088 17.561C200.043 17.561 198.946 18.2325 198.946 19.941L198.938 25.8655H197.705L197.714 19.924C197.714 18.462 196.864 17.561 195.597 17.561C194.322 17.561 193.472 18.5045 193.472 19.941V25.8655Z" fill="#2F3452"/>
+<path d="M193.472 25.8655H192.214V16.6855H193.336V17.6545C193.906 16.9065 194.832 16.439 195.92 16.439C197.127 16.439 198.105 16.983 198.598 17.986C199.133 17.017 200.153 16.439 201.377 16.439C203.23 16.439 204.429 17.663 204.429 19.601L204.42 25.8655H203.171L203.179 19.839C203.179 18.4195 202.295 17.561 201.088 17.561C200.043 17.561 198.946 18.2325 198.946 19.941L198.938 25.8655H197.705L197.714 19.924C197.714 18.462 196.864 17.561 195.597 17.561C194.322 17.561 193.472 18.5045 193.472 19.941V25.8655Z" fill="#2F3452"/>
 <path d="M187.346 25.8655H186.097V16.6855H187.219V18.139C187.414 17.7905 187.669 17.493 187.933 17.289C188.655 16.66 189.803 16.4815 190.61 16.6855V17.8585C189.93 17.697 189.08 17.731 188.417 18.275C187.499 18.9975 187.346 20.1875 187.346 21.284V25.8655Z" fill="#2F3452"/>
 <path d="M179.87 26.1205C177.133 26.1205 175.526 24.1145 175.526 21.267C175.526 18.377 177.184 16.4305 179.87 16.4305C182.624 16.4305 184.222 18.428 184.222 21.267C184.222 24.157 182.59 26.1205 179.87 26.1205ZM179.87 24.922C181.91 24.922 182.896 23.4345 182.896 21.267C182.896 19.057 181.893 17.629 179.87 17.629C177.813 17.629 176.852 19.125 176.852 21.267C176.852 23.477 177.881 24.922 179.87 24.922Z" fill="#2F3452"/>
 <path d="M172.501 25.8655H171.251V17.7565H169.662V16.6855H171.251V16.0055C171.251 15.3 171.319 14.586 171.821 14.042C172.373 13.4385 173.13 13.3705 173.835 13.3705H175.008V14.4245H173.92C172.968 14.4245 172.501 14.875 172.501 15.8695V16.6855H175.008V17.7565H172.501V25.8655Z" fill="#2F3452"/>
@@ -310,224 +223,206 @@
             <!-- Main Content -->
             <main class="main-content">
                 <div class="content-area">
-                    <!-- Top Navigation -->
-                    <div class="profile-nav-top">
-                        <a href="profiles.html" class="btn-back">
-                            <i class="ph ph-arrow-left"></i>
-                            All guests
-                        </a>
-                        <div style="display: flex; gap: var(--spacing-md); color: var(--text-subdued);">
-                            <i class="ph ph-download-simple" style="font-size: 20px; cursor: pointer;"></i>
-                            <i class="ph ph-question" style="font-size: 20px; cursor: pointer;"></i>
-                            <i class="ph ph-dots-three" style="font-size: 20px; cursor: pointer;"></i>
+                    <!-- Header with Search -->
+                    <div class="profiles-header">
+                        <h1 style="font-size: 32px; font-weight: 800;">Guest Profiles</h1>
+                        <div class="search-bar">
+                            <i class="ph ph-magnifying-glass" style="color: var(--text-subdued);"></i>
+                            <input type="text" class="search-input" placeholder="Search by name, email, or phone...">
                         </div>
                     </div>
 
-                    <!-- Profile Header -->
-                    <div class="profile-header-main">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150" alt="Marcus Thompson" class="profile-avatar-img">
-                        <div class="profile-name-area">
-                            <h1>Marcus Thompson</h1>
-                            <div class="status-pill">
-                                <div class="status-dot"></div>
-                                Active member
-                            </div>
+                    <!-- Filters -->
+                    <div class="filters-bar">
+                        <div class="dropdown-wrapper">
+                            <select>
+                                <option>All Loyalty Status</option>
+                                <option>Members</option>
+                                <option>Non-Members</option>
+                            </select>
+                            <i class="ph ph-caret-down"></i>
                         </div>
+                        <div class="dropdown-wrapper">
+                            <select>
+                                <option>All Lifecycle Stages</option>
+                                <option>New</option>
+                                <option>Active</option>
+                                <option>At-Risk</option>
+                                <option>Lapsed</option>
+                            </select>
+                            <i class="ph ph-caret-down"></i>
+                        </div>
+                        <div class="dropdown-wrapper">
+                            <select>
+                                <option>All Segments</option>
+                                <option>High-Value Loyalists</option>
+                                <option>Lapsed - 90 Days</option>
+                                <option>New Menu Explorers</option>
+                            </select>
+                            <i class="ph ph-caret-down"></i>
+                        </div>
+                        <button class="btn btn-secondary">
+                            <i class="ph ph-export"></i> Export
+                        </button>
                     </div>
 
-                    <!-- Contact Info Grid -->
-                    <div class="contact-info-grid">
-                        <div>
-                            <div class="contact-col-label">Credit card</div>
-                            <div class="contact-col-value">Amex-8901</div>
-                            <div class="contact-col-more">+3 more</div>
-                        </div>
-                        <div>
-                            <div class="contact-col-label">Email</div>
-                            <div class="contact-col-value">marcus.t@example.com</div>
-                            <div class="contact-col-more">+2 more</div>
-                        </div>
-                        <div>
-                            <div class="contact-col-label">Phone</div>
-                            <div class="contact-col-value">(555) 234-5678</div>
-                            <div class="contact-col-more">+1 more</div>
-                        </div>
-                        <div>
-                            <div class="contact-col-label">Address</div>
-                            <div class="contact-col-value">456 Oak Ave, Suite 12...</div>
-                            <div class="contact-col-more">+2 more</div>
-                        </div>
+                    <!-- Profiles Table -->
+                    <div class="card card-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Guest</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Loyalty Status</th>
+                                    <th>LTV</th>
+                                    <th>Orders</th>
+                                    <th>Source</th>
+                                    <th>Last Activity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Loyalty Member -->
+                                <tr onclick="window.location.href='profile.html'" style="cursor: pointer;">
+                                    <td>
+                                        <div class="guest-cell">
+                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150" alt="Marcus Thompson" class="guest-avatar">
+                                            <span class="guest-name">Marcus Thompson</span>
+                                        </div>
+                                    </td>
+                                    <td>marcus.t@example.com</td>
+                                    <td>(555) 234-5678</td>
+                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td>$3,428.50</td>
+                                    <td>67</td>
+                                    <td>Punchh, POS</td>
+                                    <td>2 hours ago</td>
+                                </tr>
+                                <!-- Non-Loyalty Guest -->
+                                <tr onclick="window.location.href='guest-profile.html'" style="cursor: pointer;">
+                                    <td>
+                                        <div class="guest-cell">
+                                            <div class="guest-avatar-placeholder">
+                                                <i class="ph ph-user"></i>
+                                            </div>
+                                            <span class="guest-name">Isabella Chen</span>
+                                        </div>
+                                    </td>
+                                    <td>isabella.c@example.com</td>
+                                    <td>(555) 012-3456</td>
+                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td>$1,240.50</td>
+                                    <td>48</td>
+                                    <td>Web App, POS</td>
+                                    <td>12 days ago</td>
+                                </tr>
+                                <!-- Additional Sample Data -->
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150" alt="Sarah Martinez" class="guest-avatar">
+                                            <span class="guest-name">Sarah Martinez</span>
+                                        </div>
+                                    </td>
+                                    <td>sarah.m@example.com</td>
+                                    <td>(555) 789-0123</td>
+                                    <td><span class="loyalty-badge member">Platinum Member</span></td>
+                                    <td>$5,892.00</td>
+                                    <td>124</td>
+                                    <td>Punchh, POS, Web App</td>
+                                    <td>1 day ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <div class="guest-avatar-placeholder">
+                                                <i class="ph ph-user"></i>
+                                            </div>
+                                            <span class="guest-name">David Kim</span>
+                                        </div>
+                                    </td>
+                                    <td>d.kim@example.com</td>
+                                    <td>(555) 456-7890</td>
+                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td>$287.50</td>
+                                    <td>12</td>
+                                    <td>POS</td>
+                                    <td>5 days ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150" alt="James Wilson" class="guest-avatar">
+                                            <span class="guest-name">James Wilson</span>
+                                        </div>
+                                    </td>
+                                    <td>j.wilson@example.com</td>
+                                    <td>(555) 321-6547</td>
+                                    <td><span class="loyalty-badge member">Silver Member</span></td>
+                                    <td>$1,782.20</td>
+                                    <td>42</td>
+                                    <td>Punchh, POS</td>
+                                    <td>3 days ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <div class="guest-avatar-placeholder">
+                                                <i class="ph ph-user"></i>
+                                            </div>
+                                            <span class="guest-name">Emily Rodriguez</span>
+                                        </div>
+                                    </td>
+                                    <td>emily.r@example.com</td>
+                                    <td>(555) 654-3210</td>
+                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td>$542.80</td>
+                                    <td>23</td>
+                                    <td>Web App</td>
+                                    <td>8 days ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150&h=150" alt="Jessica Park" class="guest-avatar">
+                                            <span class="guest-name">Jessica Park</span>
+                                        </div>
+                                    </td>
+                                    <td>jessica.park@example.com</td>
+                                    <td>(555) 987-1234</td>
+                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td>$2,945.60</td>
+                                    <td>58</td>
+                                    <td>Punchh, Web App</td>
+                                    <td>4 hours ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <div class="guest-avatar-placeholder">
+                                                <i class="ph ph-user"></i>
+                                            </div>
+                                            <span class="guest-name">Robert Taylor</span>
+                                        </div>
+                                    </td>
+                                    <td>r.taylor@example.com</td>
+                                    <td>(555) 159-7531</td>
+                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td>$95.00</td>
+                                    <td>4</td>
+                                    <td>POS</td>
+                                    <td>21 days ago</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
 
-                    <!-- Metrics Row -->
-                    <div class="metrics-row">
-                        <div class="metric-card-bikky">
-                            <div class="metric-card-label">Status</div>
-                            <div class="metric-card-value">Weekly</div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Member for</span>
-                                <span class="metric-detail-value">3 years</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Lifecycle stage</span>
-                                <span class="metric-detail-value">Active</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Order frequency</span>
-                                <span class="metric-detail-value">Weekly</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card-bikky">
-                            <div class="metric-card-label">Total orders</div>
-                            <div class="metric-card-value">67</div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Last ordered</span>
-                                <span class="metric-detail-value">2 hours ago</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Sources</span>
-                                <span class="metric-detail-value">Punchh, POS</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Locations</span>
-                                <span class="metric-detail-value">Atlanta, GA, +2</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card-bikky">
-                            <div class="metric-card-label">Lifetime value</div>
-                            <div class="metric-card-value">$3,428.50</div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Avg check size</span>
-                                <span class="metric-detail-value">$51.17</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Avg order size</span>
-                                <span class="metric-detail-value">3.2 items</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Favorite daypart</span>
-                                <span class="metric-detail-value">Lunch</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card-bikky">
-                            <div class="metric-card-label">Loyalty member</div>
-                            <div class="metric-card-value">Yes</div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Tier status</span>
-                                <span class="metric-detail-value">Gold</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Points balance</span>
-                                <span class="metric-detail-value">3,428</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Offers redeemed</span>
-                                <span class="metric-detail-value">18</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tabs -->
-                    <div class="tabs-container">
-                        <button class="tab-btn active">All events</button>
-                        <button class="tab-btn">Orders</button>
-                        <button class="tab-btn">Offers</button>
-                        <button class="tab-btn">Loyalty</button>
-                        <button class="tab-btn">Reservations</button>
-                        <button class="tab-btn">Emails</button>
-                        <button class="tab-btn">Texts</button>
-                    </div>
-
-                    <!-- Timeline Layout -->
-                    <div class="timeline-layout">
-                        <div class="timeline-events-list">
-                            <div class="timeline-event">
-                                <div class="event-date">Today</div>
-                                <div class="event-icon"><i class="ph ph-currency-dollar" style="color: #3dc1af;"></i></div>
-                                <div class="event-time">11:42 AM</div>
-                                <div class="event-desc">Placed order #67 at Buckhead location (POS) - $54.20</div>
-                            </div>
-
-                            <!-- Order Details Card -->
-                            <div class="order-details-card" style="margin-bottom: var(--spacing-lg);">
-                                <div class="order-details-header">
-                                    <span>POS Order for Dine-in - $54.20</span>
-                                </div>
-                                <div class="order-details-items">
-                                    1 x Classic Burger $12.50<br>
-                                    1 x Truffle Fries $8.50<br>
-                                    1 x Draft Beer $9.00<br>
-                                    1 x NY Cheesecake $10.00<br>
-                                    Tax & Tip $14.20
-                                </div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Today</div>
-                                <div class="event-icon"><i class="ph ph-star" style="color: #f8931c;"></i></div>
-                                <div class="event-time">11:42 AM</div>
-                                <div class="event-desc">Earned 54 points</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Wed Jan 08, 2026</div>
-                                <div class="event-icon"><i class="ph ph-envelope-open" style="color: #5a55e3;"></i></div>
-                                <div class="event-time">8:20 AM</div>
-                                <div class="event-desc">Email opened: "Your Gold Member Benefits Await"</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Mon Jan 06, 2026</div>
-                                <div class="event-icon"><i class="ph ph-award" style="color: #f8931c;"></i></div>
-                                <div class="event-time">2:15 PM</div>
-                                <div class="event-desc">Tier status upgraded to "Gold"</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Mon Jan 06, 2026</div>
-                                <div class="event-icon"><i class="ph ph-device-mobile" style="color: #5a55e3;"></i></div>
-                                <div class="event-time">12:30 PM</div>
-                                <div class="event-desc">Placed order #66 via <strong>Punchh App</strong></div>
-                            </div>
-
-                            <!-- Order Details Card -->
-                            <div class="order-details-card" style="margin-bottom: var(--spacing-lg);">
-                                <div class="order-details-header">
-                                    <span>Mobile Order for Delivery - $42.80</span>
-                                </div>
-                                <div class="order-details-items">
-                                    2 x Fire Chicken Sandwich $28.00<br>
-                                    1 x Sweet Potato Fries $7.50<br>
-                                    1 x Large Lemonade $4.50<br>
-                                    Delivery fee $2.80
-                                </div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Fri Jan 03, 2026</div>
-                                <div class="event-icon"><i class="ph ph-gift" style="color: #f8931c;"></i></div>
-                                <div class="event-time">1:10 PM</div>
-                                <div class="event-desc">Redeemed offer: "Free Side with Entree Purchase"</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Thu Jan 02, 2026</div>
-                                <div class="event-icon"><i class="ph ph-paper-plane-tilt"></i></div>
-                                <div class="event-time">9:00 AM</div>
-                                <div class="event-desc">Email delivered: "New Year, New Menu Items!"</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Sun Dec 29, 2025</div>
-                                <div class="event-icon"><i class="ph ph-chat-circle-text" style="color: #f8931c;"></i></div>
-                                <div class="event-time">11:45 AM</div>
-                                <div class="event-desc">SMS sent: "You're only 150 points away from Gold status!"</div>
-                            </div>
-                        </div>
-
+                    <!-- Pagination Info -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-md); color: var(--text-subdued); font-size: 14px;">
+                        <span>Showing 1-8 of 1,248,392 guests</span>
+                        <div style="display: flex; gap: var(--spacing-sm);">
+                            <button class="btn btn-secondary" style="padding: 4px 12px;" disabled>Previous</button>
+                            <button class="btn btn-secondary" style="padding: 4px 12px;">Next</button>
                         </div>
                     </div>
                 </div>

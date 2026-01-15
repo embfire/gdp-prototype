@@ -31,6 +31,17 @@
   
   --border-radius: 8px;
   --shadow: 0 1px 3px rgba(0,0,0,0.1);
+  --card-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.06), 
+                 0px 1px 2px -1px rgba(0, 0, 0, 0.06), 
+                 0px 2px 4px 0px rgba(0, 0, 0, 0.04);
+
+  /* Figma Dropdown Tokens */
+  --dropdown-bg: #ffffff;
+  --dropdown-hover-bg: #f4f4f4;
+  --dropdown-border: #dfe1e2;
+  --dropdown-focus-border: #1d5eff;
+  --dropdown-text: #000000;
+  --dropdown-icon: #60696c;
 }
 
 * {
@@ -71,6 +82,7 @@ body {
   flex-direction: column;
   flex-shrink: 0;
   overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 
 .sidebar-header {
@@ -205,7 +217,8 @@ body {
 
 .content-area {
   flex: 1;
-  overflow-y: scroll; /* Force scrollbar to prevent horizontal jumping */
+  overflow-y: auto;
+  scrollbar-gutter: stable;
   padding: var(--spacing-lg);
 }
 
@@ -213,9 +226,14 @@ body {
 .card {
   background: var(--bg-card);
   border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
+}
+
+.card-table {
+  padding: 0;
+  overflow: hidden;
 }
 
 .card-title {
@@ -268,6 +286,108 @@ body {
 .badge-ordering { background-color: #f3e5f5; color: #7b1fa2; }
 .badge-loyalty { background-color: #fff3e0; color: #f57c00; }
 .badge-success { background-color: rgba(61, 193, 175, 0.1); color: var(--success); }
+
+/* Timeline Order Details */
+.order-details-card {
+    background: #fcfcfc;
+    box-shadow: var(--card-shadow);
+    border-radius: 8px;
+    padding: var(--spacing-md);
+    margin-top: 8px;
+    margin-left: 240px;
+}
+
+.order-details-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.order-details-items {
+    font-size: 14px;
+    color: var(--text-subdued);
+    line-height: 1.6;
+}
+
+.border-shadow {
+    box-shadow: var(--card-shadow);
+}
+
+/* Timeline Events */
+.timeline-event {
+    display: grid;
+    grid-template-columns: 120px 40px 80px 1fr;
+    align-items: center;
+    padding: var(--spacing-md) 0;
+    border-bottom: 1px solid #f9f9f9;
+}
+
+.event-date {
+    font-size: 13px;
+    color: var(--text-subdued);
+}
+
+.event-icon {
+    width: 32px;
+    height: 32px;
+    background: #f4f4f4;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-subdued);
+}
+
+.event-time {
+    font-size: 13px;
+    color: var(--text-subdued);
+}
+
+.event-desc {
+    font-size: 14px;
+}
+
+/* Dropdown Component */
+.dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-wrapper select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--dropdown-bg);
+  border: 1px solid var(--dropdown-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-sm) 36px var(--spacing-sm) var(--spacing-md);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--dropdown-text);
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 160px;
+}
+
+.dropdown-wrapper select:hover {
+  background-color: var(--dropdown-hover-bg);
+}
+
+.dropdown-wrapper select:focus {
+  outline: none;
+  border-color: var(--dropdown-focus-border);
+  box-shadow: 0 0 0 1px var(--dropdown-focus-border);
+}
+
+.dropdown-wrapper .ph-caret-down {
+  position: absolute;
+  right: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--dropdown-icon);
+  pointer-events: none;
+  font-size: 16px;
+}
 
 .metric-grid {
   display: grid;
@@ -485,4 +605,214 @@ tr:hover td {
 
 .btn-ai:hover {
   background-color: var(--primary-hover);
+}
+
+/* Ask AVA Drawer */
+.ava-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ava-drawer-overlay.active {
+  display: block;
+  opacity: 1;
+}
+
+.ava-drawer {
+  position: fixed;
+  top: 0;
+  right: -450px;
+  width: 450px;
+  height: 100%;
+  background: white;
+  box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s ease;
+}
+
+.ava-drawer.active {
+  right: 0;
+}
+
+.ava-header {
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-sidebar);
+  color: white;
+}
+
+.ava-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.ava-header h2 i {
+  color: var(--primary-color);
+}
+
+.ava-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.ava-close:hover {
+  opacity: 1;
+}
+
+.ava-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.ava-footer {
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--border-color);
+  background: #fcfcfc;
+}
+
+.ava-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ava-input {
+  width: 100%;
+  padding: 12px 48px 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  box-shadow: var(--shadow);
+}
+
+.ava-input:focus {
+  border-color: var(--primary-color);
+}
+
+.ava-send-btn {
+  position: absolute;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: black;
+}
+
+.ava-suggestion-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.suggestion-chip {
+  padding: 6px 12px;
+  background: #f0f4f8;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  font-size: 12px;
+  color: var(--text-subdued);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.suggestion-chip:hover {
+  background: #e2e8f0;
+  color: var(--text-normal);
+}
+
+.ava-message {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  max-width: 90%;
+}
+
+.ava-message.user {
+  align-self: flex-end;
+}
+
+.ava-message.bot {
+  align-self: flex-start;
+}
+
+.message-bubble {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.user .message-bubble {
+  background: var(--primary-color);
+  color: black;
+  border-bottom-right-radius: 2px;
+}
+
+.bot .message-bubble {
+  background: #f4f4f4;
+  color: var(--text-normal);
+  border-bottom-left-radius: 2px;
+}
+
+.ava-insight-card {
+  border-left: 4px solid var(--primary-color);
+  background: #fff9f0;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  margin-top: var(--spacing-sm);
+}
+
+.ava-insight-title {
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--primary-hover);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.ava-placeholder-chart {
+  width: 100%;
+  height: 150px;
+  background: white;
+  border: 1px dashed var(--border-color);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-subdued);
+  font-size: 12px;
+  margin-top: var(--spacing-sm);
 }
