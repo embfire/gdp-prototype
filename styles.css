@@ -59,6 +59,16 @@ body {
   overflow: hidden;
 }
 
+/* Typography */
+h1 {
+  font-family: Manrope, sans-serif;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 144%; /* 40.32px */
+  color: var(--text-text-normal, #000);
+}
+
 /* Layout */
 .app-container {
   display: flex;
@@ -451,9 +461,8 @@ tr:hover td {
 
 /* Create Segment Specific Styles */
 .builder-content {
-  max-width: 1128px;
   margin: 0 auto;
-  padding: var(--spacing-xxl) var(--spacing-xl);
+  padding-bottom: 100px; /* Space for fixed action bar (80px) + extra spacing */
 }
 
 .rule-block {
