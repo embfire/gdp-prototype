@@ -6,6 +6,147 @@
     <title>GDP Dashboard - Guest Data Platform</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: #fcfcfc;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-xl);
+            align-items: center;
+        }
+
+        /* Improved Chart Components */
+        .chart-container-high {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            padding: var(--spacing-md) 0;
+        }
+
+        .chart-axis-y {
+            position: absolute;
+            left: 0;
+            top: var(--spacing-md);
+            bottom: 40px;
+            width: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: var(--text-subdued);
+            font-size: 10px;
+            text-align: right;
+            padding-right: 8px;
+            border-right: 1px solid #eee;
+        }
+
+        .chart-main-area {
+            margin-left: 40px;
+            height: 100%;
+            position: relative;
+        }
+
+        .chart-grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .grid-line {
+            width: 100%;
+            height: 1px;
+            background: #f0f0f0;
+        }
+
+        .chart-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 40px;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            padding: 0 12px;
+        }
+
+        .chart-labels-x {
+            position: absolute;
+            bottom: 0;
+            left: 40px;
+            right: 0;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 12px;
+            color: var(--text-subdued);
+            font-size: 10px;
+        }
+
+        .bar-item {
+            flex: 1;
+            background: #9aa4ff;
+            border-radius: 2px 2px 0 0;
+            min-width: 8px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .bar-item:hover {
+            background: var(--accent-blue);
+        }
+
+        .bar-item.highlight {
+            background: var(--primary-color);
+        }
+
+        /* Donut Chart Styling */
+        .donut-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xl);
+            height: 240px;
+        }
+
+        .donut-svg {
+            transform: rotate(-90deg);
+            width: 180px;
+            height: 180px;
+        }
+
+        .donut-center-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
@@ -72,10 +213,6 @@
 
                     <div class="nav-group">
                         <div class="nav-group-title">Guests</div>
-                        <a href="index.html" class="nav-item active">
-                            <i class="ph ph-layout"></i>
-                            Overview
-                        </a>
                         <a href="profiles.html" class="nav-item">
                             <i class="ph ph-user-circle"></i>
                             Profiles
@@ -84,7 +221,7 @@
                             <i class="ph ph-users-three"></i>
                             Segments
                         </a>
-                        <a href="analytics.html" class="nav-item">
+                        <a href="index.html" class="nav-item active">
                             <i class="ph ph-chart-bar"></i>
                             Analytics
                         </a>
@@ -124,32 +261,65 @@
             <!-- Main Content -->
             <main class="main-content">
                 <div class="content-area">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xl);">
-                        <h1 style="font-size: 32px; font-weight: 800;">Guest Overview</h1>
-                        <div style="display: flex; gap: var(--spacing-sm);">
-                            <div class="dropdown-wrapper">
-                                <select>
-                                    <option>Last 30 days</option>
-                                    <option>Last 7 days</option>
-                                    <option>Last 90 days</option>
-                                    <option>Year to date</option>
-                                </select>
-                                <i class="ph ph-caret-down"></i>
-                            </div>
-                            <div class="dropdown-wrapper">
-                                <select>
-                                    <option>All locations</option>
-                                    <option>Atlanta, GA</option>
-                                    <option>Dallas, TX</option>
-                                    <option>Chicago, IL</option>
-                                </select>
-                                <i class="ph ph-caret-down"></i>
-                            </div>
-                            <button class="btn btn-primary" style="background-color: #f8931c; border: none; color: black;"><i class="ph ph-plus"></i> Add filter</button>
+                    <!-- Page Header -->
+                    <div class="analytics-header">
+                        <div>
+                            <h1 style="font-size: 32px; font-weight: 800;">Guest Analytics</h1>
+                            <p style="color: var(--text-subdued); margin-top: 4px;">Understand guest behavior, retention, and value across segments and locations.</p>
                         </div>
+                        <button class="btn btn-primary" onclick="toggleAva()" style="background-color: var(--primary-color); border: none; color: black; padding: 10px 20px;">
+                            <i class="ph ph-sparkle"></i> Ask AVA
+                        </button>
                     </div>
 
-                    <!-- Hero Metrics -->
+                    <!-- Global Filter Bar -->
+                    <div class="filter-bar">
+                        <div class="dropdown-wrapper">
+                            <select>
+                                <option>Last 30 days</option>
+                                <option>Last 7 days</option>
+                                <option>Last 90 days</option>
+                                <option>Year to date</option>
+                            </select>
+                            <i class="ph ph-caret-down"></i>
+                        </div>
+                        <div class="dropdown-wrapper">
+                            <select>
+                                <option>All segments</option>
+                                <option>High-Value Loyalists</option>
+                                <option>Lapsed - 90 Days</option>
+                                <option>New Menu Explorers</option>
+                            </select>
+                            <i class="ph ph-caret-down"></i>
+                        </div>
+                        <div class="dropdown-wrapper">
+                            <select>
+                                <option>All locations</option>
+                                <option>Atlanta, GA</option>
+                                <option>Dallas, TX</option>
+                                <option>Chicago, IL</option>
+                            </select>
+                            <i class="ph ph-caret-down"></i>
+                        </div>
+                        <div class="dropdown-wrapper">
+                            <select>
+                                <option>All channels</option>
+                                <option>POS</option>
+                                <option>Mobile App</option>
+                                <option>Web Ordering</option>
+                            </select>
+                            <i class="ph ph-caret-down"></i>
+                        </div>
+                        <button class="btn btn-secondary" style="margin-left: auto;">
+                            <i class="ph ph-funnel"></i> Advanced Filters
+                        </button>
+                    </div>
+
+                    <!-- 1. Guest Overview -->
+                    <div class="section-title">
+                        <i class="ph ph-users" style="color: var(--primary-color);"></i>
+                        Guest Overview
+                    </div>
                     <div class="metric-grid" style="margin-bottom: var(--spacing-xl);">
                         <div class="card metric-card">
                             <div class="metric-label">Total Unified Guests</div>
@@ -157,88 +327,202 @@
                             <div class="metric-trend trend-up">
                                 <i class="ph ph-trend-up"></i> 3.2% vs last month
                             </div>
+                            <svg style="width: 100%; height: 24px; margin-top: 8px;">
+                                <path d="M0,20 L20,15 L40,18 L60,10 L80,12 L100,5" fill="none" stroke="var(--success)" stroke-width="1.5" />
+                            </svg>
                         </div>
                         <div class="card metric-card">
-                            <div class="metric-label">Active Segments</div>
-                            <div class="metric-value">42</div>
+                            <div class="metric-label">Active Guests</div>
+                            <div class="metric-value">842,109</div>
+                            <div class="metric-trend trend-up">
+                                <i class="ph ph-trend-up"></i> 1.8%
+                            </div>
+                            <svg style="width: 100%; height: 24px; margin-top: 8px;">
+                                <path d="M0,18 L20,20 L40,15 L60,12 L80,8 L100,6" fill="none" stroke="var(--success)" stroke-width="1.5" />
+                            </svg>
+                        </div>
+                        <div class="card metric-card">
+                            <div class="metric-label">Repeat Rate</div>
+                            <div class="metric-value">24.8%</div>
+                            <div class="metric-trend trend-down">
+                                <i class="ph ph-trend-down"></i> 0.5%
+                            </div>
+                            <svg style="width: 100%; height: 24px; margin-top: 8px;">
+                                <path d="M0,5 L20,8 L40,12 L60,10 L80,15 L100,18" fill="none" stroke="var(--danger)" stroke-width="1.5" />
+                            </svg>
+                        </div>
+                        <div class="card metric-card">
+                            <div class="metric-label">Avg Visits per Guest</div>
+                            <div class="metric-value">2.4</div>
                             <div class="metric-trend">
                                 <i class="ph ph-minus"></i> No change
                             </div>
+                            <svg style="width: 100%; height: 24px; margin-top: 8px;">
+                                <path d="M0,12 L20,12 L40,12 L60,12 L80,12 L100,12" fill="none" stroke="#ccc" stroke-width="1.5" />
+                            </svg>
                         </div>
-                        <div class="card metric-card">
-                            <div class="metric-label">Data Sources</div>
-                            <div class="metric-value">4</div>
-                            <div class="metric-trend trend-up">
-                                <i class="ph ph-trend-up"></i> +1 added recently
+                    </div>
+
+                    <!-- 2. Retention & Frequency -->
+                    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
+                        <div class="card">
+                            <div class="card-title">Repeat Guest Trend</div>
+                            <div class="chart-container-high">
+                                <div class="chart-axis-y">
+                                    <span>100%</span>
+                                    <span>75%</span>
+                                    <span>50%</span>
+                                    <span>25%</span>
+                                    <span>0%</span>
+                                </div>
+                                <div class="chart-main-area">
+                                    <div class="chart-grid-lines">
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line" style="background: #ccc;"></div>
+                                    </div>
+                                    <div class="chart-content">
+                                        <div class="bar-item" style="height: 42%;"></div>
+                                        <div class="bar-item" style="height: 58%;"></div>
+                                        <div class="bar-item" style="height: 48%;"></div>
+                                        <div class="bar-item highlight" style="height: 72%;"></div>
+                                        <div class="bar-item" style="height: 64%;"></div>
+                                        <div class="bar-item" style="height: 82%;"></div>
+                                        <div class="bar-item" style="height: 76%;"></div>
+                                        <div class="bar-item" style="height: 88%;"></div>
+                                        <div class="bar-item" style="height: 70%;"></div>
+                                        <div class="bar-item" style="height: 74%;"></div>
+                                    </div>
+                                </div>
+                                <div class="chart-labels-x">
+                                    <span>Jun 18</span>
+                                    <span>Jun 25</span>
+                                    <span>Jul 02</span>
+                                    <span>Jul 09</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="card metric-card">
-                            <div class="metric-label">Identity Match Rate</div>
-                            <div class="metric-value">84.2%</div>
-                            <div class="metric-trend trend-up">
-                                <i class="ph ph-trend-up"></i> 1.5%
+                        <div class="card">
+                            <div class="card-title">Frequency Distribution</div>
+                            <div style="display: flex; flex-direction: column; gap: var(--spacing-lg); margin-top: var(--spacing-md);">
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                                        <span style="color: var(--text-subdued);">1 Visit</span>
+                                        <span style="font-weight: 700;">72.4%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
+                                        <div style="width: 72.4%; height: 100%; background: #9aa4ff;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                                        <span style="color: var(--text-subdued);">2-3 Visits</span>
+                                        <span style="font-weight: 700;">18.2%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
+                                        <div style="width: 18.2%; height: 100%; background: var(--primary-color);"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                                        <span style="color: var(--text-subdued);">4-10 Visits</span>
+                                        <span style="font-weight: 700;">7.1%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
+                                        <div style="width: 7.1%; height: 100%; background: var(--accent-blue);"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                                        <span style="color: var(--text-subdued);">10+ Visits</span>
+                                        <span style="font-weight: 700;">2.3%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
+                                        <div style="width: 2.3%; height: 100%; background: var(--success);"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Source Breakdown -->
-                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--spacing-lg);">
+                    <!-- 3. Revenue & Value -->
+                    <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
                         <div class="card">
-                            <div class="card-title">Guest Acquisition by Source</div>
-                            <div style="height: 300px; display: flex; align-items: flex-end; gap: var(--spacing-xl); padding-bottom: var(--spacing-xl);">
-                                <!-- Mock Chart Bars -->
-                                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                                    <div style="width: 100%; height: 80%; background: var(--primary-color); border-radius: 4px 4px 0 0;"></div>
-                                    <span style="font-size: 12px; font-weight: 600;">POS</span>
+                            <div class="card-title">Revenue by Guest Type</div>
+                            <div class="donut-container">
+                                <div style="position: relative; width: 180px; height: 180px;">
+                                    <svg class="donut-svg" viewBox="0 0 36 36">
+                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="#f4f4f4" stroke-width="4"></circle>
+                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--primary-color)" stroke-width="4" stroke-dasharray="65 35" stroke-dashoffset="0"></circle>
+                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--accent-blue)" stroke-width="4" stroke-dasharray="35 65" stroke-dashoffset="-65"></circle>
+                                    </svg>
+                                    <div class="donut-center-text">
+                                        <div style="font-size: 24px; font-weight: 800;">$4.2M</div>
+                                        <div style="font-size: 9px; color: var(--text-subdued); text-transform: uppercase; letter-spacing: 0.05em;">Total Revenue</div>
+                                    </div>
                                 </div>
-                                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                                    <div style="width: 100%; height: 60%; background: #9aa4ff; border-radius: 4px 4px 0 0;"></div>
-                                    <span style="font-size: 12px; font-weight: 600;">Ordering</span>
-                                </div>
-                                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                                    <div style="width: 100%; height: 40%; background: #3dc1af; border-radius: 4px 4px 0 0;"></div>
-                                    <span style="font-size: 12px; font-weight: 600;">Loyalty</span>
-                                </div>
-                                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                                    <div style="width: 100%; height: 20%; background: #dfe1e2; border-radius: 4px 4px 0 0;"></div>
-                                    <span style="font-size: 12px; font-weight: 600;">E-Club</span>
+                                <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                        <div style="width: 12px; height: 12px; background: var(--primary-color); border-radius: 2px; margin-top: 2px;"></div>
+                                        <div>
+                                            <div style="font-size: 14px; font-weight: 700;">Loyalty</div>
+                                            <div style="font-size: 12px; color: var(--text-subdued);">$2.73M (65%)</div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                        <div style="width: 12px; height: 12px; background: var(--accent-blue); border-radius: 2px; margin-top: 2px;"></div>
+                                        <div>
+                                            <div style="font-size: 14px; font-weight: 700;">Non-Loyalty</div>
+                                            <div style="font-size: 12px; color: var(--text-subdued);">$1.47M (35%)</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
                         <div class="card">
-                            <div class="card-title">Data Health</div>
-                            <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 14px;">Profile Completeness</span>
-                                    <span style="font-weight: 700; color: var(--success);">78%</span>
+                            <div class="card-title">Average Order Value Trend</div>
+                            <div class="chart-container-high">
+                                <div class="chart-axis-y">
+                                    <span>$60</span>
+                                    <span>$45</span>
+                                    <span>$30</span>
+                                    <span>$15</span>
+                                    <span>$0</span>
                                 </div>
-                                <div style="width: 100%; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
-                                    <div style="width: 78%; height: 100%; background: var(--success);"></div>
+                                <div class="chart-main-area">
+                                    <div class="chart-grid-lines">
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line" style="background: #ccc;"></div>
+                                    </div>
+                                    <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible;">
+                                        <!-- Line Path -->
+                                        <path d="M 0,120 L 50,110 L 100,115 L 150,90 L 200,95 L 250,70 L 300,75 L 350,50 L 400,55" 
+                                              fill="none" stroke="var(--accent-blue)" stroke-width="2" />
+                                        <!-- Area Path -->
+                                        <path d="M 0,120 L 50,110 L 100,115 L 150,90 L 200,95 L 250,70 L 300,75 L 350,50 L 400,55 V 240 H 0 Z" 
+                                              fill="rgba(90, 85, 227, 0.05)" />
+                                        <!-- Points -->
+                                        <circle cx="0" cy="120" r="3" fill="var(--accent-blue)" />
+                                        <circle cx="400" cy="55" r="4" fill="var(--accent-blue)" stroke="white" stroke-width="2" />
+                                    </svg>
                                 </div>
-                                
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-sm);">
-                                    <span style="font-size: 14px;">Contactability</span>
-                                    <span style="font-weight: 700;">64%</span>
+                                <div class="chart-labels-x">
+                                    <span>Oct 2025</span>
+                                    <span>Nov 2025</span>
+                                    <span>Dec 2025</span>
+                                    <span>Jan 2026</span>
                                 </div>
-                                <div style="width: 100%; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
-                                    <div style="width: 64%; height: 100%; background: var(--primary-color);"></div>
-                                </div>
-                            </div>
-                            
-                            <div style="margin-top: var(--spacing-xl); padding-top: var(--spacing-md); border-top: 1px solid var(--border-color);">
-                                <div style="font-size: 12px; color: var(--text-subdued); margin-bottom: var(--spacing-sm);">SYSTEM STATUS</div>
-                                <div style="display: flex; align-items: center; gap: var(--spacing-sm); font-size: 14px;">
-                                    <div style="width: 8px; height: 8px; background: var(--success); border-radius: 50%;"></div>
-                                    Data Pipeline: Healthy
-                                </div>
-                                <div style="font-size: 12px; color: var(--text-subdued); margin-left: 16px;">Last sync 2 minutes ago</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Recent Segments -->
-                    <div class="card card-table">
+                    <!-- Top Performing Segments -->
+                    <div class="card card-table" style="margin-bottom: var(--spacing-xl);">
                         <div style="padding: var(--spacing-lg) var(--spacing-lg) 0 var(--spacing-lg); display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
                             <div class="card-title" style="margin-bottom: 0;">Top Performing Segments</div>
                             <a href="segments.html" style="font-size: 14px; color: var(--primary-color); text-decoration: none; font-weight: 600;">View all</a>
@@ -278,10 +562,53 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- 5. Menu & Behavior Signals -->
+                    <div class="card card-table">
+                        <div style="padding: var(--spacing-lg) var(--spacing-lg) 0 var(--spacing-lg); display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
+                            <div class="card-title" style="margin-bottom: 0;">Top Menu Items by Segment Affinity</div>
+                            <span style="font-size: 12px; color: var(--text-subdued);">Showing data for <strong>High-Value Loyalists</strong></span>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Item Name</th>
+                                    <th>Attach Rate</th>
+                                    <th>Freq. Driver Score</th>
+                                    <th>Growth vs PW</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight: 600;">Fire Chicken Sandwich</td>
+                                    <td>64%</td>
+                                    <td><span class="badge badge-success">High</span></td>
+                                    <td><span class="trend-up">+12.4%</span></td>
+                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600;">Double Delight Burger</td>
+                                    <td>42%</td>
+                                    <td><span class="badge badge-success" style="background: rgba(61, 193, 175, 0.05);">Medium</span></td>
+                                    <td><span class="trend-up">+2.1%</span></td>
+                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600;">Truffle Waffle Fries</td>
+                                    <td>88%</td>
+                                    <td><span class="badge badge-success">High</span></td>
+                                    <td><span class="trend-down">-1.5%</span></td>
+                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </main>
         </div>
     </div>
+
     <!-- Ask AVA Drawer -->
     <div class="ava-drawer-overlay" id="avaOverlay" onclick="toggleAva()"></div>
     <div class="ava-drawer" id="avaDrawer">
