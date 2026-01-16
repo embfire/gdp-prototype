@@ -609,39 +609,57 @@
         </div>
     </div>
 
-    <!-- Ask AVA Drawer -->
-    <div class="ava-drawer-overlay" id="avaOverlay" onclick="toggleAva()"></div>
-    <div class="ava-drawer" id="avaDrawer">
-        <div class="ava-header">
-            <h2><i class="ph ph-sparkle"></i> Ask AVA</h2>
-            <button class="ava-close" onclick="toggleAva()"><i class="ph ph-x"></i></button>
+    <!-- Ask AVA Modal -->
+    <div class="ava-modal-overlay" id="avaOverlay" onclick="toggleAva()"></div>
+    <div class="ava-modal" id="avaModal" role="dialog" aria-modal="true" aria-labelledby="avaTitle">
+        <div class="ava-modal-header">
+            <div class="ava-modal-title" id="avaTitle">Ask Ava</div>
+            <button class="ava-close" onclick="toggleAva()" aria-label="Close Ask Ava">
+                <img src="https://www.figma.com/api/mcp/asset/3fe4b599-3063-4bc7-8b02-be90e5ba5719" alt="">
+            </button>
         </div>
-        <div class="ava-body">
-            <div class="ava-message bot">
-                <div class="message-bubble">
-                    Hello! I'm AVA, your Guest Analytics assistant. How can I help you today?
+        <div class="ava-modal-body">
+            <aside class="ava-recent">
+                <div class="ava-recent-title">Recent</div>
+                <div class="ava-recent-empty">
+                    <img class="ava-recent-icon" src="https://www.figma.com/api/mcp/asset/e68a0fdf-0a94-408c-a4c9-c68f171c2d8a" alt="">
+                    <p>Once we've had a conversation, you'll see it here</p>
                 </div>
-            </div>
-            
-            <div class="ava-suggestion-chips">
-                <div class="suggestion-chip" onclick="askAva('Why did repeat visits drop last month?')">“Why did repeat visits drop last month?”</div>
-                <div class="suggestion-chip" onclick="askAva('Compare loyal vs non-loyal guest spend')">“Compare loyal vs non-loyal guest spend”</div>
-                <div class="suggestion-chip" onclick="askAva('Which menu items drive frequency for this segment?')">“Which menu items drive frequency?”</div>
-            </div>
-        </div>
-        <div class="ava-footer">
-            <div class="ava-input-container">
-                <input type="text" class="ava-input" placeholder="Ask a question about your guest data..." id="avaInput">
-                <button class="ava-send-btn" onclick="sendToAva()"><i class="ph ph-paper-plane-right"></i></button>
-            </div>
+            </aside>
+            <section class="ava-main">
+                <div class="ava-chat-viewport">
+                    <div class="ava-body">
+                        <div class="ava-hero">
+                            Hello! I'm AVA, your Guest Analytics assistant. How can I help you today?
+                        </div>
+                        <div class="ava-input-container" id="initialInputContainer">
+                            <input type="text" class="ava-input" placeholder="Ask Ava" id="avaInput" onkeypress="if(event.key === 'Enter') sendToAva()">
+                        </div>
+                        <div class="ava-chat-area">
+                            <div class="ava-suggestion-cards">
+                                <button class="ava-suggestion-card" onclick="askAva('Why did repeat visits drop last month?')">Why did repeat visits drop last month?</button>
+                                <button class="ava-suggestion-card" onclick="askAva('Compare loyal vs non-loyal guest spend')">Compare loyal vs non-loyal guest spend</button>
+                                <button class="ava-suggestion-card" onclick="askAva('Which menu items drive frequency for this segment?')">Which menu items drive frequency for this segment?</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ava-input-footer" id="footerInputContainer">
+                    <div class="ava-input-wrapper">
+                        <div class="ava-input-container">
+                            <input type="text" class="ava-input" placeholder="Ask follow-up" id="avaInputFooter" onkeypress="if(event.key === 'Enter') sendToAva(true)">
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 
     <script>
         function toggleAva() {
-            const drawer = document.getElementById('avaDrawer');
+            const modal = document.getElementById('avaModal');
             const overlay = document.getElementById('avaOverlay');
-            drawer.classList.toggle('active');
+            modal.classList.toggle('active');
             overlay.classList.toggle('active');
         }
 
@@ -651,44 +669,98 @@
             sendToAva();
         }
 
-        function sendToAva() {
-            const input = document.getElementById('avaInput');
+        function sendToAva(isFollowUp = false) {
+            const inputId = isFollowUp ? 'avaInputFooter' : 'avaInput';
+            const input = document.getElementById(inputId);
             const question = input.value.trim();
             if (!question) return;
 
-            const body = document.querySelector('.ava-body');
-            
-            // Add user message
+            const chatArea = document.querySelector('.ava-chat-area');
+            const chatViewport = document.querySelector('.ava-chat-viewport');
+
+            if (!isFollowUp) {
+                // Hide suggestion cards when starting conversation
+                const suggestionCards = document.querySelector('.ava-suggestion-cards');
+                if (suggestionCards) {
+                    suggestionCards.style.display = 'none';
+                }
+                
+                // Hide hero message when starting conversation
+                const hero = document.querySelector('.ava-hero');
+                if (hero) {
+                    hero.style.display = 'none';
+                }
+
+                // Hide initial input and show footer input
+                document.getElementById('initialInputContainer').style.display = 'none';
+                document.getElementById('footerInputContainer').style.display = 'flex';
+                chatViewport.classList.add('chat-active');
+            }
+
+            // Add user message (in bubble, right-aligned)
             const userMsg = document.createElement('div');
             userMsg.className = 'ava-message user';
             userMsg.innerHTML = `<div class="message-bubble">${question}</div>`;
-            body.appendChild(userMsg);
-            
+            chatArea.appendChild(userMsg);
+
             input.value = '';
-            body.scrollTop = body.scrollHeight;
-
-            // Add bot thinking
+            
+            // Scroll viewport to bottom
             setTimeout(() => {
-                const botMsg = document.createElement('div');
-                botMsg.className = 'ava-message bot';
-                botMsg.innerHTML = `<div class="message-bubble">Analyzing your guest data...</div>`;
-                body.appendChild(botMsg);
-                body.scrollTop = body.scrollHeight;
+                chatViewport.scrollTop = chatViewport.scrollHeight;
+            }, 0);
 
-                // Final response
+            // Add bot response (NOT in bubble, left-aligned)
+            setTimeout(() => {
+                const botText = document.createElement('div');
+                botText.className = 'ava-message bot';
+                botText.innerHTML = `<div class="ava-message-text">Based on the current filters, I've identified a key insight:</div>`;
+                chatArea.appendChild(botText);
+                
                 setTimeout(() => {
-                    botMsg.innerHTML = `
-                        <div class="message-bubble">Based on the current filters, I've identified a key insight:</div>
-                        <div class="ava-insight-card">
-                            <div class="ava-insight-title">Example Insight</div>
-                            <p style="font-size: 13px;">Repeat guest frequency has increased by 12% among High-Value Loyalists following the recent menu update.</p>
-                            <div class="ava-placeholder-chart">
-                                [ Chart: Frequency Trend ]
-                            </div>
-                        </div>
+                    chatViewport.scrollTop = chatViewport.scrollHeight;
+                }, 0);
+
+                // Add insight card (in card)
+                setTimeout(() => {
+                    const insightCard = document.createElement('div');
+                    insightCard.className = 'ava-insight-card';
+                    insightCard.innerHTML = `
+                        <div class="ava-insight-title">Example insight</div>
+                        <div class="ava-insight-text">Repeat guest frequency has increased by 12% among High-Value Loyalists following the recent menu update.</div>
+                        <div class="ava-placeholder-chart">[ Chart: Frequency Trend ]</div>
                     `;
-                    body.scrollTop = body.scrollHeight;
-                }, 1500);
+                    chatArea.appendChild(insightCard);
+                    
+                    // Add action buttons
+                    const actionButtons = document.createElement('div');
+                    actionButtons.className = 'ava-action-buttons';
+                    actionButtons.innerHTML = `
+                        <button class="ava-action-btn">
+                            <i class="ph ph-copy"></i>
+                            <span>Copy</span>
+                        </button>
+                        <button class="ava-action-btn">
+                            <i class="ph ph-share-network"></i>
+                            <span>Share</span>
+                        </button>
+                        <button class="ava-action-btn">
+                            <i class="ph ph-link"></i>
+                            <span>Sources (3)</span>
+                        </button>
+                        <button class="ava-action-btn-icon-only">
+                            <i class="ph ph-thumbs-up"></i>
+                        </button>
+                        <button class="ava-action-btn-icon-only">
+                            <i class="ph ph-thumbs-down"></i>
+                        </button>
+                    `;
+                    chatArea.appendChild(actionButtons);
+                    
+                    setTimeout(() => {
+                        chatViewport.scrollTop = chatViewport.scrollHeight;
+                    }, 0);
+                }, 1000);
             }, 800);
         }
     </script>
