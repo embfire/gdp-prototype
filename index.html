@@ -321,45 +321,61 @@
                         Guest Overview
                     </div>
                     <div class="metric-grid" style="margin-bottom: var(--spacing-xl);">
-                        <div class="card metric-card">
-                            <div class="metric-label">Total Unified Guests</div>
-                            <div class="metric-value">1,248,392</div>
-                            <div class="metric-trend trend-up">
-                                <i class="ph ph-trend-up"></i> 3.2% vs last month
+                        <div class="metric-card-analytics">
+                            <div class="metric-card-header">
+                                <span class="metric-card-title">Total Unified Guests</span>
+                                <div class="metric-card-trend positive">
+                                    <i class="ph ph-arrow-up-right"></i>
+                                    3.2%
+                                </div>
                             </div>
-                            <svg style="width: 100%; height: 24px; margin-top: 8px;">
-                                <path d="M0,20 L20,15 L40,18 L60,10 L80,12 L100,5" fill="none" stroke="var(--success)" stroke-width="1.5" />
-                            </svg>
+                            <div class="metric-card-value">1,248,392</div>
+                            <div class="metric-card-subtext">1,209,488 previous period</div>
+                            <div class="metric-card-sparkline">
+                                <img src="https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128" alt="">
+                            </div>
                         </div>
-                        <div class="card metric-card">
-                            <div class="metric-label">Active Guests</div>
-                            <div class="metric-value">842,109</div>
-                            <div class="metric-trend trend-up">
-                                <i class="ph ph-trend-up"></i> 1.8%
+                        <div class="metric-card-analytics">
+                            <div class="metric-card-header">
+                                <span class="metric-card-title">Active Guests</span>
+                                <div class="metric-card-trend positive">
+                                    <i class="ph ph-arrow-up-right"></i>
+                                    1.8%
+                                </div>
                             </div>
-                            <svg style="width: 100%; height: 24px; margin-top: 8px;">
-                                <path d="M0,18 L20,20 L40,15 L60,12 L80,8 L100,6" fill="none" stroke="var(--success)" stroke-width="1.5" />
-                            </svg>
+                            <div class="metric-card-value">842,109</div>
+                            <div class="metric-card-subtext">827,219 previous period</div>
+                            <div class="metric-card-sparkline">
+                                <img src="https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128" alt="">
+                            </div>
                         </div>
-                        <div class="card metric-card">
-                            <div class="metric-label">Repeat Rate</div>
-                            <div class="metric-value">24.8%</div>
-                            <div class="metric-trend trend-down">
-                                <i class="ph ph-trend-down"></i> 0.5%
+                        <div class="metric-card-analytics">
+                            <div class="metric-card-header">
+                                <span class="metric-card-title">Repeat Rate</span>
+                                <div class="metric-card-trend negative">
+                                    <i class="ph ph-arrow-down-right"></i>
+                                    0.5%
+                                </div>
                             </div>
-                            <svg style="width: 100%; height: 24px; margin-top: 8px;">
-                                <path d="M0,5 L20,8 L40,12 L60,10 L80,15 L100,18" fill="none" stroke="var(--danger)" stroke-width="1.5" />
-                            </svg>
+                            <div class="metric-card-value">24.8%</div>
+                            <div class="metric-card-subtext">25.3% previous period</div>
+                            <div class="metric-card-sparkline">
+                                <img src="https://www.figma.com/api/mcp/asset/6f3fa58a-99b9-482f-ae59-e2a98a19da19" alt="">
+                            </div>
                         </div>
-                        <div class="card metric-card">
-                            <div class="metric-label">Avg Visits per Guest</div>
-                            <div class="metric-value">2.4</div>
-                            <div class="metric-trend">
-                                <i class="ph ph-minus"></i> No change
+                        <div class="metric-card-analytics">
+                            <div class="metric-card-header">
+                                <span class="metric-card-title">Avg Visits per Guest</span>
+                                <div class="metric-card-trend positive">
+                                    <i class="ph ph-arrow-up-right"></i>
+                                    2.1%
+                                </div>
                             </div>
-                            <svg style="width: 100%; height: 24px; margin-top: 8px;">
-                                <path d="M0,12 L20,12 L40,12 L60,12 L80,12 L100,12" fill="none" stroke="#ccc" stroke-width="1.5" />
-                            </svg>
+                            <div class="metric-card-value">2.4</div>
+                            <div class="metric-card-subtext">2.3 previous period</div>
+                            <div class="metric-card-sparkline">
+                                <img src="https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128" alt="">
+                            </div>
                         </div>
                     </div>
 
@@ -387,7 +403,7 @@
                                         <div class="bar-item" style="height: 42%;"></div>
                                         <div class="bar-item" style="height: 58%;"></div>
                                         <div class="bar-item" style="height: 48%;"></div>
-                                        <div class="bar-item highlight" style="height: 72%;"></div>
+                                        <div class="bar-item" style="height: 72%;"></div>
                                         <div class="bar-item" style="height: 64%;"></div>
                                         <div class="bar-item" style="height: 82%;"></div>
                                         <div class="bar-item" style="height: 76%;"></div>
@@ -504,7 +520,7 @@
                                         <path d="M 0,120 L 50,110 L 100,115 L 150,90 L 200,95 L 250,70 L 300,75 L 350,50 L 400,55" 
                                               fill="none" stroke="var(--accent-blue)" stroke-width="2" />
                                         <!-- Area Path -->
-                                        <path d="M 0,120 L 50,110 L 100,115 L 150,90 L 200,95 L 250,70 L 300,75 L 350,50 L 400,55 V 240 H 0 Z" 
+                                        <path d="M 0,120 L 50,110 L 100,115 L 150,90 L 200,95 L 250,70 L 300,75 L 350,50 L 400,55 V 208 H 0 Z" 
                                               fill="rgba(90, 85, 227, 0.05)" />
                                         <!-- Points -->
                                         <circle cx="0" cy="120" r="3" fill="var(--accent-blue)" />
