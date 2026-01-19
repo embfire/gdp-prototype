@@ -284,7 +284,7 @@
                             <i class="ph ph-caret-down"></i>
                         </div>
                         <div class="dropdown-wrapper">
-                            <select>
+                            <select id="segment-dropdown">
                                 <option>All segments</option>
                                 <option>Dormant High Spenders</option>
                                 <option>Breakfast Regulars</option>
@@ -324,57 +324,57 @@
                         <div class="metric-card-analytics">
                             <div class="metric-card-header">
                                 <span class="metric-card-title">Total Unified Guests</span>
-                                <div class="metric-card-trend positive">
+                                <div class="metric-card-trend positive" id="total-guests-trend">
                                     <i class="ph ph-arrow-up-right"></i>
                                     3.2%
                                 </div>
                             </div>
-                            <div class="metric-card-value">1,248,392</div>
-                            <div class="metric-card-subtext">1,209,488 previous period</div>
+                            <div class="metric-card-value" id="total-guests-value">1,248,392</div>
+                            <div class="metric-card-subtext" id="total-guests-subtext">1,209,488 previous period</div>
                             <div class="metric-card-sparkline">
-                                <img src="https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128" alt="">
+                                <img id="total-guests-sparkline" src="https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128" alt="">
                             </div>
                         </div>
                         <div class="metric-card-analytics">
                             <div class="metric-card-header">
                                 <span class="metric-card-title">Active Guests</span>
-                                <div class="metric-card-trend positive">
+                                <div class="metric-card-trend positive" id="active-guests-trend">
                                     <i class="ph ph-arrow-up-right"></i>
                                     1.8%
                                 </div>
                             </div>
-                            <div class="metric-card-value">842,109</div>
-                            <div class="metric-card-subtext">827,219 previous period</div>
+                            <div class="metric-card-value" id="active-guests-value">842,109</div>
+                            <div class="metric-card-subtext" id="active-guests-subtext">827,219 previous period</div>
                             <div class="metric-card-sparkline">
-                                <img src="https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128" alt="">
+                                <img id="active-guests-sparkline" src="https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128" alt="">
                             </div>
                         </div>
                         <div class="metric-card-analytics">
                             <div class="metric-card-header">
                                 <span class="metric-card-title">Repeat Rate</span>
-                                <div class="metric-card-trend negative">
+                                <div class="metric-card-trend negative" id="repeat-rate-trend">
                                     <i class="ph ph-arrow-down-right"></i>
                                     0.5%
                                 </div>
                             </div>
-                            <div class="metric-card-value">24.8%</div>
-                            <div class="metric-card-subtext">25.3% previous period</div>
+                            <div class="metric-card-value" id="repeat-rate-value">24.8%</div>
+                            <div class="metric-card-subtext" id="repeat-rate-subtext">25.3% previous period</div>
                             <div class="metric-card-sparkline">
-                                <img src="https://www.figma.com/api/mcp/asset/6f3fa58a-99b9-482f-ae59-e2a98a19da19" alt="">
+                                <img id="repeat-rate-sparkline" src="https://www.figma.com/api/mcp/asset/6f3fa58a-99b9-482f-ae59-e2a98a19da19" alt="">
                             </div>
                         </div>
                         <div class="metric-card-analytics">
                             <div class="metric-card-header">
                                 <span class="metric-card-title">Avg Visits per Guest</span>
-                                <div class="metric-card-trend positive">
+                                <div class="metric-card-trend positive" id="avg-visits-trend">
                                     <i class="ph ph-arrow-up-right"></i>
                                     2.1%
                                 </div>
                             </div>
-                            <div class="metric-card-value">2.4</div>
-                            <div class="metric-card-subtext">2.3 previous period</div>
+                            <div class="metric-card-value" id="avg-visits-value">2.4</div>
+                            <div class="metric-card-subtext" id="avg-visits-subtext">2.3 previous period</div>
                             <div class="metric-card-sparkline">
-                                <img src="https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128" alt="">
+                                <img id="avg-visits-sparkline" src="https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128" alt="">
                             </div>
                         </div>
                     </div>
@@ -383,7 +383,7 @@
                     <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
                         <div class="card">
                             <div class="card-title">Repeat Guest Trend</div>
-                            <div class="chart-container-high">
+                            <div class="chart-container-high" id="repeat-trend-chart">
                                 <div class="chart-axis-y">
                                     <span>100%</span>
                                     <span>75%</span>
@@ -422,7 +422,7 @@
                         </div>
                         <div class="card">
                             <div class="card-title">Frequency Distribution</div>
-                            <div style="display: flex; flex-direction: column; gap: var(--spacing-lg); margin-top: var(--spacing-md);">
+                            <div style="display: flex; flex-direction: column; gap: var(--spacing-lg); margin-top: var(--spacing-md);" id="freq-dist-chart">
                                 <div>
                                     <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
                                         <span style="color: var(--text-subdued);">1 Visit</span>
@@ -467,7 +467,7 @@
                     <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
                         <div class="card">
                             <div class="card-title">Revenue by Guest Type</div>
-                            <div class="donut-container">
+                            <div class="donut-container" id="revenue-donut-chart">
                                 <div style="position: relative; width: 180px; height: 180px;">
                                     <svg class="donut-svg" viewBox="0 0 36 36">
                                         <circle cx="18" cy="18" r="15.915" fill="none" stroke="#f4f4f4" stroke-width="4"></circle>
@@ -499,7 +499,7 @@
                         </div>
                         <div class="card">
                             <div class="card-title">Average Order Value Trend</div>
-                            <div class="chart-container-high">
+                            <div class="chart-container-high" id="aov-trend-chart">
                                 <div class="chart-axis-y">
                                     <span>$60</span>
                                     <span>$45</span>
@@ -543,7 +543,7 @@
                             <div class="card-title" style="margin-bottom: 0;">Top Performing Segments</div>
                             <a href="segments.html" style="font-size: 14px; color: var(--primary-color); text-decoration: none; font-weight: 600;">View all</a>
                         </div>
-                        <table>
+                        <table id="top-segments-table">
                             <thead>
                                 <tr>
                                     <th>Segment Name</th>
@@ -553,7 +553,7 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="top-segments-tbody">
                                 <tr>
                                     <td style="font-weight: 600;">Dormant High Spenders</td>
                                     <td>4,208</td>
@@ -595,7 +595,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="top-items-tbody">
                                 <tr>
                                     <td style="font-weight: 600;">Fire Chicken Sandwich</td>
                                     <td>64%</td>
@@ -672,6 +672,410 @@
     </div>
 
     <script>
+        const flatGrayLine = 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTIwIDIwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0wIDEwSDEyMCIgc3Ryb2tlPSIjYmJiYmJiIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4=';
+        const segmentData = {
+            'All segments': {
+                metrics: {
+                    'total-guests': { value: '1,248,392', trend: '<i class="ph ph-arrow-up-right"></i> 3.2%', trendClass: 'positive', subtext: '1,209,488 previous period', sparkline: 'https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128' },
+                    'active-guests': { value: '842,109', trend: '<i class="ph ph-arrow-up-right"></i> 1.8%', trendClass: 'positive', subtext: '827,219 previous period', sparkline: 'https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128' },
+                    'repeat-rate': { value: '24.8%', trend: '<i class="ph ph-arrow-down-right"></i> 0.5%', trendClass: 'negative', subtext: '25.3% previous period', sparkline: 'https://www.figma.com/api/mcp/asset/6f3fa58a-99b9-482f-ae59-e2a98a19da19' },
+                    'avg-visits': { value: '2.4', trend: '<i class="ph ph-arrow-up-right"></i> 2.1%', trendClass: 'positive', subtext: '2.3 previous period', sparkline: 'https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128' }
+                },
+                charts: {
+                    'repeat-trend-chart': `
+                                <div class="chart-axis-y">
+                                    <span>100%</span>
+                                    <span>75%</span>
+                                    <span>50%</span>
+                                    <span>25%</span>
+                                    <span>0%</span>
+                                </div>
+                                <div class="chart-main-area">
+                                    <div class="chart-grid-lines">
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line" style="background: #ccc;"></div>
+                                    </div>
+                                    <div class="chart-content">
+                                        <div class="bar-item" style="height: 42%;"></div>
+                                        <div class="bar-item" style="height: 58%;"></div>
+                                        <div class="bar-item" style="height: 48%;"></div>
+                                        <div class="bar-item" style="height: 72%;"></div>
+                                        <div class="bar-item" style="height: 64%;"></div>
+                                        <div class="bar-item" style="height: 82%;"></div>
+                                        <div class="bar-item" style="height: 76%;"></div>
+                                        <div class="bar-item" style="height: 88%;"></div>
+                                        <div class="bar-item" style="height: 70%;"></div>
+                                        <div class="bar-item" style="height: 74%;"></div>
+                                    </div>
+                                </div>
+                                <div class="chart-labels-x">
+                                    <span>Jun 18</span>
+                                    <span>Jun 25</span>
+                                    <span>Jul 02</span>
+                                    <span>Jul 09</span>
+                                </div>`,
+                    'freq-dist-chart': `
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                                        <span style="color: var(--text-subdued);">1 Visit</span>
+                                        <span style="font-weight: 700;">72.4%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
+                                        <div style="width: 72.4%; height: 100%; background: #9aa4ff;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                                        <span style="color: var(--text-subdued);">2-3 Visits</span>
+                                        <span style="font-weight: 700;">18.2%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
+                                        <div style="width: 18.2%; height: 100%; background: var(--primary-color);"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                                        <span style="color: var(--text-subdued);">4-10 Visits</span>
+                                        <span style="font-weight: 700;">7.1%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
+                                        <div style="width: 7.1%; height: 100%; background: var(--accent-blue);"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                                        <span style="color: var(--text-subdued);">10+ Visits</span>
+                                        <span style="font-weight: 700;">2.3%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
+                                        <div style="width: 2.3%; height: 100%; background: var(--success);"></div>
+                                    </div>
+                                </div>`,
+                    'revenue-donut-chart': `
+                                <div style="position: relative; width: 180px; height: 180px;">
+                                    <svg class="donut-svg" viewBox="0 0 36 36">
+                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="#f4f4f4" stroke-width="4"></circle>
+                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--primary-color)" stroke-width="4" stroke-dasharray="65 35" stroke-dashoffset="0"></circle>
+                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--accent-blue)" stroke-width="4" stroke-dasharray="35 65" stroke-dashoffset="-65"></circle>
+                                    </svg>
+                                    <div class="donut-center-text">
+                                        <div style="font-size: 24px; font-weight: 800;">$4.2M</div>
+                                        <div style="font-size: 9px; color: var(--text-subdued); text-transform: uppercase; letter-spacing: 0.05em;">Total Revenue</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                        <div style="width: 12px; height: 12px; background: var(--primary-color); border-radius: 2px; margin-top: 2px;"></div>
+                                        <div>
+                                            <div style="font-size: 14px; font-weight: 700;">Loyalty</div>
+                                            <div style="font-size: 12px; color: var(--text-subdued);">$2.73M (65%)</div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                        <div style="width: 12px; height: 12px; background: var(--accent-blue); border-radius: 2px; margin-top: 2px;"></div>
+                                        <div>
+                                            <div style="font-size: 14px; font-weight: 700;">Non-Loyalty</div>
+                                            <div style="font-size: 12px; color: var(--text-subdued);">$1.47M (35%)</div>
+                                        </div>
+                                    </div>
+                                </div>`,
+                    'aov-trend-chart': `
+                                <div class="chart-axis-y">
+                                    <span>$60</span>
+                                    <span>$45</span>
+                                    <span>$30</span>
+                                    <span>$15</span>
+                                    <span>$0</span>
+                                </div>
+                                <div class="chart-main-area">
+                                    <div class="chart-grid-lines">
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line" style="background: #ccc;"></div>
+                                    </div>
+                                    <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible;">
+                                        <!-- Line Path -->
+                                        <path d="M 0,120 L 50,110 L 100,115 L 150,90 L 200,95 L 250,70 L 300,75 L 350,50 L 400,55" 
+                                              fill="none" stroke="var(--accent-blue)" stroke-width="2" />
+                                        <!-- Area Path -->
+                                        <path d="M 0,120 L 50,110 L 100,115 L 150,90 L 200,95 L 250,70 L 300,75 L 350,50 L 400,55 V 208 H 0 Z" 
+                                              fill="rgba(90, 85, 227, 0.05)" />
+                                        <!-- Points -->
+                                        <circle cx="0" cy="120" r="3" fill="var(--accent-blue)" />
+                                        <circle cx="400" cy="55" r="4" fill="var(--accent-blue)" stroke="white" stroke-width="2" />
+                                    </svg>
+                                </div>
+                                <div class="chart-labels-x">
+                                    <span>Oct 2025</span>
+                                    <span>Nov 2025</span>
+                                    <span>Dec 2025</span>
+                                    <span>Jan 2026</span>
+                                </div>`
+                },
+                tables: {
+                    'top-segments-tbody': `
+                                <tr>
+                                    <td style="font-weight: 600;">Dormant High Spenders</td>
+                                    <td>4,208</td>
+                                    <td>$512.40</td>
+                                    <td><span style="color: #3dc1af; font-weight: 600;">Active</span></td>
+                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-chart-bar"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600;">Breakfast Regulars</td>
+                                    <td>12,942</td>
+                                    <td>$84.20</td>
+                                    <td><span style="color: #3dc1af; font-weight: 600;">Active</span></td>
+                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-chart-bar"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600;">Vegetarian Segment</td>
+                                    <td>8,115</td>
+                                    <td>$124.00</td>
+                                    <td><span style="color: #3dc1af; font-weight: 600;">Active</span></td>
+                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-chart-bar"></i></button></td>
+                                </tr>`,
+                    'top-items-tbody': `
+                                <tr>
+                                    <td style="font-weight: 600;">Fire Chicken Sandwich</td>
+                                    <td>64%</td>
+                                    <td><span class="badge badge-success">High</span></td>
+                                    <td><span class="trend-up">+12.4%</span></td>
+                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600;">Double Delight Burger</td>
+                                    <td>42%</td>
+                                    <td><span class="badge badge-success" style="background: rgba(61, 193, 175, 0.05);">Medium</span></td>
+                                    <td><span class="trend-up">+2.1%</span></td>
+                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600;">Truffle Waffle Fries</td>
+                                    <td>88%</td>
+                                    <td><span class="badge badge-success">High</span></td>
+                                    <td><span class="trend-down">-1.5%</span></td>
+                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
+                                </tr>`
+                }
+            },
+            'Dormant High Spenders': {
+                metrics: {
+                    'total-guests': { value: '4,208', trend: '<i class="ph ph-arrow-down-right"></i> 1.2%', trendClass: 'negative', subtext: '4,259 previous period', sparkline: 'https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128' },
+                    'active-guests': { value: '0', trend: '0.0%', trendClass: '', subtext: '0 previous period', sparkline: flatGrayLine },
+                    'repeat-rate': { value: '100%', trend: '0.0%', trendClass: '', subtext: '100% previous period', sparkline: flatGrayLine },
+                    'avg-visits': { value: '8.4', trend: '<i class="ph ph-arrow-down-right"></i> 0.4%', trendClass: 'negative', subtext: '8.5 previous period', sparkline: 'https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128' }
+                },
+                charts: {
+                    'repeat-trend-chart': `
+                                <div class="chart-axis-y">
+                                    <span>100%</span>
+                                    <span>75%</span>
+                                    <span>50%</span>
+                                    <span>25%</span>
+                                    <span>0%</span>
+                                </div>
+                                <div class="chart-main-area">
+                                    <div class="chart-grid-lines">
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line" style="background: #ccc;"></div>
+                                    </div>
+                                    <div class="chart-content">
+                                        <div class="bar-item" style="height: 100%;"></div>
+                                        <div class="bar-item" style="height: 100%;"></div>
+                                        <div class="bar-item" style="height: 100%;"></div>
+                                        <div class="bar-item" style="height: 100%;"></div>
+                                        <div class="bar-item" style="height: 100%;"></div>
+                                        <div class="bar-item" style="height: 100%;"></div>
+                                        <div class="bar-item" style="height: 100%;"></div>
+                                        <div class="bar-item" style="height: 100%;"></div>
+                                        <div class="bar-item" style="height: 100%;"></div>
+                                        <div class="bar-item" style="height: 100%;"></div>
+                                    </div>
+                                </div>
+                                <div class="chart-labels-x">
+                                    <span>Jun 18</span>
+                                    <span>Jun 25</span>
+                                    <span>Jul 02</span>
+                                    <span>Jul 09</span>
+                                </div>`,
+                    'freq-dist-chart': `
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                                        <span style="color: var(--text-subdued);">1 Visit</span>
+                                        <span style="font-weight: 700;">0%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
+                                        <div style="width: 0%; height: 100%; background: #9aa4ff;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                                        <span style="color: var(--text-subdued);">2-3 Visits</span>
+                                        <span style="font-weight: 700;">5.2%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
+                                        <div style="width: 5.2%; height: 100%; background: var(--primary-color);"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                                        <span style="color: var(--text-subdued);">4-10 Visits</span>
+                                        <span style="font-weight: 700;">12.8%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
+                                        <div style="width: 12.8%; height: 100%; background: var(--accent-blue);"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                                        <span style="color: var(--text-subdued);">10+ Visits</span>
+                                        <span style="font-weight: 700;">82.0%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
+                                        <div style="width: 82%; height: 100%; background: var(--success);"></div>
+                                    </div>
+                                </div>`,
+                    'revenue-donut-chart': `
+                                <div style="position: relative; width: 180px; height: 180px;">
+                                    <svg class="donut-svg" viewBox="0 0 36 36">
+                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="#f4f4f4" stroke-width="4"></circle>
+                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--primary-color)" stroke-width="4" stroke-dasharray="92 8" stroke-dashoffset="0"></circle>
+                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--accent-blue)" stroke-width="4" stroke-dasharray="8 92" stroke-dashoffset="-92"></circle>
+                                    </svg>
+                                    <div class="donut-center-text">
+                                        <div style="font-size: 24px; font-weight: 800;">$2.1M</div>
+                                        <div style="font-size: 9px; color: var(--text-subdued); text-transform: uppercase; letter-spacing: 0.05em;">LTV Capital</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                        <div style="width: 12px; height: 12px; background: var(--primary-color); border-radius: 2px; margin-top: 2px;"></div>
+                                        <div>
+                                            <div style="font-size: 14px; font-weight: 700;">Loyalty</div>
+                                            <div style="font-size: 12px; color: var(--text-subdued);">$1.93M (92%)</div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                        <div style="width: 12px; height: 12px; background: var(--accent-blue); border-radius: 2px; margin-top: 2px;"></div>
+                                        <div>
+                                            <div style="font-size: 14px; font-weight: 700;">Non-Loyalty</div>
+                                            <div style="font-size: 12px; color: var(--text-subdued);">$0.17M (8%)</div>
+                                        </div>
+                                    </div>
+                                </div>`,
+                    'aov-trend-chart': `
+                                <div class="chart-axis-y">
+                                    <span>$120</span>
+                                    <span>$90</span>
+                                    <span>$60</span>
+                                    <span>$30</span>
+                                    <span>$0</span>
+                                </div>
+                                <div class="chart-main-area">
+                                    <div class="chart-grid-lines">
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line"></div>
+                                        <div class="grid-line" style="background: #ccc;"></div>
+                                    </div>
+                                    <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible;">
+                                        <path d="M 0,20 L 50,22 L 100,18 L 150,25 L 200,20 L 250,22 L 300,24 L 350,20 L 400,22" 
+                                              fill="none" stroke="var(--primary-color)" stroke-width="2" />
+                                        <path d="M 0,20 L 50,22 L 100,18 L 150,25 L 200,20 L 250,22 L 300,24 L 350,20 L 400,22 V 208 H 0 Z" 
+                                              fill="rgba(255, 199, 0, 0.05)" />
+                                        <circle cx="400" cy="22" r="4" fill="var(--primary-color)" stroke="white" stroke-width="2" />
+                                    </svg>
+                                </div>
+                                <div class="chart-labels-x">
+                                    <span>Oct 2025</span>
+                                    <span>Nov 2025</span>
+                                    <span>Dec 2025</span>
+                                    <span>Jan 2026</span>
+                                </div>`
+                },
+                tables: {
+                    'top-segments-tbody': `
+                                <tr>
+                                    <td style="font-weight: 600;">Dormant High Spenders</td>
+                                    <td>4,208</td>
+                                    <td>$512.40</td>
+                                    <td><span style="color: #3dc1af; font-weight: 600;">Active</span></td>
+                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-chart-bar"></i></button></td>
+                                </tr>`,
+                    'top-items-tbody': `
+                                <tr>
+                                    <td style="font-weight: 600;">Prime Ribeye Steak</td>
+                                    <td>92%</td>
+                                    <td><span class="badge badge-success">Critical</span></td>
+                                    <td><span class="trend-down">-4.2%</span></td>
+                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600;">Vintage Cabernet Reserve</td>
+                                    <td>78%</td>
+                                    <td><span class="badge badge-success">High</span></td>
+                                    <td><span class="trend-up">+1.5%</span></td>
+                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight: 600;">Lobster Thermidor</td>
+                                    <td>65%</td>
+                                    <td><span class="badge badge-success">High</span></td>
+                                    <td><span class="trend-down">-0.8%</span></td>
+                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
+                                </tr>`
+                }
+            }
+        };
+
+        function refreshDashboard(segmentName) {
+            const data = segmentData[segmentName] || segmentData['All segments'];
+            
+            // Update Metrics
+            Object.keys(data.metrics).forEach(id => {
+                const metric = data.metrics[id];
+                document.getElementById(id + '-value').innerText = metric.value;
+                document.getElementById(id + '-trend').innerHTML = metric.trend;
+                document.getElementById(id + '-trend').className = 'metric-card-trend ' + metric.trendClass;
+                document.getElementById(id + '-subtext').innerText = metric.subtext;
+                if (metric.sparkline) {
+                    document.getElementById(id + '-sparkline').src = metric.sparkline;
+                }
+            });
+
+            // Update Charts
+            Object.keys(data.charts).forEach(id => {
+                document.getElementById(id).innerHTML = data.charts[id];
+            });
+
+            // Update Tables
+            Object.keys(data.tables).forEach(id => {
+                document.getElementById(id).innerHTML = data.tables[id];
+            });
+
+            // Update dynamic labels
+            const labels = document.querySelectorAll('strong');
+            labels.forEach(label => {
+                if (label.innerText === 'Dormant High Spenders' || label.innerText === 'High-Value Loyalists') {
+                    label.innerText = segmentName === 'All segments' ? 'High-Value Loyalists' : segmentName;
+                }
+            });
+        }
+
+        document.getElementById('segment-dropdown').addEventListener('change', function(e) {
+            refreshDashboard(e.target.value);
+        });
+
         function toggleAva() {
             const modal = document.getElementById('avaModal');
             const overlay = document.getElementById('avaOverlay');

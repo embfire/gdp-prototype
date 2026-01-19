@@ -323,12 +323,25 @@
                     <div class="profile-header-main">
                         <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150" alt="Marcus Thompson" class="profile-avatar-img">
                         <div class="profile-name-area">
-                            <h1>Marcus Thompson</h1>
-                            <div class="status-pill">
-                                <div class="status-dot"></div>
-                                Active member
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
+                                <h1>Marcus Thompson</h1>
+                                <div style="display: flex; gap: 6px;">
+                                    <span class="badge badge-segment">Dormant High Spender</span>
+                                    <span class="badge badge-segment">Vegetarian</span>
+                                    <span class="badge badge-segment">Weekend Regular</span>
+                                </div>
+                            </div>
+                            <div class="status-pill" style="background: #fff1f2; color: #991b1b;">
+                                <div class="status-dot" style="background: #ef4444;"></div>
+                                Dormant member
                             </div>
                         </div>
+                        <a href="segments.html?new=true" style="text-decoration: none;">
+                            <button class="btn btn-primary">
+                                <i class="ph ph-plus-circle"></i>
+                                Create segment from profile
+                            </button>
+                        </a>
                     </div>
 
                     <!-- Contact Info Grid -->
@@ -366,11 +379,11 @@
                             </div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Lifecycle stage</span>
-                                <span class="metric-detail-value">Active</span>
+                                <span class="metric-detail-value" style="color: #ef4444; font-weight: 700;">At-Risk (Dormant)</span>
                             </div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Order frequency</span>
-                                <span class="metric-detail-value">Weekly</span>
+                                <span class="metric-detail-value">Weekly (Historic)</span>
                             </div>
                         </div>
 
@@ -379,7 +392,7 @@
                             <div class="metric-card-value">67</div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Last ordered</span>
-                                <span class="metric-detail-value">2 hours ago</span>
+                                <span class="metric-detail-value">82 days ago</span>
                             </div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Sources</span>
@@ -441,49 +454,49 @@
                     <div class="timeline-layout">
                         <div class="timeline-events-list">
                             <div class="timeline-event">
-                                <div class="event-date">Today</div>
+                                <div class="event-date">Jan 12, 2026</div>
+                                <div class="event-icon"><i class="ph ph-paper-plane-tilt" style="color: #5a55e3;"></i></div>
+                                <div class="event-time">10:00 AM</div>
+                                <div class="event-desc">Email delivered: "New Year Rewards: Check your Gold member balance"</div>
+                            </div>
+
+                            <div class="timeline-event">
+                                <div class="event-date">Dec 20, 2025</div>
                                 <div class="event-icon"><i class="ph ph-currency-dollar" style="color: #3dc1af;"></i></div>
-                                <div class="event-time">11:42 AM</div>
-                                <div class="event-desc">Placed order #67 at Buckhead location (POS) - $54.20</div>
+                                <div class="event-time">6:15 PM</div>
+                                <div class="event-desc">Placed delivery order #67 via Buckhead location (POS) - $245.50</div>
                             </div>
 
                             <!-- Order Details Card -->
                             <div class="order-details-card" style="margin-bottom: var(--spacing-lg);">
                                 <div class="order-details-header">
-                                    <span>POS Order for Dine-in - $54.20</span>
+                                    <span>POS Order for Delivery - $245.50</span>
                                 </div>
                                 <div class="order-details-items">
-                                    1 x Classic Burger $12.50<br>
-                                    1 x Truffle Fries $8.50<br>
-                                    1 x Draft Beer $9.00<br>
-                                    1 x NY Cheesecake $10.00<br>
-                                    Tax & Tip $14.20
+                                    2 x Holiday Prime Rib Platter $110.00<br>
+                                    1 x Large Seasonal Side Medley $35.00<br>
+                                    4 x Premium Craft Beer $36.00<br>
+                                    2 x Winter Spice Dessert Sampler $24.00<br>
+                                    Tax, Tip & Delivery $40.50
                                 </div>
                             </div>
 
                             <div class="timeline-event">
-                                <div class="event-date">Today</div>
+                                <div class="event-date">Dec 20, 2025</div>
                                 <div class="event-icon"><i class="ph ph-star" style="color: #f8931c;"></i></div>
-                                <div class="event-time">11:42 AM</div>
-                                <div class="event-desc">Earned 54 points</div>
+                                <div class="event-time">6:15 PM</div>
+                                <div class="event-desc">Earned 245 points</div>
                             </div>
 
                             <div class="timeline-event">
-                                <div class="event-date">Wed Jan 08, 2026</div>
-                                <div class="event-icon"><i class="ph ph-envelope-open" style="color: #5a55e3;"></i></div>
-                                <div class="event-time">8:20 AM</div>
-                                <div class="event-desc">Email opened: "Your Gold Member Benefits Await"</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Mon Jan 06, 2026</div>
+                                <div class="event-date">Nov 15, 2025</div>
                                 <div class="event-icon"><i class="ph ph-award" style="color: #f8931c;"></i></div>
-                                <div class="event-time">2:15 PM</div>
+                                <div class="event-time">9:00 AM</div>
                                 <div class="event-desc">Tier status upgraded to "Gold"</div>
                             </div>
 
                             <div class="timeline-event">
-                                <div class="event-date">Mon Jan 06, 2026</div>
+                                <div class="event-date">Nov 06, 2025</div>
                                 <div class="event-icon"><i class="ph ph-device-mobile" style="color: #5a55e3;"></i></div>
                                 <div class="event-time">12:30 PM</div>
                                 <div class="event-desc">Placed order #66 via <strong>Punchh App</strong></div>
@@ -503,21 +516,21 @@
                             </div>
 
                             <div class="timeline-event">
-                                <div class="event-date">Fri Jan 03, 2026</div>
+                                <div class="event-date">Nov 03, 2025</div>
                                 <div class="event-icon"><i class="ph ph-gift" style="color: #f8931c;"></i></div>
                                 <div class="event-time">1:10 PM</div>
                                 <div class="event-desc">Redeemed offer: "Free Side with Entree Purchase"</div>
                             </div>
 
                             <div class="timeline-event">
-                                <div class="event-date">Thu Jan 02, 2026</div>
+                                <div class="event-date">Nov 02, 2025</div>
                                 <div class="event-icon"><i class="ph ph-paper-plane-tilt"></i></div>
                                 <div class="event-time">9:00 AM</div>
-                                <div class="event-desc">Email delivered: "New Year, New Menu Items!"</div>
+                                <div class="event-desc">Email delivered: "Weekend specials are here"</div>
                             </div>
 
                             <div class="timeline-event">
-                                <div class="event-date">Sun Dec 29, 2025</div>
+                                <div class="event-date">Oct 29, 2025</div>
                                 <div class="event-icon"><i class="ph ph-chat-circle-text" style="color: #f8931c;"></i></div>
                                 <div class="event-time">11:45 AM</div>
                                 <div class="event-desc">SMS sent: "You're only 150 points away from Gold status!"</div>

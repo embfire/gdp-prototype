@@ -249,11 +249,11 @@
                             <i class="ph ph-caret-down"></i>
                         </div>
                         <div class="dropdown-wrapper">
-                            <select>
-                                <option>All Segments</option>
-                                <option>High-Value Loyalists</option>
-                                <option>Lapsed - 90 Days</option>
-                                <option>New Menu Explorers</option>
+                            <select id="segment-dropdown">
+                                <option>All segments</option>
+                                <option>Dormant High Spenders</option>
+                                <option>Breakfast Regulars</option>
+                                <option>Vegetarian Segment</option>
                             </select>
                             <i class="ph ph-caret-down"></i>
                         </div>
@@ -277,7 +277,7 @@
                                     <th>Last Activity</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="profiles-tbody">
                                 <!-- Loyalty Member -->
                                 <tr onclick="window.location.href='profile.html'" style="cursor: pointer;">
                                     <td>
@@ -415,7 +415,7 @@
 
                     <!-- Pagination Info -->
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-md); color: var(--text-subdued); font-size: 14px;">
-                        <span>Showing 1-8 of 1,248,392 guests</span>
+                        <span id="pagination-info">Showing 1-8 of 1,248,392 guests</span>
                         <div style="display: flex; gap: var(--spacing-sm);">
                             <button class="btn btn-secondary" style="padding: 4px 12px;" disabled>Previous</button>
                             <button class="btn btn-secondary" style="padding: 4px 12px;">Next</button>
@@ -472,6 +472,273 @@
     </div>
 
     <script>
+        const profileData = {
+            'All segments': {
+                tbody: `
+                                <!-- Loyalty Member -->
+                                <tr onclick="window.location.href='profile.html'" style="cursor: pointer;">
+                                    <td>
+                                        <div class="guest-cell">
+                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150" alt="Marcus Thompson" class="guest-avatar">
+                                            <span class="guest-name">Marcus Thompson</span>
+                                        </div>
+                                    </td>
+                                    <td>marcus.t@example.com</td>
+                                    <td>(555) 234-5678</td>
+                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td>$3,428.50</td>
+                                    <td>67</td>
+                                    <td>Punchh, POS</td>
+                                    <td>2 hours ago</td>
+                                </tr>
+                                <!-- Non-Loyalty Guest -->
+                                <tr onclick="window.location.href='guest-profile.html'" style="cursor: pointer;">
+                                    <td>
+                                        <div class="guest-cell">
+                                            <div class="guest-avatar-placeholder">
+                                                <i class="ph ph-user"></i>
+                                            </div>
+                                            <span class="guest-name">Isabella Chen</span>
+                                        </div>
+                                    </td>
+                                    <td>isabella.c@example.com</td>
+                                    <td>(555) 012-3456</td>
+                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td>$1,240.50</td>
+                                    <td>48</td>
+                                    <td>Web App, POS</td>
+                                    <td>12 days ago</td>
+                                </tr>
+                                <!-- Additional Sample Data -->
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150" alt="Sarah Martinez" class="guest-avatar">
+                                            <span class="guest-name">Sarah Martinez</span>
+                                        </div>
+                                    </td>
+                                    <td>sarah.m@example.com</td>
+                                    <td>(555) 789-0123</td>
+                                    <td><span class="loyalty-badge member">Platinum Member</span></td>
+                                    <td>$5,892.00</td>
+                                    <td>124</td>
+                                    <td>Punchh, POS, Web App</td>
+                                    <td>1 day ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <div class="guest-avatar-placeholder">
+                                                <i class="ph ph-user"></i>
+                                            </div>
+                                            <span class="guest-name">David Kim</span>
+                                        </div>
+                                    </td>
+                                    <td>d.kim@example.com</td>
+                                    <td>(555) 456-7890</td>
+                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td>$287.50</td>
+                                    <td>12</td>
+                                    <td>POS</td>
+                                    <td>5 days ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150" alt="James Wilson" class="guest-avatar">
+                                            <span class="guest-name">James Wilson</span>
+                                        </div>
+                                    </td>
+                                    <td>j.wilson@example.com</td>
+                                    <td>(555) 321-6547</td>
+                                    <td><span class="loyalty-badge member">Silver Member</span></td>
+                                    <td>$1,782.20</td>
+                                    <td>42</td>
+                                    <td>Punchh, POS</td>
+                                    <td>3 days ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <div class="guest-avatar-placeholder">
+                                                <i class="ph ph-user"></i>
+                                            </div>
+                                            <span class="guest-name">Emily Rodriguez</span>
+                                        </div>
+                                    </td>
+                                    <td>emily.r@example.com</td>
+                                    <td>(555) 654-3210</td>
+                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td>$542.80</td>
+                                    <td>23</td>
+                                    <td>Web App</td>
+                                    <td>8 days ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150&h=150" alt="Jessica Park" class="guest-avatar">
+                                            <span class="guest-name">Jessica Park</span>
+                                        </div>
+                                    </td>
+                                    <td>jessica.park@example.com</td>
+                                    <td>(555) 987-1234</td>
+                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td>$2,945.60</td>
+                                    <td>58</td>
+                                    <td>Punchh, Web App</td>
+                                    <td>4 hours ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <div class="guest-avatar-placeholder">
+                                                <i class="ph ph-user"></i>
+                                            </div>
+                                            <span class="guest-name">Robert Taylor</span>
+                                        </div>
+                                    </td>
+                                    <td>r.taylor@example.com</td>
+                                    <td>(555) 159-7531</td>
+                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td>$95.00</td>
+                                    <td>4</td>
+                                    <td>POS</td>
+                                    <td>21 days ago</td>
+                                </tr>`,
+                pagination: 'Showing 1-8 of 1,248,392 guests'
+            },
+            'Dormant High Spenders': {
+                tbody: `
+                                <!-- Marcus Thompson (Kept on top) -->
+                                <tr onclick="window.location.href='profile.html'" style="cursor: pointer;">
+                                    <td>
+                                        <div class="guest-cell">
+                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150" alt="Marcus Thompson" class="guest-avatar">
+                                            <span class="guest-name">Marcus Thompson</span>
+                                        </div>
+                                    </td>
+                                    <td>marcus.t@example.com</td>
+                                    <td>(555) 234-5678</td>
+                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td>$3,428.50</td>
+                                    <td>67</td>
+                                    <td>Punchh, POS</td>
+                                    <td>2 months ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150&h=150" alt="Elena Rodriguez" class="guest-avatar">
+                                            <span class="guest-name">Elena Rodriguez</span>
+                                        </div>
+                                    </td>
+                                    <td>elena.rod@example.com</td>
+                                    <td>(555) 876-5432</td>
+                                    <td><span class="loyalty-badge member">Platinum Member</span></td>
+                                    <td>$4,892.00</td>
+                                    <td>92</td>
+                                    <td>Punchh, POS</td>
+                                    <td>3 months ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <div class="guest-avatar-placeholder">
+                                                <i class="ph ph-user"></i>
+                                            </div>
+                                            <span class="guest-name">Thomas Wright</span>
+                                        </div>
+                                    </td>
+                                    <td>t.wright@example.com</td>
+                                    <td>(555) 231-9876</td>
+                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td>$2,150.40</td>
+                                    <td>54</td>
+                                    <td>Web App, POS</td>
+                                    <td>78 days ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=150&h=150" alt="Arthur Morgan" class="guest-avatar">
+                                            <span class="guest-name">Arthur Morgan</span>
+                                        </div>
+                                    </td>
+                                    <td>a.morgan@example.com</td>
+                                    <td>(555) 444-5555</td>
+                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td>$1,875.00</td>
+                                    <td>32</td>
+                                    <td>POS</td>
+                                    <td>92 days ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150" alt="James Wilson" class="guest-avatar">
+                                            <span class="guest-name">James Wilson</span>
+                                        </div>
+                                    </td>
+                                    <td>j.wilson@example.com</td>
+                                    <td>(555) 321-6547</td>
+                                    <td><span class="loyalty-badge member">Silver Member</span></td>
+                                    <td>$1,782.20</td>
+                                    <td>42</td>
+                                    <td>Punchh, POS</td>
+                                    <td>3 months ago</td>
+                                </tr>`,
+                pagination: 'Showing 1-5 of 4,208 guests'
+            },
+            'Vegetarian Segment': {
+                tbody: `
+                                <!-- Isabella Chen -->
+                                <tr onclick="window.location.href='guest-profile.html'" style="cursor: pointer;">
+                                    <td>
+                                        <div class="guest-cell">
+                                            <div class="guest-avatar-placeholder">
+                                                <i class="ph ph-user"></i>
+                                            </div>
+                                            <span class="guest-name">Isabella Chen</span>
+                                        </div>
+                                    </td>
+                                    <td>isabella.c@example.com</td>
+                                    <td>(555) 012-3456</td>
+                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td>$1,240.50</td>
+                                    <td>48</td>
+                                    <td>Web App, POS</td>
+                                    <td>12 days ago</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="guest-cell">
+                                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150&h=150" alt="Jessica Park" class="guest-avatar">
+                                            <span class="guest-name">Jessica Park</span>
+                                        </div>
+                                    </td>
+                                    <td>jessica.park@example.com</td>
+                                    <td>(555) 987-1234</td>
+                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td>$2,945.60</td>
+                                    <td>58</td>
+                                    <td>Punchh, Web App</td>
+                                    <td>4 hours ago</td>
+                                </tr>`,
+                pagination: 'Showing 1-2 of 842 guests'
+            }
+        };
+
+        function refreshProfiles(segmentName) {
+            const data = profileData[segmentName] || profileData['All segments'];
+            document.getElementById('profiles-tbody').innerHTML = data.tbody;
+            document.getElementById('pagination-info').innerText = data.pagination;
+        }
+
+        document.getElementById('segment-dropdown').addEventListener('change', function(e) {
+            refreshProfiles(e.target.value);
+        });
+
         function toggleAva() {
             const modal = document.getElementById('avaModal');
             const overlay = document.getElementById('avaOverlay');

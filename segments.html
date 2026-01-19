@@ -65,7 +65,20 @@
             border-radius: var(--border-radius);
             margin-top: var(--spacing-xl);
         }
+
+        /* Direct view handling to prevent flicker */
+        .direct-builder #segment-list { display: none !important; }
+        .direct-builder #segment-builder { display: block !important; }
     </style>
+    <script>
+        // Check for ?new=true immediately to prevent UI flicker
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('new') === 'true') {
+                document.documentElement.classList.add('direct-builder');
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="app-container">
