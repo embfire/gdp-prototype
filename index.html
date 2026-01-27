@@ -332,7 +332,7 @@
                             <div class="metric-card-value" id="total-guests-value">1,248,392</div>
                             <div class="metric-card-subtext" id="total-guests-subtext">1,209,488 previous period</div>
                             <div class="metric-card-sparkline">
-                                <img id="total-guests-sparkline" src="https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128" alt="">
+                                <img id="total-guests-sparkline" src="assets/sparkline-up.svg" alt="">
                             </div>
                         </div>
                         <div class="metric-card-analytics">
@@ -346,7 +346,7 @@
                             <div class="metric-card-value" id="active-guests-value">842,109</div>
                             <div class="metric-card-subtext" id="active-guests-subtext">827,219 previous period</div>
                             <div class="metric-card-sparkline">
-                                <img id="active-guests-sparkline" src="https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128" alt="">
+                                <img id="active-guests-sparkline" src="assets/sparkline-up.svg" alt="">
                             </div>
                         </div>
                         <div class="metric-card-analytics">
@@ -360,7 +360,7 @@
                             <div class="metric-card-value" id="repeat-rate-value">24.8%</div>
                             <div class="metric-card-subtext" id="repeat-rate-subtext">25.3% previous period</div>
                             <div class="metric-card-sparkline">
-                                <img id="repeat-rate-sparkline" src="https://www.figma.com/api/mcp/asset/6f3fa58a-99b9-482f-ae59-e2a98a19da19" alt="">
+                                <img id="repeat-rate-sparkline" src="assets/sparkline-down.svg" alt="">
                             </div>
                         </div>
                         <div class="metric-card-analytics">
@@ -374,7 +374,7 @@
                             <div class="metric-card-value" id="avg-visits-value">2.4</div>
                             <div class="metric-card-subtext" id="avg-visits-subtext">2.3 previous period</div>
                             <div class="metric-card-sparkline">
-                                <img id="avg-visits-sparkline" src="https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128" alt="">
+                                <img id="avg-visits-sparkline" src="assets/sparkline-up.svg" alt="">
                             </div>
                         </div>
                     </div>
@@ -676,10 +676,10 @@
         const segmentData = {
             'All segments': {
                 metrics: {
-                    'total-guests': { value: '1,248,392', trend: '<i class="ph ph-arrow-up-right"></i> 3.2%', trendClass: 'positive', subtext: '1,209,488 previous period', sparkline: 'https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128' },
-                    'active-guests': { value: '842,109', trend: '<i class="ph ph-arrow-up-right"></i> 1.8%', trendClass: 'positive', subtext: '827,219 previous period', sparkline: 'https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128' },
-                    'repeat-rate': { value: '24.8%', trend: '<i class="ph ph-arrow-down-right"></i> 0.5%', trendClass: 'negative', subtext: '25.3% previous period', sparkline: 'https://www.figma.com/api/mcp/asset/6f3fa58a-99b9-482f-ae59-e2a98a19da19' },
-                    'avg-visits': { value: '2.4', trend: '<i class="ph ph-arrow-up-right"></i> 2.1%', trendClass: 'positive', subtext: '2.3 previous period', sparkline: 'https://www.figma.com/api/mcp/asset/f15ef06c-9a0a-4515-b733-c66a849ea128' }
+                    'total-guests': { value: '1,248,392', trend: '<i class="ph ph-arrow-up-right"></i> 3.2%', trendClass: 'positive', subtext: '1,209,488 previous period', sparkline: 'assets/sparkline-up.svg' },
+                    'active-guests': { value: '842,109', trend: '<i class="ph ph-arrow-up-right"></i> 1.8%', trendClass: 'positive', subtext: '827,219 previous period', sparkline: 'assets/sparkline-up.svg' },
+                    'repeat-rate': { value: '24.8%', trend: '<i class="ph ph-arrow-down-right"></i> 0.5%', trendClass: 'negative', subtext: '25.3% previous period', sparkline: 'assets/sparkline-down.svg' },
+                    'avg-visits': { value: '2.4', trend: '<i class="ph ph-arrow-up-right"></i> 2.1%', trendClass: 'positive', subtext: '2.3 previous period', sparkline: 'assets/sparkline-up.svg' }
                 },
                 charts: {
                     'repeat-trend-chart': `
@@ -866,10 +866,10 @@
             },
             'Dormant High Spenders': {
                 metrics: {
-                    'total-guests': { value: '4,208', trend: '<i class="ph ph-arrow-down-right"></i> 1.2%', trendClass: 'negative', subtext: '4,259 previous period', sparkline: 'https://www.figma.com/api/mcp/asset/6f3fa58a-99b9-482f-ae59-e2a98a19da19' },
+                    'total-guests': { value: '4,208', trend: '<i class="ph ph-arrow-down-right"></i> 1.2%', trendClass: 'negative', subtext: '4,259 previous period', sparkline: 'assets/sparkline-down.svg' },
                     'active-guests': { value: '0', trend: '0.0%', trendClass: '', subtext: '0 previous period', sparkline: flatGrayLine },
                     'repeat-rate': { value: '100%', trend: '0.0%', trendClass: '', subtext: '100% previous period', sparkline: flatGrayLine },
-                    'avg-visits': { value: '8.4', trend: '<i class="ph ph-arrow-down-right"></i> 0.4%', trendClass: 'negative', subtext: '8.5 previous period', sparkline: 'https://www.figma.com/api/mcp/asset/6f3fa58a-99b9-482f-ae59-e2a98a19da19' }
+                    'avg-visits': { value: '8.4', trend: '<i class="ph ph-arrow-down-right"></i> 0.4%', trendClass: 'negative', subtext: '8.5 previous period', sparkline: 'assets/sparkline-down.svg' }
                 },
                 charts: {
                     'repeat-trend-chart': `
