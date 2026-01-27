@@ -469,14 +469,14 @@ h1 {
 
 .metric-card-sparkline {
   width: 100%;
-  height: auto;
-  min-height: 20px;
+  height: 20px;
   margin-top: 4px;
 }
 
 .metric-card-sparkline img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: fill;
   display: block;
 }
 
