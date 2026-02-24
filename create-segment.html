@@ -1,0 +1,3125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Segment - Guest Data Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .cs-title-bar {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .cs-button-cluster {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            flex-shrink: 0;
+        }
+
+        .btn-help {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: none;
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--border-radius);
+        }
+
+        .btn-help i {
+            font-size: 24px;
+        }
+
+        .btn-help:hover {
+            background: var(--bg-subdued);
+        }
+
+        .btn-template {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            border: 1px solid var(--text-normal);
+            border-radius: var(--border-radius);
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            padding: 8px 16px;
+            height: 40px;
+        }
+
+        .btn-template i {
+            font-size: 24px;
+        }
+
+        .btn-template:hover {
+            background: var(--bg-subdued);
+        }
+
+        .btn-overflow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 1px solid var(--text-normal);
+            border-radius: var(--border-radius);
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .btn-overflow i {
+            font-size: 20px;
+        }
+
+        .btn-overflow:hover {
+            background: var(--bg-subdued);
+        }
+
+        /* ── Name section ── */
+        .cs-name-section {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .cs-name-label {
+            display: block;
+            font-family: var(--font-family);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-normal);
+            margin-bottom: 6px;
+        }
+
+        .cs-name-input {
+            width: 100%;
+            max-width: 480px;
+            padding: 8px 16px;
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            background: white;
+            border: 1px solid var(--text-normal);
+            border-radius: var(--border-radius);
+            outline: none;
+            box-sizing: border-box;
+            height: 40px;
+        }
+
+        .cs-name-input::placeholder {
+            color: var(--text-subdued);
+        }
+
+        .cs-name-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(90, 85, 227, 0.12);
+        }
+
+        .cs-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .cs-meta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--border-color);
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            padding: 0 0 2px 0;
+            line-height: 1.5;
+        }
+
+        .cs-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: var(--spacing-xl) 0;
+        }
+
+        .cs-rule-area {
+            margin-bottom: 24px;
+        }
+
+        .cs-rule-block {
+            background: var(--bg-subdued);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            display: inline-block;
+        }
+
+        .cs-filter-type-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--border-color);
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            padding: 0 0 2px 0;
+            line-height: 1.5;
+        }
+
+        .cs-filter-type-btn:hover {
+            border-bottom-color: var(--text-normal);
+        }
+
+        .cs-preview-heading {
+            font-size: 20px;
+            font-weight: 800;
+            line-height: 1.6;
+            color: var(--text-normal);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .cs-empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-xxl) 0;
+        }
+
+        .cs-empty-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-normal);
+        }
+
+        .cs-empty-icon i {
+            font-size: 48px;
+        }
+
+        .cs-empty-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .cs-empty-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-normal);
+            line-height: 1.6;
+        }
+
+        .cs-empty-subtitle {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-subdued);
+            line-height: 1.5;
+        }
+
+        /* ── Post-selection rule row ── */
+        .cs-rule-row {
+            display: none;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .cs-rule-label {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--border-color);
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            padding: 0 0 2px 0;
+            line-height: 1.5;
+            white-space: nowrap;
+        }
+
+        .cs-pill-wrap {
+            position: relative;
+            display: inline-flex;
+        }
+
+        .cs-select-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: 1px solid var(--text-normal);
+            border-radius: var(--border-radius);
+            background: white;
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            white-space: nowrap;
+            height: 40px;
+        }
+
+        .cs-select-pill:hover {
+            background: var(--bg-subdued);
+        }
+
+        .cs-operator-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            z-index: 300;
+            flex-direction: column;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
+            padding: 8px;
+            min-width: 180px;
+            white-space: nowrap;
+        }
+
+        .cs-operator-dropdown.open {
+            display: flex;
+        }
+
+        .cs-op-item {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 8px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .cs-op-item:hover,
+        .cs-op-item.active {
+            background: var(--bg-subdued);
+        }
+
+        .cs-rule-overflow {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 4px;
+            color: var(--text-normal);
+            line-height: 0;
+        }
+
+        .cs-rule-overflow:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .cs-rule-overflow i {
+            font-size: 20px;
+        }
+
+        .cs-rule-context-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            z-index: 400;
+            flex-direction: column;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
+            padding: 8px;
+            min-width: 140px;
+            white-space: nowrap;
+        }
+
+        .cs-rule-context-menu.open {
+            display: flex;
+        }
+
+        .cs-rule-ctx-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 8px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .cs-rule-ctx-item:hover {
+            background: var(--bg-subdued);
+        }
+
+        .cs-rule-ctx-item i {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .cs-rule-ctx-item.danger {
+            color: #dc2626;
+        }
+
+        /* ── Combo box ── */
+        .cs-combo-box {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 4px;
+            padding: 4px 16px 4px 4px;
+            border: 1px solid var(--text-normal);
+            border-radius: var(--border-radius);
+            background: white;
+            cursor: pointer;
+            min-width: 160px;
+            position: relative;
+        }
+
+        /* Empty / placeholder state */
+        .cs-combo-box.cs-combo-empty {
+            align-items: center;
+            padding: 8px 16px;
+            gap: 8px;
+        }
+
+        .cs-combo-box.cs-combo-empty .cs-combo-chevron {
+            padding-top: 0;
+        }
+
+        .cs-combo-placeholder {
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            line-height: 1.5;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .cs-combo-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cs-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: #dfe1e2;
+            border-radius: 8px;
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            white-space: nowrap;
+        }
+
+        .cs-chip-remove {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            color: var(--text-normal);
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .cs-chip-remove:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .cs-chip-remove i {
+            font-size: 16px;
+        }
+
+        .cs-combo-chevron {
+            display: flex;
+            align-items: flex-start;
+            padding-top: 6px;
+            flex-shrink: 0;
+            color: var(--text-normal);
+        }
+
+        .cs-combo-chevron i {
+            font-size: 20px;
+        }
+
+        /* ── Combo dropdown ── */
+        .cs-combo-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            width: max-content;
+            background: white;
+            border: 2px solid #dfe1e2;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            z-index: 300;
+            padding: 16px;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cs-combo-dropdown.open {
+            display: flex;
+        }
+
+        .cs-combo-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 8px;
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .cs-combo-option:hover:not(.selected) {
+            background: var(--bg-subdued);
+        }
+
+        .cs-combo-option.selected {
+            background: #eeeefc;
+        }
+
+        .cs-combo-checkbox {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.5 21C4.1 21 3.75 20.85 3.45 20.55C3.15 20.25 3 19.9 3 19.5V4.5C3 4.1 3.15 3.75 3.45 3.45C3.75 3.15 4.1 3 4.5 3H19.5C19.9 3 20.25 3.15 20.55 3.45C20.85 3.75 21 4.1 21 4.5V19.5C21 19.9 20.85 20.25 20.55 20.55C20.25 20.85 19.9 21 19.5 21H4.5ZM4.5 19.5H19.5V4.5H4.5V19.5Z' fill='black'/%3E%3C/svg%3E");
+        }
+
+        .cs-combo-option.selected .cs-combo-checkbox {
+            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='4' y='4' width='16' height='16' fill='white'/%3E%3Cpath d='M4.5 21C4.1 21 3.75 20.85 3.45 20.55C3.15 20.25 3 19.9 3 19.5V4.5C3 4.1 3.15 3.75 3.45 3.45C3.75 3.15 4.1 3 4.5 3H19.5C19.9 3 20.25 3.15 20.55 3.45C20.85 3.75 21 4.1 21 4.5V19.5C21 19.9 20.85 20.25 20.55 20.55C20.25 20.85 19.9 21 19.5 21H4.5ZM10.475 15.675C10.575 15.675 10.6667 15.6583 10.75 15.625C10.8333 15.5917 10.9167 15.5333 11 15.45L17.175 9.275C17.3083 9.14167 17.3792 8.96667 17.3875 8.75C17.3958 8.53333 17.325 8.35 17.175 8.2C17.025 8.05 16.8458 7.975 16.6375 7.975C16.4292 7.975 16.25 8.05 16.1 8.2L10.475 13.825L8.025 11.375C7.89167 11.2417 7.72083 11.1708 7.5125 11.1625C7.30417 11.1542 7.125 11.225 6.975 11.375C6.825 11.525 6.75 11.7042 6.75 11.9125C6.75 12.1208 6.825 12.3 6.975 12.45L9.95 15.45C10.0333 15.5333 10.1167 15.5917 10.2 15.625C10.2833 15.6583 10.375 15.675 10.475 15.675Z' fill='%235A55E3'/%3E%3C/svg%3E");
+        }
+
+        /* ── Operator row ── */
+        .cs-operator-row {
+            display: none;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .cs-btn-group {
+            display: flex;
+            align-items: center;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            border: 1px solid var(--text-normal);
+        }
+
+        .cs-btn-group-item {
+            height: 40px;
+            padding: 0 16px;
+            background: white;
+            border: none;
+            border-left: 1px solid var(--text-normal);
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+        }
+
+        .cs-btn-group-item:first-child {
+            border-left: none;
+        }
+
+        .cs-btn-group-item.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .cs-btn-group-item:hover:not(.active) {
+            background: var(--bg-subdued);
+        }
+
+        .cs-add-rule-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--border-color);
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            padding: 0 0 2px 0;
+            line-height: 1.5;
+        }
+
+        /* ── Action bar ── */
+        .cs-action-bar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 240px;
+            right: 0;
+            height: 80px;
+            background: #eeeefc;
+            box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.12);
+            z-index: 100;
+            padding: 0 48px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cs-action-bar-left,
+        .cs-action-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .cs-btn-next {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 8px 24px;
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            cursor: pointer;
+            height: 40px;
+        }
+
+        .cs-btn-next:hover {
+            background: var(--accent-blue-hover);
+        }
+
+        .cs-btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            border: 1px solid var(--text-normal);
+            border-radius: var(--border-radius);
+            padding: 8px 16px;
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            height: 40px;
+        }
+
+        .cs-btn-cancel,
+        .cs-btn-save-close {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--border-color);
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            padding: 0 0 2px 0;
+            line-height: 1.5;
+        }
+
+        /* ── Filter type dropdown ── */
+        .cs-dropdown-anchor {
+            position: relative;
+            display: inline-block;
+        }
+
+        .cs-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            z-index: 200;
+            flex-direction: row;
+            align-items: stretch;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+        }
+
+        .cs-dropdown.open {
+            display: flex;
+        }
+
+        .fd-panel {
+            background: white;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 180px;
+            flex-shrink: 0;
+        }
+
+        .fd-panel + .fd-panel {
+            border-left: 2px solid var(--border-color);
+        }
+
+        .fd-search-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid var(--text-normal);
+            border-radius: var(--border-radius);
+            padding: 6px 12px;
+            margin-bottom: 4px;
+        }
+
+        .fd-search-wrap i {
+            font-size: 18px;
+            color: var(--text-subdued);
+            flex-shrink: 0;
+        }
+
+        .fd-search-wrap input {
+            border: none;
+            outline: none;
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            width: 140px;
+            background: transparent;
+        }
+
+        .fd-search-wrap input::placeholder {
+            color: var(--text-subdued);
+        }
+
+        .fd-subheading {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-normal);
+            line-height: 1.5;
+            padding-bottom: 8px;
+        }
+
+        .fd-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            white-space: nowrap;
+            line-height: 1.5;
+            user-select: none;
+        }
+
+        .fd-item:hover,
+        .fd-item.active {
+            background: var(--bg-subdued);
+        }
+
+        .fd-item i {
+            font-size: 18px;
+            color: var(--text-subdued);
+            flex-shrink: 0;
+        }
+
+        .fd-separator {
+            height: 1px;
+            background: var(--border-color);
+            margin: 4px 0;
+        }
+
+        /* Third-level: description items */
+        .fd-desc-item {
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .fd-desc-item:hover {
+            background: var(--bg-subdued);
+        }
+
+        .fd-desc-title {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            line-height: 1.5;
+        }
+
+        .fd-desc-sub {
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-subdued);
+            line-height: 1.5;
+            white-space: normal;
+            width: 240px;
+        }
+
+        /* ── Segment Preview (populated) ── */
+        .sp-populated { display: none; }
+        .sp-populated.visible { display: block; }
+
+        /* ── Skeleton Loading ── */
+        @keyframes skeleton-shimmer {
+            0% { background-position: -400px 0; }
+            100% { background-position: 400px 0; }
+        }
+
+        .skeleton-bone {
+            background: linear-gradient(90deg, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%);
+            background-size: 800px 100%;
+            animation: skeleton-shimmer 1.8s ease-in-out infinite;
+            border-radius: 4px;
+        }
+
+        .sp-skeleton { display: none; }
+        .sp-skeleton.visible { display: block; }
+
+        .sp-skeleton .sp-hero-card {
+            position: relative;
+        }
+
+        .sk-hero-label {
+            width: 65%;
+            height: 14px;
+        }
+
+        .sk-hero-value {
+            width: 45%;
+            height: 28px;
+            margin: 4px 0;
+        }
+
+        .sk-hero-sub {
+            width: 50%;
+            height: 12px;
+        }
+
+        .sk-card-title {
+            width: 40%;
+            height: 16px;
+        }
+
+        .sk-card-subtitle {
+            width: 70%;
+            height: 14px;
+            margin-top: 4px;
+        }
+
+        .sk-chart-area {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .sp-hero-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .sp-hero-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .sp-hero-label {
+            font-size: 14px;
+            font-weight: 400;
+            color: #60696c;
+            line-height: 1.72;
+        }
+
+        .sp-hero-value {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.44;
+            color: var(--text-normal);
+        }
+
+        .sp-hero-sub {
+            font-size: 12px;
+            font-weight: 400;
+            color: #60696c;
+            line-height: 1.36;
+        }
+
+        .sp-charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.56fr;
+            grid-template-rows: auto auto;
+            gap: 16px;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .sp-card {
+            border: 1px solid #dfe1e2;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sp-card-title {
+            font-size: 16px;
+            font-weight: 800;
+            line-height: 1.5;
+            color: var(--text-normal);
+        }
+
+        .sp-card-subtitle {
+            font-size: 14px;
+            font-weight: 400;
+            color: #60696c;
+            line-height: 1.72;
+        }
+
+        .sp-chart-wrap {
+            position: relative;
+            min-height: 160px;
+        }
+
+        .sp-chart-wrap canvas { max-width: 100%; }
+
+        .sp-overlaps-row {
+            display: flex;
+            gap: 56px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .sp-overlap-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            width: 150px;
+        }
+
+        .sp-overlap-doughnut { width: 134px; height: 116px; }
+
+        .sp-overlap-stats {
+            font-size: 12px;
+            line-height: 1.36;
+            color: var(--text-normal);
+            text-align: center;
+        }
+
+        .sp-overlap-link {
+            font-size: 12px;
+            color: #1d5eff;
+            text-decoration: underline;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            width: 100%;
+        }
+
+        .sp-composition-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .sp-composition-select-wrap {
+            position: relative;
+            width: 216px;
+            flex-shrink: 0;
+        }
+
+        .sp-composition-dropdown {
+            width: 100%;
+            padding: 8px 40px 8px 16px;
+            border: 1px solid var(--text-normal);
+            border-radius: 8px;
+            background: white;
+            font-size: 16px;
+            font-family: inherit;
+            color: var(--text-normal);
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            line-height: 1.5;
+        }
+
+        .sp-composition-select-wrap::after {
+            content: '';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+
+        input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            cursor: pointer;
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.5 21C4.1 21 3.75 20.85 3.45 20.55C3.15 20.25 3 19.9 3 19.5V4.5C3 4.1 3.15 3.75 3.45 3.45C3.75 3.15 4.1 3 4.5 3H19.5C19.9 3 20.25 3.15 20.55 3.45C20.85 3.75 21 4.1 21 4.5V19.5C21 19.9 20.85 20.25 20.55 20.55C20.25 20.85 19.9 21 19.5 21H4.5ZM4.5 19.5H19.5V4.5H4.5V19.5Z' fill='black'/%3E%3C/svg%3E");
+        }
+
+        input[type="checkbox"]:checked {
+            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='4' y='4' width='16' height='16' fill='white'/%3E%3Cpath d='M4.5 21C4.1 21 3.75 20.85 3.45 20.55C3.15 20.25 3 19.9 3 19.5V4.5C3 4.1 3.15 3.75 3.45 3.45C3.75 3.15 4.1 3 4.5 3H19.5C19.9 3 20.25 3.15 20.55 3.45C20.85 3.75 21 4.1 21 4.5V19.5C21 19.9 20.85 20.25 20.55 20.55C20.25 20.85 19.9 21 19.5 21H4.5ZM10.475 15.675C10.575 15.675 10.6667 15.6583 10.75 15.625C10.8333 15.5917 10.9167 15.5333 11 15.45L17.175 9.275C17.3083 9.14167 17.3792 8.96667 17.3875 8.75C17.3958 8.53333 17.325 8.35 17.175 8.2C17.025 8.05 16.8458 7.975 16.6375 7.975C16.4292 7.975 16.25 8.05 16.1 8.2L10.475 13.825L8.025 11.375C7.89167 11.2417 7.72083 11.1708 7.5125 11.1625C7.30417 11.1542 7.125 11.225 6.975 11.375C6.825 11.525 6.75 11.7042 6.75 11.9125C6.75 12.1208 6.825 12.3 6.975 12.45L9.95 15.45C10.0333 15.5333 10.1167 15.5917 10.2 15.625C10.2833 15.6583 10.375 15.675 10.475 15.675Z' fill='%235A55E3'/%3E%3C/svg%3E");
+        }
+
+        .sp-show-unknown-label {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .sp-show-unknown-text {
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            color: var(--text-normal);
+            background: transparent;
+            transition: background 0.15s;
+            line-height: 1.5;
+        }
+
+        .sp-show-unknown-label input:checked + .sp-show-unknown-text {
+            background: #ebf0ff;
+        }
+
+        .sp-composition-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sp-legend-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .sp-legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .sp-composition-chart-legend {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .sp-menu-list { display: flex; flex-direction: column; }
+
+        .sp-menu-row {
+            display: flex;
+            align-items: center;
+            min-height: 49px;
+            border-top: 1px solid #dfe1e2;
+            position: relative;
+        }
+
+        .sp-menu-row:last-child { border-bottom: 1px solid #dfe1e2; }
+
+        .sp-menu-item-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 190px;
+            flex-shrink: 0;
+            z-index: 1;
+            padding: 4px 8px 4px 0;
+        }
+
+        .sp-menu-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            background: #eee;
+            flex-shrink: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 18px;
+        }
+
+        .sp-menu-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 4px;
+        }
+
+        .sp-menu-name {
+            font-size: 12px;
+            color: var(--text-normal);
+            line-height: 1.36;
+        }
+
+        .sp-menu-bar-area {
+            flex: 1;
+            position: relative;
+            align-self: stretch;
+        }
+
+        .sp-menu-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: rgba(255, 102, 0, 0.18);
+            border-bottom: 2px solid #ff6600;
+        }
+
+        .sp-menu-stats {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 6px 0 6px 8px;
+            flex-shrink: 0;
+            min-width: 110px;
+        }
+
+        .sp-menu-pct {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-normal);
+            line-height: 1.36;
+        }
+
+        .sp-menu-vs {
+            font-size: 10px;
+            color: #60696c;
+            line-height: 1.4;
+            white-space: nowrap;
+        }
+
+        .sp-menu-vs.negative { color: #d93025; }
+
+        .sp-table-wrap {
+            overflow-x: auto;
+            border: 1px solid #dfe1e2;
+        }
+
+        .sp-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .sp-table th {
+            background: var(--bg-subdued);
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 16px;
+            font-weight: 800;
+            color: #000;
+            text-transform: none;
+            border-bottom: 1px solid #dfe1e2;
+        }
+
+        .sp-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #dfe1e2;
+        }
+
+        .sp-table tr:last-child td { border-bottom: none; }
+        .sp-table .sp-col-check { width: 40px; }
+        .sp-table .sp-col-menu { width: 40px; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Header -->
+        <header class="header">
+            <div class="header-left">
+                <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+                    <img src="assets/par-guest360.svg" alt="PAR Guest360 logo">
+                </a>
+                <svg width="205" height="40" viewBox="0 0 205 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M39.4909 0H0V39.491H39.4909V0Z" fill="#2F3452"/>
+<path d="M193.472 25.8655H192.214V16.6855H193.336V17.6545C193.906 16.9065 194.832 16.439 195.92 16.439C197.127 16.439 198.105 16.983 198.598 17.986C199.133 17.017 200.153 16.439 201.377 16.439C203.23 16.439 204.429 17.663 204.429 19.601L204.42 25.8655H203.171L203.179 19.839C203.179 18.4195 202.295 17.561 201.088 17.561C200.043 17.561 198.946 18.2325 198.946 19.941L198.938 25.8655H197.705L197.714 19.924C197.714 18.462 196.864 17.561 195.597 17.561C194.322 17.561 193.472 18.5045 193.472 19.941V25.8655Z" fill="#2F3452"/>
+<path d="M187.346 25.8655H186.097V16.6855H187.219V18.139C187.414 17.7905 187.669 17.493 187.933 17.289C188.655 16.66 189.803 16.4815 190.61 16.6855V17.8585C189.93 17.697 189.08 17.731 188.417 18.275C187.499 18.9975 187.346 20.1875 187.346 21.284V25.8655Z" fill="#2F3452"/>
+<path d="M179.87 26.1205C177.133 26.1205 175.526 24.1145 175.526 21.267C175.526 18.377 177.184 16.4305 179.87 16.4305C182.624 16.4305 184.222 18.428 184.222 21.267C184.222 24.157 182.59 26.1205 179.87 26.1205ZM179.87 24.922C181.91 24.922 182.896 23.4345 182.896 21.267C182.896 19.057 181.893 17.629 179.87 17.629C177.813 17.629 176.852 19.125 176.852 21.267C176.852 23.477 177.881 24.922 179.87 24.922Z" fill="#2F3452"/>
+<path d="M172.501 25.8655H171.251V17.7565H169.662V16.6855H171.251V16.0055C171.251 15.3 171.319 14.586 171.821 14.042C172.373 13.4385 173.13 13.3705 173.835 13.3705H175.008V14.4245H173.92C172.968 14.4245 172.501 14.875 172.501 15.8695V16.6855H175.008V17.7565H172.501V25.8655Z" fill="#2F3452"/>
+<path d="M168.533 24.769V25.8655C166.978 26.1885 165.371 25.993 164.768 24.769C164.436 24.0975 164.479 23.443 164.479 22.542V17.7565H162.515V16.6855H164.479V14.1355H165.72V16.6855H168.533V17.7565H165.72V22.491C165.72 23.2645 165.686 23.749 165.907 24.14C166.315 24.905 167.216 24.9815 168.533 24.769Z" fill="#2F3452"/>
+<path d="M156.715 26.1205C154.633 26.1205 153.579 24.8625 153.579 23.4005C153.579 21.896 154.548 21.097 155.916 20.7315C157.157 20.434 158.874 20.2385 160.098 20.0685C160.073 18.411 159.393 17.612 157.65 17.612C156.392 17.612 155.491 18.156 155.143 19.38L153.927 19.023C154.352 17.3825 155.644 16.4305 157.667 16.4305C159.342 16.4305 160.566 17.0765 161.05 18.2665C161.271 18.802 161.322 19.482 161.322 20.162V25.8655H160.209V24.344C159.495 25.5085 158.279 26.1205 156.715 26.1205ZM156.86 25.041C158.611 25.041 159.724 24.0125 159.962 22.627C160.064 22.1765 160.081 21.5815 160.081 21.165C158.874 21.3095 157.429 21.454 156.418 21.7345C155.636 21.964 154.828 22.406 154.828 23.4005C154.828 24.1995 155.381 25.041 156.86 25.041Z" fill="#2F3452"/>
+<path d="M151.541 25.8655H150.291V13.6255H151.541V25.8655Z" fill="#2F3452"/>
+<path d="M141.111 25.8655H139.861V13.6255H144.587C144.825 13.6255 145.14 13.6425 145.446 13.6935C147.358 13.991 148.429 15.5125 148.429 17.425C148.429 19.329 147.35 20.859 145.446 21.148C145.14 21.199 144.817 21.216 144.587 21.216H141.111V25.8655ZM141.111 14.824V20.026H144.553C144.757 20.026 145.055 20.009 145.31 19.9495C146.568 19.686 147.146 18.564 147.146 17.425C147.146 16.286 146.568 15.164 145.31 14.892C145.055 14.841 144.757 14.824 144.553 14.824H141.111Z" fill="#2F3452"/>
+<path d="M129.638 26.1205C127.556 26.1205 126.502 24.8625 126.502 23.4005C126.502 21.896 127.471 21.097 128.839 20.7315C130.08 20.434 131.797 20.2385 133.021 20.0685C132.996 18.411 132.316 17.612 130.573 17.612C129.315 17.612 128.414 18.156 128.066 19.38L126.85 19.023C127.275 17.3825 128.567 16.4305 130.59 16.4305C132.265 16.4305 133.489 17.0765 133.973 18.2665C134.194 18.802 134.245 19.482 134.245 20.162V25.8655H133.132V24.344C132.418 25.5085 131.202 26.1205 129.638 26.1205ZM129.783 25.041C131.534 25.041 132.647 24.0125 132.885 22.627C132.987 22.1765 133.004 21.5815 133.004 21.165C131.797 21.3095 130.352 21.454 129.341 21.7345C128.559 21.964 127.751 22.406 127.751 23.4005C127.751 24.1995 128.304 25.041 129.783 25.041Z" fill="#2F3452"/>
+<path d="M125.203 24.769V25.8655C123.648 26.1885 122.041 25.993 121.438 24.769C121.106 24.0975 121.149 23.443 121.149 22.542V17.7565H119.185V16.6855H121.149V14.1355H122.39V16.6855H125.203V17.7565H122.39V22.491C122.39 23.2645 122.356 23.749 122.577 24.14C122.985 24.905 123.886 24.9815 125.203 24.769Z" fill="#2F3452"/>
+<path d="M113.385 26.1205C111.303 26.1205 110.249 24.8625 110.249 23.4005C110.249 21.896 111.218 21.097 112.586 20.7315C113.827 20.434 115.544 20.2385 116.768 20.0685C116.743 18.411 116.063 17.612 114.32 17.612C113.062 17.612 112.161 18.156 111.813 19.38L110.597 19.023C111.022 17.3825 112.314 16.4305 114.337 16.4305C116.012 16.4305 117.236 17.0765 117.72 18.2665C117.941 18.802 117.992 19.482 117.992 20.162V25.8655H116.879V24.344C116.165 25.5085 114.949 26.1205 113.385 26.1205ZM113.53 25.041C115.281 25.041 116.394 24.0125 116.632 22.627C116.734 22.1765 116.751 21.5815 116.751 21.165C115.544 21.3095 114.099 21.454 113.088 21.7345C112.306 21.964 111.498 22.406 111.498 23.4005C111.498 24.1995 112.051 25.041 113.53 25.041Z" fill="#2F3452"/>
+<path d="M103.051 25.8655H99.3369V13.6255H103.051C103.306 13.6255 104.037 13.6255 104.624 13.702C107.412 14.0845 108.823 16.626 108.823 19.7455C108.823 22.882 107.412 25.4065 104.624 25.789C104.054 25.8655 103.289 25.8655 103.051 25.8655ZM100.629 14.824V24.667H103.051C103.51 24.667 104.105 24.6415 104.496 24.565C106.638 24.191 107.497 22.185 107.497 19.7455C107.497 17.272 106.621 15.3 104.496 14.926C104.105 14.8495 103.493 14.824 103.051 14.824H100.629Z" fill="#2F3452"/>
+<path d="M94.1249 24.769V25.8655C92.5694 26.1885 90.9629 25.993 90.3594 24.769C90.0279 24.0975 90.0704 23.443 90.0704 22.542V17.7565H88.1069V16.6855H90.0704V14.1355H91.3114V16.6855H94.1249V17.7565H91.3114V22.491C91.3114 23.2645 91.2774 23.749 91.4984 24.14C91.9064 24.905 92.8074 24.9815 94.1249 24.769Z" fill="#2F3452"/>
+<path d="M83.6208 26.112C81.4703 26.112 79.9998 25.1345 79.6853 23.477L80.9603 23.2645C81.2238 24.31 82.2608 24.973 83.6888 24.973C85.0828 24.973 85.9413 24.344 85.9413 23.341C85.9413 22.491 85.5503 22.236 83.2213 21.607C80.7308 20.9355 79.9658 20.332 79.9658 19.0485C79.9658 17.4845 81.3768 16.4305 83.4508 16.4305C85.5248 16.4305 87.0378 17.51 87.2248 19.108L85.9498 19.3375C85.7713 18.258 84.8108 17.595 83.4338 17.5695C82.1333 17.544 81.2323 18.122 81.2323 18.989C81.2323 19.72 81.7508 20.06 83.9183 20.604C86.4513 21.25 87.2418 21.9045 87.2418 23.324C87.2418 25.058 85.8733 26.112 83.6208 26.112Z" fill="#2F3452"/>
+<path d="M74.1355 26.1205C71.458 26.1205 69.741 24.225 69.741 21.318C69.741 18.309 71.4325 16.4305 74.0845 16.4305C76.8045 16.4305 78.4025 18.3855 78.309 21.624H71.0755C71.1775 23.732 72.257 24.922 74.0845 24.922C75.3935 24.922 76.3965 24.3015 76.966 23.154L78.1305 23.6045C77.3995 25.211 75.912 26.1205 74.1355 26.1205ZM74.1185 17.578C72.3505 17.578 71.2965 18.649 71.101 20.5785H77C76.8045 18.598 75.827 17.578 74.1185 17.578Z" fill="#2F3452"/>
+<path d="M63.6678 26.095C60.9138 26.095 59.9873 23.8 59.9873 21.7345V16.6855H61.2453V21.369C61.2453 23.392 61.9848 24.905 63.9058 24.905C65.6738 24.905 66.6258 23.6555 66.6258 21.5815V16.6855H67.8753V25.8655H66.7533V24.5905C66.0733 25.585 64.9853 26.095 63.6678 26.095Z" fill="#2F3452"/>
+<path d="M53.0755 26.1205C49.6075 26.1205 47.491 23.6215 47.491 19.7455C47.491 15.895 49.5735 13.379 53.0755 13.379C55.6765 13.379 57.3255 14.6965 57.9715 16.745L56.7135 17.051C56.1695 15.555 54.9285 14.586 53.1265 14.586C50.2535 14.569 48.8425 16.6855 48.817 19.7455C48.7915 22.8055 50.2535 24.905 53.1265 24.922C55.753 24.9305 56.9855 23.307 57.113 20.6975H54.291V19.6265H58.422C58.4475 19.89 58.456 20.23 58.456 20.349C58.456 23.6555 56.671 26.1205 53.0755 26.1205Z" fill="#2F3452"/>
+<path d="M19.4763 21.9438H16.6261L19.4763 17.8762V21.9438ZM9.54021 19.1926H7.95677V15.7569H9.40826C11.0577 15.7569 11.7834 16.2834 11.7834 17.455C11.7834 18.6266 11.0445 19.1926 9.55341 19.1926M15.201 18.6529C15.2802 18.2448 15.3198 17.8236 15.3198 17.4024C15.3198 15.441 14.3433 13.7823 12.7731 13.0583C12.0077 12.7029 10.8466 12.4923 9.3027 12.5055H4.40723V26.9723H7.95677V22.444H9.68536C11.1368 22.444 12.2585 22.1544 13.1162 21.6674L9.42146 26.9855H13.1425L14.594 24.8925H19.4763V26.9855H23.0259V12.5186H19.4763L15.201 18.6661V18.6529Z" fill="#F4F5FA"/>
+<path d="M29.531 19.5875C29.2803 19.6797 29.0956 19.7323 28.7657 19.7586C28.1587 19.7981 26.9975 19.7718 26.9975 19.7718V15.7437H28.4226C28.8317 15.7437 29.2407 15.7964 29.6102 15.9675C29.9797 16.1255 30.2964 16.3756 30.4943 16.731C30.6394 16.9811 30.7054 17.2444 30.7318 17.5208C30.7582 17.8367 30.7318 18.1395 30.6394 18.4423C30.4679 19.0083 30.072 19.3769 29.531 19.5875ZM30.6922 22.0491H30.7714C31.5763 21.878 32.2889 21.5357 32.8827 20.9697C33.3973 20.4958 33.7535 19.9166 33.9911 19.2584C34.1362 18.8635 34.2286 18.4554 34.2682 18.0342C34.3473 17.1654 34.2418 16.2966 33.9119 15.4805C33.5688 14.6117 33.0146 13.9008 32.2361 13.3743C31.8138 13.0978 31.3784 12.9135 30.9034 12.7951C30.4679 12.6898 30.072 12.6108 29.5706 12.545C29.188 12.5055 28.7789 12.5055 28.7789 12.5055H23.4612V26.9723H27.0107V22.2466L30.4019 26.9723H34.4001L30.6922 22.0491Z" fill="#F4F5FA"/>
+<path d="M34.3869 14.0851C34.2814 14.0851 34.1758 14.0719 34.0834 14.0193C33.9911 13.9666 33.8987 13.9271 33.8327 13.8482C33.7668 13.7692 33.7008 13.6902 33.6612 13.5981C33.6216 13.5059 33.5952 13.4006 33.5952 13.2953C33.5952 13.19 33.6084 13.0847 33.6612 12.9925C33.714 12.9004 33.7536 12.8082 33.8327 12.7424C33.8987 12.6634 33.9911 12.6108 34.0834 12.5713C34.1758 12.5318 34.2814 12.5055 34.3869 12.5055C34.4925 12.5055 34.5981 12.5186 34.6904 12.5713C34.7828 12.6108 34.8752 12.6634 34.9411 12.7424C35.0071 12.8214 35.0731 12.9004 35.1127 12.9925C35.1523 13.0847 35.1787 13.19 35.1787 13.2953C35.1787 13.4006 35.1655 13.5059 35.1127 13.5981C35.0731 13.6902 35.0203 13.7823 34.9411 13.8482C34.8752 13.9271 34.7828 13.9798 34.6904 14.0193C34.5981 14.0588 34.4925 14.0851 34.3869 14.0851ZM34.3869 13.9403C34.5057 13.9403 34.6113 13.914 34.7168 13.8482C34.8092 13.7955 34.8884 13.7165 34.9543 13.6112C35.0071 13.5191 35.0335 13.4006 35.0335 13.2821C35.0335 13.1637 35.0071 13.0583 34.9543 12.9662C34.9016 12.8741 34.8224 12.7951 34.7168 12.7293C34.6245 12.6766 34.5057 12.6371 34.3869 12.6371C34.2682 12.6371 34.1626 12.6634 34.0571 12.7293C33.9515 12.7951 33.8855 12.8609 33.8195 12.9662C33.7668 13.0583 33.7272 13.1768 33.7272 13.2821C33.7272 13.3874 33.7536 13.5059 33.8195 13.6112C33.8855 13.7165 33.9515 13.7823 34.0571 13.8482C34.1626 13.914 34.2682 13.9403 34.3869 13.9403ZM34.123 13.677V12.9004H34.4661C34.5321 12.9004 34.5981 12.9267 34.6376 12.9794C34.6904 13.032 34.7168 13.0847 34.7168 13.1505C34.7168 13.2163 34.7036 13.2426 34.6772 13.2821C34.6508 13.3216 34.6113 13.3611 34.5717 13.3743L34.7168 13.677H34.5849L34.4529 13.4006H34.255V13.677H34.1362H34.123ZM34.2418 13.2821H34.4661C34.5057 13.2821 34.5321 13.269 34.5585 13.2426C34.5849 13.2163 34.5981 13.19 34.5981 13.1505C34.5981 13.111 34.5849 13.0715 34.5585 13.0583C34.5321 13.032 34.4925 13.0189 34.4661 13.0189H34.2418V13.2953V13.2821Z" fill="#F4F5FA"/>
+</svg>
+            </div>
+            <div class="header-right">
+                <a href="javascript:void(0)" class="header-nav-item" onclick="toggleAva()">
+                    <i class="ph ph-sparkle"></i>
+                    Ask Ava
+                </a>
+                <a href="#" class="header-nav-item">
+                    <i class="ph ph-graduation-cap"></i>
+                    PAR Academy
+                </a>
+                <button class="header-icon-btn" type="button" aria-label="Help">
+                    <i class="ph ph-question"></i>
+                </button>
+                <button class="header-icon-btn" type="button" aria-label="Profile">
+                    <i class="ph ph-user"></i>
+                </button>
+                <button class="header-icon-btn" type="button" aria-label="Apps menu">
+                    <i class="ph ph-dots-nine"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="app-body">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <div class="nav-group">
+                        <a href="#" class="nav-item">
+                            <i class="ph-duotone ph-chart-bar"></i>
+                            Trends
+                        </a>
+                    </div>
+
+                    <div class="nav-group">
+                        <div class="nav-group-title">Guests</div>
+                        <a href="index.html" class="nav-item">
+                            <i class="ph-duotone ph-chart-pie"></i>
+                            Analytics
+                        </a>
+                        <a href="profiles.html" class="nav-item">
+                            <i class="ph ph-user-circle"></i>
+                            Profiles
+                        </a>
+                        <a href="segments.html" class="nav-item active">
+                            <i class="ph ph-users-three"></i>
+                            Segments
+                        </a>
+                    </div>
+
+                    <div class="nav-group">
+                        <div class="nav-group-title">Platform</div>
+                        <a href="#" class="nav-item">
+                            <i class="ph-duotone ph-database"></i>
+                            Data Sources
+                        </a>
+                        <a href="#" class="nav-item">
+                            <i class="ph-duotone ph-fingerprint-simple"></i>
+                            Identity Resolution
+                        </a>
+                        <a href="#" class="nav-item">
+                            <i class="ph-duotone ph-share-fat"></i>
+                            Data Export
+                        </a>
+                    </div>
+
+                    <div class="nav-group" style="margin-top: auto;">
+                        <a href="#" class="nav-item">
+                            <i class="ph-duotone ph-gear"></i>
+                            Settings
+                        </a>
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <div class="content-area">
+
+                    <!-- Title Bar -->
+                    <div class="cs-title-bar">
+                        <h1>Create segment</h1>
+                        <div class="cs-button-cluster">
+                            <button class="btn-help" type="button">
+                                <i class="ph ph-question"></i>
+                                Help
+                            </button>
+                            <button class="btn btn-primary" type="button">
+                                <i class="ph ph-sparkle"></i>
+                                Create with AI...
+                            </button>
+                            <button class="btn-template" type="button">
+                                <i class="ph ph-clipboard-text"></i>
+                                Work from a template...
+                            </button>
+                            <button class="btn-overflow" type="button" aria-label="More options">
+                                <i class="ph ph-dots-three-vertical"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Name section -->
+                    <div class="cs-name-section">
+                        <label class="cs-name-label" for="segmentName">Name</label>
+                        <input class="cs-name-input" type="text" id="segmentName" placeholder="Segment name" autocomplete="off">
+                        <div class="cs-meta-row">
+                            <button class="cs-meta-btn" type="button">
+                                <i class="ph ph-plus"></i> Add description
+                            </button>
+                            <button class="cs-meta-btn" type="button">
+                                <i class="ph ph-plus"></i> Add tag
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="cs-divider"></div>
+
+                    <!-- Rule Builder Area -->
+                    <div class="cs-rule-area" id="csRuleArea">
+                        <div class="cs-rule-block" id="csRuleBlock">
+                            <div class="cs-dropdown-anchor" id="csDropdownAnchor">
+                                <button class="cs-filter-type-btn" type="button" id="filterTypeBtn" onclick="toggleFilterDropdown(event)">
+                                    Select filter type...
+                                </button>
+
+                                <!-- Cascading dropdown (data-driven) -->
+                                <div class="cs-dropdown" id="filterDropdown">
+
+                                    <!-- Level 1: root categories (static) -->
+                                    <div class="fd-panel" id="fdPanel1">
+                                        <div class="fd-search-wrap">
+                                            <i class="ph ph-magnifying-glass"></i>
+                                            <input type="text" placeholder="Find by name" id="fdSearch" oninput="filterDropdownItems(this.value)" autocomplete="off">
+                                        </div>
+                                        <div class="fd-item" onmouseenter="showL2('Orders')">
+                                            Orders
+                                            <i class="ph ph-caret-right"></i>
+                                        </div>
+                                        <div class="fd-item" onmouseenter="showL2('Guests')">
+                                            Guests
+                                            <i class="ph ph-caret-right"></i>
+                                        </div>
+                                        <div class="fd-item" onmouseenter="showL2('Menu')">
+                                            Menu
+                                            <i class="ph ph-caret-right"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Level 2: populated dynamically -->
+                                    <div class="fd-panel" id="fdPanel2" style="display:none;"></div>
+
+                                    <!-- Level 3: populated dynamically -->
+                                    <div class="fd-panel" id="fdPanel3" style="display:none;"></div>
+
+                                </div>
+                            </div>
+
+                            <!-- Rule row: shown after a filter is selected -->
+                            <div class="cs-rule-row" id="csRuleRow">
+                                <button class="cs-rule-label" type="button" id="csRuleLabel">Lifecycle stage</button>
+                                <div class="cs-pill-wrap">
+                                    <button class="cs-select-pill" type="button">
+                                        Is currently <i class="ph ph-caret-down"></i>
+                                    </button>
+                                </div>
+                                <div class="cs-combo-box" id="csComboBox">
+                                    <div class="cs-combo-pills" id="csComboPills">
+                                        <!-- chips rendered here by JS -->
+                                    </div>
+                                    <div class="cs-combo-chevron">
+                                        <i class="ph ph-caret-down"></i>
+                                    </div>
+                                    <div class="cs-combo-dropdown" id="csComboDropdown">
+                                        <!-- options rendered by JS -->
+                                    </div>
+                                </div>
+                                <button class="cs-rule-overflow" type="button" aria-label="More options">
+                                    <i class="ph ph-dots-three-vertical"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Operator row: shown after a filter is selected -->
+                    <div class="cs-operator-row" id="csOperatorRow">
+                        <div class="cs-btn-group">
+                            <button class="cs-btn-group-item active" type="button">And</button>
+                            <button class="cs-btn-group-item" type="button">Or</button>
+                            <button class="cs-btn-group-item" type="button">Exclude</button>
+                        </div>
+                        <button class="cs-add-rule-btn" type="button" onclick="addNewRule()">
+                            <i class="ph ph-plus"></i> Add new rule
+                        </button>
+                    </div>
+
+                    <!-- Segment Preview -->
+                    <div>
+                        <div class="cs-empty-state" id="csEmptyState">
+                            <div class="cs-empty-icon">
+                                <i class="ph-duotone ph-chart-bar-horizontal"></i>
+                            </div>
+                            <div class="cs-empty-text">
+                                <span class="cs-empty-title">Guest data will show up here</span>
+                                <span class="cs-empty-subtitle">Build a rule to see who's coming</span>
+                            </div>
+                        </div>
+
+                        <!-- Skeleton Loading State -->
+                        <div class="sp-skeleton" id="spSkeleton">
+                            <div class="sp-hero-row">
+                                <div class="sp-hero-card">
+                                    <div class="skeleton-bone sk-hero-label"></div>
+                                    <div class="skeleton-bone sk-hero-value"></div>
+                                    <div class="skeleton-bone sk-hero-sub"></div>
+                                </div>
+                                <div class="sp-hero-card">
+                                    <div class="skeleton-bone sk-hero-label"></div>
+                                    <div class="skeleton-bone sk-hero-value"></div>
+                                </div>
+                                <div class="sp-hero-card">
+                                    <div class="skeleton-bone sk-hero-label"></div>
+                                    <div class="skeleton-bone sk-hero-value"></div>
+                                    <div class="skeleton-bone sk-hero-sub"></div>
+                                </div>
+                                <div class="sp-hero-card">
+                                    <div class="skeleton-bone sk-hero-label"></div>
+                                    <div class="skeleton-bone sk-hero-value"></div>
+                                </div>
+                                <div class="sp-hero-card">
+                                    <div class="skeleton-bone sk-hero-label"></div>
+                                    <div class="skeleton-bone sk-hero-value"></div>
+                                </div>
+                            </div>
+                            <div class="sp-charts-grid">
+                                <div class="sp-card">
+                                    <div>
+                                        <div class="skeleton-bone sk-card-title"></div>
+                                        <div class="skeleton-bone sk-card-subtitle"></div>
+                                    </div>
+                                    <div class="skeleton-bone sk-chart-area" style="height: 180px;"></div>
+                                </div>
+                                <div class="sp-card">
+                                    <div>
+                                        <div class="skeleton-bone sk-card-title"></div>
+                                        <div class="skeleton-bone sk-card-subtitle"></div>
+                                    </div>
+                                    <div class="skeleton-bone sk-chart-area" style="height: 180px;"></div>
+                                </div>
+                                <div class="sp-card">
+                                    <div>
+                                        <div class="skeleton-bone sk-card-title"></div>
+                                        <div class="skeleton-bone sk-card-subtitle"></div>
+                                    </div>
+                                    <div class="skeleton-bone sk-chart-area" style="height: 232px;"></div>
+                                </div>
+                                <div class="sp-card">
+                                    <div>
+                                        <div class="skeleton-bone sk-card-title"></div>
+                                        <div class="skeleton-bone sk-card-subtitle"></div>
+                                    </div>
+                                    <div class="skeleton-bone sk-chart-area" style="height: 296px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sp-populated" id="spPopulated">
+                            <div class="sp-hero-row">
+                                <div class="sp-hero-card">
+                                    <span class="sp-hero-label">Current guests</span>
+                                    <span class="sp-hero-value">129</span>
+                                    <span class="sp-hero-sub">0.4% of all guests</span>
+                                </div>
+                                <div class="sp-hero-card">
+                                    <span class="sp-hero-label">Avg. days between orders</span>
+                                    <span class="sp-hero-value">21 days</span>
+                                </div>
+                                <div class="sp-hero-card">
+                                    <span class="sp-hero-label">Avg. check size</span>
+                                    <span class="sp-hero-value">$28.69</span>
+                                    <span class="sp-hero-sub">$27.54 in store • $30.12 online</span>
+                                </div>
+                                <div class="sp-hero-card">
+                                    <span class="sp-hero-label">Avg. total orders</span>
+                                    <span class="sp-hero-value">12</span>
+                                </div>
+                                <div class="sp-hero-card">
+                                    <span class="sp-hero-label">Avg. lifetime value</span>
+                                    <span class="sp-hero-value">$296.78</span>
+                                </div>
+                            </div>
+
+                            <div class="sp-charts-grid">
+                                <div class="sp-card">
+                                    <div>
+                                        <div class="sp-card-title">Reach</div>
+                                        <div class="sp-card-subtitle">Potential reach for your campaigns.</div>
+                                    </div>
+                                    <div class="sp-chart-wrap" style="height: 180px;">
+                                        <canvas id="spChartReach"></canvas>
+                                    </div>
+                                </div>
+                                <div class="sp-card">
+                                    <div>
+                                        <div class="sp-card-title">Overlaps</div>
+                                        <div class="sp-card-subtitle">Number of users in this segment who also belong to another segment.</div>
+                                    </div>
+                                    <div class="sp-overlaps-row">
+                                        <div class="sp-overlap-item">
+                                            <div class="sp-overlap-doughnut"><canvas id="spChartOverlap1"></canvas></div>
+                                            <div class="sp-overlap-stats">17k • 84%</div>
+                                            <a class="sp-overlap-link">Late Weekly Burger Fans</a>
+                                        </div>
+                                        <div class="sp-overlap-item">
+                                            <div class="sp-overlap-doughnut"><canvas id="spChartOverlap2"></canvas></div>
+                                            <div class="sp-overlap-stats">10k • 53%</div>
+                                            <a class="sp-overlap-link">High-Potential Pizza Rookies</a>
+                                        </div>
+                                        <div class="sp-overlap-item">
+                                            <div class="sp-overlap-doughnut"><canvas id="spChartOverlap3"></canvas></div>
+                                            <div class="sp-overlap-stats">5k • 32%</div>
+                                            <a class="sp-overlap-link">At-Risk Desert VIPs</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="sp-card">
+                                    <div>
+                                        <div class="sp-card-title">Composition</div>
+                                        <div class="sp-card-subtitle">User distribution by user attribute.</div>
+                                    </div>
+                                    <div class="sp-composition-controls">
+                                        <div class="cs-pill-wrap" id="spCompPillWrap">
+                                            <button class="cs-select-pill" type="button" id="spCompPill">By location <i class="ph ph-caret-down"></i></button>
+                                            <div class="cs-operator-dropdown" id="spCompDropdown">
+                                                <button class="cs-op-item active" type="button" data-comp="location">By location</button>
+                                                <button class="cs-op-item" type="button" data-comp="age">By age</button>
+                                                <button class="cs-op-item" type="button" data-comp="gender">By gender</button>
+                                                <button class="cs-op-item" type="button" data-comp="email">By email opt-in</button>
+                                                <button class="cs-op-item" type="button" data-comp="sms">By SMS opt-in</button>
+                                            </div>
+                                        </div>
+                                        <label class="sp-show-unknown-label">
+                                            <input type="checkbox" id="spShowUnknown" checked>
+                                            <span class="sp-show-unknown-text">Show unknown</span>
+                                        </label>
+                                    </div>
+                                    <div class="sp-composition-chart-legend">
+                                        <div class="sp-chart-wrap" style="width: 232px; height: 232px;">
+                                            <canvas id="spChartComposition"></canvas>
+                                        </div>
+                                        <div class="sp-composition-legend" id="spCompositionLegend"></div>
+                                    </div>
+                                </div>
+                                <div class="sp-card">
+                                    <div>
+                                        <div class="sp-card-title">Popular menu items</div>
+                                        <div class="sp-card-subtitle">% of guests in this segment who ordered each item, compared to all guests.</div>
+                                    </div>
+                                    <div class="sp-menu-list">
+                                        <div class="sp-menu-row">
+                                            <div class="sp-menu-item-info">
+                                                <div class="sp-menu-img"><img src="assets/menu-double-delight-burger.jpg" alt="Double Delight Burger"></div>
+                                                <span class="sp-menu-name">Double Delight Burger</span>
+                                            </div>
+                                            <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:72%"></div></div>
+                                            <div class="sp-menu-stats"><span class="sp-menu-pct">72%</span><span class="sp-menu-vs">+28% vs all guests</span></div>
+                                        </div>
+                                        <div class="sp-menu-row">
+                                            <div class="sp-menu-item-info">
+                                                <div class="sp-menu-img"><img src="assets/menu-choco-delight.jpg" alt="Choco Delight"></div>
+                                                <span class="sp-menu-name">Choco Delight</span>
+                                            </div>
+                                            <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:58%"></div></div>
+                                            <div class="sp-menu-stats"><span class="sp-menu-pct">58%</span><span class="sp-menu-vs">+18% vs all guests</span></div>
+                                        </div>
+                                        <div class="sp-menu-row">
+                                            <div class="sp-menu-item-info">
+                                                <div class="sp-menu-img"><img src="assets/menu-golden-wedge-delight.jpg" alt="Golden Wedge Delight"></div>
+                                                <span class="sp-menu-name">Golden Wedge Delight</span>
+                                            </div>
+                                            <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:41%"></div></div>
+                                            <div class="sp-menu-stats"><span class="sp-menu-pct">41%</span><span class="sp-menu-vs">+9% vs all guests</span></div>
+                                        </div>
+                                        <div class="sp-menu-row">
+                                            <div class="sp-menu-item-info">
+                                                <div class="sp-menu-img"><img src="assets/menu-american-specialty.jpg" alt="American Specialty"></div>
+                                                <span class="sp-menu-name">American Specialty</span>
+                                            </div>
+                                            <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:26%"></div></div>
+                                            <div class="sp-menu-stats"><span class="sp-menu-pct">26%</span><span class="sp-menu-vs">+6% vs all guests</span></div>
+                                        </div>
+                                        <div class="sp-menu-row">
+                                            <div class="sp-menu-item-info">
+                                                <div class="sp-menu-img"><img src="assets/menu-potato-gems.jpg" alt="Potato Gems"></div>
+                                                <span class="sp-menu-name">Potato Gems</span>
+                                            </div>
+                                            <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:20%"></div></div>
+                                            <div class="sp-menu-stats"><span class="sp-menu-pct">20%</span><span class="sp-menu-vs">+3% vs all guests</span></div>
+                                        </div>
+                                        <div class="sp-menu-row">
+                                            <div class="sp-menu-item-info">
+                                                <div class="sp-menu-img"><img src="assets/menu-coca-cola-zero.jpg" alt="Coca Cola Zero"></div>
+                                                <span class="sp-menu-name">Coca Cola Zero</span>
+                                            </div>
+                                            <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:11%"></div></div>
+                                            <div class="sp-menu-stats"><span class="sp-menu-pct">11%</span><span class="sp-menu-vs negative">-4% vs all guests</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="sp-table-wrap">
+                                <table class="sp-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="sp-col-check"><input type="checkbox"></th>
+                                            <th>Name</th>
+                                            <th>Total orders</th>
+                                            <th>Avg. check size</th>
+                                            <th>Lifetime value</th>
+                                            <th>Last seen</th>
+                                            <th>Guest for</th>
+                                            <th class="sp-col-menu"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><input type="checkbox"></td><td>Serena Williams</td><td>15</td><td>$12.75</td><td>$120.45</td><td>18 days ago</td><td>2 years</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
+                                        <tr><td><input type="checkbox"></td><td>Elon Musk</td><td>19</td><td>$25.30</td><td>$350.99</td><td>21 days ago</td><td>9 months</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
+                                        <tr><td><input type="checkbox"></td><td>Greta Thunberg</td><td>22</td><td>$45.60</td><td>$200.75</td><td>20 days ago</td><td>3 years</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
+                                        <tr><td><input type="checkbox"></td><td>Lin Manuel</td><td>7</td><td>$10.00</td><td>$90.00</td><td>26 days ago</td><td>1 year</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
+                                        <tr><td><input type="checkbox"></td><td>Usain Bolt</td><td>11</td><td>$30.15</td><td>$150.25</td><td>22 days ago</td><td>5 months</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
+                                        <tr><td><input type="checkbox"></td><td>Jon Batiste</td><td>23</td><td>$58.90</td><td>$300.10</td><td>29 days ago</td><td>3 months</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
+                                        <tr><td><input type="checkbox"></td><td>Naomi Watts</td><td>18</td><td>$22.50</td><td>$85.60</td><td>1 month ago</td><td>2 years</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
+                                        <tr><td><input type="checkbox"></td><td>Carter Beauford</td><td>3</td><td>$9.99</td><td>$75.69</td><td>19 days ago</td><td>3 years</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
+                                        <tr><td><input type="checkbox"></td><td>Amelia Earhart</td><td>20</td><td>$64.22</td><td>$439.53</td><td>21 days ago</td><td>7 months</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
+                                        <tr><td><input type="checkbox"></td><td>Robin Denaut</td><td>12</td><td>$15.75</td><td>$110.00</td><td>24 days ago</td><td>4 months</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Action bar: shown after a filter is selected -->
+    <div class="cs-action-bar" id="csActionBar">
+        <div class="cs-action-bar-left">
+            <button class="cs-btn-next" type="button">Save</button>
+            <button class="cs-btn-cancel" type="button" onclick="window.location.href='segments.html'">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Ask AVA Modal -->
+    <div class="ava-modal-overlay" id="avaOverlay" onclick="toggleAva()"></div>
+    <div class="ava-modal" id="avaModal" role="dialog" aria-modal="true" aria-labelledby="avaTitle">
+        <div class="ava-modal-header">
+            <div class="ava-modal-title" id="avaTitle">Ask Ava</div>
+            <button class="ava-close" onclick="toggleAva()" aria-label="Close Ask Ava">
+                <img src="assets/icon-close.svg" alt="">
+            </button>
+        </div>
+        <div class="ava-modal-body">
+            <aside class="ava-recent">
+                <div class="ava-recent-title">Recent</div>
+                <div class="ava-recent-empty">
+                    <img class="ava-recent-icon" src="assets/icon-recent.svg" alt="">
+                    <p>Once we've had a conversation, you'll see it here</p>
+                </div>
+            </aside>
+            <section class="ava-main">
+                <div class="ava-chat-viewport">
+                    <div class="ava-body">
+                        <div class="ava-hero">
+                            Hello! I'm AVA, your Guest Analytics assistant. How can I help you today?
+                        </div>
+                        <div class="ava-input-container" id="initialInputContainer">
+                            <input type="text" class="ava-input" placeholder="Ask Ava" id="avaInput" onkeypress="if(event.key === 'Enter') sendToAva()">
+                        </div>
+                        <div class="ava-chat-area">
+                            <div class="ava-suggestion-cards">
+                                <button class="ava-suggestion-card" onclick="askAva('Help me build a segment for high-value guests')">Help me build a segment for high-value guests</button>
+                                <button class="ava-suggestion-card" onclick="askAva('What filter types are available?')">What filter types are available?</button>
+                                <button class="ava-suggestion-card" onclick="askAva('Show me templates for loyalty segments')">Show me templates for loyalty segments</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ava-input-footer" id="footerInputContainer">
+                    <div class="ava-input-wrapper">
+                        <div class="ava-input-container">
+                            <input type="text" class="ava-input" placeholder="Ask follow-up" id="avaInputFooter" onkeypress="if(event.key === 'Enter') sendToAva(true)">
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        Chart.defaults.animation = false;
+        Chart.defaults.plugins.tooltip.animation = false;
+
+        let activeRuleBlockId = null;
+        let ruleBlockCounter = 0;
+        let completedRulesCount = 0;
+
+        const STAGE_DATA = {
+            1: {
+                hero: {
+                    guests: '945', guestsPct: '2.8% of all guests',
+                    avgDays: '34 days', avgCheck: '$22.15',
+                    avgCheckSub: '$20.80 in store • $24.50 online',
+                    avgOrders: '8', avgLtv: '$185.20'
+                },
+                reach: { data: [38000, 28000, 15000, 11000], max: 40000 },
+                overlaps: [
+                    { pct: 72, stats: '24k • 72%', name: 'Late Weekly Burger Fans' },
+                    { pct: 45, stats: '14k • 45%', name: 'High-Potential Pizza Rookies' },
+                    { pct: 28, stats: '8k • 28%', name: 'At-Risk Desert VIPs' }
+                ],
+                composition: {
+                    location: {
+                        label: 'By location',
+                        slices: [
+                            { label: 'Unknown', value: 60, color: '#5a55e3' },
+                            { label: 'Other',   value: 18, color: '#b3b0ff' },
+                            { label: 'Florida', value: 8,  color: '#ff6600' },
+                            { label: 'Georgia', value: 7,  color: '#ff9933' },
+                            { label: 'New York',value: 7,  color: '#ff3333' }
+                        ]
+                    },
+                    age: {
+                        label: 'By age',
+                        slices: [
+                            { label: 'Unknown', value: 22, color: '#5a55e3' },
+                            { label: '18–24',   value: 15, color: '#b3b0ff' },
+                            { label: '25–34',   value: 30, color: '#ff6600' },
+                            { label: '35–44',   value: 18, color: '#ff9933' },
+                            { label: '45–54',   value: 10, color: '#ff3333' },
+                            { label: '55+',     value: 5,  color: '#ffcc80' }
+                        ]
+                    },
+                    gender: {
+                        label: 'By gender',
+                        slices: [
+                            { label: 'Unknown',    value: 25, color: '#5a55e3' },
+                            { label: 'Male',       value: 38, color: '#ff6600' },
+                            { label: 'Female',     value: 30, color: '#ff9933' },
+                            { label: 'Non-binary', value: 7,  color: '#b3b0ff' }
+                        ]
+                    },
+                    email: {
+                        label: 'By email opt-in',
+                        slices: [
+                            { label: 'Unknown',   value: 20, color: '#5a55e3' },
+                            { label: 'Opted in',  value: 58, color: '#ff6600' },
+                            { label: 'Opted out', value: 22, color: '#ff3333' }
+                        ]
+                    },
+                    sms: {
+                        label: 'By SMS opt-in',
+                        slices: [
+                            { label: 'Unknown',   value: 24, color: '#5a55e3' },
+                            { label: 'Opted in',  value: 45, color: '#ff6600' },
+                            { label: 'Opted out', value: 31, color: '#ff3333' }
+                        ]
+                    }
+                },
+                menuItems: [
+                    { name: 'Double Delight Burger', img: 'assets/menu-double-delight-burger.jpg', pct: 45, vs: '+12% vs all guests', negative: false },
+                    { name: 'Golden Wedge Delight',  img: 'assets/menu-golden-wedge-delight.jpg',  pct: 38, vs: '+6% vs all guests',  negative: false },
+                    { name: 'Choco Delight',         img: 'assets/menu-choco-delight.jpg',         pct: 33, vs: '+4% vs all guests',  negative: false },
+                    { name: 'Coca Cola Zero',        img: 'assets/menu-coca-cola-zero.jpg',        pct: 22, vs: '+1% vs all guests',  negative: false },
+                    { name: 'American Specialty',    img: 'assets/menu-american-specialty.jpg',     pct: 18, vs: '-2% vs all guests',  negative: true },
+                    { name: 'Potato Gems',           img: 'assets/menu-potato-gems.jpg',           pct: 12, vs: '-5% vs all guests',  negative: true }
+                ]
+            },
+            2: {
+                hero: {
+                    guests: '350', guestsPct: '1.0% of all guests',
+                    avgDays: '27 days', avgCheck: '$25.40',
+                    avgCheckSub: '$24.10 in store • $27.80 online',
+                    avgOrders: '10', avgLtv: '$240.50'
+                },
+                reach: { data: [30000, 22000, 12000, 9000], max: 35000 },
+                overlaps: [
+                    { pct: 80, stats: '20k • 80%', name: 'Late Weekly Burger Fans' },
+                    { pct: 50, stats: '11k • 50%', name: 'High-Potential Pizza Rookies' },
+                    { pct: 30, stats: '6k • 30%', name: 'At-Risk Desert VIPs' }
+                ],
+                composition: {
+                    location: {
+                        label: 'By location',
+                        slices: [
+                            { label: 'Unknown', value: 68, color: '#5a55e3' },
+                            { label: 'Other',   value: 22, color: '#b3b0ff' },
+                            { label: 'Florida', value: 12, color: '#ff6600' },
+                            { label: 'Georgia', value: 10, color: '#ff9933' },
+                            { label: 'New York',value: 5,  color: '#ff3333' }
+                        ]
+                    },
+                    age: {
+                        label: 'By age',
+                        slices: [
+                            { label: 'Unknown', value: 20, color: '#5a55e3' },
+                            { label: '18–24',   value: 10, color: '#b3b0ff' },
+                            { label: '25–34',   value: 28, color: '#ff6600' },
+                            { label: '35–44',   value: 22, color: '#ff9933' },
+                            { label: '45–54',   value: 14, color: '#ff3333' },
+                            { label: '55+',     value: 6,  color: '#ffcc80' }
+                        ]
+                    },
+                    gender: {
+                        label: 'By gender',
+                        slices: [
+                            { label: 'Unknown',    value: 20, color: '#5a55e3' },
+                            { label: 'Male',       value: 42, color: '#ff6600' },
+                            { label: 'Female',     value: 33, color: '#ff9933' },
+                            { label: 'Non-binary', value: 5,  color: '#b3b0ff' }
+                        ]
+                    },
+                    email: {
+                        label: 'By email opt-in',
+                        slices: [
+                            { label: 'Unknown',   value: 17, color: '#5a55e3' },
+                            { label: 'Opted in',  value: 63, color: '#ff6600' },
+                            { label: 'Opted out', value: 20, color: '#ff3333' }
+                        ]
+                    },
+                    sms: {
+                        label: 'By SMS opt-in',
+                        slices: [
+                            { label: 'Unknown',   value: 21, color: '#5a55e3' },
+                            { label: 'Opted in',  value: 50, color: '#ff6600' },
+                            { label: 'Opted out', value: 29, color: '#ff3333' }
+                        ]
+                    }
+                },
+                menuItems: [
+                    { name: 'Double Delight Burger', img: 'assets/menu-double-delight-burger.jpg', pct: 58, vs: '+20% vs all guests', negative: false },
+                    { name: 'Choco Delight',         img: 'assets/menu-choco-delight.jpg',         pct: 44, vs: '+10% vs all guests', negative: false },
+                    { name: 'Golden Wedge Delight',  img: 'assets/menu-golden-wedge-delight.jpg',  pct: 36, vs: '+7% vs all guests',  negative: false },
+                    { name: 'American Specialty',    img: 'assets/menu-american-specialty.jpg',     pct: 24, vs: '+4% vs all guests',  negative: false },
+                    { name: 'Potato Gems',           img: 'assets/menu-potato-gems.jpg',           pct: 18, vs: '+2% vs all guests',  negative: false },
+                    { name: 'Coca Cola Zero',        img: 'assets/menu-coca-cola-zero.jpg',        pct: 13, vs: '-3% vs all guests',  negative: true }
+                ]
+            },
+            3: {
+                hero: {
+                    guests: '129', guestsPct: '0.4% of all guests',
+                    avgDays: '21 days', avgCheck: '$28.69',
+                    avgCheckSub: '$27.54 in store • $30.12 online',
+                    avgOrders: '12', avgLtv: '$296.78'
+                },
+                reach: { data: [25000, 18000, 10000, 8000], max: 25000 },
+                overlaps: [
+                    { pct: 84, stats: '17k • 84%', name: 'Late Weekly Burger Fans' },
+                    { pct: 53, stats: '10k • 53%', name: 'High-Potential Pizza Rookies' },
+                    { pct: 32, stats: '5k • 32%', name: 'At-Risk Desert VIPs' }
+                ],
+                composition: {
+                    location: {
+                        label: 'By location',
+                        slices: [
+                            { label: 'Unknown', value: 74, color: '#5a55e3' },
+                            { label: 'Other',   value: 28, color: '#b3b0ff' },
+                            { label: 'Florida', value: 9,  color: '#ff6600' },
+                            { label: 'Georgia', value: 12, color: '#ff9933' },
+                            { label: 'New York',value: 3,  color: '#ff3333' }
+                        ]
+                    },
+                    age: {
+                        label: 'By age',
+                        slices: [
+                            { label: 'Unknown', value: 18, color: '#5a55e3' },
+                            { label: '18–24',   value: 12, color: '#b3b0ff' },
+                            { label: '25–34',   value: 27, color: '#ff6600' },
+                            { label: '35–44',   value: 24, color: '#ff9933' },
+                            { label: '45–54',   value: 13, color: '#ff3333' },
+                            { label: '55+',     value: 6,  color: '#ffcc80' }
+                        ]
+                    },
+                    gender: {
+                        label: 'By gender',
+                        slices: [
+                            { label: 'Unknown',    value: 22, color: '#5a55e3' },
+                            { label: 'Male',       value: 41, color: '#ff6600' },
+                            { label: 'Female',     value: 32, color: '#ff9933' },
+                            { label: 'Non-binary', value: 5,  color: '#b3b0ff' }
+                        ]
+                    },
+                    email: {
+                        label: 'By email opt-in',
+                        slices: [
+                            { label: 'Unknown',   value: 15, color: '#5a55e3' },
+                            { label: 'Opted in',  value: 68, color: '#ff6600' },
+                            { label: 'Opted out', value: 17, color: '#ff3333' }
+                        ]
+                    },
+                    sms: {
+                        label: 'By SMS opt-in',
+                        slices: [
+                            { label: 'Unknown',   value: 19, color: '#5a55e3' },
+                            { label: 'Opted in',  value: 54, color: '#ff6600' },
+                            { label: 'Opted out', value: 27, color: '#ff3333' }
+                        ]
+                    }
+                },
+                menuItems: [
+                    { name: 'Double Delight Burger', img: 'assets/menu-double-delight-burger.jpg', pct: 72, vs: '+28% vs all guests', negative: false },
+                    { name: 'Choco Delight',         img: 'assets/menu-choco-delight.jpg',         pct: 58, vs: '+18% vs all guests', negative: false },
+                    { name: 'Golden Wedge Delight',  img: 'assets/menu-golden-wedge-delight.jpg',  pct: 41, vs: '+9% vs all guests',  negative: false },
+                    { name: 'American Specialty',    img: 'assets/menu-american-specialty.jpg',     pct: 26, vs: '+6% vs all guests',  negative: false },
+                    { name: 'Potato Gems',           img: 'assets/menu-potato-gems.jpg',           pct: 20, vs: '+3% vs all guests',  negative: false },
+                    { name: 'Coca Cola Zero',        img: 'assets/menu-coca-cola-zero.jpg',        pct: 11, vs: '-4% vs all guests',  negative: true }
+                ]
+            }
+        };
+
+        /* ── Filter type dropdown ── */
+
+        const MENU_DATA = {
+            Orders: {
+                Frequency: {
+                    items: ['Lifecycle Stage', 'Order Frequency'],
+                    descriptions: {
+                        'Lifecycle Stage': "Guest's current stage in their relationship with the brand",
+                        'Order Frequency': 'How often a guest places orders'
+                    }
+                },
+                Date: {
+                    items: ['First order date', 'Most recent order date', 'Day of the week ordered',
+                            'Only day of the week ordered', 'Most recent day of the week ordered',
+                            'Day of the week most frequently ordered', 'Date did not order']
+                },
+                Daypart: {
+                    items: ['Daypart ordered', 'Daypart most frequently ordered',
+                            'Only daypart ordered', 'Most recently ordered daypart']
+                },
+                Spending:           { items: ['Total amount spent', 'Average check size'] },
+                Quantity:           { items: [] },
+                Location:           { items: [] },
+                'Location Group':   { items: [] },
+                Source:             { items: [] },
+                'Fulfillment method': { items: [] }
+            },
+            Menu: {
+                Item: {
+                    items: ['First item ordered', 'Most recent item ordered',
+                            'Has ever ordered menu group', 'Has never ordered item',
+                            'Only item ordered', 'Most frequent item ordered']
+                },
+                'Menu Group': {
+                    items: ['First menu group ordered', 'Most recent menu group ordered',
+                            'Has ever ordered menu group', 'Has never ordered menu group',
+                            'Only menu group ordered', 'Most frequent menu group ordered']
+                }
+            },
+            Guests: {
+                'Lifecycle Stage':       { items: [] },
+                'Order Frequency':       { items: [] },
+                'Guest first seen':      { items: [] },
+                'Guest identifier':      { items: [] },
+                'Phone number':          { items: [] },
+                'Email address':         { items: [] },
+                'Email opt-in status':   { items: [] },
+                'SMS opt-in status':     { items: [] },
+                'Loyalty data':          { items: [] },
+                'Loyalty registration date': { items: [] }
+            }
+        };
+
+        function toggleFilterDropdown(e) {
+            e.stopPropagation();
+            activeRuleBlockId = null;
+            const dd = document.getElementById('filterDropdown');
+            if (dd.classList.contains('open')) {
+                closeFilterDropdown();
+            } else {
+                dd.classList.add('open');
+                document.getElementById('fdPanel2').style.display = 'none';
+                document.getElementById('fdPanel3').style.display = 'none';
+                document.querySelectorAll('#fdPanel1 .fd-item').forEach(el => el.classList.remove('active'));
+                document.getElementById('fdSearch').value = '';
+                document.getElementById('fdSearch').focus();
+            }
+        }
+
+        function closeFilterDropdown() {
+            document.getElementById('filterDropdown').classList.remove('open');
+        }
+
+        document.addEventListener('click', function(e) {
+            const dd = document.getElementById('filterDropdown');
+            if (e.target.closest('.cs-filter-type-btn')) return;
+            if (dd && !dd.contains(e.target)) {
+                closeFilterDropdown();
+            }
+        });
+
+        /* ── Button group: select one option ── */
+        document.addEventListener('click', function(e) {
+            const item = e.target.closest('.cs-btn-group-item');
+            if (!item) return;
+            const group = item.closest('.cs-btn-group');
+            if (!group) return;
+            group.querySelectorAll('.cs-btn-group-item').forEach(btn => btn.classList.remove('active'));
+            item.classList.add('active');
+        });
+
+        /* ── Operator pill dropdown ── */
+        let activePillWrap = null;
+
+        function getFilterNameForPill(pill) {
+            const ruleRow = pill.closest('.cs-rule-row');
+            if (!ruleRow) return null;
+            const label = ruleRow.querySelector('.cs-rule-label');
+            return label ? label.textContent.trim() : null;
+        }
+
+        document.addEventListener('click', function(e) {
+            const pill = e.target.closest('.cs-select-pill');
+            if (pill) {
+                if (pill.id === 'spCompPill') return; // handled by composition dropdown listener
+                e.stopPropagation();
+                const wrap = pill.closest('.cs-pill-wrap');
+                const dd = document.getElementById('operatorDropdown');
+
+                if (activePillWrap === wrap && dd.classList.contains('open')) {
+                    dd.classList.remove('open');
+                    activePillWrap = null;
+                    return;
+                }
+
+                wrap.appendChild(dd);
+                activePillWrap = wrap;
+
+                const filterName = getFilterNameForPill(pill);
+                const operators = (filterName && FILTER_OPERATORS[filterName]) || DEFAULT_OPERATORS;
+                const currentText = pill.childNodes[0].textContent.trim();
+
+                dd.innerHTML = operators.map(op =>
+                    `<button class="cs-op-item${op === currentText ? ' active' : ''}" type="button" data-op="${op}">${op}</button>`
+                ).join('');
+
+                dd.classList.add('open');
+                return;
+            }
+
+            const opItem = e.target.closest('.cs-op-item');
+            if (opItem) {
+                e.stopPropagation();
+                const dd = document.getElementById('operatorDropdown');
+                const wrap = dd.closest('.cs-pill-wrap');
+                if (wrap) {
+                    const pill = wrap.querySelector('.cs-select-pill');
+                    const icon = pill.querySelector('i');
+                    // Clear text nodes only, keep the icon element
+                    Array.from(pill.childNodes).forEach(n => {
+                        if (n.nodeType === Node.TEXT_NODE) n.remove();
+                    });
+                    pill.insertBefore(document.createTextNode(opItem.dataset.op + ' '), icon);
+                }
+                dd.classList.remove('open');
+                activePillWrap = null;
+                return;
+            }
+
+            const dd = document.getElementById('operatorDropdown');
+            if (dd.classList.contains('open') && !dd.contains(e.target)) {
+                dd.classList.remove('open');
+                activePillWrap = null;
+            }
+        });
+
+        function showL2(category) {
+            // Highlight L1 item
+            document.querySelectorAll('#fdPanel1 .fd-item').forEach(el => {
+                el.classList.toggle('active', el.textContent.trim() === category);
+            });
+
+            const panel2 = document.getElementById('fdPanel2');
+            const panel3 = document.getElementById('fdPanel3');
+            panel3.style.display = 'none';
+
+            const filters = MENU_DATA[category];
+            if (!filters || Object.keys(filters).length === 0) {
+                panel2.style.display = 'none';
+                return;
+            }
+
+            panel2.innerHTML = '';
+            Object.keys(filters).forEach(filterName => {
+                const data = filters[filterName];
+                const hasChildren = data.items && data.items.length > 0;
+                const el = document.createElement('div');
+                el.className = 'fd-item';
+                el.innerHTML = hasChildren
+                    ? `${filterName} <i class="ph ph-caret-right"></i>`
+                    : filterName;
+                if (hasChildren) {
+                    el.addEventListener('mouseenter', () => showL3(filterName, data));
+                } else {
+                    el.addEventListener('mouseenter', () => {
+                        document.querySelectorAll('#fdPanel2 .fd-item').forEach(i => i.classList.remove('active'));
+                        el.classList.add('active');
+                        panel3.style.display = 'none';
+                    });
+                    el.addEventListener('click', () => selectFilter(filterName));
+                }
+                panel2.appendChild(el);
+            });
+
+            panel2.style.display = 'flex';
+        }
+
+        function showL3(filterName, data) {
+            // Highlight L2 item
+            document.querySelectorAll('#fdPanel2 .fd-item').forEach(el => {
+                el.classList.toggle('active', el.textContent.trim() === filterName);
+            });
+
+            const panel3 = document.getElementById('fdPanel3');
+            const hasDescriptions = data.descriptions && Object.keys(data.descriptions).length > 0;
+
+            panel3.innerHTML = '';
+            panel3.style.minWidth = hasDescriptions ? '272px' : '180px';
+            data.items.forEach(subItem => {
+                const desc = data.descriptions && data.descriptions[subItem];
+                const el = document.createElement('div');
+                if (hasDescriptions) {
+                    el.className = 'fd-desc-item';
+                    el.innerHTML = `<div class="fd-desc-title">${subItem}</div>${desc ? `<div class="fd-desc-sub">${desc}</div>` : ''}`;
+                } else {
+                    el.className = 'fd-item';
+                    el.textContent = subItem;
+                }
+                el.style.cursor = 'pointer';
+                el.addEventListener('click', () => selectFilter(subItem));
+                panel3.appendChild(el);
+            });
+
+            panel3.style.display = 'flex';
+        }
+
+        function filterDropdownItems(query) {
+            const q = query.toLowerCase().trim();
+            document.querySelectorAll('#fdPanel1 .fd-item').forEach(el => {
+                el.style.display = (!q || el.textContent.trim().toLowerCase().includes(q)) ? '' : 'none';
+            });
+        }
+
+        /* ── Combo box logic ── */
+        const COMBO_OPTIONS = {
+            'Lifecycle Stage':   ['First-time', 'Onboarding', 'Engaged', 'Late', 'Churned', 'Re-onboarding'],
+            'Order Frequency':   ['Daily', 'Weekly', 'Monthly', 'Quarterly', 'Irregular'],
+            'First item ordered': ['Buffalo Deluxe', 'Crispy Clucker', 'Club Crunch', 'Double Delight Burger', 'Fresh Garden Ham Sandwich', 'French Fries'],
+        };
+
+        const FILTER_OPERATORS = {
+            'Lifecycle Stage':   ['Is currently', 'Is not currently', 'Was last', 'Is most commonly', 'Has ever been'],
+            'Order Frequency':   ['Is currently', 'Is not currently', 'Was last', 'Is most commonly', 'Has ever been'],
+            'First item ordered': ['Is', 'Is not'],
+        };
+
+        const DEFAULT_OPERATORS = ['Is currently', 'Is not currently', 'Was last', 'Is most commonly', 'Has ever been'];
+
+        let activeComboOptions = [];
+        let selectedChips = [];
+
+        function initComboBox(filterName) {
+            activeComboOptions = COMBO_OPTIONS[filterName] || [];
+            selectedChips = [];
+            renderChips();
+            renderComboOptions();
+        }
+
+        let skeletonTimer = null;
+
+        function triggerSkeletonLoading() {
+            const skeleton = document.getElementById('spSkeleton');
+            const populated = document.getElementById('spPopulated');
+            if (!skeleton || !populated) return;
+
+            skeleton.classList.add('visible');
+            populated.classList.remove('visible');
+
+            if (skeletonTimer) clearTimeout(skeletonTimer);
+            skeletonTimer = setTimeout(() => {
+                skeleton.classList.remove('visible');
+                populated.classList.add('visible');
+                initSegmentPreviewCharts();
+                updateSegmentPreview();
+                skeletonTimer = null;
+            }, 1000);
+        }
+
+        let firstRuleCounted = false;
+
+        function renderChips() {
+            const pillsEl = document.getElementById('csComboPills');
+            const box = document.getElementById('csComboBox');
+            const emptyState = document.getElementById('csEmptyState');
+            const populated = document.getElementById('spPopulated');
+            const skeleton = document.getElementById('spSkeleton');
+            pillsEl.innerHTML = '';
+
+            if (selectedChips.length === 0) {
+                box.classList.add('cs-combo-empty');
+                const placeholder = document.createElement('span');
+                placeholder.className = 'cs-combo-placeholder';
+                placeholder.textContent = '- Type or select -';
+                pillsEl.appendChild(placeholder);
+                if (emptyState) emptyState.style.display = '';
+                if (skeleton) skeleton.classList.remove('visible');
+                if (skeletonTimer) { clearTimeout(skeletonTimer); skeletonTimer = null; }
+                if (populated) {
+                    populated.classList.remove('visible');
+                    destroySegmentPreviewCharts();
+                }
+                return;
+            }
+
+            if (!firstRuleCounted) {
+                completedRulesCount++;
+                firstRuleCounted = true;
+            }
+            box.classList.remove('cs-combo-empty');
+            if (emptyState) emptyState.style.display = 'none';
+            triggerSkeletonLoading();
+
+            selectedChips.forEach(val => {
+                const chip = document.createElement('div');
+                chip.className = 'cs-chip';
+                chip.innerHTML = `<span>${val}</span>
+                    <button class="cs-chip-remove" type="button" aria-label="Remove ${val}">
+                        <i class="ph ph-x"></i>
+                    </button>`;
+                chip.querySelector('.cs-chip-remove').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectedChips = selectedChips.filter(c => c !== val);
+                    renderChips();
+                    renderComboOptions();
+                });
+                pillsEl.appendChild(chip);
+            });
+        }
+
+        function renderComboOptions() {
+            const dropdown = document.getElementById('csComboDropdown');
+            dropdown.innerHTML = '';
+            activeComboOptions.forEach(opt => {
+                const isSelected = selectedChips.includes(opt);
+                const el = document.createElement('div');
+                el.className = 'cs-combo-option' + (isSelected ? ' selected' : '');
+                el.innerHTML = `
+                    <div class="cs-combo-checkbox"></div>
+                    <span>${opt}</span>`;
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (isSelected) {
+                        selectedChips = selectedChips.filter(c => c !== opt);
+                    } else {
+                        selectedChips = [...selectedChips, opt];
+                    }
+                    renderChips();
+                    renderComboOptions();
+                });
+                dropdown.appendChild(el);
+            });
+        }
+
+        function toggleComboDropdown(e) {
+            e.stopPropagation();
+            if (!activeComboOptions.length) return;
+            document.getElementById('csComboDropdown').classList.toggle('open');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.cs-combo-box')) {
+                document.querySelectorAll('.cs-combo-dropdown.open').forEach(dd => dd.classList.remove('open'));
+            }
+        });
+
+        function initDynamicComboBox(id, filterName) {
+            const options = COMBO_OPTIONS[filterName] || [];
+            const box = document.getElementById('csComboBox' + id);
+            const pillsEl = document.getElementById('csComboPills' + id);
+            const dropdown = document.getElementById('csComboDropdown' + id);
+            if (!box || !pillsEl || !dropdown) return;
+
+            let selected = [];
+
+            let prevSelectedCount = 0;
+            let dynamicRuleCounted = false;
+
+            function renderDynamic() {
+                pillsEl.innerHTML = '';
+                if (selected.length === 0) {
+                    box.classList.add('cs-combo-empty');
+                    const ph = document.createElement('span');
+                    ph.className = 'cs-combo-placeholder';
+                    ph.textContent = '- Type or select -';
+                    pillsEl.appendChild(ph);
+                } else {
+                    box.classList.remove('cs-combo-empty');
+                    if (!dynamicRuleCounted) {
+                        completedRulesCount++;
+                        dynamicRuleCounted = true;
+                    }
+                    selected.forEach(val => {
+                        const chip = document.createElement('div');
+                        chip.className = 'cs-chip';
+                        chip.innerHTML = `<span>${val}</span>
+                            <button class="cs-chip-remove" type="button" aria-label="Remove ${val}">
+                                <i class="ph ph-x"></i>
+                            </button>`;
+                        chip.querySelector('.cs-chip-remove').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            selected = selected.filter(c => c !== val);
+                            renderDynamic();
+                        });
+                        pillsEl.appendChild(chip);
+                    });
+                }
+
+                if (selected.length !== prevSelectedCount && selectedChips.length > 0) {
+                    triggerSkeletonLoading();
+                    prevSelectedCount = selected.length;
+                }
+
+                dropdown.innerHTML = '';
+                options.forEach(opt => {
+                    const isSel = selected.includes(opt);
+                    const el = document.createElement('div');
+                    el.className = 'cs-combo-option' + (isSel ? ' selected' : '');
+                    el.innerHTML = `<div class="cs-combo-checkbox"></div><span>${opt}</span>`;
+                    el.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        selected = isSel ? selected.filter(c => c !== opt) : [...selected, opt];
+                        renderDynamic();
+                    });
+                    dropdown.appendChild(el);
+                });
+            }
+
+            renderDynamic();
+
+            box.onclick = function(e) {
+                e.stopPropagation();
+                if (options.length) dropdown.classList.toggle('open');
+            };
+        }
+
+        /* ── Overlap Venn Plugin ── */
+        Chart.register({
+            id: 'overlapVennPlugin',
+            afterDraw(chart) {
+                const overlapPct = chart.data?.datasets?.[0]?.overlapPct;
+                if (overlapPct === undefined) return;
+
+                const ctx = chart.ctx;
+                const { left, right, top, bottom } = chart.chartArea;
+                const h = bottom - top;
+
+                // Purple circle: always fills the full canvas height (116px → r = 58)
+                const rPurple = h / 2;
+                const xPurple = left + rPurple;   // left-anchored
+                const yCentre = top + rPurple;
+
+                // Blue circle: radius scales with overlap %, right-anchored to canvas edge
+                const rBlue = rPurple * overlapPct;
+                const xBlue  = right - rBlue;
+
+                ctx.save();
+
+                // White fill so multiply blend mode works against a known background
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(left, top, right - left, h);
+
+                // Purple circle drawn first (behind)
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.beginPath();
+                ctx.arc(xPurple, yCentre, rPurple, 0, Math.PI * 2);
+                ctx.fillStyle = '#5A55E3';
+                ctx.fill();
+
+                // Blue circle drawn on top with multiply blend mode
+                ctx.globalCompositeOperation = 'multiply';
+                ctx.beginPath();
+                ctx.arc(xBlue, yCentre, rBlue, 0, Math.PI * 2);
+                ctx.fillStyle = '#8CC3FF';
+                ctx.fill();
+
+                // 2px white inner stroke on blue circle (clip to keep it inside)
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(xBlue, yCentre, rBlue, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 4; // 4px stroke centered on edge = 2px visible inside
+                ctx.stroke();
+                ctx.restore();
+
+                ctx.restore();
+            }
+        });
+
+        /* ── Segment Preview Charts ── */
+        let spCharts = { reach: null, overlap1: null, overlap2: null, overlap3: null, composition: null };
+
+        const COMPOSITION_DATA = {
+            location: {
+                label: 'By location',
+                slices: [
+                    { label: 'Unknown', value: 74, color: '#5a55e3' },
+                    { label: 'Other',   value: 28, color: '#b3b0ff' },
+                    { label: 'Florida', value: 9,  color: '#ff6600' },
+                    { label: 'Georgia', value: 12, color: '#ff9933' },
+                    { label: 'New York',value: 3,  color: '#ff3333' },
+                ]
+            },
+            age: {
+                label: 'By age',
+                slices: [
+                    { label: 'Unknown', value: 18, color: '#5a55e3' },
+                    { label: '18–24',   value: 12, color: '#b3b0ff' },
+                    { label: '25–34',   value: 27, color: '#ff6600' },
+                    { label: '35–44',   value: 24, color: '#ff9933' },
+                    { label: '45–54',   value: 13, color: '#ff3333' },
+                    { label: '55+',     value: 6,  color: '#ffcc80' },
+                ]
+            },
+            gender: {
+                label: 'By gender',
+                slices: [
+                    { label: 'Unknown',    value: 22, color: '#5a55e3' },
+                    { label: 'Male',       value: 41, color: '#ff6600' },
+                    { label: 'Female',     value: 32, color: '#ff9933' },
+                    { label: 'Non-binary', value: 5,  color: '#b3b0ff' },
+                ]
+            },
+            email: {
+                label: 'By email opt-in',
+                slices: [
+                    { label: 'Unknown',   value: 15, color: '#5a55e3' },
+                    { label: 'Opted in',  value: 68, color: '#ff6600' },
+                    { label: 'Opted out', value: 17, color: '#ff3333' },
+                ]
+            },
+            sms: {
+                label: 'By SMS opt-in',
+                slices: [
+                    { label: 'Unknown',   value: 19, color: '#5a55e3' },
+                    { label: 'Opted in',  value: 54, color: '#ff6600' },
+                    { label: 'Opted out', value: 27, color: '#ff3333' },
+                ]
+            }
+        };
+
+        let currentCompKey = 'location';
+
+        function renderCompositionView(key) {
+            currentCompKey = key;
+            const data = COMPOSITION_DATA[key];
+            if (!data) return;
+            const showUnknown = document.getElementById('spShowUnknown').checked;
+            const slices = showUnknown ? data.slices : data.slices.filter(s => s.label !== 'Unknown');
+
+            const chart = spCharts.composition;
+            if (chart) {
+                chart.data.labels = slices.map(s => s.label);
+                chart.data.datasets[0].data = slices.map(s => s.value);
+                chart.data.datasets[0].backgroundColor = slices.map(s => s.color);
+                chart.update();
+            }
+
+            const legend = document.getElementById('spCompositionLegend');
+            if (legend) {
+                legend.innerHTML = data.slices.map(s =>
+                    `<div class="sp-legend-row"${s.label === 'Unknown' ? ' id="spLegendUnknown"' : ''}${s.label === 'Unknown' && !showUnknown ? ' style="display:none"' : ''}>
+                        <span class="sp-legend-dot" style="background:${s.color}"></span> ${s.label} ${s.value}%
+                    </div>`
+                ).join('');
+            }
+
+            const pill = document.getElementById('spCompPill');
+            if (pill) {
+                const icon = pill.querySelector('i');
+                Array.from(pill.childNodes).forEach(n => { if (n.nodeType === Node.TEXT_NODE) n.remove(); });
+                pill.insertBefore(document.createTextNode(data.label + ' '), icon);
+            }
+
+            document.querySelectorAll('#spCompDropdown .cs-op-item').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.comp === key);
+            });
+        }
+
+        function initSegmentPreviewCharts() {
+            destroySegmentPreviewCharts();
+
+            const reachCtx = document.getElementById('spChartReach');
+            if (reachCtx) {
+                spCharts.reach = new Chart(reachCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Unreachable', 'Email', 'SMS', 'Push'],
+                        datasets: [{
+                            label: 'Reach',
+                            data: [25000, 18000, 10000, 8000],
+                            backgroundColor: ['#FF6600', '#FF9933', '#FFB266', '#FFCC99'],
+                            borderWidth: 0,
+                            barThickness: 20,
+                            borderRadius: 2
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: {
+                                min: 0,
+                                max: 25000,
+                                ticks: { stepSize: 5000, callback: v => (v / 1000) + 'k', font: { size: 11 } },
+                                grid: { color: '#eee' }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: { font: { size: 12 } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            [84, 53, 32].forEach((pct, i) => {
+                const id = ['spChartOverlap1', 'spChartOverlap2', 'spChartOverlap3'][i];
+                const canvas = document.getElementById(id);
+                if (canvas) {
+                    spCharts['overlap' + (i + 1)] = new Chart(canvas, {
+                        type: 'doughnut',
+                        data: {
+                            datasets: [{
+                                data: [1],
+                                overlapPct: pct / 100,
+                                backgroundColor: ['transparent'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            layout: { padding: 0 },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: { enabled: false }
+                            }
+                        }
+                    });
+                }
+            });
+
+            const compCtx = document.getElementById('spChartComposition');
+            if (compCtx) {
+                spCharts.composition = new Chart(compCtx, {
+                    type: 'doughnut',
+                    data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 0 }] },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '55%',
+                        plugins: { legend: { display: false } }
+                    }
+                });
+                renderCompositionView(currentCompKey);
+            }
+
+            const showUnknownCheckbox = document.getElementById('spShowUnknown');
+            if (showUnknownCheckbox) {
+                showUnknownCheckbox.addEventListener('change', function () {
+                    renderCompositionView(currentCompKey);
+                });
+            }
+
+        }
+
+        function updateSegmentPreview() {
+            const stage = Math.min(completedRulesCount, 3);
+            const data = STAGE_DATA[stage];
+            if (!data) return;
+
+            const heroCards = document.querySelectorAll('#spPopulated .sp-hero-card');
+            if (heroCards.length >= 5) {
+                heroCards[0].querySelector('.sp-hero-value').textContent = data.hero.guests;
+                heroCards[0].querySelector('.sp-hero-sub').textContent = data.hero.guestsPct;
+                heroCards[1].querySelector('.sp-hero-value').textContent = data.hero.avgDays;
+                heroCards[2].querySelector('.sp-hero-value').textContent = data.hero.avgCheck;
+                heroCards[2].querySelector('.sp-hero-sub').textContent = data.hero.avgCheckSub;
+                heroCards[3].querySelector('.sp-hero-value').textContent = data.hero.avgOrders;
+                heroCards[4].querySelector('.sp-hero-value').textContent = data.hero.avgLtv;
+            }
+
+            if (spCharts.reach) {
+                spCharts.reach.data.datasets[0].data = data.reach.data;
+                spCharts.reach.options.scales.x.max = data.reach.max;
+                spCharts.reach.update();
+            }
+
+            data.overlaps.forEach((ov, i) => {
+                const key = 'overlap' + (i + 1);
+                if (spCharts[key]) {
+                    spCharts[key].data.datasets[0].overlapPct = ov.pct / 100;
+                    spCharts[key].update();
+                }
+                const items = document.querySelectorAll('#spPopulated .sp-overlap-item');
+                if (items[i]) {
+                    items[i].querySelector('.sp-overlap-stats').textContent = ov.stats;
+                    items[i].querySelector('.sp-overlap-link').textContent = ov.name;
+                }
+            });
+
+            Object.assign(COMPOSITION_DATA, data.composition);
+            renderCompositionView(currentCompKey);
+
+            const menuList = document.querySelector('#spPopulated .sp-menu-list');
+            if (menuList) {
+                menuList.innerHTML = data.menuItems.map(item => `
+                    <div class="sp-menu-row">
+                        <div class="sp-menu-item-info">
+                            <div class="sp-menu-img"><img src="${item.img}" alt="${item.name}"></div>
+                            <span class="sp-menu-name">${item.name}</span>
+                        </div>
+                        <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:${item.pct}%"></div></div>
+                        <div class="sp-menu-stats"><span class="sp-menu-pct">${item.pct}%</span><span class="sp-menu-vs${item.negative ? ' negative' : ''}">${item.vs}</span></div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function destroySegmentPreviewCharts() {
+            if (skeletonTimer) { clearTimeout(skeletonTimer); skeletonTimer = null; }
+            const skeleton = document.getElementById('spSkeleton');
+            if (skeleton) skeleton.classList.remove('visible');
+            ['reach', 'overlap1', 'overlap2', 'overlap3', 'composition'].forEach(key => {
+                if (spCharts[key]) {
+                    spCharts[key].destroy();
+                    spCharts[key] = null;
+                }
+            });
+        }
+
+        function addNewRule() {
+            ruleBlockCounter++;
+            const id = ruleBlockCounter;
+
+            const currentAddBtn = event.target.closest('.cs-add-rule-btn');
+            if (currentAddBtn) currentAddBtn.style.display = 'none';
+
+            const newRuleArea = document.createElement('div');
+            newRuleArea.className = 'cs-rule-area';
+            newRuleArea.id = 'csRuleArea' + id;
+
+            const newRuleBlock = document.createElement('div');
+            newRuleBlock.className = 'cs-rule-block';
+            newRuleBlock.id = 'csRuleBlock' + id;
+
+            const anchor = document.createElement('div');
+            anchor.className = 'cs-dropdown-anchor';
+            anchor.id = 'csDropdownAnchor' + id;
+
+            const filterBtn = document.createElement('button');
+            filterBtn.className = 'cs-filter-type-btn';
+            filterBtn.type = 'button';
+            filterBtn.textContent = 'Select filter type...';
+            filterBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                activeRuleBlockId = id;
+                const dropdown = document.getElementById('filterDropdown');
+                anchor.appendChild(dropdown);
+                if (dropdown.classList.contains('open')) {
+                    closeFilterDropdown();
+                } else {
+                    dropdown.classList.add('open');
+                    document.getElementById('fdPanel2').style.display = 'none';
+                    document.getElementById('fdPanel3').style.display = 'none';
+                    document.querySelectorAll('#fdPanel1 .fd-item').forEach(el => el.classList.remove('active'));
+                    document.getElementById('fdSearch').value = '';
+                    document.getElementById('fdSearch').focus();
+                }
+            });
+
+            anchor.appendChild(filterBtn);
+
+            const ruleRow = document.createElement('div');
+            ruleRow.className = 'cs-rule-row';
+            ruleRow.id = 'csRuleRow' + id;
+            ruleRow.style.display = 'none';
+            ruleRow.innerHTML = `
+                <button class="cs-rule-label" type="button" id="csRuleLabel${id}"></button>
+                <div class="cs-pill-wrap">
+                    <button class="cs-select-pill" type="button">
+                        Is currently <i class="ph ph-caret-down"></i>
+                    </button>
+                </div>
+                <div class="cs-combo-box cs-combo-empty" id="csComboBox${id}">
+                    <div class="cs-combo-pills" id="csComboPills${id}">
+                        <span class="cs-combo-placeholder">- Type or select -</span>
+                    </div>
+                    <div class="cs-combo-chevron">
+                        <i class="ph ph-caret-down"></i>
+                    </div>
+                    <div class="cs-combo-dropdown" id="csComboDropdown${id}"></div>
+                </div>
+                <button class="cs-rule-overflow" type="button" aria-label="More options">
+                    <i class="ph ph-dots-three-vertical"></i>
+                </button>
+            `;
+
+            newRuleBlock.appendChild(anchor);
+            newRuleBlock.appendChild(ruleRow);
+            newRuleArea.appendChild(newRuleBlock);
+
+            const allOperatorRows = document.querySelectorAll('.cs-operator-row');
+            const lastOpRow = allOperatorRows[allOperatorRows.length - 1];
+            lastOpRow.after(newRuleArea);
+
+            activeRuleBlockId = id;
+        }
+
+        function setOperatorUI(ruleRow, filterName) {
+            const ops = FILTER_OPERATORS[filterName] || DEFAULT_OPERATORS;
+            const pillWrap = ruleRow.querySelector('.cs-pill-wrap');
+            let btnGroup = ruleRow.querySelector('.cs-op-btngroup');
+
+            if (ops.length <= 2) {
+                if (pillWrap) pillWrap.style.display = 'none';
+                if (!btnGroup) {
+                    btnGroup = document.createElement('div');
+                    btnGroup.className = 'cs-btn-group cs-op-btngroup';
+                    if (pillWrap) {
+                        pillWrap.after(btnGroup);
+                    } else {
+                        const comboBox = ruleRow.querySelector('[class*="cs-combo-box"]');
+                        if (comboBox) ruleRow.insertBefore(btnGroup, comboBox);
+                        else ruleRow.appendChild(btnGroup);
+                    }
+                }
+                btnGroup.style.display = '';
+                btnGroup.innerHTML = ops.map((op, i) =>
+                    `<button class="cs-btn-group-item${i === 0 ? ' active' : ''}" type="button">${op}</button>`
+                ).join('');
+            } else {
+                if (btnGroup) btnGroup.style.display = 'none';
+                if (pillWrap) {
+                    pillWrap.style.display = '';
+                    const pill = pillWrap.querySelector('.cs-select-pill');
+                    if (pill) {
+                        const icon = pill.querySelector('i');
+                        Array.from(pill.childNodes).forEach(n => { if (n.nodeType === Node.TEXT_NODE) n.remove(); });
+                        pill.insertBefore(document.createTextNode(ops[0] + ' '), icon);
+                    }
+                }
+            }
+        }
+
+        function selectFilter(filterName) {
+            closeFilterDropdown();
+
+            if (activeRuleBlockId === null) {
+                document.getElementById('csRuleLabel').textContent = filterName;
+                document.getElementById('csDropdownAnchor').style.display = 'none';
+                const ruleRow = document.getElementById('csRuleRow');
+                ruleRow.style.display = 'flex';
+                setOperatorUI(ruleRow, filterName);
+                document.getElementById('csOperatorRow').style.display = 'flex';
+                document.getElementById('csActionBar').style.display = 'flex';
+                document.querySelector('.content-area').style.paddingBottom = '100px';
+                initComboBox(filterName);
+                document.getElementById('csComboBox').onclick = toggleComboDropdown;
+            } else {
+                const id = activeRuleBlockId;
+                document.getElementById('csRuleLabel' + id).textContent = filterName;
+                document.getElementById('csDropdownAnchor' + id).style.display = 'none';
+                const ruleRow = document.getElementById('csRuleRow' + id);
+                ruleRow.style.display = 'flex';
+                setOperatorUI(ruleRow, filterName);
+
+                const ruleArea = document.getElementById('csRuleArea' + id);
+                const newOpRow = document.createElement('div');
+                newOpRow.className = 'cs-operator-row';
+                newOpRow.style.display = 'flex';
+                newOpRow.innerHTML = `
+                    <div class="cs-btn-group">
+                        <button class="cs-btn-group-item active" type="button">And</button>
+                        <button class="cs-btn-group-item" type="button">Or</button>
+                        <button class="cs-btn-group-item" type="button">Exclude</button>
+                    </div>
+                    <button class="cs-add-rule-btn" type="button" onclick="addNewRule()">
+                        <i class="ph ph-plus"></i> Add new rule
+                    </button>
+                `;
+                ruleArea.after(newOpRow);
+                initDynamicComboBox(id, filterName);
+                activeRuleBlockId = null;
+            }
+        }
+
+        /* ── Ask Ava ── */
+        function toggleAva() {
+            const modal = document.getElementById('avaModal');
+            const overlay = document.getElementById('avaOverlay');
+            modal.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function askAva(question) {
+            const input = document.getElementById('avaInput');
+            input.value = question;
+            sendToAva();
+        }
+
+        function sendToAva(isFollowUp = false) {
+            const inputId = isFollowUp ? 'avaInputFooter' : 'avaInput';
+            const input = document.getElementById(inputId);
+            const question = input.value.trim();
+            if (!question) return;
+
+            const chatArea = document.querySelector('.ava-chat-area');
+            const chatViewport = document.querySelector('.ava-chat-viewport');
+
+            if (!isFollowUp) {
+                const suggestionCards = document.querySelector('.ava-suggestion-cards');
+                if (suggestionCards) suggestionCards.style.display = 'none';
+
+                const hero = document.querySelector('.ava-hero');
+                if (hero) hero.style.display = 'none';
+
+                document.getElementById('initialInputContainer').style.display = 'none';
+                document.getElementById('footerInputContainer').style.display = 'flex';
+                chatViewport.classList.add('chat-active');
+            }
+
+            const userMsg = document.createElement('div');
+            userMsg.className = 'ava-message user';
+            userMsg.innerHTML = `<div class="message-bubble">${question}</div>`;
+            chatArea.appendChild(userMsg);
+
+            input.value = '';
+            setTimeout(() => { chatViewport.scrollTop = chatViewport.scrollHeight; }, 0);
+
+            setTimeout(() => {
+                const botText = document.createElement('div');
+                botText.className = 'ava-message bot';
+                botText.innerHTML = `<div class="ava-message-text">Based on the current filters, I've identified a key insight:</div>`;
+                chatArea.appendChild(botText);
+                setTimeout(() => { chatViewport.scrollTop = chatViewport.scrollHeight; }, 0);
+
+                setTimeout(() => {
+                    const insightCard = document.createElement('div');
+                    insightCard.className = 'ava-insight-card';
+                    insightCard.innerHTML = `
+                        <div class="ava-insight-title">Example insight</div>
+                        <div class="ava-insight-text">Repeat guest frequency has increased by 12% among High-Value Loyalists following the recent menu update.</div>
+                        <div class="ava-placeholder-chart"><canvas class="ava-insight-chart-canvas"></canvas></div>
+                    `;
+                    chatArea.appendChild(insightCard);
+                    const canvas = insightCard.querySelector('.ava-insight-chart-canvas');
+                    if (canvas && typeof Chart !== 'undefined') {
+                        const accentBlue = getComputedStyle(document.documentElement).getPropertyValue('--accent-blue').trim() || '#5A55E3';
+                        const subdued = getComputedStyle(document.documentElement).getPropertyValue('--text-subdued').trim() || '#6b7280';
+                        new Chart(canvas, {
+                            type: 'line',
+                            data: {
+                                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                                datasets: [{
+                                    label: 'Frequency',
+                                    data: [2.1, 2.2, 2.35, 2.4],
+                                    borderColor: accentBlue,
+                                    backgroundColor: 'rgba(90, 85, 227, 0.08)',
+                                    fill: true,
+                                    tension: 0.3,
+                                    pointRadius: 3
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { grid: { display: false }, ticks: { font: { size: 10 }, color: subdued } },
+                                    y: { min: 1.8, max: 2.6, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, color: subdued } }
+                                }
+                            }
+                        });
+                    }
+
+                    const actionButtons = document.createElement('div');
+                    actionButtons.className = 'ava-action-buttons';
+                    actionButtons.innerHTML = `
+                        <button class="ava-action-btn"><i class="ph ph-copy"></i><span>Copy</span></button>
+                        <button class="ava-action-btn"><i class="ph ph-share-network"></i><span>Share</span></button>
+                        <button class="ava-action-btn"><i class="ph ph-link"></i><span>Sources (3)</span></button>
+                        <button class="ava-action-btn-icon-only"><i class="ph ph-thumbs-up"></i></button>
+                        <button class="ava-action-btn-icon-only"><i class="ph ph-thumbs-down"></i></button>
+                    `;
+                    chatArea.appendChild(actionButtons);
+                    setTimeout(() => { chatViewport.scrollTop = chatViewport.scrollHeight; }, 0);
+                }, 1000);
+            }, 800);
+        }
+        /* ── Rule overflow context menu ── */
+        let activeOverflowBtn = null;
+
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('ruleContextMenu');
+            if (!menu) return;
+
+            // Handle Delete — checked before overflow button since menu lives inside it
+            if (e.target.closest('#ruleMenuDelete')) {
+                menu.classList.remove('open');
+                document.body.appendChild(menu); // detach before DOM removal
+                if (!activeOverflowBtn) return;
+                const ruleRow = activeOverflowBtn.closest('.cs-rule-row');
+                activeOverflowBtn = null;
+                if (!ruleRow) return;
+                const ruleArea = ruleRow.closest('.cs-rule-area');
+                if (!ruleArea) return;
+                if (ruleArea.id === 'csRuleArea') {
+                    ruleRow.style.display = 'none';
+                    document.getElementById('csDropdownAnchor').style.display = '';
+                    document.getElementById('csOperatorRow').style.display = 'none';
+                    const actionBar = document.getElementById('csActionBar');
+                    if (actionBar) actionBar.style.display = 'none';
+                    document.querySelector('.content-area').style.paddingBottom = '';
+                    document.getElementById('csRuleLabel').textContent = '';
+                } else {
+                    let next = ruleArea.nextElementSibling;
+                    while (next && !next.classList.contains('cs-operator-row')) {
+                        next = next.nextElementSibling;
+                    }
+                    if (next && next.classList.contains('cs-operator-row')) next.remove();
+                    ruleArea.remove();
+                }
+                // If no configured rules remain, reset the segment preview to empty state
+                const remainingRules = document.querySelectorAll('.cs-rule-row');
+                const hasActiveRule = Array.from(remainingRules).some(r => r.style.display !== 'none');
+                if (!hasActiveRule) {
+                    const emptyState = document.getElementById('csEmptyState');
+                    const skeleton = document.getElementById('spSkeleton');
+                    const populated = document.getElementById('spPopulated');
+                    if (emptyState) emptyState.style.display = '';
+                    if (skeleton) skeleton.classList.remove('visible');
+                    if (populated) populated.classList.remove('visible');
+                    destroySegmentPreviewCharts();
+                }
+                return;
+            }
+
+            // Handle Duplicate
+            if (e.target.closest('#ruleMenuDuplicate')) {
+                menu.classList.remove('open');
+                if (!activeOverflowBtn) return;
+                const ruleRow = activeOverflowBtn.closest('.cs-rule-row');
+                activeOverflowBtn = null;
+                if (!ruleRow) return;
+                const ruleArea = ruleRow.closest('.cs-rule-area');
+                if (!ruleArea) return;
+
+                const clone = ruleArea.cloneNode(true);
+                const newId = 'dup' + Date.now();
+                clone.id = 'csRuleArea' + newId;
+                clone.querySelectorAll('[id]').forEach(el => { el.id = el.id + newId; });
+
+                const newOpRow = document.createElement('div');
+                newOpRow.className = 'cs-operator-row';
+                newOpRow.style.display = 'flex';
+                newOpRow.innerHTML = `
+                    <div class="cs-btn-group">
+                        <button class="cs-btn-group-item active" type="button">And</button>
+                        <button class="cs-btn-group-item" type="button">Or</button>
+                        <button class="cs-btn-group-item" type="button">Exclude</button>
+                    </div>
+                    <button class="cs-add-rule-btn" type="button" onclick="addNewRule()">
+                        <i class="ph ph-plus"></i> Add new rule
+                    </button>
+                `;
+
+                let insertAfter = ruleArea.nextElementSibling;
+                while (insertAfter && !insertAfter.classList.contains('cs-operator-row')) {
+                    insertAfter = insertAfter.nextElementSibling;
+                }
+                if (insertAfter) {
+                    insertAfter.after(newOpRow);
+                    insertAfter.after(clone);
+                } else {
+                    ruleArea.after(newOpRow);
+                    ruleArea.after(clone);
+                }
+                return;
+            }
+
+            // Handle overflow button toggle
+            const btn = e.target.closest('.cs-rule-overflow');
+            if (btn) {
+                if (activeOverflowBtn === btn && menu.classList.contains('open')) {
+                    menu.classList.remove('open');
+                    activeOverflowBtn = null;
+                    return;
+                }
+                btn.appendChild(menu);
+                menu.classList.add('open');
+                activeOverflowBtn = btn;
+                return;
+            }
+
+            // Outside click — close menu
+            if (!menu.contains(e.target)) {
+                menu.classList.remove('open');
+                activeOverflowBtn = null;
+            }
+        });
+
+        /* ── Composition view dropdown ── */
+        document.addEventListener('click', function(e) {
+            const pill = e.target.closest('#spCompPill');
+            if (pill) {
+                e.stopPropagation();
+                document.getElementById('spCompDropdown').classList.toggle('open');
+                return;
+            }
+            const optBtn = e.target.closest('#spCompDropdown .cs-op-item');
+            if (optBtn) {
+                e.stopPropagation();
+                renderCompositionView(optBtn.dataset.comp);
+                document.getElementById('spCompDropdown').classList.remove('open');
+                return;
+            }
+            if (!e.target.closest('#spCompPillWrap')) {
+                const dd = document.getElementById('spCompDropdown');
+                if (dd) dd.classList.remove('open');
+            }
+        });
+    </script>
+
+    <!-- Shared rule context menu (moved next to overflow button on open) -->
+    <div id="ruleContextMenu" class="cs-rule-context-menu">
+        <button class="cs-rule-ctx-item" type="button" id="ruleMenuDuplicate">
+            <i class="ph ph-copy"></i> Duplicate
+        </button>
+        <button class="cs-rule-ctx-item danger" type="button" id="ruleMenuDelete">
+            <i class="ph ph-trash"></i> Delete
+        </button>
+    </div>
+
+    <!-- Shared operator dropdown (moved next to pill on open) -->
+    <div id="operatorDropdown" class="cs-operator-dropdown">
+        <button class="cs-op-item" type="button" data-op="Is currently">Is currently</button>
+        <button class="cs-op-item" type="button" data-op="Is not currently">Is not currently</button>
+        <button class="cs-op-item" type="button" data-op="Was last">Was last</button>
+        <button class="cs-op-item" type="button" data-op="Is most commonly">Is most commonly</button>
+        <button class="cs-op-item" type="button" data-op="Has ever been">Has ever been</button>
+    </div>
+</body>
+</html>

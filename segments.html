@@ -6,6 +6,7 @@
     <title>Segments - Guest Data Platform</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         
         .builder-container {
@@ -85,6 +86,9 @@
         <!-- Top Header -->
         <header class="header">
             <div class="header-left">
+                <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+                    <img src="assets/par-guest360.svg" alt="PAR Guest360 logo">
+                </a>
                 <svg width="205" height="40" viewBox="0 0 205 40" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M39.4909 0H0V39.491H39.4909V0Z" fill="#2F3452"/>
 <path d="M193.472 25.8655H192.214V16.6855H193.336V17.6545C193.906 16.9065 194.832 16.439 195.92 16.439C197.127 16.439 198.105 16.983 198.598 17.986C199.133 17.017 200.153 16.439 201.377 16.439C203.23 16.439 204.429 17.663 204.429 19.601L204.42 25.8655H203.171L203.179 19.839C203.179 18.4195 202.295 17.561 201.088 17.561C200.043 17.561 198.946 18.2325 198.946 19.941L198.938 25.8655H197.705L197.714 19.924C197.714 18.462 196.864 17.561 195.597 17.561C194.322 17.561 193.472 18.5045 193.472 19.941V25.8655Z" fill="#2F3452"/>
@@ -111,24 +115,22 @@
             </div>
             <div class="header-right">
                 <a href="javascript:void(0)" class="header-nav-item" onclick="toggleAva()">
-                    <i class="ph ph-sparkle" style="color: var(--primary-color);"></i>
-                    Ask AVA
-                </a>
-                <a href="#" class="header-nav-item">
-                    <i class="ph ph-magnifying-glass"></i>
-                    Guests
-                </a>
-                <a href="#" class="header-nav-item">
-                    <i class="ph ph-lightbulb"></i>
-                    Support Portal
+                    <i class="ph ph-sparkle"></i>
+                    Ask Ava
                 </a>
                 <a href="#" class="header-nav-item">
                     <i class="ph ph-graduation-cap"></i>
                     PAR Academy
                 </a>
-                <div style="width: 32px; height: 32px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-left: var(--spacing-sm);">
+                <button class="header-icon-btn" type="button" aria-label="Help">
+                    <i class="ph ph-question"></i>
+                </button>
+                <button class="header-icon-btn" type="button" aria-label="Profile">
                     <i class="ph ph-user"></i>
-                </div>
+                </button>
+                <button class="header-icon-btn" type="button" aria-label="Apps menu">
+                    <i class="ph ph-dots-nine"></i>
+                </button>
             </div>
         </header>
 
@@ -138,7 +140,7 @@
                 <nav class="sidebar-nav">
                     <div class="nav-group">
                         <a href="#" class="nav-item">
-                            <i class="ph ph-chart-line-up"></i>
+                            <i class="ph-duotone ph-chart-bar"></i>
                             Trends
                         </a>
                     </div>
@@ -146,7 +148,7 @@
                     <div class="nav-group">
                         <div class="nav-group-title">Guests</div>
                         <a href="index.html" class="nav-item">
-                            <i class="ph ph-chart-bar"></i>
+                            <i class="ph-duotone ph-chart-pie"></i>
                             Analytics
                         </a>
                         <a href="profiles.html" class="nav-item">
@@ -162,28 +164,22 @@
                     <div class="nav-group">
                         <div class="nav-group-title">Platform</div>
                         <a href="#" class="nav-item">
-                            <i class="ph ph-database"></i>
+                            <i class="ph-duotone ph-database"></i>
                             Data Sources
                         </a>
                         <a href="#" class="nav-item">
-                            <i class="ph ph-fingerprint"></i>
+                            <i class="ph-duotone ph-fingerprint-simple"></i>
                             Identity Resolution
-                            <span class="badge" style="background: rgba(255,255,255,0.1); margin-left: auto; font-size: 10px;">SOON</span>
                         </a>
                         <a href="#" class="nav-item">
-                            <i class="ph ph-export"></i>
+                            <i class="ph-duotone ph-share-fat"></i>
                             Data Export
-                            <span class="badge" style="background: rgba(255,255,255,0.1); margin-left: auto; font-size: 10px;">SOON</span>
                         </a>
                     </div>
 
                     <div class="nav-group" style="margin-top: auto;">
                         <a href="#" class="nav-item">
-                            <i class="ph ph-magnifying-glass"></i>
-                            Search
-                        </a>
-                        <a href="#" class="nav-item">
-                            <i class="ph ph-gear"></i>
+                            <i class="ph-duotone ph-gear"></i>
                             Settings
                         </a>
                     </div>
@@ -198,9 +194,11 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xl);">
                             <h1>Segments</h1>
                             <div style="display: flex; gap: var(--spacing-sm);">
-                                <button class="btn btn-primary" onclick="document.getElementById('segment-list').style.display='none'; document.getElementById('segment-builder').style.display='block';">
-                                    <i class="ph ph-plus"></i> Create Segment
-                                </button>
+                                <a href="create-segment.html" style="text-decoration: none;">
+                                    <button class="btn btn-primary">
+                                        <i class="ph ph-plus"></i> Create Segment
+                                    </button>
+                                </a>
                             </div>
                         </div>
 
@@ -271,7 +269,7 @@
                                     <button class="btn-link" style="font-size: 16px; font-weight: 400;">
                                         <i class="ph ph-question" style="font-size: 24px;"></i> Help
                                     </button>
-                                    <button class="btn btn-ai">
+                                    <button class="btn btn-primary">
                                         <i class="ph ph-sparkle"></i> Create with AI...
                                     </button>
                                     <button class="btn btn-secondary" style="padding: 8px;">
@@ -446,6 +444,9 @@
     </div>
 
     <script>
+        Chart.defaults.animation = false;
+        Chart.defaults.plugins.tooltip.animation = false;
+
         function toggleAva() {
             const modal = document.getElementById('avaModal');
             const overlay = document.getElementById('avaOverlay');
@@ -518,9 +519,38 @@
                     insightCard.innerHTML = `
                         <div class="ava-insight-title">Example insight</div>
                         <div class="ava-insight-text">Repeat guest frequency has increased by 12% among High-Value Loyalists following the recent menu update.</div>
-                        <div class="ava-placeholder-chart">[ Chart: Frequency Trend ]</div>
+                        <div class="ava-placeholder-chart"><canvas class="ava-insight-chart-canvas"></canvas></div>
                     `;
                     chatArea.appendChild(insightCard);
+                    const canvas = insightCard.querySelector('.ava-insight-chart-canvas');
+                    if (canvas && typeof Chart !== 'undefined') {
+                        const accentBlue = getComputedStyle(document.documentElement).getPropertyValue('--accent-blue').trim() || '#5A55E3';
+                        const subdued = getComputedStyle(document.documentElement).getPropertyValue('--text-subdued').trim() || '#6b7280';
+                        new Chart(canvas, {
+                            type: 'line',
+                            data: {
+                                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                                datasets: [{
+                                    label: 'Frequency',
+                                    data: [2.1, 2.2, 2.35, 2.4],
+                                    borderColor: accentBlue,
+                                    backgroundColor: 'rgba(90, 85, 227, 0.08)',
+                                    fill: true,
+                                    tension: 0.3,
+                                    pointRadius: 3
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { grid: { display: false }, ticks: { font: { size: 10 }, color: subdued } },
+                                    y: { min: 1.8, max: 2.6, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, color: subdued } }
+                                }
+                            }
+                        });
+                    }
                     
                     // Add action buttons
                     const actionButtons = document.createElement('div');

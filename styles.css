@@ -50,6 +50,10 @@
   padding: 0;
 }
 
+button, input, select, textarea {
+  font-family: var(--font-family);
+}
+
 body {
   font-family: var(--font-family);
   background-color: var(--bg-main);
@@ -114,33 +118,39 @@ h1 {
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-sm);
+  padding: var(--spacing-sm) 0;
+  gap: 24px;
+  flex: 1;
 }
 
 .nav-group {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: 0;
 }
 
 .nav-group-title {
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 8px 24px;
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-subdued);
+  letter-spacing: 0.066px;
+  color: rgba(255,255,255,0.6);
   font-weight: 700;
+  line-height: 12px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
+  gap: 12px;
+  padding: 8px 12px;
+  margin: 2px 12px;
   color: var(--text-inverse);
   text-decoration: none;
   font-size: 14px;
-  border-radius: var(--border-radius);
+  font-weight: 500;
+  border-radius: 4px;
   transition: background 0.2s;
-  margin-bottom: 2px;
+  letter-spacing: -0.154px;
+  line-height: 22px;
 }
 
 .nav-item:hover {
@@ -150,11 +160,21 @@ h1 {
 .nav-item.active {
   background-color: var(--active-bg);
   color: var(--active-text);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .nav-item i {
-  font-size: 18px;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-item i::before {
+  display: inline-block;
 }
 
 /* Main Content */
@@ -166,46 +186,93 @@ h1 {
 }
 
 .header {
-  height: 64px;
+  height: 60px;
   background-color: var(--bg-card);
-  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--spacing-lg);
+  padding: 0 var(--spacing-md);
   flex-shrink: 0;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
+}
+
+.header-left > svg {
+  display: none;
+}
+
+.header-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.header-brand svg {
+  width: 124px;
+  height: 40px;
+  display: block;
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: 8px;
 }
 
 .header-nav-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
-  color: var(--text-normal);
+  gap: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  color: #141414;
   text-decoration: none;
   font-size: 16px;
-  font-weight: 500;
-  transition: opacity 0.2s;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: -0.154px;
+  transition: background-color 0.2s;
 }
 
 .header-nav-item:hover {
-  opacity: 0.7;
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
 .header-nav-item i {
-  font-size: 20px;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.header-icon-btn {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #333333;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.header-icon-btn:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.header-icon-btn.active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.header-icon-btn i {
+  font-size: 24px;
 }
 
 .breadcrumb {
@@ -258,6 +325,7 @@ h1 {
   gap: var(--spacing-xs);
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius);
+  font-family: var(--font-family);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -267,12 +335,15 @@ h1 {
 }
 
 .btn-primary {
-  background-color: var(--primary-color);
-  color: #000;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  background-color: var(--accent-blue);
+  color: #ffffff;
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-hover);
+  background-color: var(--accent-blue-hover);
 }
 
 .btn-secondary {
@@ -658,14 +729,6 @@ tr:hover td {
   background-color: var(--accent-blue-hover);
 }
 
-.btn-ai {
-  background-color: var(--primary-color);
-  color: black;
-}
-
-.btn-ai:hover {
-  background-color: var(--primary-hover);
-}
 
 /* Ask AVA Modal */
 .ava-modal-overlay {

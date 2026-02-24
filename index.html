@@ -6,6 +6,7 @@
     <title>GDP Dashboard - Guest Data Platform</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .analytics-header {
             display: flex;
@@ -25,7 +26,6 @@
             align-items: center;
         }
 
-        /* Improved Chart Components */
         .chart-container-high {
             position: relative;
             width: 100%;
@@ -33,109 +33,11 @@
             padding: var(--spacing-md) 0;
         }
 
-        .chart-axis-y {
-            position: absolute;
-            left: 0;
-            top: var(--spacing-md);
-            bottom: 40px;
-            width: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            color: var(--text-subdued);
-            font-size: 10px;
-            text-align: right;
-            padding-right: 8px;
-            border-right: 1px solid #eee;
-        }
-
-        .chart-main-area {
-            margin-left: 40px;
-            height: 100%;
-            position: relative;
-        }
-
-        .chart-grid-lines {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            pointer-events: none;
-        }
-
-        .grid-line {
-            width: 100%;
-            height: 1px;
-            background: #f0f0f0;
-        }
-
-        .chart-content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 40px;
-            display: flex;
-            align-items: flex-end;
-            gap: 12px;
-            padding: 0 12px;
-        }
-
-        .chart-labels-x {
-            position: absolute;
-            bottom: 0;
-            left: 40px;
-            right: 0;
-            height: 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 12px;
-            color: var(--text-subdued);
-            font-size: 10px;
-        }
-
-        .bar-item {
-            flex: 1;
-            background: #9aa4ff;
-            border-radius: 2px 2px 0 0;
-            min-width: 8px;
-            position: relative;
-            transition: all 0.2s ease;
-        }
-
-        .bar-item:hover {
-            background: var(--accent-blue);
-        }
-
-        .bar-item.highlight {
-            background: var(--primary-color);
-        }
-
-        /* Donut Chart Styling */
         .donut-container {
             display: flex;
             align-items: center;
             gap: var(--spacing-xl);
             height: 240px;
-        }
-
-        .donut-svg {
-            transform: rotate(-90deg);
-            width: 180px;
-            height: 180px;
-        }
-
-        .donut-center-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
         }
 
         .section-title {
@@ -153,6 +55,9 @@
         <!-- Top Header -->
         <header class="header">
             <div class="header-left">
+                <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+                    <img src="assets/par-guest360.svg" alt="PAR Guest360 logo">
+                </a>
                 <svg width="205" height="40" viewBox="0 0 205 40" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M39.4909 0H0V39.491H39.4909V0Z" fill="#2F3452"/>
 <path d="M193.472 25.8655H192.214V16.6855H193.336V17.6545C193.906 16.9065 194.832 16.439 195.92 16.439C197.127 16.439 198.105 16.983 198.598 17.986C199.133 17.017 200.153 16.439 201.377 16.439C203.23 16.439 204.429 17.663 204.429 19.601L204.42 25.8655H203.171L203.179 19.839C203.179 18.4195 202.295 17.561 201.088 17.561C200.043 17.561 198.946 18.2325 198.946 19.941L198.938 25.8655H197.705L197.714 19.924C197.714 18.462 196.864 17.561 195.597 17.561C194.322 17.561 193.472 18.5045 193.472 19.941V25.8655Z" fill="#2F3452"/>
@@ -179,24 +84,22 @@
             </div>
             <div class="header-right">
                 <a href="javascript:void(0)" class="header-nav-item" onclick="toggleAva()">
-                    <i class="ph ph-sparkle" style="color: var(--primary-color);"></i>
-                    Ask AVA
-                </a>
-                <a href="#" class="header-nav-item">
-                    <i class="ph ph-magnifying-glass"></i>
-                    Guests
-                </a>
-                <a href="#" class="header-nav-item">
-                    <i class="ph ph-lightbulb"></i>
-                    Support Portal
+                    <i class="ph ph-sparkle"></i>
+                    Ask Ava
                 </a>
                 <a href="#" class="header-nav-item">
                     <i class="ph ph-graduation-cap"></i>
                     PAR Academy
                 </a>
-                <div style="width: 32px; height: 32px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-left: var(--spacing-sm);">
+                <button class="header-icon-btn" type="button" aria-label="Help">
+                    <i class="ph ph-question"></i>
+                </button>
+                <button class="header-icon-btn" type="button" aria-label="Profile">
                     <i class="ph ph-user"></i>
-                </div>
+                </button>
+                <button class="header-icon-btn" type="button" aria-label="Apps menu">
+                    <i class="ph ph-dots-nine"></i>
+                </button>
             </div>
         </header>
 
@@ -206,7 +109,7 @@
                 <nav class="sidebar-nav">
                     <div class="nav-group">
                         <a href="#" class="nav-item">
-                            <i class="ph ph-chart-line-up"></i>
+                            <i class="ph-duotone ph-chart-bar"></i>
                             Trends
                         </a>
                     </div>
@@ -214,7 +117,7 @@
                     <div class="nav-group">
                         <div class="nav-group-title">Guests</div>
                         <a href="index.html" class="nav-item active">
-                            <i class="ph ph-chart-bar"></i>
+                            <i class="ph-duotone ph-chart-pie"></i>
                             Analytics
                         </a>
                         <a href="profiles.html" class="nav-item">
@@ -230,28 +133,22 @@
                     <div class="nav-group">
                         <div class="nav-group-title">Platform</div>
                         <a href="#" class="nav-item">
-                            <i class="ph ph-database"></i>
+                            <i class="ph-duotone ph-database"></i>
                             Data Sources
                         </a>
                         <a href="#" class="nav-item">
-                            <i class="ph ph-fingerprint"></i>
+                            <i class="ph-duotone ph-fingerprint-simple"></i>
                             Identity Resolution
-                            <span class="badge" style="background: rgba(255,255,255,0.1); margin-left: auto; font-size: 10px;">SOON</span>
                         </a>
                         <a href="#" class="nav-item">
-                            <i class="ph ph-export"></i>
+                            <i class="ph-duotone ph-share-fat"></i>
                             Data Export
-                            <span class="badge" style="background: rgba(255,255,255,0.1); margin-left: auto; font-size: 10px;">SOON</span>
                         </a>
                     </div>
 
                     <div class="nav-group" style="margin-top: auto;">
                         <a href="#" class="nav-item">
-                            <i class="ph ph-magnifying-glass"></i>
-                            Search
-                        </a>
-                        <a href="#" class="nav-item">
-                            <i class="ph ph-gear"></i>
+                            <i class="ph-duotone ph-gear"></i>
                             Settings
                         </a>
                     </div>
@@ -267,7 +164,7 @@
                             <h1>Guest Analytics</h1>
                             <p style="color: var(--text-subdued); margin-top: 4px;">Understand guest behavior, retention, and value across segments and locations.</p>
                         </div>
-                        <button class="btn btn-primary" onclick="toggleAva()" style="background-color: var(--primary-color); border: none; color: black; padding: 10px 20px;">
+                        <button class="btn btn-primary" onclick="toggleAva()">
                             <i class="ph ph-sparkle"></i> Ask AVA
                         </button>
                     </div>
@@ -332,7 +229,7 @@
                             <div class="metric-card-value" id="total-guests-value">1,248,392</div>
                             <div class="metric-card-subtext" id="total-guests-subtext">1,209,488 previous period</div>
                             <div class="metric-card-sparkline">
-                                <img id="total-guests-sparkline" src="assets/sparkline-up.svg" alt="">
+                                <canvas id="total-guests-sparkline" width="120" height="28"></canvas>
                             </div>
                         </div>
                         <div class="metric-card-analytics">
@@ -346,7 +243,7 @@
                             <div class="metric-card-value" id="active-guests-value">842,109</div>
                             <div class="metric-card-subtext" id="active-guests-subtext">827,219 previous period</div>
                             <div class="metric-card-sparkline">
-                                <img id="active-guests-sparkline" src="assets/sparkline-up.svg" alt="">
+                                <canvas id="active-guests-sparkline" width="120" height="28"></canvas>
                             </div>
                         </div>
                         <div class="metric-card-analytics">
@@ -360,7 +257,7 @@
                             <div class="metric-card-value" id="repeat-rate-value">24.8%</div>
                             <div class="metric-card-subtext" id="repeat-rate-subtext">25.3% previous period</div>
                             <div class="metric-card-sparkline">
-                                <img id="repeat-rate-sparkline" src="assets/sparkline-down.svg" alt="">
+                                <canvas id="repeat-rate-sparkline" width="120" height="28"></canvas>
                             </div>
                         </div>
                         <div class="metric-card-analytics">
@@ -374,7 +271,7 @@
                             <div class="metric-card-value" id="avg-visits-value">2.4</div>
                             <div class="metric-card-subtext" id="avg-visits-subtext">2.3 previous period</div>
                             <div class="metric-card-sparkline">
-                                <img id="avg-visits-sparkline" src="assets/sparkline-up.svg" alt="">
+                                <canvas id="avg-visits-sparkline" width="120" height="28"></canvas>
                             </div>
                         </div>
                     </div>
@@ -384,81 +281,13 @@
                         <div class="card">
                             <div class="card-title">Repeat Guest Trend</div>
                             <div class="chart-container-high" id="repeat-trend-chart">
-                                <div class="chart-axis-y">
-                                    <span>100%</span>
-                                    <span>75%</span>
-                                    <span>50%</span>
-                                    <span>25%</span>
-                                    <span>0%</span>
-                                </div>
-                                <div class="chart-main-area">
-                                    <div class="chart-grid-lines">
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line" style="background: #ccc;"></div>
-                                    </div>
-                                    <div class="chart-content">
-                                        <div class="bar-item" style="height: 42%;"></div>
-                                        <div class="bar-item" style="height: 58%;"></div>
-                                        <div class="bar-item" style="height: 48%;"></div>
-                                        <div class="bar-item" style="height: 72%;"></div>
-                                        <div class="bar-item" style="height: 64%;"></div>
-                                        <div class="bar-item" style="height: 82%;"></div>
-                                        <div class="bar-item" style="height: 76%;"></div>
-                                        <div class="bar-item" style="height: 88%;"></div>
-                                        <div class="bar-item" style="height: 70%;"></div>
-                                        <div class="bar-item" style="height: 74%;"></div>
-                                    </div>
-                                </div>
-                                <div class="chart-labels-x">
-                                    <span>Jun 18</span>
-                                    <span>Jun 25</span>
-                                    <span>Jul 02</span>
-                                    <span>Jul 09</span>
-                                </div>
+                                <canvas id="repeat-trend-canvas"></canvas>
                             </div>
                         </div>
                         <div class="card">
                             <div class="card-title">Frequency Distribution</div>
-                            <div style="display: flex; flex-direction: column; gap: var(--spacing-lg); margin-top: var(--spacing-md);" id="freq-dist-chart">
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                                        <span style="color: var(--text-subdued);">1 Visit</span>
-                                        <span style="font-weight: 700;">72.4%</span>
-                                    </div>
-                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
-                                        <div style="width: 72.4%; height: 100%; background: #9aa4ff;"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                                        <span style="color: var(--text-subdued);">2-3 Visits</span>
-                                        <span style="font-weight: 700;">18.2%</span>
-                                    </div>
-                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
-                                        <div style="width: 18.2%; height: 100%; background: var(--primary-color);"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                                        <span style="color: var(--text-subdued);">4-10 Visits</span>
-                                        <span style="font-weight: 700;">7.1%</span>
-                                    </div>
-                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
-                                        <div style="width: 7.1%; height: 100%; background: var(--accent-blue);"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                                        <span style="color: var(--text-subdued);">10+ Visits</span>
-                                        <span style="font-weight: 700;">2.3%</span>
-                                    </div>
-                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
-                                        <div style="width: 2.3%; height: 100%; background: var(--success);"></div>
-                                    </div>
-                                </div>
+                            <div style="margin-top: var(--spacing-md); height: 200px;" id="freq-dist-chart">
+                                <canvas id="freq-dist-canvas"></canvas>
                             </div>
                         </div>
                     </div>
@@ -468,30 +297,22 @@
                         <div class="card">
                             <div class="card-title">Revenue by Guest Type</div>
                             <div class="donut-container" id="revenue-donut-chart">
-                                <div style="position: relative; width: 180px; height: 180px;">
-                                    <svg class="donut-svg" viewBox="0 0 36 36">
-                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="#f4f4f4" stroke-width="4"></circle>
-                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--primary-color)" stroke-width="4" stroke-dasharray="65 35" stroke-dashoffset="0"></circle>
-                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--accent-blue)" stroke-width="4" stroke-dasharray="35 65" stroke-dashoffset="-65"></circle>
-                                    </svg>
-                                    <div class="donut-center-text">
-                                        <div style="font-size: 24px; font-weight: 800;">$4.2M</div>
-                                        <div style="font-size: 9px; color: var(--text-subdued); text-transform: uppercase; letter-spacing: 0.05em;">Total Revenue</div>
-                                    </div>
+                                <div style="position: relative; width: 200px; height: 200px; flex-shrink: 0;">
+                                    <canvas id="revenue-donut-canvas"></canvas>
                                 </div>
-                                <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                                <div id="revenue-donut-legend" style="display: flex; flex-direction: column; gap: var(--spacing-md);">
                                     <div style="display: flex; align-items: flex-start; gap: 8px;">
                                         <div style="width: 12px; height: 12px; background: var(--primary-color); border-radius: 2px; margin-top: 2px;"></div>
                                         <div>
                                             <div style="font-size: 14px; font-weight: 700;">Loyalty</div>
-                                            <div style="font-size: 12px; color: var(--text-subdued);">$2.73M (65%)</div>
+                                            <div style="font-size: 12px; color: var(--text-subdued);" id="revenue-legend-loyalty">$2.73M (65%)</div>
                                         </div>
                                     </div>
                                     <div style="display: flex; align-items: flex-start; gap: 8px;">
                                         <div style="width: 12px; height: 12px; background: var(--accent-blue); border-radius: 2px; margin-top: 2px;"></div>
                                         <div>
                                             <div style="font-size: 14px; font-weight: 700;">Non-Loyalty</div>
-                                            <div style="font-size: 12px; color: var(--text-subdued);">$1.47M (35%)</div>
+                                            <div style="font-size: 12px; color: var(--text-subdued);" id="revenue-legend-nonloyalty">$1.47M (35%)</div>
                                         </div>
                                     </div>
                                 </div>
@@ -500,39 +321,7 @@
                         <div class="card">
                             <div class="card-title">Average Order Value Trend</div>
                             <div class="chart-container-high" id="aov-trend-chart">
-                                <div class="chart-axis-y">
-                                    <span>$60</span>
-                                    <span>$45</span>
-                                    <span>$30</span>
-                                    <span>$15</span>
-                                    <span>$0</span>
-                                </div>
-                                <div class="chart-main-area">
-                                    <div class="chart-grid-lines">
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line" style="background: #ccc;"></div>
-                                    </div>
-                                    <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible;">
-                                        <!-- Line Path -->
-                                        <path d="M 0,120 L 50,110 L 100,115 L 150,90 L 200,95 L 250,70 L 300,75 L 350,50 L 400,55" 
-                                              fill="none" stroke="var(--accent-blue)" stroke-width="2" />
-                                        <!-- Area Path -->
-                                        <path d="M 0,120 L 50,110 L 100,115 L 150,90 L 200,95 L 250,70 L 300,75 L 350,50 L 400,55 V 208 H 0 Z" 
-                                              fill="rgba(90, 85, 227, 0.05)" />
-                                        <!-- Points -->
-                                        <circle cx="0" cy="120" r="3" fill="var(--accent-blue)" />
-                                        <circle cx="400" cy="55" r="4" fill="var(--accent-blue)" stroke="white" stroke-width="2" />
-                                    </svg>
-                                </div>
-                                <div class="chart-labels-x">
-                                    <span>Oct 2025</span>
-                                    <span>Nov 2025</span>
-                                    <span>Dec 2025</span>
-                                    <span>Jan 2026</span>
-                                </div>
+                                <canvas id="aov-trend-canvas"></canvas>
                             </div>
                         </div>
                     </div>
@@ -672,150 +461,31 @@
     </div>
 
     <script>
-        const flatGrayLine = 'data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTIwIDIwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0wIDEwSDEyMCIgc3Ryb2tlPSIjYmJiYmJiIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4=';
+        Chart.defaults.animation = false;
+        Chart.defaults.plugins.tooltip.animation = false;
+
+        function getChartColors() {
+            const root = document.documentElement;
+            const primary = getComputedStyle(root).getPropertyValue('--primary-color').trim() || '#FFC700';
+            const accentBlue = getComputedStyle(root).getPropertyValue('--accent-blue').trim() || '#5A55E3';
+            const success = getComputedStyle(root).getPropertyValue('--success').trim() || '#3dc1af';
+            const subdued = getComputedStyle(root).getPropertyValue('--text-subdued').trim() || '#6b7280';
+            return { primary, accentBlue, success, subdued };
+        }
+
         const segmentData = {
             'All segments': {
                 metrics: {
-                    'total-guests': { value: '1,248,392', trend: '<i class="ph ph-arrow-up-right"></i> 3.2%', trendClass: 'positive', subtext: '1,209,488 previous period', sparkline: 'assets/sparkline-up.svg' },
-                    'active-guests': { value: '842,109', trend: '<i class="ph ph-arrow-up-right"></i> 1.8%', trendClass: 'positive', subtext: '827,219 previous period', sparkline: 'assets/sparkline-up.svg' },
-                    'repeat-rate': { value: '24.8%', trend: '<i class="ph ph-arrow-down-right"></i> 0.5%', trendClass: 'negative', subtext: '25.3% previous period', sparkline: 'assets/sparkline-down.svg' },
-                    'avg-visits': { value: '2.4', trend: '<i class="ph ph-arrow-up-right"></i> 2.1%', trendClass: 'positive', subtext: '2.3 previous period', sparkline: 'assets/sparkline-up.svg' }
+                    'total-guests': { value: '1,248,392', trend: '<i class="ph ph-arrow-up-right"></i> 3.2%', trendClass: 'positive', subtext: '1,209,488 previous period', sparkline: 'up' },
+                    'active-guests': { value: '842,109', trend: '<i class="ph ph-arrow-up-right"></i> 1.8%', trendClass: 'positive', subtext: '827,219 previous period', sparkline: 'up' },
+                    'repeat-rate': { value: '24.8%', trend: '<i class="ph ph-arrow-down-right"></i> 0.5%', trendClass: 'negative', subtext: '25.3% previous period', sparkline: 'down' },
+                    'avg-visits': { value: '2.4', trend: '<i class="ph ph-arrow-up-right"></i> 2.1%', trendClass: 'positive', subtext: '2.3 previous period', sparkline: 'up' }
                 },
-                charts: {
-                    'repeat-trend-chart': `
-                                <div class="chart-axis-y">
-                                    <span>100%</span>
-                                    <span>75%</span>
-                                    <span>50%</span>
-                                    <span>25%</span>
-                                    <span>0%</span>
-                                </div>
-                                <div class="chart-main-area">
-                                    <div class="chart-grid-lines">
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line" style="background: #ccc;"></div>
-                                    </div>
-                                    <div class="chart-content">
-                                        <div class="bar-item" style="height: 42%;"></div>
-                                        <div class="bar-item" style="height: 58%;"></div>
-                                        <div class="bar-item" style="height: 48%;"></div>
-                                        <div class="bar-item" style="height: 72%;"></div>
-                                        <div class="bar-item" style="height: 64%;"></div>
-                                        <div class="bar-item" style="height: 82%;"></div>
-                                        <div class="bar-item" style="height: 76%;"></div>
-                                        <div class="bar-item" style="height: 88%;"></div>
-                                        <div class="bar-item" style="height: 70%;"></div>
-                                        <div class="bar-item" style="height: 74%;"></div>
-                                    </div>
-                                </div>
-                                <div class="chart-labels-x">
-                                    <span>Jun 18</span>
-                                    <span>Jun 25</span>
-                                    <span>Jul 02</span>
-                                    <span>Jul 09</span>
-                                </div>`,
-                    'freq-dist-chart': `
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                                        <span style="color: var(--text-subdued);">1 Visit</span>
-                                        <span style="font-weight: 700;">72.4%</span>
-                                    </div>
-                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
-                                        <div style="width: 72.4%; height: 100%; background: #9aa4ff;"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                                        <span style="color: var(--text-subdued);">2-3 Visits</span>
-                                        <span style="font-weight: 700;">18.2%</span>
-                                    </div>
-                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
-                                        <div style="width: 18.2%; height: 100%; background: var(--primary-color);"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                                        <span style="color: var(--text-subdued);">4-10 Visits</span>
-                                        <span style="font-weight: 700;">7.1%</span>
-                                    </div>
-                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
-                                        <div style="width: 7.1%; height: 100%; background: var(--accent-blue);"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                                        <span style="color: var(--text-subdued);">10+ Visits</span>
-                                        <span style="font-weight: 700;">2.3%</span>
-                                    </div>
-                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
-                                        <div style="width: 2.3%; height: 100%; background: var(--success);"></div>
-                                    </div>
-                                </div>`,
-                    'revenue-donut-chart': `
-                                <div style="position: relative; width: 180px; height: 180px;">
-                                    <svg class="donut-svg" viewBox="0 0 36 36">
-                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="#f4f4f4" stroke-width="4"></circle>
-                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--primary-color)" stroke-width="4" stroke-dasharray="65 35" stroke-dashoffset="0"></circle>
-                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--accent-blue)" stroke-width="4" stroke-dasharray="35 65" stroke-dashoffset="-65"></circle>
-                                    </svg>
-                                    <div class="donut-center-text">
-                                        <div style="font-size: 24px; font-weight: 800;">$4.2M</div>
-                                        <div style="font-size: 9px; color: var(--text-subdued); text-transform: uppercase; letter-spacing: 0.05em;">Total Revenue</div>
-                                    </div>
-                                </div>
-                                <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
-                                    <div style="display: flex; align-items: flex-start; gap: 8px;">
-                                        <div style="width: 12px; height: 12px; background: var(--primary-color); border-radius: 2px; margin-top: 2px;"></div>
-                                        <div>
-                                            <div style="font-size: 14px; font-weight: 700;">Loyalty</div>
-                                            <div style="font-size: 12px; color: var(--text-subdued);">$2.73M (65%)</div>
-                                        </div>
-                                    </div>
-                                    <div style="display: flex; align-items: flex-start; gap: 8px;">
-                                        <div style="width: 12px; height: 12px; background: var(--accent-blue); border-radius: 2px; margin-top: 2px;"></div>
-                                        <div>
-                                            <div style="font-size: 14px; font-weight: 700;">Non-Loyalty</div>
-                                            <div style="font-size: 12px; color: var(--text-subdued);">$1.47M (35%)</div>
-                                        </div>
-                                    </div>
-                                </div>`,
-                    'aov-trend-chart': `
-                                <div class="chart-axis-y">
-                                    <span>$60</span>
-                                    <span>$45</span>
-                                    <span>$30</span>
-                                    <span>$15</span>
-                                    <span>$0</span>
-                                </div>
-                                <div class="chart-main-area">
-                                    <div class="chart-grid-lines">
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line" style="background: #ccc;"></div>
-                                    </div>
-                                    <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible;">
-                                        <!-- Line Path -->
-                                        <path d="M 0,120 L 50,110 L 100,115 L 150,90 L 200,95 L 250,70 L 300,75 L 350,50 L 400,55" 
-                                              fill="none" stroke="var(--accent-blue)" stroke-width="2" />
-                                        <!-- Area Path -->
-                                        <path d="M 0,120 L 50,110 L 100,115 L 150,90 L 200,95 L 250,70 L 300,75 L 350,50 L 400,55 V 208 H 0 Z" 
-                                              fill="rgba(90, 85, 227, 0.05)" />
-                                        <!-- Points -->
-                                        <circle cx="0" cy="120" r="3" fill="var(--accent-blue)" />
-                                        <circle cx="400" cy="55" r="4" fill="var(--accent-blue)" stroke="white" stroke-width="2" />
-                                    </svg>
-                                </div>
-                                <div class="chart-labels-x">
-                                    <span>Oct 2025</span>
-                                    <span>Nov 2025</span>
-                                    <span>Dec 2025</span>
-                                    <span>Jan 2026</span>
-                                </div>`
+                chartData: {
+                    repeatTrend: { labels: ['Jun 18', 'Jun 25', 'Jul 02', 'Jul 09', 'Jul 16', 'Jul 23', 'Jul 30', 'Aug 06', 'Aug 13', 'Aug 20'], data: [42, 58, 48, 72, 64, 82, 76, 88, 70, 74] },
+                    freqDist: { labels: ['1 Visit', '2-3 Visits', '4-10 Visits', '10+ Visits'], data: [72.4, 18.2, 7.1, 2.3], colors: ['#9aa4ff', null, null, null] },
+                    revenueDonut: { data: [65, 35], totalLabel: '$4.2M', subLabel: 'Total Revenue', legend: { loyalty: '$2.73M (65%)', nonloyalty: '$1.47M (35%)' } },
+                    aovTrend: { labels: ['Oct 2025', 'Nov 2025', 'Dec 2025', 'Jan 2026'], data: [52, 48, 38, 18], yMax: 60, lineColor: 'accentBlue', fillRgba: '90, 85, 227, 0.05' }
                 },
                 tables: {
                     'top-segments-tbody': `
@@ -866,142 +536,16 @@
             },
             'Dormant High Spenders': {
                 metrics: {
-                    'total-guests': { value: '4,208', trend: '<i class="ph ph-arrow-down-right"></i> 1.2%', trendClass: 'negative', subtext: '4,259 previous period', sparkline: 'assets/sparkline-down.svg' },
-                    'active-guests': { value: '0', trend: '0.0%', trendClass: '', subtext: '0 previous period', sparkline: flatGrayLine },
-                    'repeat-rate': { value: '100%', trend: '0.0%', trendClass: '', subtext: '100% previous period', sparkline: flatGrayLine },
-                    'avg-visits': { value: '8.4', trend: '<i class="ph ph-arrow-down-right"></i> 0.4%', trendClass: 'negative', subtext: '8.5 previous period', sparkline: 'assets/sparkline-down.svg' }
+                    'total-guests': { value: '4,208', trend: '<i class="ph ph-arrow-down-right"></i> 1.2%', trendClass: 'negative', subtext: '4,259 previous period', sparkline: 'down' },
+                    'active-guests': { value: '0', trend: '0.0%', trendClass: '', subtext: '0 previous period', sparkline: 'flat' },
+                    'repeat-rate': { value: '100%', trend: '0.0%', trendClass: '', subtext: '100% previous period', sparkline: 'flat' },
+                    'avg-visits': { value: '8.4', trend: '<i class="ph ph-arrow-down-right"></i> 0.4%', trendClass: 'negative', subtext: '8.5 previous period', sparkline: 'down' }
                 },
-                charts: {
-                    'repeat-trend-chart': `
-                                <div class="chart-axis-y">
-                                    <span>100%</span>
-                                    <span>75%</span>
-                                    <span>50%</span>
-                                    <span>25%</span>
-                                    <span>0%</span>
-                                </div>
-                                <div class="chart-main-area">
-                                    <div class="chart-grid-lines">
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line" style="background: #ccc;"></div>
-                                    </div>
-                                    <div class="chart-content">
-                                        <div class="bar-item" style="height: 100%;"></div>
-                                        <div class="bar-item" style="height: 100%;"></div>
-                                        <div class="bar-item" style="height: 100%;"></div>
-                                        <div class="bar-item" style="height: 100%;"></div>
-                                        <div class="bar-item" style="height: 100%;"></div>
-                                        <div class="bar-item" style="height: 100%;"></div>
-                                        <div class="bar-item" style="height: 100%;"></div>
-                                        <div class="bar-item" style="height: 100%;"></div>
-                                        <div class="bar-item" style="height: 100%;"></div>
-                                        <div class="bar-item" style="height: 100%;"></div>
-                                    </div>
-                                </div>
-                                <div class="chart-labels-x">
-                                    <span>Jun 18</span>
-                                    <span>Jun 25</span>
-                                    <span>Jul 02</span>
-                                    <span>Jul 09</span>
-                                </div>`,
-                    'freq-dist-chart': `
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                                        <span style="color: var(--text-subdued);">1 Visit</span>
-                                        <span style="font-weight: 700;">0%</span>
-                                    </div>
-                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
-                                        <div style="width: 0%; height: 100%; background: #9aa4ff;"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                                        <span style="color: var(--text-subdued);">2-3 Visits</span>
-                                        <span style="font-weight: 700;">5.2%</span>
-                                    </div>
-                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
-                                        <div style="width: 5.2%; height: 100%; background: var(--primary-color);"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                                        <span style="color: var(--text-subdued);">4-10 Visits</span>
-                                        <span style="font-weight: 700;">12.8%</span>
-                                    </div>
-                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
-                                        <div style="width: 12.8%; height: 100%; background: var(--accent-blue);"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-                                        <span style="color: var(--text-subdued);">10+ Visits</span>
-                                        <span style="font-weight: 700;">82.0%</span>
-                                    </div>
-                                    <div style="width: 100%; height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden;">
-                                        <div style="width: 82%; height: 100%; background: var(--success);"></div>
-                                    </div>
-                                </div>`,
-                    'revenue-donut-chart': `
-                                <div style="position: relative; width: 180px; height: 180px;">
-                                    <svg class="donut-svg" viewBox="0 0 36 36">
-                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="#f4f4f4" stroke-width="4"></circle>
-                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--primary-color)" stroke-width="4" stroke-dasharray="92 8" stroke-dashoffset="0"></circle>
-                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--accent-blue)" stroke-width="4" stroke-dasharray="8 92" stroke-dashoffset="-92"></circle>
-                                    </svg>
-                                    <div class="donut-center-text">
-                                        <div style="font-size: 24px; font-weight: 800;">$2.1M</div>
-                                        <div style="font-size: 9px; color: var(--text-subdued); text-transform: uppercase; letter-spacing: 0.05em;">LTV Capital</div>
-                                    </div>
-                                </div>
-                                <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
-                                    <div style="display: flex; align-items: flex-start; gap: 8px;">
-                                        <div style="width: 12px; height: 12px; background: var(--primary-color); border-radius: 2px; margin-top: 2px;"></div>
-                                        <div>
-                                            <div style="font-size: 14px; font-weight: 700;">Loyalty</div>
-                                            <div style="font-size: 12px; color: var(--text-subdued);">$1.93M (92%)</div>
-                                        </div>
-                                    </div>
-                                    <div style="display: flex; align-items: flex-start; gap: 8px;">
-                                        <div style="width: 12px; height: 12px; background: var(--accent-blue); border-radius: 2px; margin-top: 2px;"></div>
-                                        <div>
-                                            <div style="font-size: 14px; font-weight: 700;">Non-Loyalty</div>
-                                            <div style="font-size: 12px; color: var(--text-subdued);">$0.17M (8%)</div>
-                                        </div>
-                                    </div>
-                                </div>`,
-                    'aov-trend-chart': `
-                                <div class="chart-axis-y">
-                                    <span>$120</span>
-                                    <span>$90</span>
-                                    <span>$60</span>
-                                    <span>$30</span>
-                                    <span>$0</span>
-                                </div>
-                                <div class="chart-main-area">
-                                    <div class="chart-grid-lines">
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line" style="background: #ccc;"></div>
-                                    </div>
-                                    <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible;">
-                                        <path d="M 0,20 L 50,22 L 100,18 L 150,25 L 200,20 L 250,22 L 300,24 L 350,20 L 400,22" 
-                                              fill="none" stroke="var(--primary-color)" stroke-width="2" />
-                                        <path d="M 0,20 L 50,22 L 100,18 L 150,25 L 200,20 L 250,22 L 300,24 L 350,20 L 400,22 V 208 H 0 Z" 
-                                              fill="rgba(255, 199, 0, 0.05)" />
-                                        <circle cx="400" cy="22" r="4" fill="var(--primary-color)" stroke="white" stroke-width="2" />
-                                    </svg>
-                                </div>
-                                <div class="chart-labels-x">
-                                    <span>Oct 2025</span>
-                                    <span>Nov 2025</span>
-                                    <span>Dec 2025</span>
-                                    <span>Jan 2026</span>
-                                </div>`
+                chartData: {
+                    repeatTrend: { labels: ['Jun 18', 'Jun 25', 'Jul 02', 'Jul 09', 'Jul 16', 'Jul 23', 'Jul 30', 'Aug 06', 'Aug 13', 'Aug 20'], data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100] },
+                    freqDist: { labels: ['1 Visit', '2-3 Visits', '4-10 Visits', '10+ Visits'], data: [0, 5.2, 12.8, 82], colors: ['#9aa4ff', null, null, null] },
+                    revenueDonut: { data: [92, 8], totalLabel: '$2.1M', subLabel: 'LTV Capital', legend: { loyalty: '$1.93M (92%)', nonloyalty: '$0.17M (8%)' } },
+                    aovTrend: { labels: ['Oct 2025', 'Nov 2025', 'Dec 2025', 'Jan 2026'], data: [95, 92, 97, 90], yMax: 120, lineColor: 'primary', fillRgba: '255, 199, 0, 0.05' }
                 },
                 tables: {
                     'top-segments-tbody': `
@@ -1038,32 +582,205 @@
             }
         };
 
+        function drawSparkline(canvasId, trend) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas || !canvas.getContext) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+            const pad = 2;
+            const n = 8;
+            let ys;
+            if (trend === 'up') ys = [0.7, 0.6, 0.55, 0.5, 0.45, 0.35, 0.2, 0.1];
+            else if (trend === 'down') ys = [0.1, 0.2, 0.35, 0.45, 0.5, 0.55, 0.6, 0.7];
+            else ys = [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4];
+            const step = (w - 2 * pad) / (n - 1);
+            ctx.strokeStyle = trend === 'up' ? '#3dc1af' : trend === 'down' ? '#e11d48' : '#bbb';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(pad, pad + ys[0] * (h - 2 * pad));
+            for (let i = 1; i < n; i++) ctx.lineTo(pad + i * step, pad + ys[i] * (h - 2 * pad));
+            ctx.stroke();
+        }
+
+        const doughnutCenterPlugin = {
+            id: 'doughnutCenter',
+            afterDraw(chart) {
+                if (chart.config.type !== 'doughnut' || !chart.config.options.centerText) return;
+                const { ctx, chartArea: { left, right, top, bottom } } = chart;
+                const cx = (left + right) / 2;
+                const cy = (top + bottom) / 2;
+                const { main, sub } = chart.config.options.centerText;
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '800 24px Manrope, sans-serif';
+                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-text-normal').trim() || '#111';
+                ctx.fillText(main, cx, cy - 8);
+                ctx.font = '9px Manrope, sans-serif';
+                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-subdued').trim() || '#6b7280';
+                ctx.fillText(sub, cx, cy + 10);
+                ctx.restore();
+            }
+        };
+
+        Chart.register(doughnutCenterPlugin);
+
+        let repeatTrendChart, freqDistChart, revenueDonutChart, aovTrendChart;
+
+        function initCharts() {
+            const c = getChartColors();
+            const fontFamily = 'Manrope, sans-serif';
+
+            repeatTrendChart = new Chart(document.getElementById('repeat-trend-canvas'), {
+                type: 'bar',
+                data: {
+                    labels: segmentData['All segments'].chartData.repeatTrend.labels,
+                    datasets: [{ label: 'Repeat %', data: segmentData['All segments'].chartData.repeatTrend.data, backgroundColor: '#9aa4ff', borderRadius: 2 }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 300 },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (item) => item.raw + '%' } }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 10, family: fontFamily }, color: c.subdued } },
+                        y: { min: 0, max: 100, ticks: { stepSize: 25, callback: v => v + '%', font: { size: 10, family: fontFamily }, color: c.subdued }, grid: { color: '#f0f0f0' } }
+                    }
+                }
+            });
+
+            freqDistChart = new Chart(document.getElementById('freq-dist-canvas'), {
+                type: 'bar',
+                data: {
+                    labels: segmentData['All segments'].chartData.freqDist.labels,
+                    datasets: [{
+                        label: '%',
+                        data: segmentData['All segments'].chartData.freqDist.data,
+                        backgroundColor: [c.primary, c.accentBlue, '#9aa4ff', c.success],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 300 },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (item) => item.raw + '%' } }
+                    },
+                    scales: {
+                        x: { min: 0, max: 100, ticks: { display: false }, grid: { display: false } },
+                        y: { grid: { display: false }, ticks: { font: { size: 12, family: fontFamily }, color: c.subdued } }
+                    }
+                }
+            });
+
+            revenueDonutChart = new Chart(document.getElementById('revenue-donut-canvas'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Loyalty', 'Non-Loyalty'],
+                    datasets: [{
+                        data: segmentData['All segments'].chartData.revenueDonut.data,
+                        backgroundColor: [c.primary, c.accentBlue],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    animation: { duration: 300 },
+                    centerText: {
+                        main: segmentData['All segments'].chartData.revenueDonut.totalLabel,
+                        sub: segmentData['All segments'].chartData.revenueDonut.subLabel
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (ctx) => ctx.label + ' ' + ctx.raw + '%' } }
+                    }
+                }
+            });
+
+            aovTrendChart = new Chart(document.getElementById('aov-trend-canvas'), {
+                type: 'line',
+                data: {
+                    labels: segmentData['All segments'].chartData.aovTrend.labels,
+                    datasets: [{
+                        label: 'AOV',
+                        data: segmentData['All segments'].chartData.aovTrend.data,
+                        borderColor: c.accentBlue,
+                        backgroundColor: 'rgba(90, 85, 227, 0.05)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 3,
+                        pointBackgroundColor: c.accentBlue
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 300 },
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 10, family: fontFamily }, color: c.subdued } },
+                        y: { min: 0, max: 60, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10, family: fontFamily }, color: c.subdued, callback: v => '$' + v } }
+                    }
+                }
+            });
+
+            ['total-guests', 'active-guests', 'repeat-rate', 'avg-visits'].forEach(id => drawSparkline(id + '-sparkline', segmentData['All segments'].metrics[id].sparkline));
+        }
+
         function refreshDashboard(segmentName) {
             const data = segmentData[segmentName] || segmentData['All segments'];
             
-            // Update Metrics
             Object.keys(data.metrics).forEach(id => {
                 const metric = data.metrics[id];
                 document.getElementById(id + '-value').innerText = metric.value;
                 document.getElementById(id + '-trend').innerHTML = metric.trend;
                 document.getElementById(id + '-trend').className = 'metric-card-trend ' + metric.trendClass;
                 document.getElementById(id + '-subtext').innerText = metric.subtext;
-                if (metric.sparkline) {
-                    document.getElementById(id + '-sparkline').src = metric.sparkline;
-                }
+                drawSparkline(id + '-sparkline', metric.sparkline);
             });
 
-            // Update Charts
-            Object.keys(data.charts).forEach(id => {
-                document.getElementById(id).innerHTML = data.charts[id];
-            });
+            const cd = data.chartData;
+            if (cd) {
+                repeatTrendChart.data.labels = cd.repeatTrend.labels;
+                repeatTrendChart.data.datasets[0].data = cd.repeatTrend.data;
+                repeatTrendChart.update();
 
-            // Update Tables
+                freqDistChart.data.labels = cd.freqDist.labels;
+                freqDistChart.data.datasets[0].data = cd.freqDist.data;
+                freqDistChart.update();
+
+                revenueDonutChart.data.datasets[0].data = cd.revenueDonut.data;
+                revenueDonutChart.options.centerText = { main: cd.revenueDonut.totalLabel, sub: cd.revenueDonut.subLabel };
+                revenueDonutChart.update();
+                document.getElementById('revenue-legend-loyalty').innerText = cd.revenueDonut.legend.loyalty;
+                document.getElementById('revenue-legend-nonloyalty').innerText = cd.revenueDonut.legend.nonloyalty;
+
+                aovTrendChart.data.labels = cd.aovTrend.labels;
+                aovTrendChart.data.datasets[0].data = cd.aovTrend.data;
+                const c = getChartColors();
+                aovTrendChart.data.datasets[0].borderColor = cd.aovTrend.lineColor === 'primary' ? c.primary : c.accentBlue;
+                aovTrendChart.data.datasets[0].backgroundColor = 'rgba(' + cd.aovTrend.fillRgba + ')';
+                aovTrendChart.data.datasets[0].pointBackgroundColor = cd.aovTrend.lineColor === 'primary' ? c.primary : c.accentBlue;
+                aovTrendChart.options.scales.y.max = cd.aovTrend.yMax;
+                aovTrendChart.update();
+            }
+
             Object.keys(data.tables).forEach(id => {
                 document.getElementById(id).innerHTML = data.tables[id];
             });
 
-            // Update dynamic labels
             const labels = document.querySelectorAll('strong');
             labels.forEach(label => {
                 if (label.innerText === 'Dormant High Spenders' || label.innerText === 'High-Value Loyalists') {
@@ -1075,6 +792,9 @@
         document.getElementById('segment-dropdown').addEventListener('change', function(e) {
             refreshDashboard(e.target.value);
         });
+
+        initCharts();
+        refreshDashboard('All segments');
 
         function toggleAva() {
             const modal = document.getElementById('avaModal');
@@ -1148,10 +868,37 @@
                     insightCard.innerHTML = `
                         <div class="ava-insight-title">Example insight</div>
                         <div class="ava-insight-text">Repeat guest frequency has increased by 12% among High-Value Loyalists following the recent menu update.</div>
-                        <div class="ava-placeholder-chart">[ Chart: Frequency Trend ]</div>
+                        <div class="ava-placeholder-chart"><canvas class="ava-insight-chart-canvas"></canvas></div>
                     `;
                     chatArea.appendChild(insightCard);
-                    
+                    const canvas = insightCard.querySelector('.ava-insight-chart-canvas');
+                    if (canvas && typeof Chart !== 'undefined') {
+                        const c = getChartColors();
+                        new Chart(canvas, {
+                            type: 'line',
+                            data: {
+                                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                                datasets: [{
+                                    label: 'Frequency',
+                                    data: [2.1, 2.2, 2.35, 2.4],
+                                    borderColor: c.accentBlue,
+                                    backgroundColor: 'rgba(90, 85, 227, 0.08)',
+                                    fill: true,
+                                    tension: 0.3,
+                                    pointRadius: 3
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { grid: { display: false }, ticks: { font: { size: 10 }, color: c.subdued } },
+                                    y: { min: 1.8, max: 2.6, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, color: c.subdued } }
+                                }
+                            }
+                        });
+                    }
                     // Add action buttons
                     const actionButtons = document.createElement('div');
                     actionButtons.className = 'ava-action-buttons';
