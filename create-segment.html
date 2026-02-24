@@ -160,7 +160,7 @@
         }
 
         .cs-rule-area {
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .cs-rule-block {
@@ -168,6 +168,34 @@
             border-radius: var(--border-radius);
             padding: var(--spacing-md);
             display: inline-block;
+        }
+
+        .cs-rule-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .cs-rule-header-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .cs-rule-number {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-normal);
+            line-height: 1.5;
+        }
+
+        .cs-rule-meta {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-subdued);
+            line-height: 1.36;
         }
 
         .cs-filter-type-btn {
@@ -557,7 +585,11 @@
             flex-direction: column;
             align-items: flex-start;
             gap: 24px;
-            margin-bottom: var(--spacing-xl);
+            margin-bottom: 16px;
+        }
+
+        .cs-segment-preview-wrap {
+            margin-top: 32px;
         }
 
         .cs-btn-group {
@@ -591,6 +623,72 @@
         }
 
         .cs-btn-group-item:hover:not(.active) {
+            background: var(--bg-subdued);
+        }
+
+        .cs-operator-compact {
+            position: relative;
+            display: inline-block;
+        }
+
+        .cs-operator-compact-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: white;
+            border: 1px solid var(--text-normal);
+            border-radius: var(--border-radius);
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            line-height: 1.5;
+        }
+
+        .cs-operator-compact-trigger:hover {
+            background: var(--bg-subdued);
+        }
+
+        .cs-operator-compact-trigger i {
+            font-size: 16px;
+        }
+
+        .cs-operator-compact-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            z-index: 400;
+            flex-direction: column;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
+            padding: 4px;
+            min-width: 120px;
+            white-space: nowrap;
+        }
+
+        .cs-operator-compact-menu.open {
+            display: flex;
+        }
+
+        .cs-operator-compact-item {
+            padding: 8px 12px;
+            background: none;
+            border: none;
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-normal);
+            cursor: pointer;
+            text-align: left;
+            border-radius: 4px;
+        }
+
+        .cs-operator-compact-item:hover {
             background: var(--bg-subdued);
         }
 
@@ -1374,6 +1472,15 @@
                     <!-- Rule Builder Area -->
                     <div class="cs-rule-area" id="csRuleArea">
                         <div class="cs-rule-block" id="csRuleBlock">
+                            <div class="cs-rule-header">
+                                <div class="cs-rule-header-info">
+                                    <span class="cs-rule-number">Rule 1</span>
+                                    <span class="cs-rule-meta">0 guests &bull; 0% of all guests</span>
+                                </div>
+                                <button class="cs-rule-overflow" type="button" aria-label="More options">
+                                    <i class="ph ph-dots-three-vertical"></i>
+                                </button>
+                            </div>
                             <div class="cs-dropdown-anchor" id="csDropdownAnchor">
                                 <button class="cs-filter-type-btn" type="button" id="filterTypeBtn" onclick="toggleFilterDropdown(event)">
                                     Select filter type...
@@ -1430,9 +1537,6 @@
                                         <!-- options rendered by JS -->
                                     </div>
                                 </div>
-                                <button class="cs-rule-overflow" type="button" aria-label="More options">
-                                    <i class="ph ph-dots-three-vertical"></i>
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -1450,7 +1554,7 @@
                     </div>
 
                     <!-- Segment Preview -->
-                    <div>
+                    <div class="cs-segment-preview-wrap">
                         <div class="cs-empty-state" id="csEmptyState">
                             <div class="cs-empty-icon">
                                 <i class="ph-duotone ph-chart-bar-horizontal"></i>
@@ -1762,6 +1866,171 @@
         let ruleBlockCounter = 0;
         let completedRulesCount = 0;
 
+        function getRuleDisplayNumber(newBlock) {
+            const allBlocks = document.querySelectorAll('.cs-rule-block');
+            return allBlocks.length + 1;
+        }
+
+        function renumberRules() {
+            const allBlocks = document.querySelectorAll('.cs-rule-block');
+            allBlocks.forEach((block, i) => {
+                const numEl = block.querySelector('.cs-rule-number');
+                if (numEl) numEl.textContent = 'Rule ' + (i + 1);
+            });
+        }
+
+        const TOTAL_GUESTS = 33750;
+
+        const RULE_BASE_DATA = {
+            'Lifecycle Stage':    { guests: 945,  avgDays: 34, avgCheck: 22.15, avgCheckIn: 20.80, avgCheckOn: 24.50, avgOrders: 8,  avgLtv: 185.20 },
+            'Order Frequency':    { guests: 2400, avgDays: 28, avgCheck: 24.80, avgCheckIn: 23.10, avgCheckOn: 27.60, avgOrders: 9,  avgLtv: 210.00 },
+            'First item ordered': { guests: 1800, avgDays: 22, avgCheck: 27.50, avgCheckIn: 25.90, avgCheckOn: 30.20, avgOrders: 11, avgLtv: 260.00 },
+        };
+        const RULE_BASE_DEFAULT = { guests: 1200, avgDays: 30, avgCheck: 23.50, avgCheckIn: 22.00, avgCheckOn: 26.00, avgOrders: 7, avgLtv: 195.00 };
+
+        function getFilterNameForBlock(ruleBlock) {
+            const label = ruleBlock.querySelector('.cs-rule-label');
+            return label ? label.textContent.trim() : null;
+        }
+
+        function getRuleBaseForBlock(ruleBlock) {
+            const name = getFilterNameForBlock(ruleBlock);
+            return (name && RULE_BASE_DATA[name]) || RULE_BASE_DEFAULT;
+        }
+
+        function getOperatorForRow(opRow) {
+            if (!opRow) return 'And';
+            const compact = opRow.querySelector('.cs-operator-compact-trigger');
+            if (compact) {
+                const text = compact.textContent.replace(/\s+/g, ' ').trim();
+                if (text.startsWith('Or')) return 'Or';
+                if (text.startsWith('Exclude')) return 'Exclude';
+                return 'And';
+            }
+            const active = opRow.querySelector('.cs-btn-group-item.active');
+            return active ? active.textContent.trim() : 'And';
+        }
+
+        function gatherActiveRules() {
+            const ruleAreas = document.querySelectorAll('.cs-rule-area');
+            const rules = [];
+            ruleAreas.forEach((area, i) => {
+                const block = area.querySelector('.cs-rule-block');
+                if (!block) return;
+                const ruleRow = block.querySelector('.cs-rule-row');
+                if (!ruleRow) return;
+                const rowDisplay = ruleRow.style.display || getComputedStyle(ruleRow).display;
+                if (rowDisplay === 'none') return;
+                const chips = block.querySelectorAll('.cs-chip');
+                if (chips.length === 0) return;
+
+                const base = getRuleBaseForBlock(block);
+                let operator = null;
+                if (i > 0) {
+                    let prev = area.previousElementSibling;
+                    while (prev && !prev.classList.contains('cs-operator-row')) {
+                        prev = prev.previousElementSibling;
+                    }
+                    operator = getOperatorForRow(prev);
+                }
+                rules.push({ ...base, operator });
+            });
+            return rules;
+        }
+
+        function computeSegmentGuests(rules) {
+            if (rules.length === 0) return 0;
+            let result = rules[0].guests;
+            for (let i = 1; i < rules.length; i++) {
+                const r = rules[i];
+                switch (r.operator) {
+                    case 'And':
+                        result = Math.round(Math.min(result, r.guests) * 0.37);
+                        break;
+                    case 'Or': {
+                        const intersection = Math.round(Math.min(result, r.guests) * 0.35);
+                        result = result + r.guests - intersection;
+                        break;
+                    }
+                    case 'Exclude':
+                        result = Math.max(Math.round(result - Math.min(result, r.guests) * 0.40), 0);
+                        break;
+                    default:
+                        result = Math.round(Math.min(result, r.guests) * 0.37);
+                }
+            }
+            return result;
+        }
+
+        function computeHeroMetrics(rules, combined) {
+            const pct = (combined / TOTAL_GUESTS * 100).toFixed(1);
+            const totalW = rules.reduce((s, r) => s + r.guests, 0);
+            const wAvg = (key) => rules.reduce((s, r) => s + r[key] * r.guests / totalW, 0);
+
+            const avgCheck = wAvg('avgCheck');
+            const avgIn = wAvg('avgCheckIn');
+            const avgOn = wAvg('avgCheckOn');
+
+            return {
+                guests: combined.toLocaleString(),
+                guestsPct: pct + '% of all guests',
+                avgDays: Math.round(wAvg('avgDays')) + ' days',
+                avgCheck: '$' + avgCheck.toFixed(2),
+                avgCheckSub: '$' + avgIn.toFixed(2) + ' in store \u2022 $' + avgOn.toFixed(2) + ' online',
+                avgOrders: String(Math.round(wAvg('avgOrders'))),
+                avgLtv: '$' + wAvg('avgLtv').toFixed(2),
+            };
+        }
+
+        function updateRuleMeta(ruleBlock) {
+            const base = getRuleBaseForBlock(ruleBlock);
+            const pct = (base.guests / TOTAL_GUESTS * 100).toFixed(1);
+            const metaEl = ruleBlock.querySelector('.cs-rule-meta');
+            if (metaEl) metaEl.textContent = base.guests.toLocaleString() + ' guests \u2022 ' + pct + '% of all guests';
+        }
+
+        function recalculateAllRuleMetas() {
+            document.querySelectorAll('.cs-rule-block').forEach(block => {
+                const ruleRow = block.querySelector('.cs-rule-row');
+                if (ruleRow && ruleRow.style.display !== 'none') {
+                    const chips = block.querySelectorAll('.cs-chip');
+                    if (chips.length > 0) updateRuleMeta(block);
+                }
+            });
+        }
+
+        function collapseOperatorRow(opRow) {
+            const activeBtn = opRow.querySelector('.cs-btn-group-item.active');
+            const value = activeBtn ? activeBtn.textContent.trim() : 'And';
+            opRow.innerHTML = `
+                <div class="cs-operator-compact">
+                    <button class="cs-operator-compact-trigger" type="button">
+                        ${value} <i class="ph ph-caret-down"></i>
+                    </button>
+                    <div class="cs-operator-compact-menu">
+                        <button class="cs-operator-compact-item" type="button">And</button>
+                        <button class="cs-operator-compact-item" type="button">Or</button>
+                        <button class="cs-operator-compact-item" type="button">Exclude</button>
+                    </div>
+                </div>
+            `;
+            opRow.style.gap = '0';
+        }
+
+        function expandOperatorRow(opRow) {
+            opRow.innerHTML = `
+                <div class="cs-btn-group">
+                    <button class="cs-btn-group-item active" type="button">And</button>
+                    <button class="cs-btn-group-item" type="button">Or</button>
+                    <button class="cs-btn-group-item" type="button">Exclude</button>
+                </div>
+                <button class="cs-add-rule-btn" type="button" onclick="addNewRule()">
+                    <i class="ph ph-plus"></i> Add new rule
+                </button>
+            `;
+            opRow.style.gap = '';
+        }
+
         const STAGE_DATA = {
             1: {
                 hero: {
@@ -2064,6 +2333,7 @@
             if (!group) return;
             group.querySelectorAll('.cs-btn-group-item').forEach(btn => btn.classList.remove('active'));
             item.classList.add('active');
+            if (group.closest('.cs-operator-row')) triggerSkeletonLoading();
         });
 
         /* ── Operator pill dropdown ── */
@@ -2282,6 +2552,7 @@
             if (!firstRuleCounted) {
                 completedRulesCount++;
                 firstRuleCounted = true;
+                updateRuleMeta(document.getElementById('csRuleBlock'));
             }
             box.classList.remove('cs-combo-empty');
             if (emptyState) emptyState.style.display = 'none';
@@ -2365,6 +2636,8 @@
                     if (!dynamicRuleCounted) {
                         completedRulesCount++;
                         dynamicRuleCounted = true;
+                        const ruleBlock = document.getElementById('csRuleBlock' + id);
+                        if (ruleBlock) updateRuleMeta(ruleBlock);
                     }
                     selected.forEach(val => {
                         const chip = document.createElement('div');
@@ -2646,19 +2919,23 @@
         }
 
         function updateSegmentPreview() {
+            const rules = gatherActiveRules();
+            const combined = rules.length > 0 ? computeSegmentGuests(rules) : 0;
+            const hero = rules.length > 0 ? computeHeroMetrics(rules, combined) : null;
+
             const stage = Math.min(completedRulesCount, 3);
             const data = STAGE_DATA[stage];
             if (!data) return;
 
             const heroCards = document.querySelectorAll('#spPopulated .sp-hero-card');
-            if (heroCards.length >= 5) {
-                heroCards[0].querySelector('.sp-hero-value').textContent = data.hero.guests;
-                heroCards[0].querySelector('.sp-hero-sub').textContent = data.hero.guestsPct;
-                heroCards[1].querySelector('.sp-hero-value').textContent = data.hero.avgDays;
-                heroCards[2].querySelector('.sp-hero-value').textContent = data.hero.avgCheck;
-                heroCards[2].querySelector('.sp-hero-sub').textContent = data.hero.avgCheckSub;
-                heroCards[3].querySelector('.sp-hero-value').textContent = data.hero.avgOrders;
-                heroCards[4].querySelector('.sp-hero-value').textContent = data.hero.avgLtv;
+            if (heroCards.length >= 5 && hero) {
+                heroCards[0].querySelector('.sp-hero-value').textContent = hero.guests;
+                heroCards[0].querySelector('.sp-hero-sub').textContent = hero.guestsPct;
+                heroCards[1].querySelector('.sp-hero-value').textContent = hero.avgDays;
+                heroCards[2].querySelector('.sp-hero-value').textContent = hero.avgCheck;
+                heroCards[2].querySelector('.sp-hero-sub').textContent = hero.avgCheckSub;
+                heroCards[3].querySelector('.sp-hero-value').textContent = hero.avgOrders;
+                heroCards[4].querySelector('.sp-hero-value').textContent = hero.avgLtv;
             }
 
             if (spCharts.reach) {
@@ -2715,7 +2992,8 @@
             const id = ruleBlockCounter;
 
             const currentAddBtn = event.target.closest('.cs-add-rule-btn');
-            if (currentAddBtn) currentAddBtn.style.display = 'none';
+            const parentOpRow = currentAddBtn ? currentAddBtn.closest('.cs-operator-row') : null;
+            if (parentOpRow) collapseOperatorRow(parentOpRow);
 
             const newRuleArea = document.createElement('div');
             newRuleArea.className = 'cs-rule-area';
@@ -2724,6 +3002,19 @@
             const newRuleBlock = document.createElement('div');
             newRuleBlock.className = 'cs-rule-block';
             newRuleBlock.id = 'csRuleBlock' + id;
+
+            const header = document.createElement('div');
+            header.className = 'cs-rule-header';
+            header.innerHTML = `
+                <div class="cs-rule-header-info">
+                    <span class="cs-rule-number">Rule ${getRuleDisplayNumber(newRuleBlock)}</span>
+                    <span class="cs-rule-meta">0 guests &bull; 0% of all guests</span>
+                </div>
+                <button class="cs-rule-overflow" type="button" aria-label="More options">
+                    <i class="ph ph-dots-three-vertical"></i>
+                </button>
+            `;
+            newRuleBlock.appendChild(header);
 
             const anchor = document.createElement('div');
             anchor.className = 'cs-dropdown-anchor';
@@ -2772,9 +3063,6 @@
                     </div>
                     <div class="cs-combo-dropdown" id="csComboDropdown${id}"></div>
                 </div>
-                <button class="cs-rule-overflow" type="button" aria-label="More options">
-                    <i class="ph ph-dots-three-vertical"></i>
-                </button>
             `;
 
             newRuleBlock.appendChild(anchor);
@@ -2785,6 +3073,7 @@
             const lastOpRow = allOperatorRows[allOperatorRows.length - 1];
             lastOpRow.after(newRuleArea);
 
+            renumberRules();
             activeRuleBlockId = id;
         }
 
@@ -2981,28 +3270,43 @@
                 menu.classList.remove('open');
                 document.body.appendChild(menu); // detach before DOM removal
                 if (!activeOverflowBtn) return;
-                const ruleRow = activeOverflowBtn.closest('.cs-rule-row');
+                const ruleBlock = activeOverflowBtn.closest('.cs-rule-block');
                 activeOverflowBtn = null;
-                if (!ruleRow) return;
-                const ruleArea = ruleRow.closest('.cs-rule-area');
+                if (!ruleBlock) return;
+                const ruleArea = ruleBlock.closest('.cs-rule-area');
                 if (!ruleArea) return;
                 if (ruleArea.id === 'csRuleArea') {
-                    ruleRow.style.display = 'none';
+                    const ruleRow = document.getElementById('csRuleRow');
+                    if (ruleRow) ruleRow.style.display = 'none';
                     document.getElementById('csDropdownAnchor').style.display = '';
                     document.getElementById('csOperatorRow').style.display = 'none';
                     const actionBar = document.getElementById('csActionBar');
                     if (actionBar) actionBar.style.display = 'none';
                     document.querySelector('.content-area').style.paddingBottom = '';
                     document.getElementById('csRuleLabel').textContent = '';
+                    const metaEl = ruleBlock.querySelector('.cs-rule-meta');
+                    if (metaEl) metaEl.textContent = '0 guests \u2022 0% of all guests';
                 } else {
                     let next = ruleArea.nextElementSibling;
                     while (next && !next.classList.contains('cs-operator-row')) {
                         next = next.nextElementSibling;
                     }
                     if (next && next.classList.contains('cs-operator-row')) next.remove();
+
+                    const dropdown = ruleArea.querySelector('#filterDropdown');
+                    if (dropdown) {
+                        document.getElementById('csDropdownAnchor').appendChild(dropdown);
+                    }
+
                     ruleArea.remove();
+
+                    const allOpRows = document.querySelectorAll('.cs-operator-row');
+                    const lastOpRow = allOpRows[allOpRows.length - 1];
+                    if (lastOpRow && !lastOpRow.querySelector('.cs-btn-group')) {
+                        expandOperatorRow(lastOpRow);
+                    }
                 }
-                // If no configured rules remain, reset the segment preview to empty state
+                renumberRules();
                 const remainingRules = document.querySelectorAll('.cs-rule-row');
                 const hasActiveRule = Array.from(remainingRules).some(r => r.style.display !== 'none');
                 if (!hasActiveRule) {
@@ -3013,6 +3317,8 @@
                     if (skeleton) skeleton.classList.remove('visible');
                     if (populated) populated.classList.remove('visible');
                     destroySegmentPreviewCharts();
+                } else {
+                    triggerSkeletonLoading();
                 }
                 return;
             }
@@ -3021,10 +3327,10 @@
             if (e.target.closest('#ruleMenuDuplicate')) {
                 menu.classList.remove('open');
                 if (!activeOverflowBtn) return;
-                const ruleRow = activeOverflowBtn.closest('.cs-rule-row');
+                const ruleBlock = activeOverflowBtn.closest('.cs-rule-block');
                 activeOverflowBtn = null;
-                if (!ruleRow) return;
-                const ruleArea = ruleRow.closest('.cs-rule-area');
+                if (!ruleBlock) return;
+                const ruleArea = ruleBlock.closest('.cs-rule-area');
                 if (!ruleArea) return;
 
                 const clone = ruleArea.cloneNode(true);
@@ -3035,15 +3341,18 @@
                 const newOpRow = document.createElement('div');
                 newOpRow.className = 'cs-operator-row';
                 newOpRow.style.display = 'flex';
+                newOpRow.style.gap = '0';
                 newOpRow.innerHTML = `
-                    <div class="cs-btn-group">
-                        <button class="cs-btn-group-item active" type="button">And</button>
-                        <button class="cs-btn-group-item" type="button">Or</button>
-                        <button class="cs-btn-group-item" type="button">Exclude</button>
+                    <div class="cs-operator-compact">
+                        <button class="cs-operator-compact-trigger" type="button">
+                            And <i class="ph ph-caret-down"></i>
+                        </button>
+                        <div class="cs-operator-compact-menu">
+                            <button class="cs-operator-compact-item" type="button">And</button>
+                            <button class="cs-operator-compact-item" type="button">Or</button>
+                            <button class="cs-operator-compact-item" type="button">Exclude</button>
+                        </div>
                     </div>
-                    <button class="cs-add-rule-btn" type="button" onclick="addNewRule()">
-                        <i class="ph ph-plus"></i> Add new rule
-                    </button>
                 `;
 
                 let insertAfter = ruleArea.nextElementSibling;
@@ -3057,6 +3366,9 @@
                     ruleArea.after(newOpRow);
                     ruleArea.after(clone);
                 }
+                renumberRules();
+                completedRulesCount++;
+                triggerSkeletonLoading();
                 return;
             }
 
@@ -3079,6 +3391,30 @@
                 menu.classList.remove('open');
                 activeOverflowBtn = null;
             }
+        });
+
+        /* ── Compact operator dropdown ── */
+        document.addEventListener('click', function(e) {
+            const item = e.target.closest('.cs-operator-compact-item');
+            if (item) {
+                e.stopPropagation();
+                const compact = item.closest('.cs-operator-compact');
+                const trigger = compact.querySelector('.cs-operator-compact-trigger');
+                const icon = trigger.querySelector('i');
+                Array.from(trigger.childNodes).forEach(n => { if (n.nodeType === Node.TEXT_NODE) n.remove(); });
+                trigger.insertBefore(document.createTextNode(item.textContent.trim() + ' '), icon);
+                compact.querySelector('.cs-operator-compact-menu').classList.remove('open');
+                triggerSkeletonLoading();
+                return;
+            }
+            const toggle = e.target.closest('.cs-operator-compact-trigger');
+            if (toggle) {
+                e.stopPropagation();
+                document.querySelectorAll('.cs-operator-compact-menu.open').forEach(m => m.classList.remove('open'));
+                toggle.closest('.cs-operator-compact').querySelector('.cs-operator-compact-menu').classList.toggle('open');
+                return;
+            }
+            document.querySelectorAll('.cs-operator-compact-menu.open').forEach(m => m.classList.remove('open'));
         });
 
         /* ── Composition view dropdown ── */
