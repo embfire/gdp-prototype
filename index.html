@@ -617,10 +617,10 @@
                 ctx.save();
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.font = '800 24px Manrope, sans-serif';
+                ctx.font = `800 24px ${getComputedStyle(document.documentElement).getPropertyValue('--font-family').trim()}`;
                 ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-text-normal').trim() || '#111';
                 ctx.fillText(main, cx, cy - 8);
-                ctx.font = '9px Manrope, sans-serif';
+                ctx.font = `9px ${getComputedStyle(document.documentElement).getPropertyValue('--font-family').trim()}`;
                 ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-subdued').trim() || '#6b7280';
                 ctx.fillText(sub, cx, cy + 10);
                 ctx.restore();
@@ -633,7 +633,7 @@
 
         function initCharts() {
             const c = getChartColors();
-            const fontFamily = 'Manrope, sans-serif';
+            const fontFamily = getComputedStyle(document.documentElement).getPropertyValue('--font-family').trim();
 
             repeatTrendChart = new Chart(document.getElementById('repeat-trend-canvas'), {
                 type: 'bar',

@@ -65,7 +65,7 @@ body {
 
 /* Typography */
 h1 {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-family);
   font-size: 28px;
   font-style: normal;
   font-weight: 400;
@@ -912,7 +912,7 @@ tr:hover td {
   padding: 8px 16px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-family);
   font-size: 16px;
   line-height: 1.5;
   outline: none;
@@ -951,7 +951,7 @@ tr:hover td {
   border: 1px solid var(--border-color);
   border-radius: 8px;
   background: white;
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-family);
   font-size: 16px;
   line-height: 1.5;
   color: var(--text-text-normal, #000);
@@ -981,7 +981,7 @@ tr:hover td {
 }
 
 .ava-message-text {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-family);
   font-size: 16px;
   line-height: 1.5;
   color: var(--text-text-normal, #000);
@@ -991,7 +991,7 @@ tr:hover td {
 .message-bubble {
   padding: 16px;
   border-radius: 8px;
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-family);
   font-size: 16px;
   line-height: 1.5;
   background: #eeeefc;
@@ -1017,7 +1017,7 @@ tr:hover td {
 }
 
 .ava-insight-title {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-family);
   font-weight: 800;
   font-size: 16px;
   line-height: 1.5;
@@ -1025,7 +1025,7 @@ tr:hover td {
 }
 
 .ava-insight-text {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-family);
   font-size: 16px;
   line-height: 1.5;
   color: var(--text-text-normal, #000);
@@ -1040,7 +1040,7 @@ tr:hover td {
   align-items: center;
   justify-content: center;
   color: var(--text-text-normal, #000);
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-family);
   font-size: 16px;
   line-height: 1.5;
   margin-top: 0;
@@ -1059,7 +1059,7 @@ tr:hover td {
   border: 1px solid #000000;
   border-radius: 8px;
   background: white;
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-family);
   font-size: 16px;
   line-height: 1.5;
   color: var(--text-text-normal, #000);

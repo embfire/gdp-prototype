@@ -6,6 +6,7 @@
     <title>Create Segment - Guest Data Platform</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .cs-title-bar {
@@ -557,26 +558,49 @@
             white-space: nowrap;
         }
 
+        .cs-combo-option.has-id {
+            align-items: flex-start;
+        }
+
+        .cs-combo-option.has-id .cs-combo-checkbox {
+            margin-top: 2px;
+        }
+
+        .cs-combo-option-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .cs-combo-item-id {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--text-subdued);
+        }
+
         .cs-combo-option:hover:not(.selected) {
             background: var(--bg-subdued);
         }
 
         .cs-combo-option.selected {
-            background: #eeeefc;
+            background: #ebf0ff;
         }
 
         .cs-combo-checkbox {
             width: 24px;
             height: 24px;
             flex-shrink: 0;
-            background-repeat: no-repeat;
-            background-size: contain;
-            background-position: center;
-            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.5 21C4.1 21 3.75 20.85 3.45 20.55C3.15 20.25 3 19.9 3 19.5V4.5C3 4.1 3.15 3.75 3.45 3.45C3.75 3.15 4.1 3 4.5 3H19.5C19.9 3 20.25 3.15 20.55 3.45C20.85 3.75 21 4.1 21 4.5V19.5C21 19.9 20.85 20.25 20.55 20.55C20.25 20.85 19.9 21 19.5 21H4.5ZM4.5 19.5H19.5V4.5H4.5V19.5Z' fill='black'/%3E%3C/svg%3E");
+            font-family: 'Material Symbols Rounded';
+            font-size: 24px;
+            line-height: 24px;
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            color: #000000;
+            user-select: none;
         }
 
         .cs-combo-option.selected .cs-combo-checkbox {
-            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='4' y='4' width='16' height='16' fill='white'/%3E%3Cpath d='M4.5 21C4.1 21 3.75 20.85 3.45 20.55C3.15 20.25 3 19.9 3 19.5V4.5C3 4.1 3.15 3.75 3.45 3.45C3.75 3.15 4.1 3 4.5 3H19.5C19.9 3 20.25 3.15 20.55 3.45C20.85 3.75 21 4.1 21 4.5V19.5C21 19.9 20.85 20.25 20.55 20.55C20.25 20.85 19.9 21 19.5 21H4.5ZM10.475 15.675C10.575 15.675 10.6667 15.6583 10.75 15.625C10.8333 15.5917 10.9167 15.5333 11 15.45L17.175 9.275C17.3083 9.14167 17.3792 8.96667 17.3875 8.75C17.3958 8.53333 17.325 8.35 17.175 8.2C17.025 8.05 16.8458 7.975 16.6375 7.975C16.4292 7.975 16.25 8.05 16.1 8.2L10.475 13.825L8.025 11.375C7.89167 11.2417 7.72083 11.1708 7.5125 11.1625C7.30417 11.1542 7.125 11.225 6.975 11.375C6.825 11.525 6.75 11.7042 6.75 11.9125C6.75 12.1208 6.825 12.3 6.975 12.45L9.95 15.45C10.0333 15.5333 10.1167 15.5917 10.2 15.625C10.2833 15.6583 10.375 15.675 10.475 15.675Z' fill='%235A55E3'/%3E%3C/svg%3E");
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            color: #6864d1;
         }
 
         /* ── Operator row ── */
@@ -1018,11 +1042,12 @@
 
         .sp-charts-grid {
             display: grid;
-            grid-template-columns: 1fr 1.56fr;
-            grid-template-rows: auto auto;
+            grid-template-columns: 1fr 1fr;
             gap: 16px;
             margin-bottom: var(--spacing-xl);
         }
+
+        .sp-charts-grid > .sp-card { align-self: stretch; }
 
         .sp-card {
             border: 1px solid #dfe1e2;
@@ -1054,39 +1079,43 @@
 
         .sp-chart-wrap canvas { max-width: 100%; }
 
-        .sp-overlaps-row {
-            display: flex;
-            gap: 56px;
-            justify-content: center;
-            align-items: flex-start;
-            flex-wrap: wrap;
+        .sp-reach-skeleton {
+            display: none;
+            position: absolute;
+            inset: 0;
+            z-index: 2;
         }
 
-        .sp-overlap-item {
+        .sp-reach-skeleton.visible {
+            display: block;
+        }
+
+        .sp-reach-controls {
             display: flex;
-            flex-direction: column;
             align-items: center;
             gap: 16px;
-            width: 150px;
         }
 
-        .sp-overlap-doughnut { width: 134px; height: 116px; }
-
-        .sp-overlap-stats {
-            font-size: 12px;
-            line-height: 1.36;
-            color: var(--text-normal);
-            text-align: center;
+        .sp-reach-legend {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-left: auto;
         }
 
-        .sp-overlap-link {
+        .sp-reach-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             font-size: 12px;
-            color: #1d5eff;
-            text-decoration: underline;
-            cursor: pointer;
-            text-align: center;
-            display: block;
-            width: 100%;
+            color: #60696c;
+        }
+
+        .sp-reach-legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            flex-shrink: 0;
         }
 
         .sp-composition-controls {
@@ -1196,99 +1225,8 @@
             display: flex;
             gap: 32px;
             align-items: center;
-        }
-
-        .sp-menu-list { display: flex; flex-direction: column; }
-
-        .sp-menu-row {
-            display: flex;
-            align-items: center;
-            min-height: 49px;
-            border-top: 1px solid #dfe1e2;
-            position: relative;
-        }
-
-        .sp-menu-row:last-child { border-bottom: 1px solid #dfe1e2; }
-
-        .sp-menu-item-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 190px;
-            flex-shrink: 0;
-            z-index: 1;
-            padding: 4px 8px 4px 0;
-        }
-
-        .sp-menu-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 4px;
-            background: #eee;
-            flex-shrink: 0;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #aaa;
-            font-size: 18px;
-        }
-
-        .sp-menu-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            border-radius: 4px;
-        }
-
-        .sp-menu-name {
-            font-size: 12px;
-            color: var(--text-normal);
-            line-height: 1.36;
-        }
-
-        .sp-menu-bar-area {
             flex: 1;
-            position: relative;
-            align-self: stretch;
         }
-
-        .sp-menu-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: rgba(255, 102, 0, 0.18);
-            border-bottom: 2px solid #ff6600;
-        }
-
-        .sp-menu-stats {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            padding: 6px 0 6px 8px;
-            flex-shrink: 0;
-            min-width: 110px;
-        }
-
-        .sp-menu-pct {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-normal);
-            line-height: 1.36;
-        }
-
-        .sp-menu-vs {
-            font-size: 10px;
-            color: #60696c;
-            line-height: 1.4;
-            white-space: nowrap;
-        }
-
-        .sp-menu-vs.negative { color: #d93025; }
 
         .sp-table-wrap {
             overflow-x: auto;
@@ -1606,20 +1544,6 @@
                                     </div>
                                     <div class="skeleton-bone sk-chart-area" style="height: 180px;"></div>
                                 </div>
-                                <div class="sp-card">
-                                    <div>
-                                        <div class="skeleton-bone sk-card-title"></div>
-                                        <div class="skeleton-bone sk-card-subtitle"></div>
-                                    </div>
-                                    <div class="skeleton-bone sk-chart-area" style="height: 232px;"></div>
-                                </div>
-                                <div class="sp-card">
-                                    <div>
-                                        <div class="skeleton-bone sk-card-title"></div>
-                                        <div class="skeleton-bone sk-card-subtitle"></div>
-                                    </div>
-                                    <div class="skeleton-bone sk-chart-area" style="height: 296px;"></div>
-                                </div>
                             </div>
                         </div>
 
@@ -1652,33 +1576,33 @@
                             <div class="sp-charts-grid">
                                 <div class="sp-card">
                                     <div>
-                                        <div class="sp-card-title">Reach</div>
-                                        <div class="sp-card-subtitle">Potential reach for your campaigns.</div>
+                                        <div class="sp-card-title">Reach &amp; responsiveness</div>
+                                        <div class="sp-card-subtitle">Potential reach and past campaign performance by channel.</div>
                                     </div>
-                                    <div class="sp-chart-wrap" style="height: 180px;">
+                                    <div class="sp-reach-controls">
+                                        <label class="sp-show-unknown-label">
+                                            <input type="checkbox" id="spShowPerformance">
+                                            <span class="sp-show-unknown-text">Show campaign performance</span>
+                                        </label>
+                                        <div class="sp-reach-legend" id="spReachLegend" style="display: none;">
+                                            <div class="sp-reach-legend-item">
+                                                <div class="sp-reach-legend-dot" style="background: #5A55E3;"></div>
+                                                Reach
+                                            </div>
+                                            <div class="sp-reach-legend-item">
+                                                <div class="sp-reach-legend-dot" style="background: #FFA800;"></div>
+                                                CTR
+                                            </div>
+                                            <div class="sp-reach-legend-item">
+                                                <div class="sp-reach-legend-dot" style="background: #FF3B30;"></div>
+                                                Conversion
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="sp-chart-wrap" style="flex: 1; min-height: 180px; position: relative;">
                                         <canvas id="spChartReach"></canvas>
-                                    </div>
-                                </div>
-                                <div class="sp-card">
-                                    <div>
-                                        <div class="sp-card-title">Overlaps</div>
-                                        <div class="sp-card-subtitle">Number of users in this segment who also belong to another segment.</div>
-                                    </div>
-                                    <div class="sp-overlaps-row">
-                                        <div class="sp-overlap-item">
-                                            <div class="sp-overlap-doughnut"><canvas id="spChartOverlap1"></canvas></div>
-                                            <div class="sp-overlap-stats">17k • 84%</div>
-                                            <a class="sp-overlap-link">Late Weekly Burger Fans</a>
-                                        </div>
-                                        <div class="sp-overlap-item">
-                                            <div class="sp-overlap-doughnut"><canvas id="spChartOverlap2"></canvas></div>
-                                            <div class="sp-overlap-stats">10k • 53%</div>
-                                            <a class="sp-overlap-link">High-Potential Pizza Rookies</a>
-                                        </div>
-                                        <div class="sp-overlap-item">
-                                            <div class="sp-overlap-doughnut"><canvas id="spChartOverlap3"></canvas></div>
-                                            <div class="sp-overlap-stats">5k • 32%</div>
-                                            <a class="sp-overlap-link">At-Risk Desert VIPs</a>
+                                        <div class="sp-reach-skeleton" id="spReachSkeleton">
+                                            <div class="skeleton-bone" style="width: 100%; height: 100%; border-radius: 8px;"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1689,9 +1613,11 @@
                                     </div>
                                     <div class="sp-composition-controls">
                                         <div class="cs-pill-wrap" id="spCompPillWrap">
-                                            <button class="cs-select-pill" type="button" id="spCompPill">By location <i class="ph ph-caret-down"></i></button>
+                                            <button class="cs-select-pill" type="button" id="spCompPill">By channel <i class="ph ph-caret-down"></i></button>
                                             <div class="cs-operator-dropdown" id="spCompDropdown">
-                                                <button class="cs-op-item active" type="button" data-comp="location">By location</button>
+                                                <button class="cs-op-item active" type="button" data-comp="channel">By channel</button>
+                                                <button class="cs-op-item" type="button" data-comp="daypart">By daypart</button>
+                                                <button class="cs-op-item" type="button" data-comp="location">By location</button>
                                                 <button class="cs-op-item" type="button" data-comp="age">By age</button>
                                                 <button class="cs-op-item" type="button" data-comp="gender">By gender</button>
                                                 <button class="cs-op-item" type="button" data-comp="email">By email opt-in</button>
@@ -1708,62 +1634,6 @@
                                             <canvas id="spChartComposition"></canvas>
                                         </div>
                                         <div class="sp-composition-legend" id="spCompositionLegend"></div>
-                                    </div>
-                                </div>
-                                <div class="sp-card">
-                                    <div>
-                                        <div class="sp-card-title">Popular menu items</div>
-                                        <div class="sp-card-subtitle">% of guests in this segment who ordered each item, compared to all guests.</div>
-                                    </div>
-                                    <div class="sp-menu-list">
-                                        <div class="sp-menu-row">
-                                            <div class="sp-menu-item-info">
-                                                <div class="sp-menu-img"><img src="assets/menu-double-delight-burger.jpg" alt="Double Delight Burger"></div>
-                                                <span class="sp-menu-name">Double Delight Burger</span>
-                                            </div>
-                                            <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:72%"></div></div>
-                                            <div class="sp-menu-stats"><span class="sp-menu-pct">72%</span><span class="sp-menu-vs">+28% vs all guests</span></div>
-                                        </div>
-                                        <div class="sp-menu-row">
-                                            <div class="sp-menu-item-info">
-                                                <div class="sp-menu-img"><img src="assets/menu-choco-delight.jpg" alt="Choco Delight"></div>
-                                                <span class="sp-menu-name">Choco Delight</span>
-                                            </div>
-                                            <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:58%"></div></div>
-                                            <div class="sp-menu-stats"><span class="sp-menu-pct">58%</span><span class="sp-menu-vs">+18% vs all guests</span></div>
-                                        </div>
-                                        <div class="sp-menu-row">
-                                            <div class="sp-menu-item-info">
-                                                <div class="sp-menu-img"><img src="assets/menu-golden-wedge-delight.jpg" alt="Golden Wedge Delight"></div>
-                                                <span class="sp-menu-name">Golden Wedge Delight</span>
-                                            </div>
-                                            <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:41%"></div></div>
-                                            <div class="sp-menu-stats"><span class="sp-menu-pct">41%</span><span class="sp-menu-vs">+9% vs all guests</span></div>
-                                        </div>
-                                        <div class="sp-menu-row">
-                                            <div class="sp-menu-item-info">
-                                                <div class="sp-menu-img"><img src="assets/menu-american-specialty.jpg" alt="American Specialty"></div>
-                                                <span class="sp-menu-name">American Specialty</span>
-                                            </div>
-                                            <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:26%"></div></div>
-                                            <div class="sp-menu-stats"><span class="sp-menu-pct">26%</span><span class="sp-menu-vs">+6% vs all guests</span></div>
-                                        </div>
-                                        <div class="sp-menu-row">
-                                            <div class="sp-menu-item-info">
-                                                <div class="sp-menu-img"><img src="assets/menu-potato-gems.jpg" alt="Potato Gems"></div>
-                                                <span class="sp-menu-name">Potato Gems</span>
-                                            </div>
-                                            <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:20%"></div></div>
-                                            <div class="sp-menu-stats"><span class="sp-menu-pct">20%</span><span class="sp-menu-vs">+3% vs all guests</span></div>
-                                        </div>
-                                        <div class="sp-menu-row">
-                                            <div class="sp-menu-item-info">
-                                                <div class="sp-menu-img"><img src="assets/menu-coca-cola-zero.jpg" alt="Coca Cola Zero"></div>
-                                                <span class="sp-menu-name">Coca Cola Zero</span>
-                                            </div>
-                                            <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:11%"></div></div>
-                                            <div class="sp-menu-stats"><span class="sp-menu-pct">11%</span><span class="sp-menu-vs negative">-4% vs all guests</span></div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -2039,68 +1909,76 @@
                     avgCheckSub: '$20.80 in store • $24.50 online',
                     avgOrders: '8', avgLtv: '$185.20'
                 },
-                reach: { data: [38000, 28000, 15000, 11000], max: 40000 },
-                overlaps: [
-                    { pct: 72, stats: '24k • 72%', name: 'Late Weekly Burger Fans' },
-                    { pct: 45, stats: '14k • 45%', name: 'High-Potential Pizza Rookies' },
-                    { pct: 28, stats: '8k • 28%', name: 'At-Risk Desert VIPs' }
-                ],
+                reach: { data: [42, 68, 38, 27] },
+                performance: { ctr: [0, 3.2, 2.1, 5.8], conversion: [0, 1.4, 0.9, 2.6] },
                 composition: {
+                    channel: {
+                        label: 'By channel',
+                        slices: [
+                            { label: 'Unknown',   value: 10, color: '#5A55E3' },
+                            { label: 'Mobile App',value: 32, color: '#ACAAF1' },
+                            { label: 'Web App',   value: 20, color: '#FFA800' },
+                            { label: 'In store',  value: 22, color: '#FF3B30' },
+                            { label: 'Kiosk',     value: 10, color: '#8CC3FF' },
+                            { label: '3rd party', value: 6,  color: '#007AFF' }
+                        ]
+                    },
+                    daypart: {
+                        label: 'By daypart',
+                        slices: [
+                            { label: 'Unknown',   value: 6,  color: '#5A55E3' },
+                            { label: 'Breakfast', value: 30, color: '#ACAAF1' },
+                            { label: 'Lunch',     value: 40, color: '#FFA800' },
+                            { label: 'Dinner',    value: 24, color: '#FF3B30' }
+                        ]
+                    },
                     location: {
                         label: 'By location',
                         slices: [
-                            { label: 'Unknown', value: 60, color: '#5a55e3' },
-                            { label: 'Other',   value: 18, color: '#b3b0ff' },
-                            { label: 'Florida', value: 8,  color: '#ff6600' },
-                            { label: 'Georgia', value: 7,  color: '#ff9933' },
-                            { label: 'New York',value: 7,  color: '#ff3333' }
+                            { label: 'Unknown', value: 60, color: '#5A55E3' },
+                            { label: 'Other',   value: 18, color: '#ACAAF1' },
+                            { label: 'Florida', value: 8,  color: '#FFA800' },
+                            { label: 'Georgia', value: 7,  color: '#FF3B30' },
+                            { label: 'New York',value: 7,  color: '#8CC3FF' }
                         ]
                     },
                     age: {
                         label: 'By age',
                         slices: [
-                            { label: 'Unknown', value: 22, color: '#5a55e3' },
-                            { label: '18–24',   value: 15, color: '#b3b0ff' },
-                            { label: '25–34',   value: 30, color: '#ff6600' },
-                            { label: '35–44',   value: 18, color: '#ff9933' },
-                            { label: '45–54',   value: 10, color: '#ff3333' },
-                            { label: '55+',     value: 5,  color: '#ffcc80' }
+                            { label: 'Unknown', value: 22, color: '#5A55E3' },
+                            { label: '18–24',   value: 15, color: '#ACAAF1' },
+                            { label: '25–34',   value: 30, color: '#FFA800' },
+                            { label: '35–44',   value: 18, color: '#FF3B30' },
+                            { label: '45–54',   value: 10, color: '#8CC3FF' },
+                            { label: '55+',     value: 5,  color: '#007AFF' }
                         ]
                     },
                     gender: {
                         label: 'By gender',
                         slices: [
-                            { label: 'Unknown',    value: 25, color: '#5a55e3' },
-                            { label: 'Male',       value: 38, color: '#ff6600' },
-                            { label: 'Female',     value: 30, color: '#ff9933' },
-                            { label: 'Non-binary', value: 7,  color: '#b3b0ff' }
+                            { label: 'Unknown',    value: 25, color: '#5A55E3' },
+                            { label: 'Male',       value: 38, color: '#ACAAF1' },
+                            { label: 'Female',     value: 30, color: '#FFA800' },
+                            { label: 'Non-binary', value: 7,  color: '#FF3B30' }
                         ]
                     },
                     email: {
                         label: 'By email opt-in',
                         slices: [
-                            { label: 'Unknown',   value: 20, color: '#5a55e3' },
-                            { label: 'Opted in',  value: 58, color: '#ff6600' },
-                            { label: 'Opted out', value: 22, color: '#ff3333' }
+                            { label: 'Unknown',   value: 20, color: '#5A55E3' },
+                            { label: 'Opted in',  value: 58, color: '#ACAAF1' },
+                            { label: 'Opted out', value: 22, color: '#FFA800' }
                         ]
                     },
                     sms: {
                         label: 'By SMS opt-in',
                         slices: [
-                            { label: 'Unknown',   value: 24, color: '#5a55e3' },
-                            { label: 'Opted in',  value: 45, color: '#ff6600' },
-                            { label: 'Opted out', value: 31, color: '#ff3333' }
+                            { label: 'Unknown',   value: 24, color: '#5A55E3' },
+                            { label: 'Opted in',  value: 45, color: '#ACAAF1' },
+                            { label: 'Opted out', value: 31, color: '#FFA800' }
                         ]
                     }
-                },
-                menuItems: [
-                    { name: 'Double Delight Burger', img: 'assets/menu-double-delight-burger.jpg', pct: 45, vs: '+12% vs all guests', negative: false },
-                    { name: 'Golden Wedge Delight',  img: 'assets/menu-golden-wedge-delight.jpg',  pct: 38, vs: '+6% vs all guests',  negative: false },
-                    { name: 'Choco Delight',         img: 'assets/menu-choco-delight.jpg',         pct: 33, vs: '+4% vs all guests',  negative: false },
-                    { name: 'Coca Cola Zero',        img: 'assets/menu-coca-cola-zero.jpg',        pct: 22, vs: '+1% vs all guests',  negative: false },
-                    { name: 'American Specialty',    img: 'assets/menu-american-specialty.jpg',     pct: 18, vs: '-2% vs all guests',  negative: true },
-                    { name: 'Potato Gems',           img: 'assets/menu-potato-gems.jpg',           pct: 12, vs: '-5% vs all guests',  negative: true }
-                ]
+                }
             },
             2: {
                 hero: {
@@ -2109,68 +1987,76 @@
                     avgCheckSub: '$24.10 in store • $27.80 online',
                     avgOrders: '10', avgLtv: '$240.50'
                 },
-                reach: { data: [30000, 22000, 12000, 9000], max: 35000 },
-                overlaps: [
-                    { pct: 80, stats: '20k • 80%', name: 'Late Weekly Burger Fans' },
-                    { pct: 50, stats: '11k • 50%', name: 'High-Potential Pizza Rookies' },
-                    { pct: 30, stats: '6k • 30%', name: 'At-Risk Desert VIPs' }
-                ],
+                reach: { data: [35, 72, 42, 31] },
+                performance: { ctr: [0, 4.1, 2.8, 6.5], conversion: [0, 1.8, 1.2, 3.1] },
                 composition: {
+                    channel: {
+                        label: 'By channel',
+                        slices: [
+                            { label: 'Unknown',   value: 7,  color: '#5A55E3' },
+                            { label: 'Mobile App',value: 38, color: '#ACAAF1' },
+                            { label: 'Web App',   value: 18, color: '#FFA800' },
+                            { label: 'In store',  value: 24, color: '#FF3B30' },
+                            { label: 'Kiosk',     value: 8,  color: '#8CC3FF' },
+                            { label: '3rd party', value: 5,  color: '#007AFF' }
+                        ]
+                    },
+                    daypart: {
+                        label: 'By daypart',
+                        slices: [
+                            { label: 'Unknown',   value: 4,  color: '#5A55E3' },
+                            { label: 'Breakfast', value: 26, color: '#ACAAF1' },
+                            { label: 'Lunch',     value: 44, color: '#FFA800' },
+                            { label: 'Dinner',    value: 26, color: '#FF3B30' }
+                        ]
+                    },
                     location: {
                         label: 'By location',
                         slices: [
-                            { label: 'Unknown', value: 68, color: '#5a55e3' },
-                            { label: 'Other',   value: 22, color: '#b3b0ff' },
-                            { label: 'Florida', value: 12, color: '#ff6600' },
-                            { label: 'Georgia', value: 10, color: '#ff9933' },
-                            { label: 'New York',value: 5,  color: '#ff3333' }
+                            { label: 'Unknown', value: 68, color: '#5A55E3' },
+                            { label: 'Other',   value: 22, color: '#ACAAF1' },
+                            { label: 'Florida', value: 12, color: '#FFA800' },
+                            { label: 'Georgia', value: 10, color: '#FF3B30' },
+                            { label: 'New York',value: 5,  color: '#8CC3FF' }
                         ]
                     },
                     age: {
                         label: 'By age',
                         slices: [
-                            { label: 'Unknown', value: 20, color: '#5a55e3' },
-                            { label: '18–24',   value: 10, color: '#b3b0ff' },
-                            { label: '25–34',   value: 28, color: '#ff6600' },
-                            { label: '35–44',   value: 22, color: '#ff9933' },
-                            { label: '45–54',   value: 14, color: '#ff3333' },
-                            { label: '55+',     value: 6,  color: '#ffcc80' }
+                            { label: 'Unknown', value: 20, color: '#5A55E3' },
+                            { label: '18–24',   value: 10, color: '#ACAAF1' },
+                            { label: '25–34',   value: 28, color: '#FFA800' },
+                            { label: '35–44',   value: 22, color: '#FF3B30' },
+                            { label: '45–54',   value: 14, color: '#8CC3FF' },
+                            { label: '55+',     value: 6,  color: '#007AFF' }
                         ]
                     },
                     gender: {
                         label: 'By gender',
                         slices: [
-                            { label: 'Unknown',    value: 20, color: '#5a55e3' },
-                            { label: 'Male',       value: 42, color: '#ff6600' },
-                            { label: 'Female',     value: 33, color: '#ff9933' },
-                            { label: 'Non-binary', value: 5,  color: '#b3b0ff' }
+                            { label: 'Unknown',    value: 20, color: '#5A55E3' },
+                            { label: 'Male',       value: 42, color: '#ACAAF1' },
+                            { label: 'Female',     value: 33, color: '#FFA800' },
+                            { label: 'Non-binary', value: 5,  color: '#FF3B30' }
                         ]
                     },
                     email: {
                         label: 'By email opt-in',
                         slices: [
-                            { label: 'Unknown',   value: 17, color: '#5a55e3' },
-                            { label: 'Opted in',  value: 63, color: '#ff6600' },
-                            { label: 'Opted out', value: 20, color: '#ff3333' }
+                            { label: 'Unknown',   value: 17, color: '#5A55E3' },
+                            { label: 'Opted in',  value: 63, color: '#ACAAF1' },
+                            { label: 'Opted out', value: 20, color: '#FFA800' }
                         ]
                     },
                     sms: {
                         label: 'By SMS opt-in',
                         slices: [
-                            { label: 'Unknown',   value: 21, color: '#5a55e3' },
-                            { label: 'Opted in',  value: 50, color: '#ff6600' },
-                            { label: 'Opted out', value: 29, color: '#ff3333' }
+                            { label: 'Unknown',   value: 21, color: '#5A55E3' },
+                            { label: 'Opted in',  value: 50, color: '#ACAAF1' },
+                            { label: 'Opted out', value: 29, color: '#FFA800' }
                         ]
                     }
-                },
-                menuItems: [
-                    { name: 'Double Delight Burger', img: 'assets/menu-double-delight-burger.jpg', pct: 58, vs: '+20% vs all guests', negative: false },
-                    { name: 'Choco Delight',         img: 'assets/menu-choco-delight.jpg',         pct: 44, vs: '+10% vs all guests', negative: false },
-                    { name: 'Golden Wedge Delight',  img: 'assets/menu-golden-wedge-delight.jpg',  pct: 36, vs: '+7% vs all guests',  negative: false },
-                    { name: 'American Specialty',    img: 'assets/menu-american-specialty.jpg',     pct: 24, vs: '+4% vs all guests',  negative: false },
-                    { name: 'Potato Gems',           img: 'assets/menu-potato-gems.jpg',           pct: 18, vs: '+2% vs all guests',  negative: false },
-                    { name: 'Coca Cola Zero',        img: 'assets/menu-coca-cola-zero.jpg',        pct: 13, vs: '-3% vs all guests',  negative: true }
-                ]
+                }
             },
             3: {
                 hero: {
@@ -2179,68 +2065,76 @@
                     avgCheckSub: '$27.54 in store • $30.12 online',
                     avgOrders: '12', avgLtv: '$296.78'
                 },
-                reach: { data: [25000, 18000, 10000, 8000], max: 25000 },
-                overlaps: [
-                    { pct: 84, stats: '17k • 84%', name: 'Late Weekly Burger Fans' },
-                    { pct: 53, stats: '10k • 53%', name: 'High-Potential Pizza Rookies' },
-                    { pct: 32, stats: '5k • 32%', name: 'At-Risk Desert VIPs' }
-                ],
+                reach: { data: [28, 78, 45, 35] },
+                performance: { ctr: [0, 4.8, 3.5, 7.2], conversion: [0, 2.1, 1.5, 3.8] },
                 composition: {
+                    channel: {
+                        label: 'By channel',
+                        slices: [
+                            { label: 'Unknown',   value: 5,  color: '#5A55E3' },
+                            { label: 'Mobile App',value: 40, color: '#ACAAF1' },
+                            { label: 'Web App',   value: 19, color: '#FFA800' },
+                            { label: 'In store',  value: 21, color: '#FF3B30' },
+                            { label: 'Kiosk',     value: 10, color: '#8CC3FF' },
+                            { label: '3rd party', value: 5,  color: '#007AFF' }
+                        ]
+                    },
+                    daypart: {
+                        label: 'By daypart',
+                        slices: [
+                            { label: 'Unknown',   value: 3,  color: '#5A55E3' },
+                            { label: 'Breakfast', value: 25, color: '#ACAAF1' },
+                            { label: 'Lunch',     value: 45, color: '#FFA800' },
+                            { label: 'Dinner',    value: 27, color: '#FF3B30' }
+                        ]
+                    },
                     location: {
                         label: 'By location',
                         slices: [
-                            { label: 'Unknown', value: 74, color: '#5a55e3' },
-                            { label: 'Other',   value: 28, color: '#b3b0ff' },
-                            { label: 'Florida', value: 9,  color: '#ff6600' },
-                            { label: 'Georgia', value: 12, color: '#ff9933' },
-                            { label: 'New York',value: 3,  color: '#ff3333' }
+                            { label: 'Unknown', value: 74, color: '#5A55E3' },
+                            { label: 'Other',   value: 28, color: '#ACAAF1' },
+                            { label: 'Florida', value: 9,  color: '#FFA800' },
+                            { label: 'Georgia', value: 12, color: '#FF3B30' },
+                            { label: 'New York',value: 3,  color: '#8CC3FF' }
                         ]
                     },
                     age: {
                         label: 'By age',
                         slices: [
-                            { label: 'Unknown', value: 18, color: '#5a55e3' },
-                            { label: '18–24',   value: 12, color: '#b3b0ff' },
-                            { label: '25–34',   value: 27, color: '#ff6600' },
-                            { label: '35–44',   value: 24, color: '#ff9933' },
-                            { label: '45–54',   value: 13, color: '#ff3333' },
-                            { label: '55+',     value: 6,  color: '#ffcc80' }
+                            { label: 'Unknown', value: 18, color: '#5A55E3' },
+                            { label: '18–24',   value: 12, color: '#ACAAF1' },
+                            { label: '25–34',   value: 27, color: '#FFA800' },
+                            { label: '35–44',   value: 24, color: '#FF3B30' },
+                            { label: '45–54',   value: 13, color: '#8CC3FF' },
+                            { label: '55+',     value: 6,  color: '#007AFF' }
                         ]
                     },
                     gender: {
                         label: 'By gender',
                         slices: [
-                            { label: 'Unknown',    value: 22, color: '#5a55e3' },
-                            { label: 'Male',       value: 41, color: '#ff6600' },
-                            { label: 'Female',     value: 32, color: '#ff9933' },
-                            { label: 'Non-binary', value: 5,  color: '#b3b0ff' }
+                            { label: 'Unknown',    value: 22, color: '#5A55E3' },
+                            { label: 'Male',       value: 41, color: '#ACAAF1' },
+                            { label: 'Female',     value: 32, color: '#FFA800' },
+                            { label: 'Non-binary', value: 5,  color: '#FF3B30' }
                         ]
                     },
                     email: {
                         label: 'By email opt-in',
                         slices: [
-                            { label: 'Unknown',   value: 15, color: '#5a55e3' },
-                            { label: 'Opted in',  value: 68, color: '#ff6600' },
-                            { label: 'Opted out', value: 17, color: '#ff3333' }
+                            { label: 'Unknown',   value: 15, color: '#5A55E3' },
+                            { label: 'Opted in',  value: 68, color: '#ACAAF1' },
+                            { label: 'Opted out', value: 17, color: '#FFA800' }
                         ]
                     },
                     sms: {
                         label: 'By SMS opt-in',
                         slices: [
-                            { label: 'Unknown',   value: 19, color: '#5a55e3' },
-                            { label: 'Opted in',  value: 54, color: '#ff6600' },
-                            { label: 'Opted out', value: 27, color: '#ff3333' }
+                            { label: 'Unknown',   value: 19, color: '#5A55E3' },
+                            { label: 'Opted in',  value: 54, color: '#ACAAF1' },
+                            { label: 'Opted out', value: 27, color: '#FFA800' }
                         ]
                     }
-                },
-                menuItems: [
-                    { name: 'Double Delight Burger', img: 'assets/menu-double-delight-burger.jpg', pct: 72, vs: '+28% vs all guests', negative: false },
-                    { name: 'Choco Delight',         img: 'assets/menu-choco-delight.jpg',         pct: 58, vs: '+18% vs all guests', negative: false },
-                    { name: 'Golden Wedge Delight',  img: 'assets/menu-golden-wedge-delight.jpg',  pct: 41, vs: '+9% vs all guests',  negative: false },
-                    { name: 'American Specialty',    img: 'assets/menu-american-specialty.jpg',     pct: 26, vs: '+6% vs all guests',  negative: false },
-                    { name: 'Potato Gems',           img: 'assets/menu-potato-gems.jpg',           pct: 20, vs: '+3% vs all guests',  negative: false },
-                    { name: 'Coca Cola Zero',        img: 'assets/menu-coca-cola-zero.jpg',        pct: 11, vs: '-4% vs all guests',  negative: true }
-                ]
+                }
             }
         };
 
@@ -2485,6 +2379,17 @@
             'First item ordered': ['Buffalo Deluxe', 'Crispy Clucker', 'Club Crunch', 'Double Delight Burger', 'Fresh Garden Ham Sandwich', 'French Fries'],
         };
 
+        const ITEM_IDS = {
+            'Buffalo Deluxe':             '58392014',
+            'Crispy Clucker':             '29475683',
+            'Club Crunch':                '71820456',
+            'Double Delight Burger':      '56473829',
+            'Fresh Garden Ham Sandwich':  '83920174',
+            'French Fries':               '10293847',
+        };
+
+        let activeFilterName = '';
+
         const FILTER_OPERATORS = {
             'Lifecycle Stage':   ['Is currently', 'Is not currently', 'Was last', 'Is most commonly', 'Has ever been'],
             'Order Frequency':   ['Is currently', 'Is not currently', 'Was last', 'Is most commonly', 'Has ever been'],
@@ -2497,6 +2402,7 @@
         let selectedChips = [];
 
         function initComboBox(filterName) {
+            activeFilterName = filterName;
             activeComboOptions = COMBO_OPTIONS[filterName] || [];
             selectedChips = [];
             renderChips();
@@ -2580,11 +2486,18 @@
             dropdown.innerHTML = '';
             activeComboOptions.forEach(opt => {
                 const isSelected = selectedChips.includes(opt);
+                const itemId = ITEM_IDS[opt];
+                const checkIcon = isSelected ? 'check_box' : 'check_box_outline_blank';
                 const el = document.createElement('div');
-                el.className = 'cs-combo-option' + (isSelected ? ' selected' : '');
-                el.innerHTML = `
-                    <div class="cs-combo-checkbox"></div>
-                    <span>${opt}</span>`;
+                el.className = 'cs-combo-option' + (isSelected ? ' selected' : '') + (itemId ? ' has-id' : '');
+                el.innerHTML = itemId
+                    ? `<span class="cs-combo-checkbox">${checkIcon}</span>
+                       <div class="cs-combo-option-content">
+                           <span>${opt}</span>
+                           <span class="cs-combo-item-id">ID ${itemId}</span>
+                       </div>`
+                    : `<span class="cs-combo-checkbox">${checkIcon}</span>
+                       <span>${opt}</span>`;
                 el.addEventListener('click', (e) => {
                     e.stopPropagation();
                     if (isSelected) {
@@ -2663,9 +2576,17 @@
                 dropdown.innerHTML = '';
                 options.forEach(opt => {
                     const isSel = selected.includes(opt);
+                    const itemId = ITEM_IDS[opt];
+                    const checkIcon = isSel ? 'check_box' : 'check_box_outline_blank';
                     const el = document.createElement('div');
-                    el.className = 'cs-combo-option' + (isSel ? ' selected' : '');
-                    el.innerHTML = `<div class="cs-combo-checkbox"></div><span>${opt}</span>`;
+                    el.className = 'cs-combo-option' + (isSel ? ' selected' : '') + (itemId ? ' has-id' : '');
+                    el.innerHTML = itemId
+                        ? `<span class="cs-combo-checkbox">${checkIcon}</span>
+                           <div class="cs-combo-option-content">
+                               <span>${opt}</span>
+                               <span class="cs-combo-item-id">ID ${itemId}</span>
+                           </div>`
+                        : `<span class="cs-combo-checkbox">${checkIcon}</span><span>${opt}</span>`;
                     el.addEventListener('click', (e) => {
                         e.stopPropagation();
                         selected = isSel ? selected.filter(c => c !== opt) : [...selected, opt];
@@ -2683,114 +2604,79 @@
             };
         }
 
-        /* ── Overlap Venn Plugin ── */
-        Chart.register({
-            id: 'overlapVennPlugin',
-            afterDraw(chart) {
-                const overlapPct = chart.data?.datasets?.[0]?.overlapPct;
-                if (overlapPct === undefined) return;
-
-                const ctx = chart.ctx;
-                const { left, right, top, bottom } = chart.chartArea;
-                const h = bottom - top;
-
-                // Purple circle: always fills the full canvas height (116px → r = 58)
-                const rPurple = h / 2;
-                const xPurple = left + rPurple;   // left-anchored
-                const yCentre = top + rPurple;
-
-                // Blue circle: radius scales with overlap %, right-anchored to canvas edge
-                const rBlue = rPurple * overlapPct;
-                const xBlue  = right - rBlue;
-
-                ctx.save();
-
-                // White fill so multiply blend mode works against a known background
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(left, top, right - left, h);
-
-                // Purple circle drawn first (behind)
-                ctx.globalCompositeOperation = 'source-over';
-                ctx.beginPath();
-                ctx.arc(xPurple, yCentre, rPurple, 0, Math.PI * 2);
-                ctx.fillStyle = '#5A55E3';
-                ctx.fill();
-
-                // Blue circle drawn on top with multiply blend mode
-                ctx.globalCompositeOperation = 'multiply';
-                ctx.beginPath();
-                ctx.arc(xBlue, yCentre, rBlue, 0, Math.PI * 2);
-                ctx.fillStyle = '#8CC3FF';
-                ctx.fill();
-
-                // 2px white inner stroke on blue circle (clip to keep it inside)
-                ctx.globalCompositeOperation = 'source-over';
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(xBlue, yCentre, rBlue, 0, Math.PI * 2);
-                ctx.clip();
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 4; // 4px stroke centered on edge = 2px visible inside
-                ctx.stroke();
-                ctx.restore();
-
-                ctx.restore();
-            }
-        });
-
         /* ── Segment Preview Charts ── */
-        let spCharts = { reach: null, overlap1: null, overlap2: null, overlap3: null, composition: null };
+        let spCharts = { reach: null, composition: null };
 
         const COMPOSITION_DATA = {
+            channel: {
+                label: 'By channel',
+                slices: [
+                    { label: 'Unknown',   value: 8,  color: '#5A55E3' },
+                    { label: 'Mobile App',value: 35, color: '#ACAAF1' },
+                    { label: 'Web App',   value: 22, color: '#FFA800' },
+                    { label: 'In store',  value: 20, color: '#FF3B30' },
+                    { label: 'Kiosk',     value: 9,  color: '#8CC3FF' },
+                    { label: '3rd party', value: 6,  color: '#007AFF' }
+                ]
+            },
+            daypart: {
+                label: 'By daypart',
+                slices: [
+                    { label: 'Unknown',   value: 5,  color: '#5A55E3' },
+                    { label: 'Breakfast', value: 28, color: '#ACAAF1' },
+                    { label: 'Lunch',     value: 42, color: '#FFA800' },
+                    { label: 'Dinner',    value: 25, color: '#FF3B30' }
+                ]
+            },
             location: {
                 label: 'By location',
                 slices: [
-                    { label: 'Unknown', value: 74, color: '#5a55e3' },
-                    { label: 'Other',   value: 28, color: '#b3b0ff' },
-                    { label: 'Florida', value: 9,  color: '#ff6600' },
-                    { label: 'Georgia', value: 12, color: '#ff9933' },
-                    { label: 'New York',value: 3,  color: '#ff3333' },
+                    { label: 'Unknown', value: 74, color: '#5A55E3' },
+                    { label: 'Other',   value: 28, color: '#ACAAF1' },
+                    { label: 'Florida', value: 9,  color: '#FFA800' },
+                    { label: 'Georgia', value: 12, color: '#FF3B30' },
+                    { label: 'New York',value: 3,  color: '#8CC3FF' }
                 ]
             },
             age: {
                 label: 'By age',
                 slices: [
-                    { label: 'Unknown', value: 18, color: '#5a55e3' },
-                    { label: '18–24',   value: 12, color: '#b3b0ff' },
-                    { label: '25–34',   value: 27, color: '#ff6600' },
-                    { label: '35–44',   value: 24, color: '#ff9933' },
-                    { label: '45–54',   value: 13, color: '#ff3333' },
-                    { label: '55+',     value: 6,  color: '#ffcc80' },
+                    { label: 'Unknown', value: 18, color: '#5A55E3' },
+                    { label: '18–24',   value: 12, color: '#ACAAF1' },
+                    { label: '25–34',   value: 27, color: '#FFA800' },
+                    { label: '35–44',   value: 24, color: '#FF3B30' },
+                    { label: '45–54',   value: 13, color: '#8CC3FF' },
+                    { label: '55+',     value: 6,  color: '#007AFF' }
                 ]
             },
             gender: {
                 label: 'By gender',
                 slices: [
-                    { label: 'Unknown',    value: 22, color: '#5a55e3' },
-                    { label: 'Male',       value: 41, color: '#ff6600' },
-                    { label: 'Female',     value: 32, color: '#ff9933' },
-                    { label: 'Non-binary', value: 5,  color: '#b3b0ff' },
+                    { label: 'Unknown',    value: 22, color: '#5A55E3' },
+                    { label: 'Male',       value: 41, color: '#ACAAF1' },
+                    { label: 'Female',     value: 32, color: '#FFA800' },
+                    { label: 'Non-binary', value: 5,  color: '#FF3B30' }
                 ]
             },
             email: {
                 label: 'By email opt-in',
                 slices: [
-                    { label: 'Unknown',   value: 15, color: '#5a55e3' },
-                    { label: 'Opted in',  value: 68, color: '#ff6600' },
-                    { label: 'Opted out', value: 17, color: '#ff3333' },
+                    { label: 'Unknown',   value: 15, color: '#5A55E3' },
+                    { label: 'Opted in',  value: 68, color: '#ACAAF1' },
+                    { label: 'Opted out', value: 17, color: '#FFA800' }
                 ]
             },
             sms: {
                 label: 'By SMS opt-in',
                 slices: [
-                    { label: 'Unknown',   value: 19, color: '#5a55e3' },
-                    { label: 'Opted in',  value: 54, color: '#ff6600' },
-                    { label: 'Opted out', value: 27, color: '#ff3333' },
+                    { label: 'Unknown',   value: 19, color: '#5A55E3' },
+                    { label: 'Opted in',  value: 54, color: '#ACAAF1' },
+                    { label: 'Opted out', value: 27, color: '#FFA800' }
                 ]
             }
         };
 
-        let currentCompKey = 'location';
+        let currentCompKey = 'channel';
 
         function renderCompositionView(key) {
             currentCompKey = key;
@@ -2831,31 +2717,69 @@
         function initSegmentPreviewCharts() {
             destroySegmentPreviewCharts();
 
+            function computeReachAxisMax(chart) {
+                const datasets = chart ? chart.data.datasets : [];
+                let peak = 0;
+                datasets.forEach(ds => {
+                    if (!ds.hidden) peak = Math.max(peak, ...ds.data);
+                });
+                return Math.min(100, Math.ceil(peak / 20) * 20) || 20;
+            }
+
             const reachCtx = document.getElementById('spChartReach');
             if (reachCtx) {
                 spCharts.reach = new Chart(reachCtx, {
                     type: 'bar',
                     data: {
                         labels: ['Unreachable', 'Email', 'SMS', 'Push'],
-                        datasets: [{
-                            label: 'Reach',
-                            data: [25000, 18000, 10000, 8000],
-                            backgroundColor: ['#FF6600', '#FF9933', '#FFB266', '#FFCC99'],
-                            borderWidth: 0,
-                            barThickness: 20,
-                            borderRadius: 2
-                        }]
+                        datasets: [
+                            {
+                                label: 'Reach',
+                                data: [42, 68, 38, 27],
+                                backgroundColor: '#5A55E3',
+                                borderWidth: 0,
+                                barThickness: 34,
+                                borderRadius: 2
+                            },
+                            {
+                                label: 'CTR',
+                                data: [0, 4.8, 3.5, 7.2],
+                                backgroundColor: '#FFA800',
+                                borderWidth: 0,
+                                barThickness: 10,
+                                borderRadius: 2,
+                                hidden: true
+                            },
+                            {
+                                label: 'Conversion',
+                                data: [0, 2.1, 1.5, 3.8],
+                                backgroundColor: '#FF3B30',
+                                borderWidth: 0,
+                                barThickness: 10,
+                                borderRadius: 2,
+                                hidden: true
+                            }
+                        ]
                     },
                     options: {
                         indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(ctx) {
+                                        return ' ' + ctx.dataset.label + ': ' + ctx.raw + '%';
+                                    }
+                                }
+                            }
+                        },
                         scales: {
                             x: {
                                 min: 0,
-                                max: 25000,
-                                ticks: { stepSize: 5000, callback: v => (v / 1000) + 'k', font: { size: 11 } },
+                                max: 80,
+                                ticks: { stepSize: 20, callback: v => v + '%', font: { size: 11 } },
                                 grid: { color: '#eee' }
                             },
                             y: {
@@ -2867,32 +2791,40 @@
                 });
             }
 
-            [84, 53, 32].forEach((pct, i) => {
-                const id = ['spChartOverlap1', 'spChartOverlap2', 'spChartOverlap3'][i];
-                const canvas = document.getElementById(id);
-                if (canvas) {
-                    spCharts['overlap' + (i + 1)] = new Chart(canvas, {
-                        type: 'doughnut',
-                        data: {
-                            datasets: [{
-                                data: [1],
-                                overlapPct: pct / 100,
-                                backgroundColor: ['transparent'],
-                                borderWidth: 0
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            layout: { padding: 0 },
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: { enabled: false }
-                            }
-                        }
-                    });
-                }
-            });
+            let perfSkeletonTimer = null;
+            const perfCheckbox = document.getElementById('spShowPerformance');
+            if (perfCheckbox) {
+                perfCheckbox.addEventListener('change', function () {
+                    const show = this.checked;
+                    const chart = spCharts.reach;
+                    if (!chart) return;
+                    const skeleton = document.getElementById('spReachSkeleton');
+
+                    if (show) {
+                        if (perfSkeletonTimer) clearTimeout(perfSkeletonTimer);
+                        skeleton.classList.add('visible');
+                        document.getElementById('spReachLegend').style.display = 'flex';
+                        perfSkeletonTimer = setTimeout(() => {
+                            chart.data.datasets[1].hidden = false;
+                            chart.data.datasets[2].hidden = false;
+                            chart.data.datasets[0].barThickness = 10;
+                            chart.options.scales.x.max = computeReachAxisMax(chart);
+                            chart.update();
+                            skeleton.classList.remove('visible');
+                            perfSkeletonTimer = null;
+                        }, 1000);
+                    } else {
+                        if (perfSkeletonTimer) { clearTimeout(perfSkeletonTimer); perfSkeletonTimer = null; }
+                        skeleton.classList.remove('visible');
+                        chart.data.datasets[1].hidden = true;
+                        chart.data.datasets[2].hidden = true;
+                        chart.data.datasets[0].barThickness = 34;
+                        chart.options.scales.x.max = computeReachAxisMax(chart);
+                        chart.update();
+                        document.getElementById('spReachLegend').style.display = 'none';
+                    }
+                });
+            }
 
             const compCtx = document.getElementById('spChartComposition');
             if (compCtx) {
@@ -2940,46 +2872,23 @@
 
             if (spCharts.reach) {
                 spCharts.reach.data.datasets[0].data = data.reach.data;
-                spCharts.reach.options.scales.x.max = data.reach.max;
+                if (data.performance) {
+                    spCharts.reach.data.datasets[1].data = data.performance.ctr;
+                    spCharts.reach.data.datasets[2].data = data.performance.conversion;
+                }
+                spCharts.reach.options.scales.x.max = computeReachAxisMax(spCharts.reach);
                 spCharts.reach.update();
             }
 
-            data.overlaps.forEach((ov, i) => {
-                const key = 'overlap' + (i + 1);
-                if (spCharts[key]) {
-                    spCharts[key].data.datasets[0].overlapPct = ov.pct / 100;
-                    spCharts[key].update();
-                }
-                const items = document.querySelectorAll('#spPopulated .sp-overlap-item');
-                if (items[i]) {
-                    items[i].querySelector('.sp-overlap-stats').textContent = ov.stats;
-                    items[i].querySelector('.sp-overlap-link').textContent = ov.name;
-                }
-            });
-
             Object.assign(COMPOSITION_DATA, data.composition);
             renderCompositionView(currentCompKey);
-
-            const menuList = document.querySelector('#spPopulated .sp-menu-list');
-            if (menuList) {
-                menuList.innerHTML = data.menuItems.map(item => `
-                    <div class="sp-menu-row">
-                        <div class="sp-menu-item-info">
-                            <div class="sp-menu-img"><img src="${item.img}" alt="${item.name}"></div>
-                            <span class="sp-menu-name">${item.name}</span>
-                        </div>
-                        <div class="sp-menu-bar-area"><div class="sp-menu-bar" style="width:${item.pct}%"></div></div>
-                        <div class="sp-menu-stats"><span class="sp-menu-pct">${item.pct}%</span><span class="sp-menu-vs${item.negative ? ' negative' : ''}">${item.vs}</span></div>
-                    </div>
-                `).join('');
-            }
         }
 
         function destroySegmentPreviewCharts() {
             if (skeletonTimer) { clearTimeout(skeletonTimer); skeletonTimer = null; }
             const skeleton = document.getElementById('spSkeleton');
             if (skeleton) skeleton.classList.remove('visible');
-            ['reach', 'overlap1', 'overlap2', 'overlap3', 'composition'].forEach(key => {
+            ['reach', 'composition'].forEach(key => {
                 if (spCharts[key]) {
                     spCharts[key].destroy();
                     spCharts[key] = null;
