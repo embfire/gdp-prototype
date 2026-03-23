@@ -4,53 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GDP Dashboard - Guest Data Platform</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0" />
+    <link rel="stylesheet" href="assets/bento.css">
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
     <style>
-        .analytics-header {
+        /* ── Dashboard-specific layout (not covered by bento) ── */
+        .filter-bar-new {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .filter-bar-new .body1 { white-space: nowrap; }
+        /* Force 40px height on all filter bar controls to match Figma */
+        .filter-bar-new .button-group__set_button {
+            height: 40px;
+            padding: 0 1rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 150%;
+        }
+        .filter-bar-new .button.outlined {
+            height: 40px;
+            padding: 0 1rem;
+        }
+        .filter-bar-new .dropdown {
+            width: auto;
+        }
+        .filter-bar-new .dropdown__wrapper .dropdown__button {
+            height: 40px;
+            padding: 0 1rem;
+            white-space: nowrap;
+        }
+        .filter-bar-new .dropdown__options {
+            min-width: 100%;
+            width: max-content;
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+        .kpi-card {
+            position: relative;
+            overflow: hidden;
+            min-height: 164px;
+            cursor: auto;
+        }
+        .kpi-card-top {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: var(--spacing-xl);
         }
-
-        .filter-bar {
+        .kpi-change {
             display: flex;
-            gap: var(--spacing-md);
-            padding: var(--spacing-md);
-            background: #fcfcfc;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            margin-bottom: var(--spacing-xl);
             align-items: center;
+            gap: 4px;
+        }
+        .kpi-change .pct.up { color: #257469; }
+        .kpi-change .pct.down { color: #bc103e; }
+        .kpi-benchmark {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .kpi-benchmark.green { color: #257469; }
+        .kpi-benchmark.yellow { color: #cc8900; }
+        .kpi-benchmark.red { color: #bc103e; }
+        .kpi-sparkline {
+            position: absolute;
+            bottom: 0;
+            left: calc(-1 * var(--spacing-md));
+            right: calc(-1 * var(--spacing-md));
+            height: 52px;
         }
 
-        .chart-container-high {
-            position: relative;
+        .chart-row {
+            display: flex;
+            gap: 1rem;
+        }
+        .chart-row > .card { cursor: auto; display: flex; flex-direction: column; gap: 0; }
+        .chart-row > .card .card__header {
+            border-bottom: 1px solid #dfe1e2;
+        }
+        .chart-row > .card .card__content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-row > .card .card__content > div[id] {
+            flex: 1;
             width: 100%;
-            height: 280px;
-            padding: var(--spacing-md) 0;
+            min-height: 0;
         }
 
-        .donut-container {
+        /* Revenue quintile bar */
+        .quintile-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 4px;
+            overflow: hidden;
+            gap: 2px;
+            margin: 1rem 0;
+        }
+        .quintile-bar div { height: 100%; }
+        .quintile-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .quintile-row {
             display: flex;
             align-items: center;
-            gap: var(--spacing-xl);
-            height: 240px;
+            justify-content: space-between;
+        }
+        .quintile-row-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .quintile-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            flex-shrink: 0;
         }
 
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: var(--spacing-lg);
+        /* Insight banner button row */
+        .insight-buttons {
             display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
+            gap: 0.5rem;
+        }
+        .insight-buttons .button {
+            font-size: 1rem;
+            line-height: 1.5;
         }
     </style>
 </head>
-<body>
+<body data-v-app>
     <div class="app-container">
         <!-- Top Header -->
         <header class="header">
@@ -108,25 +201,65 @@
             <aside class="sidebar">
                 <nav class="sidebar-nav">
                     <div class="nav-group">
-                        <a href="#" class="nav-item">
+                        <a href="index.html" class="nav-item active">
                             <i class="ph-duotone ph-chart-bar"></i>
-                            Trends
+                            Dashboard
                         </a>
                     </div>
 
                     <div class="nav-group">
                         <div class="nav-group-title">Guests</div>
-                        <a href="index.html" class="nav-item active">
+                        <button class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)">
                             <i class="ph-duotone ph-chart-pie"></i>
-                            Analytics
-                        </a>
+                            <span>Analytics</span>
+                            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.96967 5.46967C2.26256 5.17678 2.73744 5.17678 3.03033 5.46967L8 10.4393L12.9697 5.46967C13.2626 5.17678 13.7374 5.17678 14.0303 5.46967C14.3232 5.76256 14.3232 6.23744 14.0303 6.53033L8.53033 12.0303C8.23744 12.3232 7.76256 12.3232 7.46967 12.0303L1.96967 6.53033C1.67678 6.23744 1.67678 5.76256 1.96967 5.46967Z" fill="#484E7F"/></svg>
+                        </button>
+                        <div class="nav-sub-group">
+                            <a href="analytics.html" class="nav-sub-item">Overview</a>
+                            <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
+                            <a href="#" class="nav-sub-item">Retention</a>
+                            <a href="#" class="nav-sub-item">At risk</a>
+                        </div>
                         <a href="profiles.html" class="nav-item">
-                            <i class="ph ph-user-circle"></i>
+                            <i class="ph-duotone ph-user-circle"></i>
                             Profiles
                         </a>
                         <a href="segments.html" class="nav-item">
-                            <i class="ph ph-users-three"></i>
+                            <i class="ph-duotone ph-users-three"></i>
                             Segments
+                        </a>
+                    </div>
+
+                    <div class="nav-group">
+                        <div class="nav-group-title">Menu</div>
+                        <a href="#" class="nav-item">
+                            <i class="ph-duotone ph-fork-knife"></i>
+                            Performance
+                        </a>
+                        <a href="#" class="nav-item">
+                            <i class="ph-duotone ph-calendar-check"></i>
+                            LTO Analysis
+                        </a>
+                    </div>
+
+                    <div class="nav-group">
+                        <div class="nav-group-title">Other</div>
+                        <button class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)">
+                            <i class="ph-duotone ph-coins"></i>
+                            <span>Revenue</span>
+                            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.96967 5.46967C2.26256 5.17678 2.73744 5.17678 3.03033 5.46967L8 10.4393L12.9697 5.46967C13.2626 5.17678 13.7374 5.17678 14.0303 5.46967C14.3232 5.76256 14.3232 6.23744 14.0303 6.53033L8.53033 12.0303C8.23744 12.3232 7.76256 12.3232 7.46967 12.0303L1.96967 6.53033C1.67678 6.23744 1.67678 5.76256 1.96967 5.46967Z" fill="#484E7F"/></svg>
+                        </button>
+                        <div class="nav-sub-group">
+                            <a href="#" class="nav-sub-item">Overview</a>
+                            <a href="#" class="nav-sub-item">Acquisition</a>
+                        </div>
+                        <a href="#" class="nav-item">
+                            <i class="ph-duotone ph-storefront"></i>
+                            Locations
+                        </a>
+                        <a href="#" class="nav-item">
+                            <i class="ph-duotone ph-megaphone-simple"></i>
+                            Campaigns
                         </a>
                     </div>
 
@@ -158,257 +291,266 @@
             <!-- Main Content -->
             <main class="main-content">
                 <div class="content-area">
-                    <!-- Page Header -->
-                    <div class="analytics-header">
-                        <div>
-                            <h1>Guest Analytics</h1>
-                            <p style="color: var(--text-subdued); margin-top: 4px;">Understand guest behavior, retention, and value across segments and locations.</p>
+                    <!-- Dashboard Title Bar (bento: title-bar) -->
+                    <div class="title-bar">
+                        <div class="title-bar__page-title">
+                            <h1>Dashboard</h1>
+                            <div class="title-bar__actions">
+                                <button class="button transparent">
+                                    <i class="ph ph-question"></i>
+                                    <span class="body1">Help</span>
+                                </button>
+                                <button class="button primary" onclick="toggleAva()">
+                                    <i class="ph ph-sparkle"></i>
+                                    <span class="body1">Create with AI...</span>
+                                </button>
+                            </div>
                         </div>
-                        <button class="btn btn-primary" onclick="toggleAva()">
-                            <i class="ph ph-sparkle"></i> Ask AVA
+                    </div>
+
+                    <!-- Filter Bar (bento: button-group, dropdown, button) -->
+                    <div class="filter-bar-new">
+                        <div class="button-group">
+                            <div class="button-group__set">
+                                <button class="button-group__set_button button-group__set_selected"><span>7D</span></button>
+                                <button class="button-group__set_button"><span>30D</span></button>
+                                <button class="button-group__set_button"><span>90D</span></button>
+                                <button class="button-group__set_button"><span>12M</span></button>
+                                <button class="button-group__set_button"><span>YTD</span></button>
+                                <button class="button-group__set_button"><span style="display:flex; align-items:center; gap:4px;"><img src="assets/icon-calendar.svg" width="24" height="24" alt=""> Custom</span></button>
+                            </div>
+                        </div>
+                        <span class="body1">compared to</span>
+                        <div class="dropdown" id="compare-dropdown">
+                            <div class="dropdown__wrapper">
+                                <button class="dropdown__button body1" onclick="toggleDropdown('compare-dropdown')">
+                                    <span>Previous period</span>
+                                    <i class="material-symbols-rounded" style="font-size:24px">expand_more</i>
+                                </button>
+                            </div>
+                            <div class="dropdown__options">
+                                <ul>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous period</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Prior year</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>None</span></button></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <button class="button outlined body1" style="margin-left:auto;">
+                            <img src="assets/icon-filter.svg" width="24" height="24" alt="">
+                            <span>More filters...</span>
                         </button>
                     </div>
 
-                    <!-- Global Filter Bar -->
-                    <div class="filter-bar">
-                        <div class="dropdown-wrapper">
-                            <select>
-                                <option>Last 30 days</option>
-                                <option>Last 7 days</option>
-                                <option>Last 90 days</option>
-                                <option>Year to date</option>
-                            </select>
-                            <i class="ph ph-caret-down"></i>
-                        </div>
-                        <div class="dropdown-wrapper">
-                            <select id="segment-dropdown">
-                                <option>All segments</option>
-                                <option>Dormant High Spenders</option>
-                                <option>Breakfast Regulars</option>
-                                <option>Vegetarian Segment</option>
-                            </select>
-                            <i class="ph ph-caret-down"></i>
-                        </div>
-                        <div class="dropdown-wrapper">
-                            <select>
-                                <option>All locations</option>
-                                <option>Atlanta, GA</option>
-                                <option>Dallas, TX</option>
-                                <option>Chicago, IL</option>
-                            </select>
-                            <i class="ph ph-caret-down"></i>
-                        </div>
-                        <div class="dropdown-wrapper">
-                            <select>
-                                <option>All channels</option>
-                                <option>POS</option>
-                                <option>Mobile App</option>
-                                <option>Web Ordering</option>
-                            </select>
-                            <i class="ph ph-caret-down"></i>
-                        </div>
-                        <button class="btn btn-secondary" style="margin-left: auto;">
-                            <i class="ph ph-funnel"></i> Advanced Filters
-                        </button>
-                    </div>
-
-                    <!-- 1. Guest Overview -->
-                    <div class="section-title">
-                        <i class="ph ph-users" style="color: var(--primary-color);"></i>
-                        Guest Overview
-                    </div>
-                    <div class="metric-grid" style="margin-bottom: var(--spacing-xl);">
-                        <div class="metric-card-analytics">
-                            <div class="metric-card-header">
-                                <span class="metric-card-title">Total Unified Guests</span>
-                                <div class="metric-card-trend positive" id="total-guests-trend">
-                                    <i class="ph ph-arrow-up-right"></i>
-                                    3.2%
-                                </div>
-                            </div>
-                            <div class="metric-card-value" id="total-guests-value">1,248,392</div>
-                            <div class="metric-card-subtext" id="total-guests-subtext">1,209,488 previous period</div>
-                            <div class="metric-card-sparkline">
-                                <canvas id="total-guests-sparkline" width="120" height="28"></canvas>
-                            </div>
-                        </div>
-                        <div class="metric-card-analytics">
-                            <div class="metric-card-header">
-                                <span class="metric-card-title">Active Guests</span>
-                                <div class="metric-card-trend positive" id="active-guests-trend">
-                                    <i class="ph ph-arrow-up-right"></i>
-                                    1.8%
-                                </div>
-                            </div>
-                            <div class="metric-card-value" id="active-guests-value">842,109</div>
-                            <div class="metric-card-subtext" id="active-guests-subtext">827,219 previous period</div>
-                            <div class="metric-card-sparkline">
-                                <canvas id="active-guests-sparkline" width="120" height="28"></canvas>
-                            </div>
-                        </div>
-                        <div class="metric-card-analytics">
-                            <div class="metric-card-header">
-                                <span class="metric-card-title">Repeat Rate</span>
-                                <div class="metric-card-trend negative" id="repeat-rate-trend">
-                                    <i class="ph ph-arrow-down-right"></i>
-                                    0.5%
-                                </div>
-                            </div>
-                            <div class="metric-card-value" id="repeat-rate-value">24.8%</div>
-                            <div class="metric-card-subtext" id="repeat-rate-subtext">25.3% previous period</div>
-                            <div class="metric-card-sparkline">
-                                <canvas id="repeat-rate-sparkline" width="120" height="28"></canvas>
-                            </div>
-                        </div>
-                        <div class="metric-card-analytics">
-                            <div class="metric-card-header">
-                                <span class="metric-card-title">Avg Visits per Guest</span>
-                                <div class="metric-card-trend positive" id="avg-visits-trend">
-                                    <i class="ph ph-arrow-up-right"></i>
-                                    2.1%
-                                </div>
-                            </div>
-                            <div class="metric-card-value" id="avg-visits-value">2.4</div>
-                            <div class="metric-card-subtext" id="avg-visits-subtext">2.3 previous period</div>
-                            <div class="metric-card-sparkline">
-                                <canvas id="avg-visits-sparkline" width="120" height="28"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 2. Retention & Frequency -->
-                    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
-                        <div class="card">
-                            <div class="card-title">Repeat Guest Trend</div>
-                            <div class="chart-container-high" id="repeat-trend-chart">
-                                <canvas id="repeat-trend-canvas"></canvas>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-title">Frequency Distribution</div>
-                            <div style="margin-top: var(--spacing-md); height: 200px;" id="freq-dist-chart">
-                                <canvas id="freq-dist-canvas"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 3. Revenue & Value -->
-                    <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
-                        <div class="card">
-                            <div class="card-title">Revenue by Guest Type</div>
-                            <div class="donut-container" id="revenue-donut-chart">
-                                <div style="position: relative; width: 200px; height: 200px; flex-shrink: 0;">
-                                    <canvas id="revenue-donut-canvas"></canvas>
-                                </div>
-                                <div id="revenue-donut-legend" style="display: flex; flex-direction: column; gap: var(--spacing-md);">
-                                    <div style="display: flex; align-items: flex-start; gap: 8px;">
-                                        <div style="width: 12px; height: 12px; background: var(--primary-color); border-radius: 2px; margin-top: 2px;"></div>
-                                        <div>
-                                            <div style="font-size: 14px; font-weight: 700;">Loyalty</div>
-                                            <div style="font-size: 12px; color: var(--text-subdued);" id="revenue-legend-loyalty">$2.73M (65%)</div>
-                                        </div>
-                                    </div>
-                                    <div style="display: flex; align-items: flex-start; gap: 8px;">
-                                        <div style="width: 12px; height: 12px; background: var(--accent-blue); border-radius: 2px; margin-top: 2px;"></div>
-                                        <div>
-                                            <div style="font-size: 14px; font-weight: 700;">Non-Loyalty</div>
-                                            <div style="font-size: 12px; color: var(--text-subdued);" id="revenue-legend-nonloyalty">$1.47M (35%)</div>
-                                        </div>
+                    <!-- KPI Cards Row (bento: card, body2, big, caption) -->
+                    <div class="kpi-row">
+                        <!-- Total guests -->
+                        <div class="card default kpi-card">
+                            <div class="kpi-card-top">
+                                <div>
+                                    <p class="body2" style="color:#60696c">Total guests</p>
+                                    <p class="big">842K</p>
+                                    <div class="kpi-change caption">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 11L6 7L9 10L14 5" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 5H14V8" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <span class="pct up">+4.2%</span>
+                                        <span>+2,340 vs prev period</span>
                                     </div>
                                 </div>
+                                <div class="kpi-benchmark green caption">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.41593 4.4C7.11996 3.2 8.88004 3.2 9.58407 4.4L12.7522 9.8C13.4562 11 12.5762 12.5 11.1681 12.5H4.83186C3.42379 12.5 2.54375 11 3.24779 9.8L6.41593 4.4Z" fill="#257469"/></svg>
+                                    75th
+                                </div>
+                            </div>
+                            <div class="kpi-sparkline" id="spark-total"></div>
+                        </div>
+
+                        <!-- Active Guests (90d) -->
+                        <div class="card default kpi-card">
+                            <div class="kpi-card-top">
+                                <div>
+                                    <p class="body2" style="color:#60696c">Active Guests (90d)</p>
+                                    <p class="big">346K</p>
+                                    <div class="kpi-change caption">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 11L6 7L9 10L14 5" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 5H14V8" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <span class="pct up">+2.2%</span>
+                                        <span>+978 vs prev period</span>
+                                    </div>
+                                </div>
+                                <div class="kpi-benchmark yellow caption">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="4" fill="#cc8900"/></svg>
+                                    50 - 75th
+                                </div>
+                            </div>
+                            <div class="kpi-sparkline" id="spark-active"></div>
+                        </div>
+
+                        <!-- Repeat Rate -->
+                        <div class="card default kpi-card">
+                            <div class="kpi-card-top">
+                                <div>
+                                    <p class="body2" style="color:#60696c">Repeat Rate</p>
+                                    <p class="big">38.2%</p>
+                                    <div class="kpi-change caption">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 5L6 9L9 6L14 11" stroke="#bc103e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 11H14V8" stroke="#bc103e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <span class="pct down">-2.1 pts</span>
+                                        <span>vs prev period</span>
+                                    </div>
+                                </div>
+                                <div class="kpi-benchmark red caption">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform:rotate(180deg)"><path d="M6.41593 4.4C7.11996 3.2 8.88004 3.2 9.58407 4.4L12.7522 9.8C13.4562 11 12.5762 12.5 11.1681 12.5H4.83186C3.42379 12.5 2.54375 11 3.24779 9.8L6.41593 4.4Z" fill="#bc103e"/></svg>
+                                    50th
+                                </div>
+                            </div>
+                            <div class="kpi-sparkline" id="spark-repeat"></div>
+                        </div>
+
+                        <!-- Avg Guest Lifetime Value -->
+                        <div class="card default kpi-card">
+                            <div class="kpi-card-top">
+                                <div>
+                                    <p class="body2" style="color:#60696c">Avg Guest Lifetime Value</p>
+                                    <p class="big">$1,245</p>
+                                    <div class="kpi-change caption">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 11L6 7L9 10L14 5" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 5H14V8" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <span class="pct up">+2.3%</span>
+                                        <span>+$1,196 vs prev period</span>
+                                    </div>
+                                </div>
+                                <div class="kpi-benchmark green caption">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.41593 4.4C7.11996 3.2 8.88004 3.2 9.58407 4.4L12.7522 9.8C13.4562 11 12.5762 12.5 11.1681 12.5H4.83186C3.42379 12.5 2.54375 11 3.24779 9.8L6.41593 4.4Z" fill="#257469"/></svg>
+                                    75th
+                                </div>
+                            </div>
+                            <div class="kpi-sparkline" id="spark-glv"></div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Lifecycle Funnel + Revenue Concentration (bento: card, subtitle, body2, caption, divider) -->
+                    <div class="chart-row">
+                        <!-- Guest Lifecycle Funnel -->
+                        <div class="card default card_non-clickable" style="flex: 2; padding: 0;">
+                            <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
+                                <div class="card__header_list">
+                                    <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
+                                        <p class="subtitle">Guest lifecycle funnel</p>
+                                        <p class="body2" style="color:#60696c">Distribution of all guests across five lifecycle stages</p>
+                                    </div>
+                                </div>
+                                <div class="card__header_list_menu">
+                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
+                                </div>
+                            </div>
+                            <div class="card__content" style="padding: 1rem;">
+                                <div id="lifecycle-chart" style="width:100%; min-height:320px;"></div>
                             </div>
                         </div>
-                        <div class="card">
-                            <div class="card-title">Average Order Value Trend</div>
-                            <div class="chart-container-high" id="aov-trend-chart">
-                                <canvas id="aov-trend-canvas"></canvas>
+
+                        <!-- Revenue Concentration -->
+                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
+                            <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
+                                <div class="card__header_list">
+                                    <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
+                                        <p class="subtitle">Revenue concentration</p>
+                                        <p class="body2" style="color:#60696c">How much revenue your top guests drive</p>
+                                    </div>
+                                </div>
+                                <div class="card__header_list_menu">
+                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
+                                </div>
+                            </div>
+                            <div class="card__content" style="padding: 1rem;">
+                                <p class="body2" style="color:#60696c">Your top 20% of guests drive</p>
+                                <p class="big">68%</p>
+                                <p class="body2" style="color:#60696c">revenue</p>
+                                <div class="kpi-change caption" style="margin-top:4px;">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 11L6 7L9 10L14 5" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 5H14V8" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    <span class="pct up">+2 pts</span>
+                                    <span>vs prev period</span>
+                                </div>
+
+                                <div class="divider__wrapper horizontal" style="margin: 1rem 0;">
+                                    <div class="divider__horizontal" style="background:#dfe1e2;"></div>
+                                </div>
+                                <p class="body2" style="color:#60696c; margin-bottom: 0.5rem;">Revenue share by guest quintile</p>
+                                <div id="quintile-chart" style="width:100%; height:160px;"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Top Performing Segments -->
-                    <div class="card card-table" style="margin-bottom: var(--spacing-xl);">
-                        <div style="padding: var(--spacing-lg) var(--spacing-lg) 0 var(--spacing-lg); display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
-                            <div class="card-title" style="margin-bottom: 0;">Top Performing Segments</div>
-                            <a href="segments.html" style="font-size: 14px; color: var(--primary-color); text-decoration: none; font-weight: 600;">View all</a>
+                    <!-- Row 3: What Changed + Alerts (bento: card, info-banner, button) -->
+                    <div class="chart-row">
+                        <!-- What changed this week -->
+                        <div class="card default card_non-clickable" style="flex: 2; padding: 0;">
+                            <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
+                                <div class="card__header_list">
+                                    <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
+                                        <p class="subtitle">What changed this week</p>
+                                        <p class="body2" style="color:#60696c">Week of Mar 10 – Mar 16</p>
+                                    </div>
+                                </div>
+                                <div class="card__header_list_menu">
+                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
+                                </div>
+                            </div>
+                            <div class="card__content" style="padding: 1rem; display:flex; flex-direction:column; gap:1rem;">
+                                <div class="info-banner info-banner_tip">
+                                    <i class="ph ph-sparkle icon-md" style="color:#000000; flex-shrink:0;"></i>
+                                    <div class="info-banner__text">
+                                        <p class="subtitle">Repeat rate dropped 1.8 pts at 3 downtown locations</p>
+                                        <p class="body2">Largest drop: Store #42 (−3.1 pts). 978 fewer returning guests than expected.</p>
+                                        <div class="insight-buttons" style="margin-top:0.5rem;">
+                                            <button class="button outlined"><span>View guests</span></button>
+                                            <button class="button outlined"><span>Compare locations</span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="info-banner info-banner_tip">
+                                    <i class="ph ph-sparkle icon-md" style="color:#000000; flex-shrink:0;"></i>
+                                    <div class="info-banner__text">
+                                        <p class="subtitle">New guest acquisition up 12% driven by mobile app channel</p>
+                                        <p class="body2">Mobile contributed 64% of new signups.</p>
+                                        <div class="insight-buttons" style="margin-top:0.5rem;">
+                                            <button class="button outlined"><span>View acquisition</span></button>
+                                            <button class="button outlined"><span>Create segment</span></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <table id="top-segments-table">
-                            <thead>
-                                <tr>
-                                    <th>Segment Name</th>
-                                    <th>Guest Count</th>
-                                    <th>Avg. LTV</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="top-segments-tbody">
-                                <tr>
-                                    <td style="font-weight: 600;">Dormant High Spenders</td>
-                                    <td>4,208</td>
-                                    <td>$512.40</td>
-                                    <td><span style="color: #3dc1af; font-weight: 600;">Active</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-chart-bar"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 600;">Breakfast Regulars</td>
-                                    <td>12,942</td>
-                                    <td>$84.20</td>
-                                    <td><span style="color: #3dc1af; font-weight: 600;">Active</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-chart-bar"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 600;">Vegetarian Segment</td>
-                                    <td>8,115</td>
-                                    <td>$124.00</td>
-                                    <td><span style="color: #3dc1af; font-weight: 600;">Active</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-chart-bar"></i></button></td>
-                                </tr>
-                            </tbody>
-                        </table>
+
+                        <!-- Alerts -->
+                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
+                            <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
+                                <div class="card__header_list">
+                                    <p class="subtitle">Alerts</p>
+                                </div>
+                                <div class="card__header_list_menu">
+                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
+                                </div>
+                            </div>
+                            <div class="card__content" style="padding: 1rem; display:flex; flex-direction:column; gap:1rem;">
+                                <div class="info-banner info-banner_warning">
+                                    <i class="ph ph-warning icon-md" style="color:#000000; flex-shrink:0;"></i>
+                                    <div class="info-banner__text">
+                                        <p class="body2">Repeat rate at Downtown dropped below 30%</p>
+                                    </div>
+                                </div>
+                                <div class="info-banner info-banner_warning">
+                                    <i class="ph ph-warning icon-md" style="color:#000000; flex-shrink:0;"></i>
+                                    <div class="info-banner__text">
+                                        <p class="body2">340 guest moved to "Churned" this week</p>
+                                    </div>
+                                </div>
+                                <div class="info-banner info-banner_warning">
+                                    <i class="ph ph-warning icon-md" style="color:#000000; flex-shrink:0;"></i>
+                                    <div class="info-banner__text">
+                                        <p class="body2">GLV benchmark dropped below 50th percentile</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- 5. Menu & Behavior Signals -->
-                    <div class="card card-table">
-                        <div style="padding: var(--spacing-lg) var(--spacing-lg) 0 var(--spacing-lg); display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
-                            <div class="card-title" style="margin-bottom: 0;">Top Menu Items by Segment Affinity</div>
-                            <span style="font-size: 12px; color: var(--text-subdued);">Showing data for <strong>Dormant High Spenders</strong></span>
-                        </div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Attach Rate</th>
-                                    <th>Freq. Driver Score</th>
-                                    <th>Growth vs PW</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="top-items-tbody">
-                                <tr>
-                                    <td style="font-weight: 600;">Fire Chicken Sandwich</td>
-                                    <td>64%</td>
-                                    <td><span class="badge badge-success">High</span></td>
-                                    <td><span class="trend-up">+12.4%</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 600;">Double Delight Burger</td>
-                                    <td>42%</td>
-                                    <td><span class="badge badge-success" style="background: rgba(61, 193, 175, 0.05);">Medium</span></td>
-                                    <td><span class="trend-up">+2.1%</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 600;">Truffle Waffle Fries</td>
-                                    <td>88%</td>
-                                    <td><span class="badge badge-success">High</span></td>
-                                    <td><span class="trend-down">-1.5%</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </main>
         </div>
@@ -461,472 +603,282 @@
     </div>
 
     <script>
-        Chart.defaults.animation = false;
-        Chart.defaults.plugins.tooltip.animation = false;
-
-        function getChartColors() {
-            const root = document.documentElement;
-            const primary = getComputedStyle(root).getPropertyValue('--primary-color').trim() || '#FFC700';
-            const accentBlue = getComputedStyle(root).getPropertyValue('--accent-blue').trim() || '#5A55E3';
-            const success = getComputedStyle(root).getPropertyValue('--success').trim() || '#3dc1af';
-            const subdued = getComputedStyle(root).getPropertyValue('--text-subdued').trim() || '#6b7280';
-            return { primary, accentBlue, success, subdued };
+        // ── Bento dropdown toggle ──
+        function toggleDropdown(id) {
+            var dd = document.getElementById(id);
+            var opts = dd.querySelector('.dropdown__options');
+            opts.classList.toggle('dropdown__options_open');
         }
-
-        const segmentData = {
-            'All segments': {
-                metrics: {
-                    'total-guests': { value: '1,248,392', trend: '<i class="ph ph-arrow-up-right"></i> 3.2%', trendClass: 'positive', subtext: '1,209,488 previous period', sparkline: 'up' },
-                    'active-guests': { value: '842,109', trend: '<i class="ph ph-arrow-up-right"></i> 1.8%', trendClass: 'positive', subtext: '827,219 previous period', sparkline: 'up' },
-                    'repeat-rate': { value: '24.8%', trend: '<i class="ph ph-arrow-down-right"></i> 0.5%', trendClass: 'negative', subtext: '25.3% previous period', sparkline: 'down' },
-                    'avg-visits': { value: '2.4', trend: '<i class="ph ph-arrow-up-right"></i> 2.1%', trendClass: 'positive', subtext: '2.3 previous period', sparkline: 'up' }
-                },
-                chartData: {
-                    repeatTrend: { labels: ['Jun 18', 'Jun 25', 'Jul 02', 'Jul 09', 'Jul 16', 'Jul 23', 'Jul 30', 'Aug 06', 'Aug 13', 'Aug 20'], data: [42, 58, 48, 72, 64, 82, 76, 88, 70, 74] },
-                    freqDist: { labels: ['1 Visit', '2-3 Visits', '4-10 Visits', '10+ Visits'], data: [72.4, 18.2, 7.1, 2.3], colors: ['#9aa4ff', null, null, null] },
-                    revenueDonut: { data: [65, 35], totalLabel: '$4.2M', subLabel: 'Total Revenue', legend: { loyalty: '$2.73M (65%)', nonloyalty: '$1.47M (35%)' } },
-                    aovTrend: { labels: ['Oct 2025', 'Nov 2025', 'Dec 2025', 'Jan 2026'], data: [52, 48, 38, 18], yMax: 60, lineColor: 'accentBlue', fillRgba: '90, 85, 227, 0.05' }
-                },
-                tables: {
-                    'top-segments-tbody': `
-                                <tr>
-                                    <td style="font-weight: 600;">Dormant High Spenders</td>
-                                    <td>4,208</td>
-                                    <td>$512.40</td>
-                                    <td><span style="color: #3dc1af; font-weight: 600;">Active</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-chart-bar"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 600;">Breakfast Regulars</td>
-                                    <td>12,942</td>
-                                    <td>$84.20</td>
-                                    <td><span style="color: #3dc1af; font-weight: 600;">Active</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-chart-bar"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 600;">Vegetarian Segment</td>
-                                    <td>8,115</td>
-                                    <td>$124.00</td>
-                                    <td><span style="color: #3dc1af; font-weight: 600;">Active</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-chart-bar"></i></button></td>
-                                </tr>`,
-                    'top-items-tbody': `
-                                <tr>
-                                    <td style="font-weight: 600;">Fire Chicken Sandwich</td>
-                                    <td>64%</td>
-                                    <td><span class="badge badge-success">High</span></td>
-                                    <td><span class="trend-up">+12.4%</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 600;">Double Delight Burger</td>
-                                    <td>42%</td>
-                                    <td><span class="badge badge-success" style="background: rgba(61, 193, 175, 0.05);">Medium</span></td>
-                                    <td><span class="trend-up">+2.1%</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 600;">Truffle Waffle Fries</td>
-                                    <td>88%</td>
-                                    <td><span class="badge badge-success">High</span></td>
-                                    <td><span class="trend-down">-1.5%</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
-                                </tr>`
-                }
-            },
-            'Dormant High Spenders': {
-                metrics: {
-                    'total-guests': { value: '4,208', trend: '<i class="ph ph-arrow-down-right"></i> 1.2%', trendClass: 'negative', subtext: '4,259 previous period', sparkline: 'down' },
-                    'active-guests': { value: '0', trend: '0.0%', trendClass: '', subtext: '0 previous period', sparkline: 'flat' },
-                    'repeat-rate': { value: '100%', trend: '0.0%', trendClass: '', subtext: '100% previous period', sparkline: 'flat' },
-                    'avg-visits': { value: '8.4', trend: '<i class="ph ph-arrow-down-right"></i> 0.4%', trendClass: 'negative', subtext: '8.5 previous period', sparkline: 'down' }
-                },
-                chartData: {
-                    repeatTrend: { labels: ['Jun 18', 'Jun 25', 'Jul 02', 'Jul 09', 'Jul 16', 'Jul 23', 'Jul 30', 'Aug 06', 'Aug 13', 'Aug 20'], data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100] },
-                    freqDist: { labels: ['1 Visit', '2-3 Visits', '4-10 Visits', '10+ Visits'], data: [0, 5.2, 12.8, 82], colors: ['#9aa4ff', null, null, null] },
-                    revenueDonut: { data: [92, 8], totalLabel: '$2.1M', subLabel: 'LTV Capital', legend: { loyalty: '$1.93M (92%)', nonloyalty: '$0.17M (8%)' } },
-                    aovTrend: { labels: ['Oct 2025', 'Nov 2025', 'Dec 2025', 'Jan 2026'], data: [95, 92, 97, 90], yMax: 120, lineColor: 'primary', fillRgba: '255, 199, 0, 0.05' }
-                },
-                tables: {
-                    'top-segments-tbody': `
-                                <tr>
-                                    <td style="font-weight: 600;">Dormant High Spenders</td>
-                                    <td>4,208</td>
-                                    <td>$512.40</td>
-                                    <td><span style="color: #3dc1af; font-weight: 600;">Active</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-chart-bar"></i></button></td>
-                                </tr>`,
-                    'top-items-tbody': `
-                                <tr>
-                                    <td style="font-weight: 600;">Prime Ribeye Steak</td>
-                                    <td>92%</td>
-                                    <td><span class="badge badge-success">Critical</span></td>
-                                    <td><span class="trend-down">-4.2%</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 600;">Vintage Cabernet Reserve</td>
-                                    <td>78%</td>
-                                    <td><span class="badge badge-success">High</span></td>
-                                    <td><span class="trend-up">+1.5%</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td style="font-weight: 600;">Lobster Thermidor</td>
-                                    <td>65%</td>
-                                    <td><span class="badge badge-success">High</span></td>
-                                    <td><span class="trend-down">-0.8%</span></td>
-                                    <td><button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-eye"></i></button></td>
-                                </tr>`
-                }
-            }
-        };
-
-        function drawSparkline(canvasId, trend) {
-            const canvas = document.getElementById(canvasId);
-            if (!canvas || !canvas.getContext) return;
-            const ctx = canvas.getContext('2d');
-            const w = canvas.width;
-            const h = canvas.height;
-            ctx.clearRect(0, 0, w, h);
-            const pad = 2;
-            const n = 8;
-            let ys;
-            if (trend === 'up') ys = [0.7, 0.6, 0.55, 0.5, 0.45, 0.35, 0.2, 0.1];
-            else if (trend === 'down') ys = [0.1, 0.2, 0.35, 0.45, 0.5, 0.55, 0.6, 0.7];
-            else ys = [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4];
-            const step = (w - 2 * pad) / (n - 1);
-            ctx.strokeStyle = trend === 'up' ? '#3dc1af' : trend === 'down' ? '#e11d48' : '#bbb';
-            ctx.lineWidth = 2;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.beginPath();
-            ctx.moveTo(pad, pad + ys[0] * (h - 2 * pad));
-            for (let i = 1; i < n; i++) ctx.lineTo(pad + i * step, pad + ys[i] * (h - 2 * pad));
-            ctx.stroke();
+        function selectDropdownOption(btn) {
+            var dd = btn.closest('.dropdown');
+            var label = dd.querySelector('.dropdown__button span:first-child');
+            label.textContent = btn.querySelector('span').textContent;
+            dd.querySelector('.dropdown__options').classList.remove('dropdown__options_open');
         }
-
-        const doughnutCenterPlugin = {
-            id: 'doughnutCenter',
-            afterDraw(chart) {
-                if (chart.config.type !== 'doughnut' || !chart.config.options.centerText) return;
-                const { ctx, chartArea: { left, right, top, bottom } } = chart;
-                const cx = (left + right) / 2;
-                const cy = (top + bottom) / 2;
-                const { main, sub } = chart.config.options.centerText;
-                ctx.save();
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.font = `800 24px ${getComputedStyle(document.documentElement).getPropertyValue('--font-family').trim()}`;
-                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-text-normal').trim() || '#111';
-                ctx.fillText(main, cx, cy - 8);
-                ctx.font = `9px ${getComputedStyle(document.documentElement).getPropertyValue('--font-family').trim()}`;
-                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-subdued').trim() || '#6b7280';
-                ctx.fillText(sub, cx, cy + 10);
-                ctx.restore();
-            }
-        };
-
-        Chart.register(doughnutCenterPlugin);
-
-        let repeatTrendChart, freqDistChart, revenueDonutChart, aovTrendChart;
-
-        function initCharts() {
-            const c = getChartColors();
-            const fontFamily = getComputedStyle(document.documentElement).getPropertyValue('--font-family').trim();
-
-            repeatTrendChart = new Chart(document.getElementById('repeat-trend-canvas'), {
-                type: 'bar',
-                data: {
-                    labels: segmentData['All segments'].chartData.repeatTrend.labels,
-                    datasets: [{ label: 'Repeat %', data: segmentData['All segments'].chartData.repeatTrend.data, backgroundColor: '#9aa4ff', borderRadius: 2 }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: { duration: 300 },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { callbacks: { label: (item) => item.raw + '%' } }
-                    },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { font: { size: 10, family: fontFamily }, color: c.subdued } },
-                        y: { min: 0, max: 100, ticks: { stepSize: 25, callback: v => v + '%', font: { size: 10, family: fontFamily }, color: c.subdued }, grid: { color: '#f0f0f0' } }
-                    }
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            document.querySelectorAll('.dropdown').forEach(function(dd) {
+                if (!dd.contains(e.target)) {
+                    dd.querySelector('.dropdown__options').classList.remove('dropdown__options_open');
                 }
             });
-
-            freqDistChart = new Chart(document.getElementById('freq-dist-canvas'), {
-                type: 'bar',
-                data: {
-                    labels: segmentData['All segments'].chartData.freqDist.labels,
-                    datasets: [{
-                        label: '%',
-                        data: segmentData['All segments'].chartData.freqDist.data,
-                        backgroundColor: [c.primary, c.accentBlue, '#9aa4ff', c.success],
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: { duration: 300 },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { callbacks: { label: (item) => item.raw + '%' } }
-                    },
-                    scales: {
-                        x: { min: 0, max: 100, ticks: { display: false }, grid: { display: false } },
-                        y: { grid: { display: false }, ticks: { font: { size: 12, family: fontFamily }, color: c.subdued } }
-                    }
-                }
-            });
-
-            revenueDonutChart = new Chart(document.getElementById('revenue-donut-canvas'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Loyalty', 'Non-Loyalty'],
-                    datasets: [{
-                        data: segmentData['All segments'].chartData.revenueDonut.data,
-                        backgroundColor: [c.primary, c.accentBlue],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    cutout: '70%',
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    animation: { duration: 300 },
-                    centerText: {
-                        main: segmentData['All segments'].chartData.revenueDonut.totalLabel,
-                        sub: segmentData['All segments'].chartData.revenueDonut.subLabel
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { callbacks: { label: (ctx) => ctx.label + ' ' + ctx.raw + '%' } }
-                    }
-                }
-            });
-
-            aovTrendChart = new Chart(document.getElementById('aov-trend-canvas'), {
-                type: 'line',
-                data: {
-                    labels: segmentData['All segments'].chartData.aovTrend.labels,
-                    datasets: [{
-                        label: 'AOV',
-                        data: segmentData['All segments'].chartData.aovTrend.data,
-                        borderColor: c.accentBlue,
-                        backgroundColor: 'rgba(90, 85, 227, 0.05)',
-                        fill: true,
-                        tension: 0.3,
-                        pointRadius: 3,
-                        pointBackgroundColor: c.accentBlue
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: { duration: 300 },
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { font: { size: 10, family: fontFamily }, color: c.subdued } },
-                        y: { min: 0, max: 60, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10, family: fontFamily }, color: c.subdued, callback: v => '$' + v } }
-                    }
-                }
-            });
-
-            ['total-guests', 'active-guests', 'repeat-rate', 'avg-visits'].forEach(id => drawSparkline(id + '-sparkline', segmentData['All segments'].metrics[id].sparkline));
-        }
-
-        function refreshDashboard(segmentName) {
-            const data = segmentData[segmentName] || segmentData['All segments'];
-            
-            Object.keys(data.metrics).forEach(id => {
-                const metric = data.metrics[id];
-                document.getElementById(id + '-value').innerText = metric.value;
-                document.getElementById(id + '-trend').innerHTML = metric.trend;
-                document.getElementById(id + '-trend').className = 'metric-card-trend ' + metric.trendClass;
-                document.getElementById(id + '-subtext').innerText = metric.subtext;
-                drawSparkline(id + '-sparkline', metric.sparkline);
-            });
-
-            const cd = data.chartData;
-            if (cd) {
-                repeatTrendChart.data.labels = cd.repeatTrend.labels;
-                repeatTrendChart.data.datasets[0].data = cd.repeatTrend.data;
-                repeatTrendChart.update();
-
-                freqDistChart.data.labels = cd.freqDist.labels;
-                freqDistChart.data.datasets[0].data = cd.freqDist.data;
-                freqDistChart.update();
-
-                revenueDonutChart.data.datasets[0].data = cd.revenueDonut.data;
-                revenueDonutChart.options.centerText = { main: cd.revenueDonut.totalLabel, sub: cd.revenueDonut.subLabel };
-                revenueDonutChart.update();
-                document.getElementById('revenue-legend-loyalty').innerText = cd.revenueDonut.legend.loyalty;
-                document.getElementById('revenue-legend-nonloyalty').innerText = cd.revenueDonut.legend.nonloyalty;
-
-                aovTrendChart.data.labels = cd.aovTrend.labels;
-                aovTrendChart.data.datasets[0].data = cd.aovTrend.data;
-                const c = getChartColors();
-                aovTrendChart.data.datasets[0].borderColor = cd.aovTrend.lineColor === 'primary' ? c.primary : c.accentBlue;
-                aovTrendChart.data.datasets[0].backgroundColor = 'rgba(' + cd.aovTrend.fillRgba + ')';
-                aovTrendChart.data.datasets[0].pointBackgroundColor = cd.aovTrend.lineColor === 'primary' ? c.primary : c.accentBlue;
-                aovTrendChart.options.scales.y.max = cd.aovTrend.yMax;
-                aovTrendChart.update();
-            }
-
-            Object.keys(data.tables).forEach(id => {
-                document.getElementById(id).innerHTML = data.tables[id];
-            });
-
-            const labels = document.querySelectorAll('strong');
-            labels.forEach(label => {
-                if (label.innerText === 'Dormant High Spenders' || label.innerText === 'High-Value Loyalists') {
-                    label.innerText = segmentName === 'All segments' ? 'High-Value Loyalists' : segmentName;
-                }
-            });
-        }
-
-        document.getElementById('segment-dropdown').addEventListener('change', function(e) {
-            refreshDashboard(e.target.value);
         });
 
-        initCharts();
-        refreshDashboard('All segments');
+        // ── Period button toggle (bento: button-group) ──
+        document.querySelectorAll('.button-group__set_button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.button-group__set_button').forEach(b => b.classList.remove('button-group__set_selected'));
+                this.classList.add('button-group__set_selected');
+            });
+        });
 
+        // ── ECharts: KPI Sparklines ──
+        function initSparkline(elId, data, color) {
+            var chart = echarts.init(document.getElementById(elId));
+            chart.setOption({
+                grid: { left: 0, right: 0, top: 0, bottom: 0 },
+                xAxis: { type: 'category', show: false, data: data.map((_, i) => i) },
+                yAxis: { type: 'value', show: false },
+                series: [{
+                    type: 'line',
+                    data: data,
+                    smooth: false,
+                    symbol: 'none',
+                    lineStyle: { width: 1.5, color: color },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: color.replace(')', ', 0.25)').replace('rgb', 'rgba') },
+                            { offset: 1, color: color.replace(')', ', 0.02)').replace('rgb', 'rgba') }
+                        ])
+                    }
+                }],
+                animation: false
+            });
+            return chart;
+        }
+
+        // Sparkline data — 7 days, ~3-4 readings/day showing realistic restaurant traffic
+        // Total guests ~842K, ~120K/day avg, lunch+dinner peaks, overnight lows, Fri-Sat bump
+        var sparkTotal = initSparkline('spark-total',
+            [112, 105, 118, 114, 108, 121, 116, 110, 124, 119, 126, 132, 138, 128, 120, 115, 122, 119, 125, 130, 127],
+            'rgb(37, 116, 105)');
+        // Active guests (90d) ~346K, steadier growth, similar daily pattern
+        var sparkActive = initSparkline('spark-active',
+            [46, 44, 48, 47, 45, 49, 48, 46, 50, 49, 51, 53, 55, 52, 50, 48, 50, 49, 52, 54, 53],
+            'rgb(37, 116, 105)');
+        // Repeat rate ~38.2%, slight decline over the week (-2.1 pts)
+        var sparkRepeat = initSparkline('spark-repeat',
+            [40.1, 39.8, 40.3, 39.5, 39.2, 39.6, 38.9, 39.1, 38.7, 38.4, 38.8, 38.2, 38.5, 38.0, 38.3, 37.8, 38.1, 37.9, 38.2, 38.0, 37.6],
+            'rgb(188, 16, 62)');
+        // Avg guest lifetime value ~$1,245, gradual upward trend (+2.3%)
+        var sparkGlv = initSparkline('spark-glv',
+            [1210, 1215, 1208, 1218, 1222, 1216, 1225, 1220, 1228, 1232, 1226, 1235, 1230, 1238, 1240, 1234, 1242, 1238, 1245, 1248, 1243],
+            'rgb(37, 116, 105)');
+
+        // ── ECharts: Guest Lifecycle Funnel (100% Stacked Bar) ──
+        var lifecycleChart = echarts.init(document.getElementById('lifecycle-chart'));
+        var dates = ['Mar 10', 'Mar 11', 'Mar 12', 'Mar 13', 'Mar 14', 'Mar 15', 'Mar 16'];
+        // Use bento chart palette tokens
+        var cs = getComputedStyle(document.documentElement);
+        var seriesColors = {
+            'Churned':    cs.getPropertyValue('--chart-indigo-900').trim()    || '#5a55e3',
+            'At risk':    cs.getPropertyValue('--chart-vermilion-900').trim() || '#ff6600',
+            'Loyal':      cs.getPropertyValue('--chart-periwinkle-900').trim()|| '#8c9fff',
+            'Returning':  cs.getPropertyValue('--chart-amber-900').trim()    || '#f8931c',
+            'First-time': cs.getPropertyValue('--chart-crimson-900').trim()  || '#e83162'
+        };
+        // Stack order (bottom to top): Churned, At risk, Loyal, Returning, First-time
+        var lifecycleData = {
+            'Churned':    [41, 43, 49, 46, 43, 41, 46],
+            'At risk':    [20, 21, 24, 18, 21, 20, 18],
+            'Loyal':      [16, 14, 11, 14, 14, 16, 14],
+            'Returning':  [12, 13, 10, 14, 13, 12, 14],
+            'First-time': [11,  9,  6,  8,  9, 11,  8]
+        };
+
+        lifecycleChart.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'none' },
+                formatter: function(params) {
+                    var lines = '<b>' + params[0].axisValue + '</b>';
+                    params.slice().reverse().forEach(function(p) {
+                        lines += '<br/>' + p.marker + ' ' + p.seriesName + ': ' + p.value + '%';
+                    });
+                    return lines;
+                }
+            },
+            legend: {
+                data: ['First-time', 'Returning', 'Loyal', 'At risk', 'Churned'],
+                top: 0,
+                left: 0,
+                itemWidth: 12,
+                itemHeight: 12,
+                itemGap: 16,
+                textStyle: { fontFamily: 'Manrope', fontSize: 12, color: '#000' }
+            },
+            grid: { left: 40, right: 16, top: 40, bottom: 36 },
+            xAxis: {
+                type: 'category',
+                data: dates,
+                axisLine: { show: false },
+                axisTick: { show: false },
+                axisLabel: { fontFamily: 'Manrope', fontSize: 12, color: '#000' }
+            },
+            yAxis: {
+                type: 'value',
+                min: 0, max: 100,
+                interval: 50,
+                axisLabel: { formatter: '{value}%', fontFamily: 'Manrope', fontSize: 12, color: '#000' },
+                splitLine: { lineStyle: { color: '#eee' } },
+                axisLine: { show: false },
+                axisTick: { show: false }
+            },
+            series: ['Churned', 'At risk', 'Loyal', 'Returning', 'First-time'].map(function(name) {
+                return {
+                    name: name,
+                    type: 'bar',
+                    stack: 'lifecycle',
+                    barWidth: '60%',
+                    data: lifecycleData[name],
+                    itemStyle: {
+                        color: seriesColors[name],
+                        borderRadius: 4,
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    },
+                    emphasis: { focus: 'series' }
+                };
+            }),
+            animation: false
+        });
+
+        // ── Revenue Quintile Bar (ECharts horizontal stacked bar) ──
+        var quintileChart = echarts.init(document.getElementById('quintile-chart'));
+        quintileChart.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' },
+                formatter: function(params) {
+                    var lines = '';
+                    params.forEach(function(p) {
+                        lines += p.marker + ' ' + p.seriesName + ': ' + p.value + '%<br/>';
+                    });
+                    return lines;
+                },
+                textStyle: { fontFamily: 'Manrope', fontSize: 12 }
+            },
+            legend: {
+                bottom: 0,
+                left: 0,
+                orient: 'vertical',
+                itemWidth: 12,
+                itemHeight: 12,
+                itemGap: 4,
+                icon: 'roundRect',
+                textStyle: { fontFamily: 'Manrope', fontSize: 12, color: '#000' },
+                data: ['Top 20%', '20-40%', '40-60%', '60-80%', 'Bottom 20%'],
+                formatter: function(name) {
+                    var vals = { 'Top 20%': 68, '20-40%': 12, '40-60%': 10, '60-80%': 6, 'Bottom 20%': 4 };
+                    return name + '   ' + vals[name] + '%';
+                }
+            },
+            grid: { left: 0, right: 0, top: 0, bottom: 110, containLabel: false },
+            xAxis: { type: 'value', max: 100, show: false },
+            yAxis: { type: 'category', data: ['Revenue'], show: false },
+            series: [
+                { name: 'Top 20%', type: 'bar', stack: 'quintile', data: [68], itemStyle: { color: '#5A55E3', borderRadius: 4, borderColor: '#fff', borderWidth: 1 }, barWidth: 40, emphasis: { focus: 'series' } },
+                { name: '20-40%', type: 'bar', stack: 'quintile', data: [12], itemStyle: { color: '#6560E6', borderRadius: 4, borderColor: '#fff', borderWidth: 1 }, barWidth: 40, emphasis: { focus: 'series' } },
+                { name: '40-60%', type: 'bar', stack: 'quintile', data: [10], itemStyle: { color: '#7874EA', borderRadius: 4, borderColor: '#fff', borderWidth: 1 }, barWidth: 40, emphasis: { focus: 'series' } },
+                { name: '60-80%', type: 'bar', stack: 'quintile', data: [6], itemStyle: { color: '#A9A6F0', borderRadius: 4, borderColor: '#fff', borderWidth: 1 }, barWidth: 40, emphasis: { focus: 'series' } },
+                { name: 'Bottom 20%', type: 'bar', stack: 'quintile', data: [4], itemStyle: { color: '#EAE9FB', borderRadius: 4, borderColor: '#fff', borderWidth: 1 }, barWidth: 40, emphasis: { focus: 'series' } }
+            ],
+            animation: false
+        });
+
+        // ── Resize all charts on window resize ──
+        window.addEventListener('resize', function() {
+            [sparkTotal, sparkActive, sparkRepeat, sparkGlv, lifecycleChart, quintileChart].forEach(function(c) {
+                if (c) c.resize();
+            });
+        });
+
+        // ── Sidebar nav ──
+        function toggleNavExpand(btn) {
+            var subGroup = btn.nextElementSibling;
+            btn.classList.toggle('open');
+            subGroup.classList.toggle('open');
+        }
+
+        // ── AVA Modal ──
         function toggleAva() {
-            const modal = document.getElementById('avaModal');
-            const overlay = document.getElementById('avaOverlay');
-            modal.classList.toggle('active');
-            overlay.classList.toggle('active');
+            document.getElementById('avaModal').classList.toggle('active');
+            document.getElementById('avaOverlay').classList.toggle('active');
         }
 
         function askAva(question) {
-            const input = document.getElementById('avaInput');
-            input.value = question;
+            document.getElementById('avaInput').value = question;
             sendToAva();
         }
 
-        function sendToAva(isFollowUp = false) {
-            const inputId = isFollowUp ? 'avaInputFooter' : 'avaInput';
-            const input = document.getElementById(inputId);
-            const question = input.value.trim();
+        function sendToAva(isFollowUp) {
+            var inputId = isFollowUp ? 'avaInputFooter' : 'avaInput';
+            var input = document.getElementById(inputId);
+            var question = input.value.trim();
             if (!question) return;
 
-            const chatArea = document.querySelector('.ava-chat-area');
-            const chatViewport = document.querySelector('.ava-chat-viewport');
+            var chatArea = document.querySelector('.ava-chat-area');
+            var chatViewport = document.querySelector('.ava-chat-viewport');
 
             if (!isFollowUp) {
-                // Hide suggestion cards when starting conversation
-                const suggestionCards = document.querySelector('.ava-suggestion-cards');
-                if (suggestionCards) {
-                    suggestionCards.style.display = 'none';
-                }
-                
-                // Hide hero message when starting conversation
-                const hero = document.querySelector('.ava-hero');
-                if (hero) {
-                    hero.style.display = 'none';
-                }
-
-                // Hide initial input and show footer input
+                var sc = document.querySelector('.ava-suggestion-cards');
+                if (sc) sc.style.display = 'none';
+                var hero = document.querySelector('.ava-hero');
+                if (hero) hero.style.display = 'none';
                 document.getElementById('initialInputContainer').style.display = 'none';
                 document.getElementById('footerInputContainer').style.display = 'flex';
                 chatViewport.classList.add('chat-active');
             }
 
-            // Add user message (in bubble, right-aligned)
-            const userMsg = document.createElement('div');
+            var userMsg = document.createElement('div');
             userMsg.className = 'ava-message user';
-            userMsg.innerHTML = `<div class="message-bubble">${question}</div>`;
+            userMsg.innerHTML = '<div class="message-bubble">' + question + '</div>';
             chatArea.appendChild(userMsg);
-
             input.value = '';
-            
-            // Scroll viewport to bottom
-            setTimeout(() => {
-                chatViewport.scrollTop = chatViewport.scrollHeight;
-            }, 0);
+            setTimeout(function() { chatViewport.scrollTop = chatViewport.scrollHeight; }, 0);
 
-            // Add bot response (NOT in bubble, left-aligned)
-            setTimeout(() => {
-                const botText = document.createElement('div');
+            setTimeout(function() {
+                var botText = document.createElement('div');
                 botText.className = 'ava-message bot';
-                botText.innerHTML = `<div class="ava-message-text">Based on the current filters, I've identified a key insight:</div>`;
+                botText.innerHTML = '<div class="ava-message-text">Based on the current filters, I\'ve identified a key insight:</div>';
                 chatArea.appendChild(botText);
-                
-                setTimeout(() => {
-                    chatViewport.scrollTop = chatViewport.scrollHeight;
-                }, 0);
 
-                // Add insight card (in card)
-                setTimeout(() => {
-                    const insightCard = document.createElement('div');
+                setTimeout(function() {
+                    var insightCard = document.createElement('div');
                     insightCard.className = 'ava-insight-card';
-                    insightCard.innerHTML = `
-                        <div class="ava-insight-title">Example insight</div>
-                        <div class="ava-insight-text">Repeat guest frequency has increased by 12% among High-Value Loyalists following the recent menu update.</div>
-                        <div class="ava-placeholder-chart"><canvas class="ava-insight-chart-canvas"></canvas></div>
-                    `;
+                    insightCard.innerHTML = '<div class="ava-insight-title">Example insight</div>' +
+                        '<div class="ava-insight-text">Repeat guest frequency has increased by 12% among High-Value Loyalists following the recent menu update.</div>' +
+                        '<div class="ava-placeholder-chart" id="ava-chart-placeholder"></div>';
                     chatArea.appendChild(insightCard);
-                    const canvas = insightCard.querySelector('.ava-insight-chart-canvas');
-                    if (canvas && typeof Chart !== 'undefined') {
-                        const c = getChartColors();
-                        new Chart(canvas, {
-                            type: 'line',
-                            data: {
-                                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                                datasets: [{
-                                    label: 'Frequency',
-                                    data: [2.1, 2.2, 2.35, 2.4],
-                                    borderColor: c.accentBlue,
-                                    backgroundColor: 'rgba(90, 85, 227, 0.08)',
-                                    fill: true,
-                                    tension: 0.3,
-                                    pointRadius: 3
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: { legend: { display: false } },
-                                scales: {
-                                    x: { grid: { display: false }, ticks: { font: { size: 10 }, color: c.subdued } },
-                                    y: { min: 1.8, max: 2.6, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, color: c.subdued } }
-                                }
-                            }
-                        });
-                    }
-                    // Add action buttons
-                    const actionButtons = document.createElement('div');
+
+                    var avaChart = echarts.init(document.getElementById('ava-chart-placeholder'));
+                    avaChart.setOption({
+                        grid: { left: 40, right: 16, top: 8, bottom: 24 },
+                        xAxis: { type: 'category', data: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], axisLabel: { fontSize: 10, color: '#60696c' }, axisLine: { show: false }, axisTick: { show: false } },
+                        yAxis: { type: 'value', min: 1.8, max: 2.6, axisLabel: { fontSize: 10, color: '#60696c' }, splitLine: { lineStyle: { color: '#f0f0f0' } }, axisLine: { show: false }, axisTick: { show: false } },
+                        series: [{ type: 'line', data: [2.1, 2.2, 2.35, 2.4], smooth: true, symbol: 'circle', symbolSize: 6, lineStyle: { color: '#5a55e3' }, itemStyle: { color: '#5a55e3' }, areaStyle: { color: 'rgba(90,85,227,0.08)' } }],
+                        animation: false
+                    });
+
+                    var actionButtons = document.createElement('div');
                     actionButtons.className = 'ava-action-buttons';
-                    actionButtons.innerHTML = `
-                        <button class="ava-action-btn">
-                            <i class="ph ph-copy"></i>
-                            <span>Copy</span>
-                        </button>
-                        <button class="ava-action-btn">
-                            <i class="ph ph-share-network"></i>
-                            <span>Share</span>
-                        </button>
-                        <button class="ava-action-btn">
-                            <i class="ph ph-link"></i>
-                            <span>Sources (3)</span>
-                        </button>
-                        <button class="ava-action-btn-icon-only">
-                            <i class="ph ph-thumbs-up"></i>
-                        </button>
-                        <button class="ava-action-btn-icon-only">
-                            <i class="ph ph-thumbs-down"></i>
-                        </button>
-                    `;
+                    actionButtons.innerHTML = '<button class="ava-action-btn"><i class="ph ph-copy"></i><span>Copy</span></button>' +
+                        '<button class="ava-action-btn"><i class="ph ph-share-network"></i><span>Share</span></button>' +
+                        '<button class="ava-action-btn"><i class="ph ph-link"></i><span>Sources (3)</span></button>' +
+                        '<button class="ava-action-btn-icon-only"><i class="ph ph-thumbs-up"></i></button>' +
+                        '<button class="ava-action-btn-icon-only"><i class="ph ph-thumbs-down"></i></button>';
                     chatArea.appendChild(actionButtons);
-                    
-                    setTimeout(() => {
-                        chatViewport.scrollTop = chatViewport.scrollHeight;
-                    }, 0);
+                    setTimeout(function() { chatViewport.scrollTop = chatViewport.scrollHeight; }, 0);
                 }, 1000);
             }, 800);
         }

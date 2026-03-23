@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guest Profile - Guest Data Platform</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0" />
+    <link rel="stylesheet" href="assets/bento.css">
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -194,7 +196,7 @@
         }
     </style>
 </head>
-<body>
+<body data-v-app>
     <div class="app-container">
         <!-- Top Header -->
         <header class="header">
@@ -252,25 +254,65 @@
             <aside class="sidebar">
                 <nav class="sidebar-nav">
                     <div class="nav-group">
-                        <a href="#" class="nav-item">
+                        <a href="index.html" class="nav-item">
                             <i class="ph-duotone ph-chart-bar"></i>
-                            Trends
+                            Dashboard
                         </a>
                     </div>
 
                     <div class="nav-group">
                         <div class="nav-group-title">Guests</div>
-                        <a href="index.html" class="nav-item">
+                        <button class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)">
                             <i class="ph-duotone ph-chart-pie"></i>
-                            Analytics
-                        </a>
+                            <span>Analytics</span>
+                            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.96967 5.46967C2.26256 5.17678 2.73744 5.17678 3.03033 5.46967L8 10.4393L12.9697 5.46967C13.2626 5.17678 13.7374 5.17678 14.0303 5.46967C14.3232 5.76256 14.3232 6.23744 14.0303 6.53033L8.53033 12.0303C8.23744 12.3232 7.76256 12.3232 7.46967 12.0303L1.96967 6.53033C1.67678 6.23744 1.67678 5.76256 1.96967 5.46967Z" fill="#484E7F"/></svg>
+                        </button>
+                        <div class="nav-sub-group">
+                            <a href="analytics.html" class="nav-sub-item">Overview</a>
+                            <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
+                            <a href="#" class="nav-sub-item">Retention</a>
+                            <a href="#" class="nav-sub-item">At risk</a>
+                        </div>
                         <a href="profiles.html" class="nav-item active">
-                            <i class="ph ph-user-circle"></i>
+                            <i class="ph-duotone ph-user-circle"></i>
                             Profiles
                         </a>
                         <a href="segments.html" class="nav-item">
-                            <i class="ph ph-users-three"></i>
+                            <i class="ph-duotone ph-users-three"></i>
                             Segments
+                        </a>
+                    </div>
+
+                    <div class="nav-group">
+                        <div class="nav-group-title">Menu</div>
+                        <a href="#" class="nav-item">
+                            <i class="ph-duotone ph-fork-knife"></i>
+                            Performance
+                        </a>
+                        <a href="#" class="nav-item">
+                            <i class="ph-duotone ph-calendar-check"></i>
+                            LTO Analysis
+                        </a>
+                    </div>
+
+                    <div class="nav-group">
+                        <div class="nav-group-title">Other</div>
+                        <button class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)">
+                            <i class="ph-duotone ph-coins"></i>
+                            <span>Revenue</span>
+                            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.96967 5.46967C2.26256 5.17678 2.73744 5.17678 3.03033 5.46967L8 10.4393L12.9697 5.46967C13.2626 5.17678 13.7374 5.17678 14.0303 5.46967C14.3232 5.76256 14.3232 6.23744 14.0303 6.53033L8.53033 12.0303C8.23744 12.3232 7.76256 12.3232 7.46967 12.0303L1.96967 6.53033C1.67678 6.23744 1.67678 5.76256 1.96967 5.46967Z" fill="#484E7F"/></svg>
+                        </button>
+                        <div class="nav-sub-group">
+                            <a href="#" class="nav-sub-item">Overview</a>
+                            <a href="#" class="nav-sub-item">Acquisition</a>
+                        </div>
+                        <a href="#" class="nav-item">
+                            <i class="ph-duotone ph-storefront"></i>
+                            Locations
+                        </a>
+                        <a href="#" class="nav-item">
+                            <i class="ph-duotone ph-megaphone-simple"></i>
+                            Campaigns
                         </a>
                     </div>
 
@@ -588,6 +630,12 @@
     <script>
         Chart.defaults.animation = false;
         Chart.defaults.plugins.tooltip.animation = false;
+
+        function toggleNavExpand(btn) {
+            const subGroup = btn.nextElementSibling;
+            btn.classList.toggle('open');
+            subGroup.classList.toggle('open');
+        }
 
         function toggleAva() {
             const modal = document.getElementById('avaModal');
