@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GDP Analytics - Acquisition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0" />
     <link rel="stylesheet" href="assets/bento.css">
     <link rel="stylesheet" href="styles.css">
@@ -186,34 +189,32 @@
         .stat-value { font-weight: 600; font-size: 0.875rem; }
 
         /* ── Location table ── */
-        .location-table {
-            width: 100%;
-            border-collapse: collapse;
+        .table-container .table {
+            border: 1px solid #dfe1e2;
         }
-        .location-table th,
-        .location-table td {
-            padding: 0.625rem 0.75rem;
-            border-bottom: 1px solid #eee;
-            text-align: left;
+        .table-container .table thead tr {
+            border-left: none;
+            border-right: none;
         }
-        .location-table th {
+        .table-container .table thead tr th {
+            text-transform: none;
+            font-size: 1rem;
             font-weight: 800;
-            font-size: 0.875rem;
-            cursor: pointer;
-            user-select: none;
+            color: #000;
+            height: 3.5rem;
+            padding: 0.5rem 1rem;
         }
-        .location-table th:hover { color: #5A55E3; }
-        .location-table td {
-            font-size: 0.875rem;
+        .table-container .table tbody tr {
+            border-left: none;
+            border-right: none;
+            border-bottom: 1px solid #f4f4f4;
         }
-        .location-table td:first-child {
-            color: #60696c;
-        }
-        .location-table td:not(:first-child) {
-            font-weight: 600;
-        }
-        .location-table tr:last-child td {
+        .table-container .table tbody tr:last-child {
             border-bottom: none;
+        }
+        .table-container .table tbody tr td {
+            height: 3.5rem;
+            padding: 0.5rem 1rem;
         }
         .location-table .change-up { color: #257469; }
         .location-table .change-down { color: #bc103e; }
@@ -513,7 +514,7 @@
                     </div>
 
                     <!-- ═══════════════════════════════════════════════════════ -->
-                    <!-- Row 2: First-Visit Conversion + Acquisition by Channel -->
+                    <!-- Row 2: First-Visit Conversion (full-width)              -->
                     <!-- ═══════════════════════════════════════════════════════ -->
                     <div class="chart-row">
                         <!-- First-Visit Conversion -->
@@ -540,23 +541,11 @@
                                         <span>vs prev period</span>
                                     </div>
                                 </div>
-                                <!-- Funnel -->
-                                <div class="funnel-container">
-                                    <div class="funnel-step">
-                                        <span class="funnel-label">Signups</span>
-                                        <div class="funnel-bar" style="width: 100%; background-color: #5A55E3;">19,440</div>
-                                    </div>
-                                    <div class="funnel-connector">
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3V13M8 13L4 9M8 13L12 9" stroke="#60696c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        <span>64.2% conversion &middot; Avg 3.2 days</span>
-                                    </div>
-                                    <div class="funnel-step">
-                                        <span class="funnel-label">First check-in</span>
-                                        <div class="funnel-bar" style="width: 64.2%; background-color: #E8640A;">12,482</div>
-                                    </div>
+                                <!-- Funnel (left) + Trend (right) -->
+                                <div style="display:flex; gap:1.5rem; flex:1; min-height:300px;">
+                                    <div id="conversion-funnel-chart" style="flex:0 0 35%; height:100%;"></div>
+                                    <div id="conversion-trend-chart" style="flex:1; min-width:0; height:100%;"></div>
                                 </div>
-                                <!-- Conversion trend line -->
-                                <div id="conversion-trend-chart" style="width:100%; height:160px; margin-top:0.75rem;"></div>
                                 <div class="chart-controls">
                                     <div class="ctrl-group">
                                         <span class="ctrl-label">Segment by:</span>
@@ -581,56 +570,10 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Acquisition by Channel -->
-                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
-                            <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
-                                <div class="card__header_list">
-                                    <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
-                                        <p class="subtitle">Acquisition by channel
-                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_25226_383)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_25226_383"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Where new guests are coming from by ordering channel</span></span></span></span>
-                                        </p>
-                                        <p class="body2" style="color:#60696c">Source breakdown of new guests</p>
-                                    </div>
-                                </div>
-                                <div class="card__header_list_menu">
-                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
-                                </div>
-                            </div>
-                            <div class="card__content" style="padding: 1rem;">
-                                <div class="hero-metric">
-                                    <p class="body2" style="color:#60696c">Largest:</p>
-                                    <p class="subtitle" style="margin:0;">In-store POS (42%)</p>
-                                </div>
-                                <div id="channel-chart" style="width:100%; min-height:260px; flex:1;"></div>
-                                <div class="chart-controls">
-                                    <div class="ctrl-group">
-                                        <span class="ctrl-label">Segment by:</span>
-                                        <div class="dropdown" id="seg-channel">
-                                            <div class="dropdown__wrapper">
-                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-channel')">
-                                                    <span>None</span>
-                                                    <i class="material-symbols-rounded">expand_more</i>
-                                                </button>
-                                            </div>
-                                            <div class="dropdown__options">
-                                                <ul>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>None</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Location</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Daypart</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Loyalty Status</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Order Type</span></button></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- ═══════════════════════════════════════════════════════ -->
-                    <!-- Row 3: Loyalty Enrollment Rate + First Visit Profile   -->
+                    <!-- Row 3: Loyalty Enrollment Rate (full-width)            -->
                     <!-- ═══════════════════════════════════════════════════════ -->
                     <div class="chart-row">
                         <!-- Loyalty Enrollment Rate -->
@@ -697,6 +640,53 @@
                                                 <ul>
                                                     <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>On</span></button></li>
                                                     <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Off</span></button></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <!-- Row 4: Acquisition by Channel + First Visit Profile    -->
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <div class="chart-row">
+                        <!-- Acquisition by Channel -->
+                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
+                            <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
+                                <div class="card__header_list">
+                                    <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
+                                        <p class="subtitle">Acquisition by channel
+                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_25226_383)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_25226_383"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Where new guests are coming from by ordering channel</span></span></span></span>
+                                        </p>
+                                        <p class="body2" style="color:#60696c">Source breakdown of new guests</p>
+                                    </div>
+                                </div>
+                                <div class="card__header_list_menu">
+                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
+                                </div>
+                            </div>
+                            <div class="card__content" style="padding: 1rem;">
+                                <div id="channel-chart" style="width:100%; min-height:260px; flex:1;"></div>
+                                <div class="chart-controls">
+                                    <div class="ctrl-group">
+                                        <span class="ctrl-label">Segment by:</span>
+                                        <div class="dropdown" id="seg-channel">
+                                            <div class="dropdown__wrapper">
+                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-channel')">
+                                                    <span>None</span>
+                                                    <i class="material-symbols-rounded">expand_more</i>
+                                                </button>
+                                            </div>
+                                            <div class="dropdown__options">
+                                                <ul>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>None</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Location</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Daypart</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Loyalty Status</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Order Type</span></button></li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -783,10 +773,10 @@
                     </div>
 
                     <!-- ═══════════════════════════════════════════════════════ -->
-                    <!-- Row 4: Acquisition by Location (full-width table)      -->
+                    <!-- Row 5: Acquisition by Location (full-width table)      -->
                     <!-- ═══════════════════════════════════════════════════════ -->
                     <div class="chart-row">
-                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
+                        <div class="card default card_non-clickable" style="flex: 1; padding: 0; overflow: hidden;">
                             <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
                                 <div class="card__header_list">
                                     <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
@@ -800,23 +790,22 @@
                                     <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
                                 </div>
                             </div>
-                            <div class="card__content" style="padding: 1rem;">
-                                <div class="hero-metric">
-                                    <p class="body2" style="color:#60696c">Largest increase:</p>
-                                    <p class="subtitle" style="margin:0;">Downtown (+18.2%)</p>
+                            <div class="card__content" style="padding: 0;">
+                                <div class="table-container" style="border: none;">
+                                    <table class="table location-table" style="border: none; border-radius: 0;">
+                                        <thead>
+                                            <tr>
+                                                <th>Location</th>
+                                                <th>New Guests</th>
+                                                <th>Prev Period</th>
+                                                <th>Change</th>
+                                                <th>Trend</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="location-table-body">
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <table class="location-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Location</th>
-                                            <th>New Guests</th>
-                                            <th>Change</th>
-                                            <th>Trend</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="location-table-body">
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
                     </div>
@@ -901,6 +890,9 @@
             });
         });
 
+        // ── Wait for Manrope font before painting charts ──
+        document.fonts.ready.then(function() {
+
         // ── Chart color tokens ──
         var cs = getComputedStyle(document.documentElement);
         var colors = {
@@ -932,9 +924,12 @@
                 textStyle: { fontFamily: 'Manrope', fontSize: 12 }
             },
             legend: {
-                top: 0, left: 0, itemWidth: 32, itemHeight: 12, itemGap: 16,
+                top: 0, left: 0, itemWidth: 32, itemHeight: 2, itemGap: 16,
                 textStyle: chartFont,
-                data: ['New Guests', 'Prior Period']
+                data: [
+                    { name: 'New Guests', icon: 'rect' },
+                    { name: 'Prior Period', icon: 'rect' }
+                ]
             },
             grid: { left: 50, right: 16, top: 40, bottom: 36 },
             xAxis: {
@@ -959,7 +954,9 @@
                     data: [1520, 1680, 1610, 1730, 1880, 2240, 1824],
                     smooth: false,
                     symbol: 'circle',
-                    symbolSize: 6,
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
                     areaStyle: {
                         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                             { offset: 0, color: 'rgba(90,85,227,0.18)' },
@@ -975,7 +972,9 @@
                     data: [1380, 1510, 1490, 1540, 1720, 2010, 1830],
                     smooth: false,
                     symbol: 'circle',
-                    symbolSize: 4,
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
                     lineStyle: { color: colors.indigo300, width: 2, type: 'dashed' },
                     itemStyle: { color: colors.indigo300 }
                 }
@@ -986,42 +985,131 @@
         // ══════════════════════════════════════════════════════════════
         // 2. First-Visit Conversion Trend — small line chart
         // ══════════════════════════════════════════════════════════════
+        // ── 2a. Conversion Sankey (vertical, left side) ──
+        var conversionFunnelChart = echarts.init(document.getElementById('conversion-funnel-chart'));
+        conversionFunnelChart.setOption({
+            tooltip: {
+                trigger: 'item',
+                formatter: function(p) {
+                    if (p.dataType === 'node') return p.name + ': ' + p.value.toLocaleString();
+                    return p.data.source + ' → ' + p.data.target + ': ' + p.data.value.toLocaleString();
+                },
+                textStyle: { fontFamily: 'Manrope', fontSize: 12 }
+            },
+            series: [{
+                type: 'sankey',
+                orient: 'horizontal',
+                top: 48,
+                bottom: 40,
+                left: 8,
+                right: 8,
+                nodeWidth: 36,
+                nodeGap: 24,
+                layoutIterations: 0,
+                emphasis: { focus: 'adjacency' },
+                label: {
+                    show: true,
+                    position: 'top',
+                    fontFamily: 'Manrope',
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: '#000',
+                    formatter: function(p) { return '{name|' + p.name + '}\n{val|' + (p.value >= 1000 ? (p.value/1000).toFixed(1) + 'K' : p.value.toLocaleString()) + '}'; },
+                    rich: {
+                        name: { fontFamily: 'Manrope', fontSize: 11, fontWeight: 600, color: '#000', lineHeight: 16 },
+                        val: { fontFamily: 'Manrope', fontSize: 11, fontWeight: 400, color: '#60696c', lineHeight: 16 }
+                    }
+                },
+                lineStyle: {
+                    color: 'gradient',
+                    curveness: 0.5,
+                    opacity: 0.3,
+                    borderRadius: 4
+                },
+                data: [
+                    { name: 'Signups', itemStyle: { color: colors.indigo900, borderRadius: 4 }, label: { position: 'top' } },
+                    { name: 'Check-in', itemStyle: { color: colors.vermilion900, borderRadius: 4 }, label: { position: 'top' } },
+                    { name: 'Drop-off', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'bottom', rich: { name: { color: '#60696c' } } } }
+                ],
+                links: [
+                    { source: 'Signups', target: 'Check-in', value: 12482 },
+                    { source: 'Signups', target: 'Drop-off', value: 6958 }
+                ]
+            }],
+            animation: false
+        });
+
+        // ── 2b. Conversion Trend (right side) ──
         var conversionTrendChart = echarts.init(document.getElementById('conversion-trend-chart'));
         conversionTrendChart.setOption({
             tooltip: {
                 trigger: 'axis',
                 formatter: function(params) {
-                    return params[0].name + '<br/>' + params[0].marker + ' Conversion Rate: ' + params[0].value + '%';
+                    var s = params[0].name;
+                    params.forEach(function(p) { s += '<br/>' + p.marker + ' ' + p.seriesName + ': ' + p.value + '%'; });
+                    return s;
                 },
                 textStyle: { fontFamily: 'Manrope', fontSize: 12 }
             },
-            grid: { left: 40, right: 16, top: 8, bottom: 28 },
+            legend: {
+                top: 0, left: 0, itemWidth: 32, itemHeight: 2, itemGap: 16,
+                textStyle: chartFont,
+                data: [
+                    { name: 'Conversion Rate', icon: 'rect' },
+                    { name: 'Prior Period', icon: 'rect' }
+                ]
+            },
+            grid: { left: 40, right: 16, top: 32, bottom: 28 },
             xAxis: {
                 type: 'category',
-                data: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+                data: days,
+                boundaryGap: false,
                 axisLine: { show: false },
                 axisTick: { show: false },
                 axisLabel: { fontFamily: 'Manrope', fontSize: 11, color: '#60696c' }
             },
             yAxis: {
                 type: 'value',
-                min: 55,
-                max: 70,
+                min: 59,
+                max: 65,
+                interval: 1,
                 axisLabel: { formatter: '{value}%', fontFamily: 'Manrope', fontSize: 11, color: '#60696c' },
                 splitLine: { lineStyle: { color: '#f0f0f0' } },
                 axisLine: { show: false },
                 axisTick: { show: false }
             },
-            series: [{
-                type: 'line',
-                data: [61.8, 62.4, 60.9, 63.1, 63.5, 64.2],
-                smooth: false,
-                symbol: 'circle',
-                symbolSize: 5,
-                lineStyle: { color: colors.indigo900, width: 2 },
-                itemStyle: { color: colors.indigo900 },
-                areaStyle: { opacity: 0.08, color: colors.indigo900 }
-            }],
+            series: [
+                {
+                    name: 'Conversion Rate',
+                    type: 'line',
+                    data: [61.8, 62.4, 60.9, 63.1, 63.5, 64.2, 63.8],
+                    smooth: false,
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
+                    lineStyle: { color: colors.indigo900, width: 2 },
+                    itemStyle: { color: colors.indigo900 },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(90,85,227,0.15)' },
+                            { offset: 1, color: 'rgba(90,85,227,0)' }
+                        ])
+                    }
+                },
+                {
+                    name: 'Prior Period',
+                    type: 'line',
+                    data: [60.5, 61.2, 59.8, 63.5, 62.4, 63.1, 62.6],
+                    smooth: false,
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
+                    lineStyle: { color: colors.indigo300, width: 2, type: 'dashed' },
+                    itemStyle: { color: colors.indigo300 }
+                }
+            ],
             animation: false
         });
 
@@ -1081,14 +1169,18 @@
                 textStyle: { fontFamily: 'Manrope', fontSize: 12 }
             },
             legend: {
-                top: 0, left: 0, itemWidth: 32, itemHeight: 12, itemGap: 16,
+                top: 0, left: 0, itemWidth: 32, itemHeight: 2, itemGap: 16,
                 textStyle: chartFont,
-                data: ['Enrollment Rate', 'Prior Period']
+                data: [
+                    { name: 'Enrollment Rate', icon: 'rect' },
+                    { name: 'Prior Period', icon: 'rect' }
+                ]
             },
             grid: { left: 40, right: 16, top: 40, bottom: 36 },
             xAxis: {
                 type: 'category',
-                data: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+                data: days,
+                boundaryGap: false,
                 axisLine: { show: false },
                 axisTick: { show: false },
                 axisLabel: chartFont
@@ -1104,20 +1196,30 @@
                 {
                     name: 'Enrollment Rate',
                     type: 'line',
-                    data: [34.8, 35.6, 36.2, 37.0, 37.8, 38.6],
+                    data: [36.4, 37.1, 36.8, 37.5, 38.0, 38.6, 37.9],
                     smooth: false,
                     symbol: 'circle',
-                    symbolSize: 6,
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(90,85,227,0.18)' },
+                            { offset: 1, color: 'rgba(90,85,227,0)' }
+                        ])
+                    },
                     lineStyle: { color: colors.indigo900, width: 2 },
                     itemStyle: { color: colors.indigo900 }
                 },
                 {
                     name: 'Prior Period',
                     type: 'line',
-                    data: [32.1, 32.8, 33.4, 34.0, 34.6, 35.2],
+                    data: [34.8, 35.4, 35.0, 35.9, 36.2, 36.8, 36.1],
                     smooth: false,
                     symbol: 'circle',
-                    symbolSize: 4,
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
                     lineStyle: { color: colors.indigo300, width: 2, type: 'dashed' },
                     itemStyle: { color: colors.indigo300 }
                 }
@@ -1129,16 +1231,16 @@
         // 5. Acquisition by Location — table with inline sparklines
         // ══════════════════════════════════════════════════════════════
         var locationData = [
-            { name: 'Downtown',    guests: 1840, change: 18.2, trend: [120, 140, 130, 160, 180, 210, 240] },
-            { name: 'Westside',    guests: 1620, change: 12.1, trend: [100, 110, 120, 130, 140, 150, 162] },
-            { name: 'Northpark',   guests: 1480, change: 8.4,  trend: [90, 100, 110, 105, 120, 130, 148] },
-            { name: 'Lakewood',    guests: 1420, change: 6.2,  trend: [95, 100, 108, 112, 118, 126, 142] },
-            { name: 'Riverside',   guests: 1380, change: 4.8,  trend: [88, 92, 98, 102, 110, 120, 138] },
-            { name: 'Summit Hill', guests: 1240, change: 2.1,  trend: [80, 82, 86, 88, 94, 100, 124] },
-            { name: 'Harbor View', guests: 1180, change: 0.4,  trend: [78, 80, 82, 84, 86, 90, 118] },
-            { name: 'Oakdale',     guests: 1120, change: -2.6, trend: [90, 88, 86, 84, 82, 80, 112] },
-            { name: 'Midtown',     guests: 1080, change: -4.2, trend: [98, 94, 90, 86, 82, 78, 108] },
-            { name: 'Eastgate',    guests: 920,  change: -8.6, trend: [110, 100, 95, 90, 85, 80, 92] }
+            { name: 'Downtown',    guests: 1840, prevGuests: 1556, change: 18.2, trend: [120, 140, 130, 160, 180, 210, 240] },
+            { name: 'Westside',    guests: 1620, prevGuests: 1445, change: 12.1, trend: [100, 110, 120, 130, 140, 150, 162] },
+            { name: 'Northpark',   guests: 1480, prevGuests: 1365, change: 8.4,  trend: [90, 100, 110, 105, 120, 130, 148] },
+            { name: 'Lakewood',    guests: 1420, prevGuests: 1337, change: 6.2,  trend: [95, 100, 108, 112, 118, 126, 142] },
+            { name: 'Riverside',   guests: 1380, prevGuests: 1317, change: 4.8,  trend: [88, 92, 98, 102, 110, 120, 138] },
+            { name: 'Summit Hill', guests: 1240, prevGuests: 1214, change: 2.1,  trend: [80, 82, 86, 88, 94, 100, 124] },
+            { name: 'Harbor View', guests: 1180, prevGuests: 1175, change: 0.4,  trend: [78, 80, 82, 84, 86, 90, 118] },
+            { name: 'Oakdale',     guests: 1120, prevGuests: 1150, change: -2.6, trend: [90, 88, 86, 84, 82, 80, 112] },
+            { name: 'Midtown',     guests: 1080, prevGuests: 1127, change: -4.2, trend: [98, 94, 90, 86, 82, 78, 108] },
+            { name: 'Eastgate',    guests: 920,  prevGuests: 1006, change: -8.6, trend: [110, 100, 95, 90, 85, 80, 92] }
         ];
 
         var tbody = document.getElementById('location-table-body');
@@ -1151,6 +1253,7 @@
             tr.innerHTML =
                 '<td>' + loc.name + '</td>' +
                 '<td>' + loc.guests.toLocaleString() + '</td>' +
+                '<td style="color:#60696c">' + loc.prevGuests.toLocaleString() + '</td>' +
                 '<td class="' + changeClass + '">' + changeSign + loc.change + '%</td>' +
                 '<td><div id="spark-' + i + '" class="sparkline-cell"></div></td>';
             tbody.appendChild(tr);
@@ -1189,7 +1292,7 @@
             var ro = new ResizeObserver(function() {
                 allCharts.forEach(function(c) { if (c) c.resize(); });
             });
-            ['new-guests-chart','conversion-trend-chart','channel-chart','enrollment-chart'].forEach(function(id) {
+            ['new-guests-chart','conversion-funnel-chart','conversion-trend-chart','channel-chart','enrollment-chart'].forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) ro.observe(el);
             });
@@ -1199,6 +1302,8 @@
                 if (el) ro.observe(el);
             });
         }
+
+        }); // end document.fonts.ready
 
         // ── Sidebar nav ──
         function toggleNavExpand(btn) {

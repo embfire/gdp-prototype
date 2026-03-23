@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GDP Analytics - Guests Overview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0" />
     <link rel="stylesheet" href="assets/bento.css">
     <link rel="stylesheet" href="styles.css">
@@ -1066,6 +1069,9 @@
             });
         });
 
+        // ── Wait for Manrope font before painting charts ──
+        document.fonts.ready.then(function() {
+
         // ── Chart color tokens ──
         var cs = getComputedStyle(document.documentElement);
         var colors = {
@@ -1353,14 +1359,18 @@
                 textStyle: { fontFamily: 'Manrope', fontSize: 12 }
             },
             legend: {
-                top: 0, left: 0, itemWidth: 12, itemHeight: 12, itemGap: 16,
+                top: 0, left: 0, itemWidth: 32, itemHeight: 2, itemGap: 16,
                 textStyle: chartFont,
-                data: ['Loyalty % of total', 'Enrollment rate']
+                data: [
+                    { name: 'Loyalty % of total', icon: 'rect' },
+                    { name: 'Enrollment rate', icon: 'rect' }
+                ]
             },
             grid: { left: 40, right: 16, top: 40, bottom: 36 },
             xAxis: {
                 type: 'category',
-                data: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+                data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                boundaryGap: false,
                 axisLine: { show: false },
                 axisTick: { show: false },
                 axisLabel: chartFont
@@ -1376,20 +1386,30 @@
                 {
                     name: 'Loyalty % of total',
                     type: 'line',
-                    data: [31.5, 32.0, 32.6, 33.1, 33.8, 34.2],
+                    data: [31.5, 32.0, 32.6, 33.1, 33.8, 34.2, 33.9],
                     smooth: false,
                     symbol: 'circle',
-                    symbolSize: 6,
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(90,85,227,0.18)' },
+                            { offset: 1, color: 'rgba(90,85,227,0)' }
+                        ])
+                    },
                     lineStyle: { color: colors.indigo900, width: 2 },
                     itemStyle: { color: colors.indigo900 }
                 },
                 {
                     name: 'Enrollment rate',
                     type: 'line',
-                    data: [2.1, 2.3, 2.0, 2.4, 2.2, 2.5],
+                    data: [2.1, 2.3, 2.0, 2.4, 2.2, 2.5, 2.3],
                     smooth: false,
                     symbol: 'circle',
-                    symbolSize: 6,
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
                     lineStyle: { color: colors.vermilion900, width: 2, type: 'dashed' },
                     itemStyle: { color: colors.vermilion900 }
                 }
@@ -1449,9 +1469,12 @@
                 textStyle: { fontFamily: 'Manrope', fontSize: 12 }
             },
             legend: {
-                top: 0, left: 0, itemWidth: 12, itemHeight: 12, itemGap: 16,
+                top: 0, left: 0, itemWidth: 32, itemHeight: 2, itemGap: 16,
                 textStyle: chartFont,
-                data: ['New Guests', 'Returning Guests']
+                data: [
+                    { name: 'New Guests', icon: 'rect' },
+                    { name: 'Returning Guests', icon: 'rect' }
+                ]
             },
             grid: { left: 50, right: 16, top: 40, bottom: 36 },
             xAxis: {
@@ -1477,8 +1500,15 @@
                     data: [1420, 1580, 1510, 1630, 1780, 2100, 1940],
                     smooth: false,
                     symbol: 'circle',
-                    symbolSize: 6,
-                    areaStyle: { opacity: 0.4 },
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(90,85,227,0.3)' },
+                            { offset: 1, color: 'rgba(90,85,227,0.05)' }
+                        ])
+                    },
                     lineStyle: { color: colors.indigo900, width: 2 },
                     itemStyle: { color: colors.indigo900 }
                 },
@@ -1489,8 +1519,15 @@
                     data: [4200, 4350, 4180, 4520, 4680, 5100, 4870],
                     smooth: false,
                     symbol: 'circle',
-                    symbolSize: 6,
-                    areaStyle: { opacity: 0.4 },
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(227,94,52,0.3)' },
+                            { offset: 1, color: 'rgba(227,94,52,0.05)' }
+                        ])
+                    },
                     lineStyle: { color: colors.vermilion900, width: 2 },
                     itemStyle: { color: colors.vermilion900 }
                 }
@@ -1609,6 +1646,8 @@
                 if (el) ro.observe(el);
             });
         }
+
+        }); // end document.fonts.ready
 
         // ── Sidebar nav ──
         function toggleNavExpand(btn) {
