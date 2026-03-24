@@ -692,37 +692,26 @@
                                 <div class="hero-metric">
                                     <p class="big">8.4% <span style="font-size:1rem; font-weight:400; color:#60696c">habitual guests (10+ visits)</span></p>
                                 </div>
-                                <div id="engagement-funnel-chart" style="width:100%; min-height:440px;"></div>
-                                <div class="chart-controls">
-                                    <div class="ctrl-group">
-                                        <span class="ctrl-label">Segment by:</span>
-                                        <div class="dropdown" id="seg-funnel">
-                                            <div class="dropdown__wrapper">
-                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-funnel')">
-                                                    <span>None</span>
-                                                    <i class="material-symbols-rounded">expand_more</i>
-                                                </button>
-                                            </div>
-                                            <div class="dropdown__options">
-                                                <ul>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>None</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Location</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Channel</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Loyalty Status</span></button></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="chart-legend" style="display:flex; align-items:center; gap:1.5rem; margin-top:0.5rem;">
+                                    <span style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:#60696c;">
+                                        <span style="display:inline-block; width:12px; height:12px; border-radius:2px; background:#E8640A;"></span>
+                                        Stickiness threshold
+                                    </span>
+                                    <span style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:#60696c;">
+                                        <span style="display:inline-block; width:12px; height:12px; border-radius:2px; background:#C0C4C7;"></span>
+                                        Drop-off
+                                    </span>
                                 </div>
+                                <div id="engagement-funnel-chart" style="width:100%; min-height:440px;"></div>
                             </div>
                         </div>
                     </div>
 
                     <!-- ═══════════════════════════════════════════════════════ -->
-                    <!-- Row 5: Return Rate by Visit Number (full-width) -->
+                    <!-- Row 5: Return Rate by Visit Number + Retention by Dimension -->
                     <!-- ═══════════════════════════════════════════════════════ -->
                     <div class="chart-row">
-                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
+                        <div class="card default card_non-clickable" style="flex: 1; min-width:0; padding: 0;">
                             <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
                                 <div class="card__header_list">
                                     <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
@@ -739,6 +728,10 @@
                             <div class="card__content" style="padding: 1rem;">
                                 <div class="hero-metric">
                                     <p class="big">72.4% <span style="font-size:1rem; font-weight:400; color:#60696c">3rd-visit conversion</span></p>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:#60696c; margin-bottom:4px;">
+                                    <span style="display:inline-block; width:12px; height:12px; border-radius:2px; background:var(--chart-vermilion-900, #FF6600);"></span>
+                                    Stickiness threshold
                                 </div>
                                 <div id="visit-number-chart" style="width:100%; min-height:280px;"></div>
                                 <div class="chart-controls">
@@ -764,13 +757,52 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="card default card_non-clickable" style="flex: 1; min-width:0; padding: 0;">
+                            <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
+                                <div class="card__header_list">
+                                    <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
+                                        <p class="subtitle">Retention by dimension
+                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_info)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_info"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Compare retention rates across different dimensions like location, channel, daypart, and loyalty status</span></span></span></span>
+                                        </p>
+                                        <p class="body2" style="color:#60696c">Retention rates compared across dimensions</p>
+                                    </div>
+                                </div>
+                                <div class="card__header_list_menu">
+                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
+                                </div>
+                            </div>
+                            <div class="card__content" style="padding: 1rem;">
+                                <div id="dimension-chart" style="width:100%; min-height:280px;"></div>
+                                <div class="chart-controls">
+                                    <div class="ctrl-group">
+                                        <span class="ctrl-label">Segment by:</span>
+                                        <div class="dropdown" id="seg-dimension">
+                                            <div class="dropdown__wrapper">
+                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-dimension')">
+                                                    <span>Location</span>
+                                                    <i class="material-symbols-rounded">expand_more</i>
+                                                </button>
+                                            </div>
+                                            <div class="dropdown__options">
+                                                <ul>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDimensionOption(this, 'location')"><span>Location</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDimensionOption(this, 'channel')"><span>Channel</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDimensionOption(this, 'daypart')"><span>Daypart</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDimensionOption(this, 'loyalty')"><span>Loyalty Status</span></button></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- ═══════════════════════════════════════════════════════ -->
                     <!-- Row 6: Retention Cohort Table (full-width) -->
                     <!-- ═══════════════════════════════════════════════════════ -->
                     <div class="chart-row">
-                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
+                        <div class="card default card_non-clickable" style="flex: 1; min-width:0; padding: 0;">
                             <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
                                 <div class="card__header_list">
                                     <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
@@ -808,36 +840,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ═══════════════════════════════════════════════════════ -->
-                    <!-- Row 7: Retention by Dimension (full-width) -->
-                    <!-- ═══════════════════════════════════════════════════════ -->
-                    <div class="chart-row">
-                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
-                            <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
-                                <div class="card__header_list">
-                                    <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
-                                        <p class="subtitle">Retention by dimension
-                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_info)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_info"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Compare retention rates across different dimensions like location, channel, daypart, and loyalty status</span></span></span></span>
-                                        </p>
-                                        <p class="body2" style="color:#60696c">Retention rates compared across dimensions</p>
-                                    </div>
-                                </div>
-                                <div class="card__header_list_menu">
-                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
-                                </div>
-                            </div>
-                            <div class="card__content" style="padding: 1rem;">
-                                <div class="tab-selector" id="dimension-tabs">
-                                    <button class="active" onclick="switchDimension('location', this)">Location</button>
-                                    <button onclick="switchDimension('channel', this)">Channel</button>
-                                    <button onclick="switchDimension('daypart', this)">Daypart</button>
-                                    <button onclick="switchDimension('loyalty', this)">Loyalty Status</button>
-                                </div>
-                                <div id="dimension-chart" style="width:100%; min-height:280px;"></div>
                             </div>
                         </div>
                     </div>
@@ -940,9 +942,14 @@
         }
 
         // ── Dimension tab switch ──
+        function selectDimensionOption(btn, dim) {
+            var dropdown = btn.closest('.dropdown');
+            dropdown.querySelector('.dropdown__button span').textContent = btn.querySelector('span').textContent;
+            dropdown.classList.remove('open');
+            renderDimensionChart(dim);
+        }
+
         function switchDimension(dim, btn) {
-            btn.closest('.tab-selector').querySelectorAll('button').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
             renderDimensionChart(dim);
         }
 
@@ -957,7 +964,8 @@
             indigo500:     cs.getPropertyValue('--chart-indigo-500').trim()     || '#7874EA',
             indigo300:     cs.getPropertyValue('--chart-indigo-300').trim()     || '#A9A6F0',
             indigo100:     cs.getPropertyValue('--chart-indigo-100').trim()     || '#EAE9FB',
-            vermilion900:  cs.getPropertyValue('--chart-vermilion-900').trim()  || '#E8640A',
+            vermilion500:  cs.getPropertyValue('--chart-vermilion-500').trim()  || '#FF7A2E',
+            vermilion900:  cs.getPropertyValue('--chart-vermilion-900').trim()  || '#FF6600',
             periwinkle900: cs.getPropertyValue('--chart-periwinkle-900').trim() || '#8C9FFF',
             amber900:      cs.getPropertyValue('--chart-amber-900').trim()     || '#F8931C',
             crimson900:    cs.getPropertyValue('--chart-crimson-900').trim()    || '#E83162',
@@ -1065,8 +1073,8 @@
                 },
                 textStyle: { fontFamily: 'Manrope', fontSize: 12 }
             },
-            grid: { left: 120, right: 80, top: 8, bottom: 8 },
-            xAxis: { type: 'value', show: false, max: 8000 },
+            grid: { left: 80, right: 44, top: 8, bottom: 8 },
+            xAxis: { type: 'value', show: false, max: 7200 },
             yAxis: {
                 type: 'category',
                 data: ['Irregular', 'Quarterly', 'Monthly', 'Weekly', 'Daily'],
@@ -1278,7 +1286,7 @@
                 top: 72,
                 bottom: 40,
                 left: 8,
-                right: 8,
+                right: 110,
                 nodeWidth: 36,
                 nodeGap: 24,
                 layoutIterations: 0,
@@ -1286,6 +1294,8 @@
                 label: {
                     show: true,
                     position: 'top',
+                    align: 'left',
+                    offset: [-18, 0],
                     fontFamily: 'Manrope',
                     fontSize: 11,
                     fontWeight: 600,
@@ -1294,9 +1304,6 @@
                         var pct = funnelPcts[p.name];
                         if (pct) {
                             var valStr = p.value >= 1000 ? (p.value/1000).toFixed(1) + 'K' : p.value.toLocaleString();
-                            if (p.name === '3rd Visit') {
-                                return '{name|' + p.name + '}\n{pct|' + pct + '}{val|  ' + valStr + '}\n{badge|STICKINESS THRESHOLD}';
-                            }
                             return '{name|' + p.name + '}\n{pct|' + pct + '}{val|  ' + valStr + '}';
                         }
                         var valStr2 = p.value >= 1000 ? (p.value/1000).toFixed(1) + 'K' : p.value.toLocaleString();
@@ -1319,14 +1326,14 @@
                     { name: 'Signup',     itemStyle: { color: colors.indigo900, borderRadius: 4 } },
                     { name: '1st Visit',  itemStyle: { color: colors.indigo700, borderRadius: 4 } },
                     { name: '2nd Visit',  itemStyle: { color: colors.indigo500, borderRadius: 4 } },
-                    { name: '3rd Visit',  itemStyle: { color: colors.indigo900, borderRadius: 4 } },
+                    { name: '3rd Visit',  itemStyle: { color: colors.vermilion900, borderRadius: 4 } },
                     { name: '5th Visit',  itemStyle: { color: colors.indigo300, borderRadius: 4 } },
-                    { name: '10th Visit', itemStyle: { color: colors.indigo100, borderRadius: 4 } },
-                    { name: 'Drop-off 1', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'bottom', rich: { name: { color: '#60696c' } } } },
-                    { name: 'Drop-off 2', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'bottom', rich: { name: { color: '#60696c' } } } },
-                    { name: 'Drop-off 3', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'bottom', rich: { name: { color: '#60696c' } } } },
-                    { name: 'Drop-off 4', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'bottom', rich: { name: { color: '#60696c' } } } },
-                    { name: 'Drop-off 5', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'bottom', rich: { name: { color: '#60696c' } } } }
+                    { name: '10th Visit', itemStyle: { color: colors.indigo100, borderRadius: 4 }, label: { position: 'right', align: 'left', offset: [0, 0] } },
+                    { name: 'Drop-off 1', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'right', align: 'left', offset: [0, 0], rich: { name: { color: '#60696c' } } } },
+                    { name: 'Drop-off 2', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'right', align: 'left', offset: [0, 0], rich: { name: { color: '#60696c' } } } },
+                    { name: 'Drop-off 3', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'right', align: 'left', offset: [0, 0], rich: { name: { color: '#60696c' } } } },
+                    { name: 'Drop-off 4', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'right', align: 'left', offset: [0, 0], rich: { name: { color: '#60696c' } } } },
+                    { name: 'Drop-off 5', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'right', align: 'left', offset: [0, 0], rich: { name: { color: '#60696c' } } } }
                 ],
                 links: [
                     { source: 'Signup',     target: '1st Visit',  value: 12482 },
@@ -1377,26 +1384,12 @@
             series: [{
                 type: 'bar',
                 data: [
-                    { value: 48.1, itemStyle: { color: colors.indigo300 } },
-                    { value: 72.4, itemStyle: { color: colors.indigo300 } },
-                    {
-                        value: 72.4,
-                        itemStyle: { color: colors.indigo900 },
-                        label: {
-                            show: true,
-                            position: 'top',
-                            formatter: '72.4%\nStickiness\nthreshold',
-                            fontFamily: 'Manrope',
-                            fontSize: 11,
-                            fontWeight: 600,
-                            color: colors.indigo900,
-                            lineHeight: 14,
-                            align: 'center'
-                        }
-                    },
-                    { value: 68.2, itemStyle: { color: colors.indigo300 } },
-                    { value: 55.1, itemStyle: { color: colors.indigo300 } },
-                    { value: 78.6, itemStyle: { color: colors.indigo300 } }
+                    { value: 48.1, itemStyle: { color: colors.indigo900 } },
+                    { value: 72.4, itemStyle: { color: colors.indigo900 } },
+                    { value: 72.4, itemStyle: { color: colors.vermilion900 } },
+                    { value: 68.2, itemStyle: { color: colors.indigo900 } },
+                    { value: 55.1, itemStyle: { color: colors.indigo900 } },
+                    { value: 78.6, itemStyle: { color: colors.indigo900 } }
                 ],
                 barWidth: '50%',
                 label: {
@@ -1405,9 +1398,9 @@
                     formatter: '{c}%',
                     fontFamily: 'Manrope',
                     fontSize: 11,
-                    color: '#60696c'
+                    color: '#000'
                 },
-                itemStyle: { borderRadius: [4, 4, 0, 0] }
+                itemStyle: { borderRadius: 4 }
             }],
             animation: false
         });
@@ -1417,10 +1410,9 @@
         // ══════════════════════════════════════════════════════════════
         var cohortChart = echarts.init(document.getElementById('cohort-heatmap'));
         var months = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
-        var periods = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6'];
+        var periods = ['Signup', '+1 mo', '+2 mo', '+3 mo', '+4 mo', '+5 mo'];
 
-        var cohortData = [
-            // [periodIndex, cohortIndex, value]
+        var cohortDataRaw = [
             [0, 0, 100], [1, 0, 42], [2, 0, 34], [3, 0, 28], [4, 0, 24], [5, 0, 22],
             [0, 1, 100], [1, 1, 44], [2, 1, 36], [3, 1, 30], [4, 1, 26],
             [0, 2, 100], [1, 2, 40], [2, 2, 32], [3, 2, 27],
@@ -1428,6 +1420,13 @@
             [0, 4, 100], [1, 4, 41],
             [0, 5, 100]
         ];
+        var cohortData = cohortDataRaw.map(function(d) {
+            var item = { value: d };
+            if (d[2] >= 80) {
+                item.label = { color: '#fff' };
+            }
+            return item;
+        });
 
         cohortChart.setOption({
             tooltip: {
@@ -1463,7 +1462,7 @@
                 bottom: -5,
                 show: false,
                 inRange: {
-                    color: ['#EAE9FB', '#A9A6F0', '#7874EA', '#5A55E3', '#3D38B8']
+                    color: [colors.indigo100, colors.indigo300, colors.indigo500, colors.indigo700, colors.indigo900]
                 }
             },
             series: [{
@@ -1474,7 +1473,7 @@
                     formatter: function(p) { return p.value[2] + '%'; },
                     fontFamily: 'Manrope',
                     fontSize: 12,
-                    color: function(p) { return p.value[2] > 60 ? '#fff' : '#000'; }
+                    color: '#000'
                 },
                 itemStyle: {
                     borderColor: '#fff',
@@ -1525,8 +1524,8 @@
                     formatter: function(params) { return params[0].name + ': ' + params[0].value + '%'; },
                     textStyle: { fontFamily: 'Manrope', fontSize: 12 }
                 },
-                grid: { left: 120, right: 60, top: 8, bottom: 8 },
-                xAxis: { type: 'value', show: false, max: 60 },
+                grid: { left: 80, right: 44, top: 28, bottom: 8 },
+                xAxis: { type: 'value', show: false, max: 52 },
                 yAxis: {
                     type: 'category',
                     data: d.labels,
