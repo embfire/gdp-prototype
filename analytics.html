@@ -356,12 +356,12 @@
                         <div class="nav-sub-group open">
                             <a href="analytics.html" class="nav-sub-item" style="background-color: var(--active-bg); color: var(--active-text); font-weight: 700;">Overview</a>
                             <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
-                            <a href="#" class="nav-sub-item">Retention</a>
+                            <a href="analytics-retention.html" class="nav-sub-item">Retention</a>
                             <a href="#" class="nav-sub-item">At risk</a>
                         </div>
                         <a href="profiles.html" class="nav-item">
                             <i class="ph-duotone ph-user-circle"></i>
-                            Profiles
+                            Guest Profiles
                         </a>
                         <a href="segments.html" class="nav-item">
                             <i class="ph-duotone ph-users-three"></i>
@@ -373,7 +373,7 @@
                         <div class="nav-group-title">Menu</div>
                         <a href="#" class="nav-item">
                             <i class="ph-duotone ph-fork-knife"></i>
-                            Performance
+                            Menu Performance
                         </a>
                         <a href="#" class="nav-item">
                             <i class="ph-duotone ph-calendar-check"></i>
@@ -1110,6 +1110,8 @@
             none: {
                 current: [28, 14, 22, 18, 18],
                 prior:   [26, 15, 21, 19, 19],
+                currentAbs: [34720, 17360, 27280, 22320, 22320],
+                priorAbs:   [30160, 17400, 24360, 22040, 22040],
                 labels:  ['Last 7D', 'Prior period']
             },
             Location: {
@@ -1151,30 +1153,42 @@
         };
 
         // Build ECharts option for snapshot comparison (no segment)
+        var compDecal = { symbol: 'rect', rotation: Math.PI / 4, dashArrayX: [1, 0], dashArrayY: [1, 1], color: 'rgba(255,255,255,1)' };
+
         function buildCompNoneOption() {
             var d = compData.none;
             var series = compStages.map(function(name, i) {
                 return {
                     name: name, type: 'bar', stack: 'comp',
-                    data: [d.prior[i], d.current[i]],
+                    data: [
+                        { value: d.prior[i], itemStyle: { decal: compDecal } },
+                        { value: d.current[i], itemStyle: { decal: { symbol: 'none' } } }
+                    ],
                     barWidth: 32,
                     barCategoryGap: 8,
                     itemStyle: {
-                        color: function(params) { return params.dataIndex === 1 ? compColors[i] : compColorsFaded[i]; },
+                        color: compColors[i],
                         borderRadius: 3, borderColor: '#fff', borderWidth: 1
                     },
-                    // Force legend icon to use the solid color (not the faded first-data-point color)
                     color: compColors[i],
                     emphasis: { focus: 'series' }
                 };
             });
             return {
+                aria: { enabled: true, decal: { show: true } },
                 tooltip: {
                     trigger: 'axis', axisPointer: { type: 'none' },
                     formatter: function(params) {
                         var title = params[0].axisValue;
+                        var isPrior = title === d.labels[1];
+                        var absData = isPrior ? d.priorAbs : d.currentAbs;
                         var lines = '<strong>' + title + '</strong><br/>';
-                        params.forEach(function(p) { lines += p.marker + ' ' + p.seriesName + ': ' + p.value + '%<br/>'; });
+                        params.forEach(function(p) {
+                            var idx = compStages.indexOf(p.seriesName);
+                            var abs = absData[idx];
+                            var absStr = abs >= 1000 ? (abs / 1000).toFixed(1).replace(/\.0$/, '') + 'K' : abs;
+                            lines += p.marker + ' ' + p.seriesName + ': ' + p.value + '% (' + absStr + ')<br/>';
+                        });
                         return lines;
                     },
                     textStyle: { fontFamily: 'Manrope', fontSize: 12 }
@@ -1182,6 +1196,9 @@
                 legend: {
                     bottom: 0, left: 0, itemWidth: 12, itemHeight: 12, itemGap: 20,
                     textStyle: { fontFamily: 'Manrope', fontSize: 12, color: '#000', fontWeight: 400 },
+                    data: compStages.map(function(name, i) {
+                        return { name: name, itemStyle: { decal: { symbol: 'none' } } };
+                    }),
                     formatter: function(name) {
                         var idx = compStages.indexOf(name);
                         var cur = d.current[idx];
@@ -1214,12 +1231,12 @@
                     barGap: '15%',
                     barCategoryGap: 8,
                     color: compColors[si],
-                    itemStyle: { color: compColors[si], borderRadius: br, borderColor: '#fff', borderWidth: 1 },
+                    itemStyle: { color: compColors[si], borderRadius: br, borderColor: '#fff', borderWidth: 1, decal: { symbol: 'none' } },
                     emphasis: { focus: 'series' }
                 };
             });
 
-            // Prior stack (faded colors) — hidden from legend
+            // Prior stack (same color + diagonal pattern) — hidden from legend
             var priorSeries = compStages.map(function(name, si) {
                 return {
                     name: name + ' (prior)', type: 'bar', stack: 'prior',
@@ -1227,13 +1244,17 @@
                     barWidth: bw,
                     barGap: '15%',
                     barCategoryGap: 8,
-                    itemStyle: { color: compColorsFaded[si], borderRadius: br, borderColor: '#fff', borderWidth: 1 },
+                    itemStyle: {
+                        color: compColors[si], borderRadius: br, borderColor: '#fff', borderWidth: 1,
+                        decal: compDecal
+                    },
                     emphasis: { focus: 'series' },
                     legendHoverLink: false
                 };
             });
 
             return {
+                aria: { enabled: true, decal: { show: true } },
                 tooltip: {
                     trigger: 'axis', axisPointer: { type: 'none' },
                     formatter: function(params) {
@@ -1241,14 +1262,21 @@
                         var current = params.filter(function(p) { return p.seriesName.indexOf('(prior)') === -1; });
                         var prior = params.filter(function(p) { return p.seriesName.indexOf('(prior)') !== -1; });
                         var title = params[0].axisValue;
+                        // Extract total from label e.g. "Downtown (45K)"
+                        var totalMatch = title.match(/\(([\d.]+)K\)/);
+                        var total = totalMatch ? parseFloat(totalMatch[1]) * 1000 : 0;
+                        function fmtAbs(pct) {
+                            var n = Math.round(total * pct / 100);
+                            return n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K' : n;
+                        }
                         var lines = '<strong>' + title + '</strong><br/>';
                         if (current.length) {
                             lines += '<em>Current period</em><br/>';
-                            current.forEach(function(p) { lines += p.marker + ' ' + p.seriesName + ': ' + p.value + '%<br/>'; });
+                            current.forEach(function(p) { lines += p.marker + ' ' + p.seriesName + ': ' + p.value + '% (' + fmtAbs(p.value) + ')<br/>'; });
                         }
                         if (prior.length) {
                             lines += '<em>Prior period</em><br/>';
-                            prior.forEach(function(p) { lines += p.marker + ' ' + p.seriesName.replace(' (prior)', '') + ': ' + p.value + '%<br/>'; });
+                            prior.forEach(function(p) { lines += p.marker + ' ' + p.seriesName.replace(' (prior)', '') + ': ' + p.value + '% (' + fmtAbs(p.value) + ')<br/>'; });
                         }
                         return lines;
                     },
@@ -1256,7 +1284,7 @@
                 },
                 legend: {
                     bottom: 0, left: 0, itemWidth: 12, itemHeight: 12, itemGap: 16, textStyle: chartFont,
-                    data: compStages
+                    data: compStages.map(function(name) { return { name: name, itemStyle: { decal: { symbol: 'none' } } }; })
                 },
                 grid: { left: 16, right: 16, top: 8, bottom: 40, containLabel: true },
                 xAxis: { type: 'value', max: 100, show: false },
@@ -1325,6 +1353,7 @@
         identificationChart.setOption({
             tooltip: {
                 trigger: 'axis',
+
                 axisPointer: { type: 'none' },
                 formatter: function(params) {
                     var lines = '';
@@ -1356,14 +1385,15 @@
         loyaltyChart.setOption({
             tooltip: {
                 trigger: 'axis',
+
                 textStyle: { fontFamily: 'Manrope', fontSize: 12 }
             },
             legend: {
-                top: 0, left: 0, itemWidth: 32, itemHeight: 2, itemGap: 16,
+                top: 0, left: 0, itemWidth: 12, itemHeight: 12, itemGap: 16,
                 textStyle: chartFont,
                 data: [
-                    { name: 'Loyalty % of total', icon: 'rect' },
-                    { name: 'Enrollment rate', icon: 'rect' }
+                    { name: 'Loyalty % of total', icon: 'roundRect' },
+                    { name: 'Enrollment rate', icon: 'roundRect' }
                 ]
             },
             grid: { left: 40, right: 16, top: 40, bottom: 36 },
@@ -1422,6 +1452,7 @@
         reachabilityChart.setOption({
             tooltip: {
                 trigger: 'axis',
+
                 axisPointer: { type: 'none' },
                 formatter: function(params) {
                     return params[0].name + ': ' + params[0].value.toLocaleString() + 'K';
@@ -1466,14 +1497,15 @@
         trendsChart.setOption({
             tooltip: {
                 trigger: 'axis',
+
                 textStyle: { fontFamily: 'Manrope', fontSize: 12 }
             },
             legend: {
-                top: 0, left: 0, itemWidth: 32, itemHeight: 2, itemGap: 16,
+                top: 0, left: 0, itemWidth: 12, itemHeight: 12, itemGap: 16,
                 textStyle: chartFont,
                 data: [
-                    { name: 'New Guests', icon: 'rect' },
-                    { name: 'Returning Guests', icon: 'rect' }
+                    { name: 'New Guests', icon: 'roundRect' },
+                    { name: 'Returning Guests', icon: 'roundRect' }
                 ]
             },
             grid: { left: 50, right: 16, top: 40, bottom: 36 },
@@ -1540,6 +1572,7 @@
         valueDistChart.setOption({
             tooltip: {
                 trigger: 'axis',
+
                 axisPointer: { type: 'none' },
                 formatter: function(params) {
                     return params[0].name + '<br/>Guests: ' + params[0].value.toLocaleString();
@@ -1592,6 +1625,7 @@
         frequencyChart.setOption({
             tooltip: {
                 trigger: 'axis',
+
                 axisPointer: { type: 'none' },
                 formatter: function(params) {
                     return params[0].name + ': ' + params[0].value + '%';

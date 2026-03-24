@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GDP Analytics - Acquisition</title>
+    <title>GDP Analytics - Retention</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
@@ -13,14 +13,15 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
     <style>
-        /* ── Analytics-specific layout (shared with analytics.html) ── */
+        /* ── Analytics-specific layout ── */
         .filter-bar-new {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
         .filter-bar-new .body1 { white-space: nowrap; }
-        .filter-bar-new .button-group__set_button {
+        .filter-bar-new .button-group__set_button,
+        .card__header .button-group__set_button {
             height: 40px;
             padding: 0 1rem;
             font-size: 1rem;
@@ -142,7 +143,7 @@
         }
         .chart-controls .ctrl-push-right { margin-left: auto; }
 
-        /* ── Funnel visualization ── */
+        /* ── Engagement Funnel ── */
         .funnel-container {
             padding: 0.5rem 0;
         }
@@ -153,12 +154,20 @@
         }
         .funnel-label {
             font-size: 0.875rem;
-            color: #60696c;
-            min-width: 100px;
+            font-family: 'Manrope', sans-serif;
+            color: #000;
+            font-weight: 600;
+            min-width: 80px;
             text-align: right;
         }
+        .funnel-bar-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
         .funnel-bar {
-            height: 36px;
+            height: 40px;
             border-radius: 4px;
             display: flex;
             align-items: center;
@@ -166,78 +175,115 @@
             color: #fff;
             font-weight: 600;
             font-size: 0.875rem;
+            font-family: 'Manrope', sans-serif;
+            transition: width 0.3s ease;
+        }
+        .funnel-bar-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-family: 'Manrope', sans-serif;
+            color: #60696c;
+            white-space: nowrap;
         }
         .funnel-connector {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.375rem 0 0.375rem calc(100px + 1rem);
+            padding: 0.25rem 0 0.25rem calc(80px + 1rem);
             color: #60696c;
             font-size: 0.75rem;
+            font-family: 'Manrope', sans-serif;
         }
         .funnel-connector svg { flex-shrink: 0; }
-
-        /* ── Summary stat rows (First Visit Profile) ── */
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #eee;
-        }
-        .stat-row:last-child { border-bottom: none; }
-        .stat-label { color: #60696c; font-size: 0.875rem; }
-        .stat-value { font-weight: 600; font-size: 0.875rem; }
-
-        /* ── Location table ── */
-        .table-container .table {
-            border: 1px solid #dfe1e2;
-        }
-        .table-container .table thead tr {
-            border-left: none;
-            border-right: none;
-        }
-        .table-container .table thead tr th {
-            text-transform: none;
-            font-size: 1rem;
-            font-weight: 800;
+        .funnel-connector .conversion-rate {
+            font-weight: 600;
             color: #000;
-            height: 3.5rem;
-            padding: 0.5rem 1rem;
         }
-        .table-container .table tbody tr {
-            border-left: none;
-            border-right: none;
-            border-bottom: 1px solid #f4f4f4;
+        .funnel-step.stickiness .funnel-bar {
+            box-shadow: 0 0 0 2px #5A55E3, 0 0 0 4px rgba(90,85,227,0.15);
         }
-        .table-container .table tbody tr:last-child {
-            border-bottom: none;
-        }
-        .table-container .table tbody tr td {
-            height: 3.5rem;
-            padding: 0.5rem 1rem;
-        }
-        .location-table .change-up { color: #257469; }
-        .location-table .change-down { color: #bc103e; }
-        .sparkline-cell {
-            width: 80px;
-            height: 28px;
-        }
-
-        /* ── Secondary metric below chart ── */
-        .secondary-metric {
-            display: flex;
+        .stickiness-badge {
+            display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding-top: 0.75rem;
-            border-top: 1px solid #eee;
-            margin-top: 0.75rem;
-            font-size: 0.875rem;
-            color: #60696c;
-        }
-        .secondary-metric strong {
-            color: #000;
+            gap: 4px;
+            background: rgba(90,85,227,0.08);
+            color: #5A55E3;
+            font-size: 0.6875rem;
             font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
+        /* ── Tab selector for Retention by Dimension ── */
+        .tab-selector {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #eee;
+            margin-bottom: 1rem;
+        }
+        .tab-selector button {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #60696c;
+            background: none;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: color 0.15s, border-color 0.15s;
+        }
+        .tab-selector button:hover { color: #000; }
+        .tab-selector button.active {
+            color: #5A55E3;
+            font-weight: 700;
+            border-bottom-color: #5A55E3;
+        }
+
+        /* ── View toggle (Distribution / Trend) ── */
+        .view-toggle {
+            display: inline-flex;
+            border: 1px solid #dfe1e2;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .view-toggle button {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: #60696c;
+            background: #fff;
+            border: none;
+            padding: 6px 14px;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+        .view-toggle button + button {
+            border-left: 1px solid #dfe1e2;
+        }
+        .view-toggle button.active {
+            background: #5A55E3;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* ── Latency "lower is better" indicator ── */
+        .latency-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            color: #60696c;
+            font-family: 'Manrope', sans-serif;
+            margin-left: 0.75rem;
+        }
+        .latency-note svg { flex-shrink: 0; }
     </style>
 </head>
 <body data-v-app>
@@ -313,8 +359,8 @@
                         </button>
                         <div class="nav-sub-group open">
                             <a href="analytics.html" class="nav-sub-item">Overview</a>
-                            <a href="analytics-acquisition.html" class="nav-sub-item" style="background-color: var(--active-bg); color: var(--active-text); font-weight: 700;">Acquisition</a>
-                            <a href="analytics-retention.html" class="nav-sub-item">Retention</a>
+                            <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
+                            <a href="analytics-retention.html" class="nav-sub-item" style="background-color: var(--active-bg); color: var(--active-text); font-weight: 700;">Retention</a>
                             <a href="#" class="nav-sub-item">At risk</a>
                         </div>
                         <a href="profiles.html" class="nav-item">
@@ -391,7 +437,7 @@
                     <!-- Title Bar -->
                     <div class="title-bar">
                         <div class="title-bar__page-title">
-                            <h1>Acquisition</h1>
+                            <h1>Retention</h1>
                             <div class="title-bar__actions">
                                 <button class="button transparent">
                                     <i class="ph ph-question"></i>
@@ -409,8 +455,8 @@
                     <div class="filter-bar-new">
                         <div class="button-group">
                             <div class="button-group__set">
-                                <button class="button-group__set_button button-group__set_selected"><span>7D</span></button>
-                                <button class="button-group__set_button"><span>30D</span></button>
+                                <button class="button-group__set_button"><span>7D</span></button>
+                                <button class="button-group__set_button button-group__set_selected"><span>30D</span></button>
                                 <button class="button-group__set_button"><span>90D</span></button>
                                 <button class="button-group__set_button"><span>12M</span></button>
                                 <button class="button-group__set_button"><span>YTD</span></button>
@@ -440,17 +486,17 @@
                     </div>
 
                     <!-- ═══════════════════════════════════════════════════════ -->
-                    <!-- Row 1: New Guest Acquisition (full-width) -->
+                    <!-- Row 1: Return Rate (full-width) -->
                     <!-- ═══════════════════════════════════════════════════════ -->
                     <div class="chart-row">
                         <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
                             <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
                                 <div class="card__header_list">
                                     <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
-                                        <p class="subtitle">New guest acquisition
-                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_25226_383)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_25226_383"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Count of guests making their first identified visit in the selected period</span></span></span></span>
+                                        <p class="subtitle">Return rate
+                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_info)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_info"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Percentage of guests who return for at least one more visit in the selected period</span></span></span></span>
                                         </p>
-                                        <p class="body2" style="color:#60696c">New guests acquired over time</p>
+                                        <p class="body2" style="color:#60696c">Guest return rate over time</p>
                                     </div>
                                 </div>
                                 <div class="card__header_list_menu">
@@ -459,21 +505,21 @@
                             </div>
                             <div class="card__content" style="padding: 1rem;">
                                 <div class="hero-metric">
-                                    <p class="big">12,482</p>
+                                    <p class="big">42.3%</p>
                                     <div class="change caption">
                                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 11L6 7L9 10L14 5" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 5H14V8" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        <span class="pct up">+8.7%</span>
+                                        <span class="pct up">+2.1%</span>
                                         <span>vs prev period</span>
                                     </div>
-                                    <div class="kpi-benchmark green caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.41593 4.4C7.11996 3.2 8.88004 3.2 9.58407 4.4L12.7522 9.8C13.4562 11 12.5762 12.5 11.1681 12.5H4.83186C3.42379 12.5 2.54375 11 3.24779 9.8L6.41593 4.4Z" fill="#257469"/></svg>75th</div>
+                                    <div class="kpi-benchmark yellow caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="4" fill="#cc8900"/></svg>50 - 75th</div>
                                 </div>
-                                <div id="new-guests-chart" style="width:100%; min-height:320px;"></div>
+                                <div id="return-rate-chart" style="width:100%; min-height:320px;"></div>
                                 <div class="chart-controls">
                                     <div class="ctrl-group">
                                         <span class="ctrl-label">Segment by:</span>
-                                        <div class="dropdown" id="seg-new-guests">
+                                        <div class="dropdown" id="seg-return-rate">
                                             <div class="dropdown__wrapper">
-                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-new-guests')">
+                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-return-rate')">
                                                     <span>None</span>
                                                     <i class="material-symbols-rounded">expand_more</i>
                                                 </button>
@@ -485,7 +531,6 @@
                                                     <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Channel</span></button></li>
                                                     <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Daypart</span></button></li>
                                                     <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Loyalty Status</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Order Type</span></button></li>
                                                     <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Guest Frequency</span></button></li>
                                                 </ul>
                                             </div>
@@ -493,9 +538,9 @@
                                     </div>
                                     <div class="ctrl-group ctrl-push-right">
                                         <span class="ctrl-label">Benchmark:</span>
-                                        <div class="dropdown" id="bench-new-guests">
+                                        <div class="dropdown" id="bench-return-rate">
                                             <div class="dropdown__wrapper">
-                                                <button class="dropdown__button body1" onclick="toggleDropdown('bench-new-guests')">
+                                                <button class="dropdown__button body1" onclick="toggleDropdown('bench-return-rate')">
                                                     <span>On</span>
                                                     <i class="material-symbols-rounded">expand_more</i>
                                                 </button>
@@ -514,44 +559,45 @@
                     </div>
 
                     <!-- ═══════════════════════════════════════════════════════ -->
-                    <!-- Row 2: First-Visit Conversion (full-width)              -->
+                    <!-- Row 2: Visit Frequency (full-width) -->
                     <!-- ═══════════════════════════════════════════════════════ -->
                     <div class="chart-row">
-                        <!-- First-Visit Conversion -->
                         <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
                             <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
                                 <div class="card__header_list">
                                     <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
-                                        <p class="subtitle">First-visit conversion
-                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_25226_383)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_25226_383"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">% of signups who complete their first check-in</span></span></span></span>
+                                        <p class="subtitle">Visit frequency
+                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_info)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_info"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Distribution and trend of guest visit frequency (visits per month)</span></span></span></span>
                                         </p>
-                                        <p class="body2" style="color:#60696c">Signup to first check-in funnel</p>
+                                        <p class="body2" style="color:#60696c">How often guests visit</p>
                                     </div>
                                 </div>
                                 <div class="card__header_list_menu">
-                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
+                                        <div class="button-group">
+                                        <div class="button-group__set">
+                                            <button class="button-group__set_button button-group__set_selected" onclick="switchFreqView('distribution', this)"><span>Distribution</span></button>
+                                            <button class="button-group__set_button" onclick="switchFreqView('trend', this)"><span>Trend</span></button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card__content" style="padding: 1rem;">
                                 <div class="hero-metric">
-                                    <p class="big">64.2%</p>
+                                    <p class="big">2.4 <span style="font-size:1rem; font-weight:400; color:#60696c">visits/month</span></p>
                                     <div class="change caption">
                                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 11L6 7L9 10L14 5" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 5H14V8" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        <span class="pct up">+1.1%</span>
+                                        <span class="pct up">+0.2</span>
                                         <span>vs prev period</span>
                                     </div>
                                 </div>
-                                <!-- Funnel (left) + Trend (right) -->
-                                <div style="display:flex; gap:1.5rem; flex:1; min-height:300px;">
-                                    <div id="conversion-funnel-chart" style="flex:0 0 35%; height:100%;"></div>
-                                    <div id="conversion-trend-chart" style="flex:1; min-width:0; height:100%;"></div>
-                                </div>
+                                <div id="frequency-distribution-chart" style="width:100%; min-height:280px;"></div>
+                                <div id="frequency-trend-chart" style="width:100%; min-height:280px; display:none;"></div>
                                 <div class="chart-controls">
                                     <div class="ctrl-group">
                                         <span class="ctrl-label">Segment by:</span>
-                                        <div class="dropdown" id="seg-conversion">
+                                        <div class="dropdown" id="seg-frequency">
                                             <div class="dropdown__wrapper">
-                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-conversion')">
+                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-frequency')">
                                                     <span>None</span>
                                                     <i class="material-symbols-rounded">expand_more</i>
                                                 </button>
@@ -561,132 +607,7 @@
                                                     <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>None</span></button></li>
                                                     <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Location</span></button></li>
                                                     <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Channel</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Daypart</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Order Type</span></button></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ═══════════════════════════════════════════════════════ -->
-                    <!-- Row 3: Loyalty Enrollment Rate (full-width)            -->
-                    <!-- ═══════════════════════════════════════════════════════ -->
-                    <div class="chart-row">
-                        <!-- Loyalty Enrollment Rate -->
-                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
-                            <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
-                                <div class="card__header_list">
-                                    <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
-                                        <p class="subtitle">Loyalty enrollment rate
-                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_25226_383)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_25226_383"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">% of new guests who enroll in the loyalty program</span></span></span></span>
-                                        </p>
-                                        <p class="body2" style="color:#60696c">New guest to loyalty signup conversion</p>
-                                    </div>
-                                </div>
-                                <div class="card__header_list_menu">
-                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
-                                </div>
-                            </div>
-                            <div class="card__content" style="padding: 1rem;">
-                                <div class="hero-metric">
-                                    <p class="big">38.6%</p>
-                                    <div class="change caption">
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 11L6 7L9 10L14 5" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 5H14V8" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        <span class="pct up">+2.4%</span>
-                                        <span>vs prev period</span>
-                                    </div>
-                                    <div class="kpi-benchmark yellow caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="4" fill="#cc8900"/></svg>50 - 75th</div>
-                                </div>
-                                <div id="enrollment-chart" style="width:100%; min-height:280px; flex:1;"></div>
-                                <div class="secondary-metric">
-                                    <span>Avg days from first visit to loyalty enrollment:</span>
-                                    <strong>12.4d</strong>
-                                </div>
-                                <div class="chart-controls">
-                                    <div class="ctrl-group">
-                                        <span class="ctrl-label">Segment by:</span>
-                                        <div class="dropdown" id="seg-enrollment">
-                                            <div class="dropdown__wrapper">
-                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-enrollment')">
-                                                    <span>None</span>
-                                                    <i class="material-symbols-rounded">expand_more</i>
-                                                </button>
-                                            </div>
-                                            <div class="dropdown__options">
-                                                <ul>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>None</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Location</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Channel</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Daypart</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Order Type</span></button></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="ctrl-group ctrl-push-right">
-                                        <span class="ctrl-label">Benchmark:</span>
-                                        <div class="dropdown" id="bench-enrollment">
-                                            <div class="dropdown__wrapper">
-                                                <button class="dropdown__button body1" onclick="toggleDropdown('bench-enrollment')">
-                                                    <span>On</span>
-                                                    <i class="material-symbols-rounded">expand_more</i>
-                                                </button>
-                                            </div>
-                                            <div class="dropdown__options">
-                                                <ul>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>On</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Off</span></button></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ═══════════════════════════════════════════════════════ -->
-                    <!-- Row 4: Acquisition by Channel + First Visit Profile    -->
-                    <!-- ═══════════════════════════════════════════════════════ -->
-                    <div class="chart-row">
-                        <!-- Acquisition by Channel -->
-                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
-                            <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
-                                <div class="card__header_list">
-                                    <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
-                                        <p class="subtitle">Acquisition by channel
-                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_25226_383)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_25226_383"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Where new guests are coming from by ordering channel</span></span></span></span>
-                                        </p>
-                                        <p class="body2" style="color:#60696c">Source breakdown of new guests</p>
-                                    </div>
-                                </div>
-                                <div class="card__header_list_menu">
-                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
-                                </div>
-                            </div>
-                            <div class="card__content" style="padding: 1rem;">
-                                <div id="channel-chart" style="width:100%; min-height:260px; flex:1;"></div>
-                                <div class="chart-controls">
-                                    <div class="ctrl-group">
-                                        <span class="ctrl-label">Segment by:</span>
-                                        <div class="dropdown" id="seg-channel">
-                                            <div class="dropdown__wrapper">
-                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-channel')">
-                                                    <span>None</span>
-                                                    <i class="material-symbols-rounded">expand_more</i>
-                                                </button>
-                                            </div>
-                                            <div class="dropdown__options">
-                                                <ul>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>None</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Location</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Daypart</span></button></li>
                                                     <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Loyalty Status</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Order Type</span></button></li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -694,16 +615,20 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- First Visit Profile -->
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <!-- Row 3: Visit Latency (full-width) -->
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <div class="chart-row">
                         <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
                             <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
                                 <div class="card__header_list">
                                     <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
-                                        <p class="subtitle">First visit profile
-                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_25226_383)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_25226_383"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Average behavior patterns of guests on their first visit</span></span></span></span>
+                                        <p class="subtitle">Avg days to second visit
+                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_info)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_info"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Average number of days between a guest's first and second visit. Lower is better.</span></span></span></span>
                                         </p>
-                                        <p class="body2" style="color:#60696c">What a typical first visit looks like</p>
+                                        <p class="body2" style="color:#60696c">Time between visits (lower is better)</p>
                                     </div>
                                 </div>
                                 <div class="card__header_list_menu">
@@ -712,46 +637,20 @@
                             </div>
                             <div class="card__content" style="padding: 1rem;">
                                 <div class="hero-metric">
-                                    <p class="big">$16.80</p>
-                                    <p class="body2" style="color:#60696c">avg first check</p>
+                                    <p class="big">8.2 <span style="font-size:1rem; font-weight:400; color:#60696c">days</span></p>
                                     <div class="change caption">
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 11L6 7L9 10L14 5" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 5H14V8" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        <span class="pct up">+3.2%</span>
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 5L6 9L9 6L14 11" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 11H14V8" stroke="#257469" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <span class="pct up">-0.4d</span>
                                         <span>vs prev period</span>
                                     </div>
                                 </div>
-                                <div style="flex: 1;">
-                                    <div class="stat-row">
-                                        <span class="stat-label">Avg First Check</span>
-                                        <span class="stat-value">$16.80</span>
-                                    </div>
-                                    <div class="stat-row">
-                                        <span class="stat-label">Most Common Daypart</span>
-                                        <span class="stat-value">Lunch (41%)</span>
-                                    </div>
-                                    <div class="stat-row">
-                                        <span class="stat-label">Top Items</span>
-                                        <span class="stat-value">Classic Burger, Fries, Soft Drink</span>
-                                    </div>
-                                    <div class="stat-row">
-                                        <span class="stat-label">Most Common Channel</span>
-                                        <span class="stat-value">In-store POS (58%)</span>
-                                    </div>
-                                    <div class="stat-row">
-                                        <span class="stat-label">Avg Items per Order</span>
-                                        <span class="stat-value">3.2</span>
-                                    </div>
-                                    <div class="stat-row">
-                                        <span class="stat-label">Peak Day</span>
-                                        <span class="stat-value">Saturday</span>
-                                    </div>
-                                </div>
+                                <div id="latency-chart" style="width:100%; min-height:300px;"></div>
                                 <div class="chart-controls">
                                     <div class="ctrl-group">
                                         <span class="ctrl-label">Segment by:</span>
-                                        <div class="dropdown" id="seg-profile">
+                                        <div class="dropdown" id="seg-latency">
                                             <div class="dropdown__wrapper">
-                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-profile')">
+                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-latency')">
                                                     <span>None</span>
                                                     <i class="material-symbols-rounded">expand_more</i>
                                                 </button>
@@ -762,7 +661,6 @@
                                                     <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Location</span></button></li>
                                                     <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Channel</span></button></li>
                                                     <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Daypart</span></button></li>
-                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Order Type</span></button></li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -773,49 +671,183 @@
                     </div>
 
                     <!-- ═══════════════════════════════════════════════════════ -->
-                    <!-- Row 5: Acquisition by Location (full-width table)      -->
+                    <!-- Row 4: Engagement Funnel (full-width) -->
                     <!-- ═══════════════════════════════════════════════════════ -->
                     <div class="chart-row">
-                        <div class="card default card_non-clickable" style="flex: 1; padding: 0; overflow: hidden;">
+                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
                             <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
                                 <div class="card__header_list">
                                     <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
-                                        <p class="subtitle">Acquisition by location
-                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_25226_383)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_25226_383"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">New guest acquisition broken down by location</span></span></span></span>
+                                        <p class="subtitle">Engagement funnel
+                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_info)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_info"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Guest progression from signup through visit milestones. Shows conversion rates and avg days between each step.</span></span></span></span>
                                         </p>
-                                        <p class="body2" style="color:#60696c">Location-level new guest performance</p>
+                                        <p class="body2" style="color:#60696c">Signup to habitual guest progression</p>
                                     </div>
                                 </div>
                                 <div class="card__header_list_menu">
                                     <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
                                 </div>
                             </div>
-                            <div class="card__content" style="padding: 0;">
-                                <div class="table-container" style="border: none;">
-                                    <table class="table location-table" style="border: none; border-radius: 0;">
-                                        <thead>
-                                            <tr>
-                                                <th>Location</th>
-                                                <th>New Guests</th>
-                                                <th>Prev Period</th>
-                                                <th>Change</th>
-                                                <th>Trend</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="location-table-body">
-                                        </tbody>
-                                    </table>
+                            <div class="card__content" style="padding: 1rem;">
+                                <div class="hero-metric">
+                                    <p class="big">8.4% <span style="font-size:1rem; font-weight:400; color:#60696c">habitual guests (10+ visits)</span></p>
+                                </div>
+                                <div id="engagement-funnel-chart" style="width:100%; min-height:440px;"></div>
+                                <div class="chart-controls">
+                                    <div class="ctrl-group">
+                                        <span class="ctrl-label">Segment by:</span>
+                                        <div class="dropdown" id="seg-funnel">
+                                            <div class="dropdown__wrapper">
+                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-funnel')">
+                                                    <span>None</span>
+                                                    <i class="material-symbols-rounded">expand_more</i>
+                                                </button>
+                                            </div>
+                                            <div class="dropdown__options">
+                                                <ul>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>None</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Location</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Channel</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Loyalty Status</span></button></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                </div>
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <!-- Row 5: Return Rate by Visit Number (full-width) -->
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <div class="chart-row">
+                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
+                            <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
+                                <div class="card__header_list">
+                                    <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
+                                        <p class="subtitle">Return rate by visit number
+                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_info)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_info"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Percentage of guests who return for the next visit after reaching each visit milestone</span></span></span></span>
+                                        </p>
+                                        <p class="body2" style="color:#60696c">Likelihood of return at each visit milestone</p>
+                                    </div>
+                                </div>
+                                <div class="card__header_list_menu">
+                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
+                                </div>
+                            </div>
+                            <div class="card__content" style="padding: 1rem;">
+                                <div class="hero-metric">
+                                    <p class="big">72.4% <span style="font-size:1rem; font-weight:400; color:#60696c">3rd-visit conversion</span></p>
+                                </div>
+                                <div id="visit-number-chart" style="width:100%; min-height:280px;"></div>
+                                <div class="chart-controls">
+                                    <div class="ctrl-group">
+                                        <span class="ctrl-label">Segment by:</span>
+                                        <div class="dropdown" id="seg-visit-number">
+                                            <div class="dropdown__wrapper">
+                                                <button class="dropdown__button body1" onclick="toggleDropdown('seg-visit-number')">
+                                                    <span>None</span>
+                                                    <i class="material-symbols-rounded">expand_more</i>
+                                                </button>
+                                            </div>
+                                            <div class="dropdown__options">
+                                                <ul>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>None</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Location</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Channel</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Loyalty Status</span></button></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <!-- Row 6: Retention Cohort Table (full-width) -->
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <div class="chart-row">
+                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
+                            <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
+                                <div class="card__header_list">
+                                    <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
+                                        <p class="subtitle">Retention cohort
+                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_info)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_info"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Month-over-month retention rates by acquisition cohort. Darker colors indicate higher retention.</span></span></span></span>
+                                        </p>
+                                        <p class="body2" style="color:#60696c">Month-over-month retention by acquisition cohort</p>
+                                    </div>
+                                </div>
+                                <div class="card__header_list_menu">
+                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
+                                </div>
+                            </div>
+                            <div class="card__content" style="padding: 1rem;">
+                                <div class="hero-metric">
+                                    <p class="big">34.2% <span style="font-size:1rem; font-weight:400; color:#60696c">current month retention</span></p>
+                                </div>
+                                <div id="cohort-heatmap" style="width:100%; min-height:380px;"></div>
+                                <div class="chart-controls">
+                                    <div class="ctrl-group">
+                                        <span class="ctrl-label">Granularity:</span>
+                                        <div class="dropdown" id="gran-cohort">
+                                            <div class="dropdown__wrapper">
+                                                <button class="dropdown__button body1" onclick="toggleDropdown('gran-cohort')">
+                                                    <span>Monthly</span>
+                                                    <i class="material-symbols-rounded">expand_more</i>
+                                                </button>
+                                            </div>
+                                            <div class="dropdown__options">
+                                                <ul>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Monthly</span></button></li>
+                                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Quarterly</span></button></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <!-- Row 7: Retention by Dimension (full-width) -->
+                    <!-- ═══════════════════════════════════════════════════════ -->
+                    <div class="chart-row">
+                        <div class="card default card_non-clickable" style="flex: 1; padding: 0;">
+                            <div class="card__header" style="padding: 1rem; border-bottom: 1px solid #dfe1e2;">
+                                <div class="card__header_list">
+                                    <div class="card__header_list_title-section" style="flex-direction:column; align-items:flex-start; gap:2px;">
+                                        <p class="subtitle">Retention by dimension
+                                            <span class="tooltip"><svg class="tooltip_icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_info)"><path d="M7.50002 11.1667H8.49999V7.33334H7.50002V11.1667ZM8 6.19232C8.15257 6.19232 8.28045 6.14072 8.38365 6.03752C8.48685 5.93432 8.53845 5.80644 8.53845 5.65387C8.53845 5.50132 8.48685 5.37343 8.38365 5.27022C8.28045 5.16702 8.15257 5.11542 8 5.11542C7.84744 5.11542 7.71955 5.16702 7.61635 5.27022C7.51315 5.37343 7.46155 5.50132 7.46155 5.65387C7.46155 5.80644 7.51315 5.93432 7.61635 6.03752C7.71955 6.14072 7.84744 6.19232 8 6.19232ZM8.00112 14.3333C7.12516 14.3333 6.30181 14.1671 5.53105 13.8347C4.76029 13.5022 4.08983 13.051 3.51969 12.4812C2.94953 11.9113 2.49816 11.2411 2.16557 10.4707C1.83298 9.70026 1.66669 8.87708 1.66669 8.00112C1.66669 7.12516 1.83291 6.30181 2.16535 5.53105C2.4978 4.76029 2.94896 4.08983 3.51885 3.51969C4.08875 2.94953 4.75891 2.49816 5.52934 2.16557C6.29975 1.83298 7.12293 1.66669 7.99889 1.66669C8.87484 1.66669 9.6982 1.83291 10.469 2.16535C11.2397 2.4978 11.9102 2.94896 12.4803 3.51885C13.0505 4.08875 13.5018 4.75892 13.8344 5.52934C14.167 6.29975 14.3333 7.12293 14.3333 7.99889C14.3333 8.87484 14.1671 9.6982 13.8347 10.469C13.5022 11.2397 13.051 11.9102 12.4812 12.4803C11.9113 13.0505 11.2411 13.5018 10.4707 13.8344C9.70026 14.167 8.87708 14.3333 8.00112 14.3333Z" fill="#5A55E3"/></g><defs><clipPath id="clip0_info"><rect width="16" height="16" fill="white"/></clipPath></defs></svg><span class="tooltip__container tooltip__container_top"><span class="tooltip__container_arrow-top"></span><span class="tooltip__text-container_content"><span class="tooltip_text">Compare retention rates across different dimensions like location, channel, daypart, and loyalty status</span></span></span></span>
+                                        </p>
+                                        <p class="body2" style="color:#60696c">Retention rates compared across dimensions</p>
+                                    </div>
+                                </div>
+                                <div class="card__header_list_menu">
+                                    <button class="button transparent no-content"><i class="ph ph-dots-three-vertical icon-md"></i></button>
+                                </div>
+                            </div>
+                            <div class="card__content" style="padding: 1rem;">
+                                <div class="tab-selector" id="dimension-tabs">
+                                    <button class="active" onclick="switchDimension('location', this)">Location</button>
+                                    <button onclick="switchDimension('channel', this)">Channel</button>
+                                    <button onclick="switchDimension('daypart', this)">Daypart</button>
+                                    <button onclick="switchDimension('loyalty', this)">Loyalty Status</button>
+                                </div>
+                                <div id="dimension-chart" style="width:100%; min-height:280px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- /content-area -->
             </main>
         </div>
     </div>
 
-    <!-- Ask AVA Modal -->
+    <!-- Ask Ava Modal -->
     <div class="ava-modal-overlay" id="avaOverlay" onclick="toggleAva()"></div>
     <div class="ava-modal" id="avaModal" role="dialog" aria-modal="true" aria-labelledby="avaTitle">
         <div class="ava-modal-header">
@@ -843,9 +875,9 @@
                         </div>
                         <div class="ava-chat-area">
                             <div class="ava-suggestion-cards">
-                                <button class="ava-suggestion-card" onclick="askAva('Which channels are driving the most new guests?')">Which channels are driving the most new guests?</button>
-                                <button class="ava-suggestion-card" onclick="askAva('How can I improve first-visit conversion?')">How can I improve first-visit conversion?</button>
-                                <button class="ava-suggestion-card" onclick="askAva('Which locations are growing fastest?')">Which locations are growing fastest?</button>
+                                <button class="ava-suggestion-card" onclick="askAva('Why did return rate increase this month?')">Why did return rate increase this month?</button>
+                                <button class="ava-suggestion-card" onclick="askAva('Which locations have the best retention?')">Which locations have the best retention?</button>
+                                <button class="ava-suggestion-card" onclick="askAva('How can I improve the 2nd visit conversion?')">How can I improve the 2nd visit conversion?</button>
                             </div>
                         </div>
                     </div>
@@ -882,13 +914,37 @@
             });
         });
 
-        // ── Period button toggle ──
-        document.querySelectorAll('.button-group__set_button').forEach(btn => {
+        // ── Period button toggle (scoped to filter bar) ──
+        document.querySelector('.filter-bar-new .button-group__set').querySelectorAll('.button-group__set_button').forEach(btn => {
             btn.addEventListener('click', function() {
-                document.querySelectorAll('.button-group__set_button').forEach(b => b.classList.remove('button-group__set_selected'));
+                this.closest('.button-group__set').querySelectorAll('.button-group__set_button').forEach(b => b.classList.remove('button-group__set_selected'));
                 this.classList.add('button-group__set_selected');
             });
         });
+
+        // ── Visit Frequency view toggle ──
+        function switchFreqView(view, btn) {
+            var distEl = document.getElementById('frequency-distribution-chart');
+            var trendEl = document.getElementById('frequency-trend-chart');
+            btn.closest('.button-group__set').querySelectorAll('.button-group__set_button').forEach(b => b.classList.remove('button-group__set_selected'));
+            btn.classList.add('button-group__set_selected');
+            if (view === 'distribution') {
+                distEl.style.display = '';
+                trendEl.style.display = 'none';
+                if (window._freqDistChart) window._freqDistChart.resize();
+            } else {
+                distEl.style.display = 'none';
+                trendEl.style.display = '';
+                if (window._freqTrendChart) window._freqTrendChart.resize();
+            }
+        }
+
+        // ── Dimension tab switch ──
+        function switchDimension(dim, btn) {
+            btn.closest('.tab-selector').querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderDimensionChart(dim);
+        }
 
         // ── Wait for Manrope font before painting charts ──
         document.fonts.ready.then(function() {
@@ -903,10 +959,8 @@
             indigo100:     cs.getPropertyValue('--chart-indigo-100').trim()     || '#EAE9FB',
             vermilion900:  cs.getPropertyValue('--chart-vermilion-900').trim()  || '#E8640A',
             periwinkle900: cs.getPropertyValue('--chart-periwinkle-900').trim() || '#8C9FFF',
-            periwinkle300: cs.getPropertyValue('--chart-periwinkle-300').trim() || '#C0C8FF',
             amber900:      cs.getPropertyValue('--chart-amber-900').trim()     || '#F8931C',
             crimson900:    cs.getPropertyValue('--chart-crimson-900').trim()    || '#E83162',
-            crimson300:    cs.getPropertyValue('--chart-crimson-300').trim()    || '#F086A3',
             teal900:       cs.getPropertyValue('--chart-teal-900').trim()      || '#1196BB',
             sky900:        cs.getPropertyValue('--chart-sky-900').trim()        || '#30ACEE'
         };
@@ -914,28 +968,27 @@
         var chartFont = { fontFamily: 'Manrope', fontSize: 12, color: '#000' };
 
         // ══════════════════════════════════════════════════════════════
-        // 1. New Guest Acquisition — line chart with area fill
+        // 1. Return Rate — line chart with benchmark band
         // ══════════════════════════════════════════════════════════════
-        var newGuestsChart = echarts.init(document.getElementById('new-guests-chart'));
-        var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        newGuestsChart.setOption({
+        var returnRateChart = echarts.init(document.getElementById('return-rate-chart'));
+        var weeks = ['W1', 'W2', 'W3', 'W4'];
+        returnRateChart.setOption({
             tooltip: {
                 trigger: 'axis',
-
                 textStyle: { fontFamily: 'Manrope', fontSize: 12 }
             },
             legend: {
                 top: 0, left: 0, itemWidth: 12, itemHeight: 12, itemGap: 16,
                 textStyle: chartFont,
                 data: [
-                    { name: 'New Guests', icon: 'roundRect' },
+                    { name: 'Return Rate', icon: 'roundRect' },
                     { name: 'Prior Period', icon: 'roundRect' }
                 ]
             },
             grid: { left: 50, right: 16, top: 40, bottom: 36 },
             xAxis: {
                 type: 'category',
-                data: days,
+                data: weeks,
                 boundaryGap: false,
                 axisLine: { show: false },
                 axisTick: { show: false },
@@ -943,6 +996,136 @@
             },
             yAxis: {
                 type: 'value',
+                min: 30,
+                max: 50,
+                axisLabel: { formatter: '{value}%', fontFamily: 'Manrope', fontSize: 12, color: '#000' },
+                splitLine: { lineStyle: { color: '#eee' } },
+                axisLine: { show: false },
+                axisTick: { show: false }
+            },
+            series: [
+                {
+                    name: 'Return Rate',
+                    type: 'line',
+                    data: [39.8, 40.5, 41.2, 42.3],
+                    smooth: false,
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(90,85,227,0.18)' },
+                            { offset: 1, color: 'rgba(90,85,227,0)' }
+                        ])
+                    },
+                    lineStyle: { color: colors.indigo900, width: 2 },
+                    itemStyle: { color: colors.indigo900 },
+                    markLine: {
+                        silent: true,
+                        symbol: 'none',
+                        lineStyle: { color: '#000', type: 'dashed', width: 1.5 },
+                        label: {
+                            formatter: '75th percentile',
+                            fontFamily: 'Manrope',
+                            fontSize: 11,
+                            color: '#000',
+                            position: 'insideEndTop'
+                        },
+                        data: [{ yAxis: 45 }]
+                    }
+                },
+                {
+                    name: 'Prior Period',
+                    type: 'line',
+                    data: [38.1, 39.0, 39.8, 40.2],
+                    smooth: false,
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
+                    lineStyle: { color: colors.indigo300, width: 2, type: 'dashed' },
+                    itemStyle: { color: colors.indigo300 }
+                }
+            ],
+            animation: false
+        });
+
+        // ══════════════════════════════════════════════════════════════
+        // 2. Visit Frequency — Distribution (horizontal bar)
+        // ══════════════════════════════════════════════════════════════
+        var freqDistChart = echarts.init(document.getElementById('frequency-distribution-chart'));
+        window._freqDistChart = freqDistChart;
+        freqDistChart.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'none' },
+                formatter: function(params) {
+                    return params[0].name + ': ' + params[0].value.toLocaleString() + ' guests';
+                },
+                textStyle: { fontFamily: 'Manrope', fontSize: 12 }
+            },
+            grid: { left: 120, right: 80, top: 8, bottom: 8 },
+            xAxis: { type: 'value', show: false, max: 8000 },
+            yAxis: {
+                type: 'category',
+                data: ['Irregular', 'Quarterly', 'Monthly', 'Weekly', 'Daily'],
+                axisLine: { show: false },
+                axisTick: { show: false },
+                axisLabel: { fontFamily: 'Manrope', fontSize: 12, color: '#000' }
+            },
+            series: [{
+                type: 'bar',
+                data: [
+                    { value: 1240, itemStyle: { color: colors.crimson900 } },
+                    { value: 2680, itemStyle: { color: colors.amber900 } },
+                    { value: 6520, itemStyle: { color: colors.periwinkle900 } },
+                    { value: 5840, itemStyle: { color: colors.vermilion900 } },
+                    { value: 3160, itemStyle: { color: colors.indigo900 } }
+                ],
+                barCategoryGap: 8,
+                label: {
+                    show: true,
+                    position: 'right',
+                    formatter: function(p) { return p.value.toLocaleString(); },
+                    fontFamily: 'Manrope',
+                    fontSize: 12,
+                    color: '#000'
+                },
+                itemStyle: { borderRadius: 4 }
+            }],
+            animation: false
+        });
+
+        // ── Visit Frequency — Trend (line chart) ──
+        var freqTrendChart = echarts.init(document.getElementById('frequency-trend-chart'));
+        window._freqTrendChart = freqTrendChart;
+        freqTrendChart.setOption({
+            tooltip: {
+                trigger: 'axis',
+                textStyle: { fontFamily: 'Manrope', fontSize: 12 }
+            },
+            legend: {
+                top: 0, left: 0, itemWidth: 12, itemHeight: 12, itemGap: 16,
+                textStyle: chartFont,
+                data: [
+                    { name: 'Avg Frequency', icon: 'roundRect' },
+                    { name: 'Prior Period', icon: 'roundRect' }
+                ]
+            },
+            grid: { left: 50, right: 16, top: 32, bottom: 28 },
+            xAxis: {
+                type: 'category',
+                data: ['Jan', 'Feb', 'Mar', 'Apr'],
+                boundaryGap: false,
+                axisLine: { show: false },
+                axisTick: { show: false },
+                axisLabel: chartFont
+            },
+            yAxis: {
+                type: 'value',
+                min: 1.8,
+                max: 2.8,
                 axisLabel: { fontFamily: 'Manrope', fontSize: 12, color: '#000' },
                 splitLine: { lineStyle: { color: '#eee' } },
                 axisLine: { show: false },
@@ -950,9 +1133,9 @@
             },
             series: [
                 {
-                    name: 'New Guests',
+                    name: 'Avg Frequency',
                     type: 'line',
-                    data: [1520, 1680, 1610, 1730, 1880, 2240, 1824],
+                    data: [2.1, 2.2, 2.3, 2.4],
                     smooth: false,
                     symbol: 'circle',
                     symbolSize: 8,
@@ -970,7 +1153,7 @@
                 {
                     name: 'Prior Period',
                     type: 'line',
-                    data: [1380, 1510, 1490, 1540, 1720, 2010, 1830],
+                    data: [2.0, 2.0, 2.1, 2.2],
                     smooth: false,
                     symbol: 'circle',
                     symbolSize: 8,
@@ -984,24 +1167,115 @@
         });
 
         // ══════════════════════════════════════════════════════════════
-        // 2. First-Visit Conversion Trend — small line chart
+        // 3. Visit Latency — dual line chart
         // ══════════════════════════════════════════════════════════════
-        // ── 2a. Conversion Sankey (vertical, left side) ──
-        var conversionFunnelChart = echarts.init(document.getElementById('conversion-funnel-chart'));
-        conversionFunnelChart.setOption({
+        var latencyChart = echarts.init(document.getElementById('latency-chart'));
+        latencyChart.setOption({
+            tooltip: {
+                trigger: 'axis',
+                formatter: function(params) {
+                    var s = params[0].name;
+                    params.forEach(function(p) { s += '<br/>' + p.marker + ' ' + p.seriesName + ': ' + p.value + ' days'; });
+                    return s;
+                },
+                textStyle: { fontFamily: 'Manrope', fontSize: 12 }
+            },
+            legend: {
+                top: 0, left: 0, itemWidth: 12, itemHeight: 12, itemGap: 16,
+                textStyle: chartFont,
+                data: [
+                    { name: 'Avg Days to 2nd Visit', icon: 'roundRect' },
+                    { name: 'Avg Days Between All Visits', icon: 'roundRect' },
+                    { name: 'Prior Period (2nd Visit)', icon: 'roundRect' }
+                ]
+            },
+            grid: { left: 50, right: 16, top: 40, bottom: 36 },
+            xAxis: {
+                type: 'category',
+                data: ['W1', 'W2', 'W3', 'W4'],
+                boundaryGap: false,
+                axisLine: { show: false },
+                axisTick: { show: false },
+                axisLabel: chartFont
+            },
+            yAxis: {
+                type: 'value',
+                inverse: true,
+                min: 4,
+                max: 16,
+                axisLabel: { formatter: '{value}d', fontFamily: 'Manrope', fontSize: 12, color: '#000' },
+                splitLine: { lineStyle: { color: '#eee' } },
+                axisLine: { show: false },
+                axisTick: { show: false }
+            },
+            series: [
+                {
+                    name: 'Avg Days to 2nd Visit',
+                    type: 'line',
+                    data: [9.1, 8.8, 8.5, 8.2],
+                    smooth: false,
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(90,85,227,0)' },
+                            { offset: 1, color: 'rgba(90,85,227,0.18)' }
+                        ])
+                    },
+                    lineStyle: { color: colors.indigo900, width: 2 },
+                    itemStyle: { color: colors.indigo900 }
+                },
+                {
+                    name: 'Avg Days Between All Visits',
+                    type: 'line',
+                    data: [13.5, 13.0, 12.6, 12.1],
+                    smooth: false,
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
+                    lineStyle: { color: colors.vermilion900, width: 2 },
+                    itemStyle: { color: colors.vermilion900 }
+                },
+                {
+                    name: 'Prior Period (2nd Visit)',
+                    type: 'line',
+                    data: [9.6, 9.4, 9.0, 8.6],
+                    smooth: false,
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    showSymbol: false,
+                    emphasis: { scale: true },
+                    lineStyle: { color: colors.indigo300, width: 2, type: 'dashed' },
+                    itemStyle: { color: colors.indigo300 }
+                }
+            ],
+            animation: false
+        });
+
+        // ══════════════════════════════════════════════════════════════
+        // 4. Engagement Funnel — Sankey diagram
+        // ══════════════════════════════════════════════════════════════
+        var funnelChart = echarts.init(document.getElementById('engagement-funnel-chart'));
+        var funnelPcts = { 'Signup': '100%', '1st Visit': '64.2%', '2nd Visit': '30.9%', '3rd Visit': '22.4%', '5th Visit': '15.3%', '10th Visit': '8.4%' };
+        funnelChart.setOption({
             tooltip: {
                 trigger: 'item',
-
                 formatter: function(p) {
-                    if (p.dataType === 'node') return p.name + ': ' + p.value.toLocaleString();
-                    return p.data.source + ' → ' + p.data.target + ': ' + p.data.value.toLocaleString();
+                    if (p.dataType === 'node') {
+                        var pct = funnelPcts[p.name] || '';
+                        return p.name + ': ' + p.value.toLocaleString() + (pct ? ' (' + pct + ')' : '');
+                    }
+                    return p.data.source + ' \u2192 ' + p.data.target + ': ' + p.data.value.toLocaleString();
                 },
                 textStyle: { fontFamily: 'Manrope', fontSize: 12 }
             },
             series: [{
                 type: 'sankey',
                 orient: 'horizontal',
-                top: 48,
+                top: 72,
                 bottom: 40,
                 left: 8,
                 right: 8,
@@ -1016,280 +1290,291 @@
                     fontSize: 11,
                     fontWeight: 600,
                     color: '#000',
-                    formatter: function(p) { return '{name|' + p.name + '}\n{val|' + (p.value >= 1000 ? (p.value/1000).toFixed(1) + 'K' : p.value.toLocaleString()) + '}'; },
+                    formatter: function(p) {
+                        var pct = funnelPcts[p.name];
+                        if (pct) {
+                            var valStr = p.value >= 1000 ? (p.value/1000).toFixed(1) + 'K' : p.value.toLocaleString();
+                            if (p.name === '3rd Visit') {
+                                return '{name|' + p.name + '}\n{pct|' + pct + '}{val|  ' + valStr + '}\n{badge|STICKINESS THRESHOLD}';
+                            }
+                            return '{name|' + p.name + '}\n{pct|' + pct + '}{val|  ' + valStr + '}';
+                        }
+                        var valStr2 = p.value >= 1000 ? (p.value/1000).toFixed(1) + 'K' : p.value.toLocaleString();
+                        return '{dropName|' + p.name + '}\n{val|' + valStr2 + '}';
+                    },
                     rich: {
                         name: { fontFamily: 'Manrope', fontSize: 11, fontWeight: 600, color: '#000', lineHeight: 16 },
-                        val: { fontFamily: 'Manrope', fontSize: 11, fontWeight: 400, color: '#60696c', lineHeight: 16 }
+                        pct: { fontFamily: 'Manrope', fontSize: 12, fontWeight: 700, color: '#000', lineHeight: 16 },
+                        val: { fontFamily: 'Manrope', fontSize: 11, fontWeight: 400, color: '#60696c', lineHeight: 16 },
+                        dropName: { fontFamily: 'Manrope', fontSize: 10, fontWeight: 400, color: '#60696c', lineHeight: 14 },
+                        badge: { fontFamily: 'Manrope', fontSize: 9, fontWeight: 700, color: '#5A55E3', backgroundColor: 'rgba(90,85,227,0.08)', borderRadius: 3, padding: [2, 4], lineHeight: 16 }
                     }
                 },
                 lineStyle: {
                     color: 'gradient',
                     curveness: 0.5,
-                    opacity: 0.3,
-                    borderRadius: 4
+                    opacity: 0.3
                 },
                 data: [
-                    { name: 'Signups', itemStyle: { color: colors.indigo900, borderRadius: 4 }, label: { position: 'top' } },
-                    { name: 'Check-in', itemStyle: { color: colors.vermilion900, borderRadius: 4 }, label: { position: 'top' } },
-                    { name: 'Drop-off', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'bottom', rich: { name: { color: '#60696c' } } } }
+                    { name: 'Signup',     itemStyle: { color: colors.indigo900, borderRadius: 4 } },
+                    { name: '1st Visit',  itemStyle: { color: colors.indigo700, borderRadius: 4 } },
+                    { name: '2nd Visit',  itemStyle: { color: colors.indigo500, borderRadius: 4 } },
+                    { name: '3rd Visit',  itemStyle: { color: colors.indigo900, borderRadius: 4 } },
+                    { name: '5th Visit',  itemStyle: { color: colors.indigo300, borderRadius: 4 } },
+                    { name: '10th Visit', itemStyle: { color: colors.indigo100, borderRadius: 4 } },
+                    { name: 'Drop-off 1', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'bottom', rich: { name: { color: '#60696c' } } } },
+                    { name: 'Drop-off 2', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'bottom', rich: { name: { color: '#60696c' } } } },
+                    { name: 'Drop-off 3', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'bottom', rich: { name: { color: '#60696c' } } } },
+                    { name: 'Drop-off 4', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'bottom', rich: { name: { color: '#60696c' } } } },
+                    { name: 'Drop-off 5', itemStyle: { color: '#C0C4C7', borderRadius: 4 }, label: { position: 'bottom', rich: { name: { color: '#60696c' } } } }
                 ],
                 links: [
-                    { source: 'Signups', target: 'Check-in', value: 12482 },
-                    { source: 'Signups', target: 'Drop-off', value: 6958 }
+                    { source: 'Signup',     target: '1st Visit',  value: 12482 },
+                    { source: 'Signup',     target: 'Drop-off 1', value: 6958 },
+                    { source: '1st Visit',  target: '2nd Visit',  value: 6005 },
+                    { source: '1st Visit',  target: 'Drop-off 2', value: 6477 },
+                    { source: '2nd Visit',  target: '3rd Visit',  value: 4354 },
+                    { source: '2nd Visit',  target: 'Drop-off 3', value: 1651 },
+                    { source: '3rd Visit',  target: '5th Visit',  value: 2974 },
+                    { source: '3rd Visit',  target: 'Drop-off 4', value: 1380 },
+                    { source: '5th Visit',  target: '10th Visit', value: 1633 },
+                    { source: '5th Visit',  target: 'Drop-off 5', value: 1341 }
                 ]
             }],
             animation: false
         });
 
-        // ── 2b. Conversion Trend (right side) ──
-        var conversionTrendChart = echarts.init(document.getElementById('conversion-trend-chart'));
-        conversionTrendChart.setOption({
+        // ══════════════════════════════════════════════════════════════
+        // 5. Return Rate by Visit Number — vertical bar chart
+        // ══════════════════════════════════════════════════════════════
+        var visitNumberChart = echarts.init(document.getElementById('visit-number-chart'));
+        visitNumberChart.setOption({
             tooltip: {
                 trigger: 'axis',
-
-                formatter: function(params) {
-                    var s = params[0].name;
-                    params.forEach(function(p) { s += '<br/>' + p.marker + ' ' + p.seriesName + ': ' + p.value + '%'; });
-                    return s;
-                },
-                textStyle: { fontFamily: 'Manrope', fontSize: 12 }
-            },
-            legend: {
-                top: 0, left: 0, itemWidth: 12, itemHeight: 12, itemGap: 16,
-                textStyle: chartFont,
-                data: [
-                    { name: 'Conversion Rate', icon: 'roundRect' },
-                    { name: 'Prior Period', icon: 'roundRect' }
-                ]
-            },
-            grid: { left: 40, right: 16, top: 32, bottom: 28 },
-            xAxis: {
-                type: 'category',
-                data: days,
-                boundaryGap: false,
-                axisLine: { show: false },
-                axisTick: { show: false },
-                axisLabel: { fontFamily: 'Manrope', fontSize: 11, color: '#60696c' }
-            },
-            yAxis: {
-                type: 'value',
-                min: 59,
-                max: 65,
-                interval: 1,
-                axisLabel: { formatter: '{value}%', fontFamily: 'Manrope', fontSize: 11, color: '#60696c' },
-                splitLine: { lineStyle: { color: '#f0f0f0' } },
-                axisLine: { show: false },
-                axisTick: { show: false }
-            },
-            series: [
-                {
-                    name: 'Conversion Rate',
-                    type: 'line',
-                    data: [61.8, 62.4, 60.9, 63.1, 63.5, 64.2, 63.8],
-                    smooth: false,
-                    symbol: 'circle',
-                    symbolSize: 8,
-                    showSymbol: false,
-                    emphasis: { scale: true },
-                    lineStyle: { color: colors.indigo900, width: 2 },
-                    itemStyle: { color: colors.indigo900 },
-                    areaStyle: {
-                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                            { offset: 0, color: 'rgba(90,85,227,0.15)' },
-                            { offset: 1, color: 'rgba(90,85,227,0)' }
-                        ])
-                    }
-                },
-                {
-                    name: 'Prior Period',
-                    type: 'line',
-                    data: [60.5, 61.2, 59.8, 63.5, 62.4, 63.1, 62.6],
-                    smooth: false,
-                    symbol: 'circle',
-                    symbolSize: 8,
-                    showSymbol: false,
-                    emphasis: { scale: true },
-                    lineStyle: { color: colors.indigo300, width: 2, type: 'dashed' },
-                    itemStyle: { color: colors.indigo300 }
-                }
-            ],
-            animation: false
-        });
-
-        // ══════════════════════════════════════════════════════════════
-        // 3. Acquisition by Channel — horizontal bar chart
-        // ══════════════════════════════════════════════════════════════
-        var channelChart = echarts.init(document.getElementById('channel-chart'));
-        channelChart.setOption({
-            tooltip: {
-                trigger: 'axis',
-
                 axisPointer: { type: 'none' },
                 formatter: function(params) {
-                    return params[0].name + ': ' + params[0].value + '%';
+                    return 'After ' + params[0].name + ': ' + params[0].value + '% return';
                 },
                 textStyle: { fontFamily: 'Manrope', fontSize: 12 }
             },
-            grid: { left: 120, right: 60, top: 8, bottom: 8 },
-            xAxis: { type: 'value', show: false, max: 50 },
-            yAxis: {
-                type: 'category',
-                data: ['Other', 'eClub / Web', 'Online Order', 'Mobile App', 'In-store POS'],
-                axisLine: { show: false },
-                axisTick: { show: false },
-                axisLabel: { fontFamily: 'Manrope', fontSize: 12, color: '#000' },
-                inverse: false
-            },
-            series: [{
-                type: 'bar',
-                data: [
-                    { value: 4, itemStyle: { color: colors.crimson900 } },
-                    { value: 8, itemStyle: { color: colors.amber900 } },
-                    { value: 18, itemStyle: { color: colors.periwinkle900 } },
-                    { value: 28, itemStyle: { color: colors.vermilion900 } },
-                    { value: 42, itemStyle: { color: colors.indigo900 } }
-                ],
-                barCategoryGap: 8,
-                label: {
-                    show: true,
-                    position: 'right',
-                    formatter: '{c}%',
-                    fontFamily: 'Manrope',
-                    fontSize: 12,
-                    color: '#000'
-                },
-                itemStyle: { borderRadius: 4 }
-            }],
-            animation: false
-        });
-
-        // ══════════════════════════════════════════════════════════════
-        // 4. Loyalty Enrollment Rate — line chart
-        // ══════════════════════════════════════════════════════════════
-        var enrollmentChart = echarts.init(document.getElementById('enrollment-chart'));
-        enrollmentChart.setOption({
-            tooltip: {
-                trigger: 'axis',
-
-                textStyle: { fontFamily: 'Manrope', fontSize: 12 }
-            },
-            legend: {
-                top: 0, left: 0, itemWidth: 12, itemHeight: 12, itemGap: 16,
-                textStyle: chartFont,
-                data: [
-                    { name: 'Enrollment Rate', icon: 'roundRect' },
-                    { name: 'Prior Period', icon: 'roundRect' }
-                ]
-            },
-            grid: { left: 40, right: 16, top: 40, bottom: 36 },
+            grid: { left: 50, right: 16, top: 32, bottom: 36 },
             xAxis: {
                 type: 'category',
-                data: days,
-                boundaryGap: false,
+                data: ['1st Visit', '2nd Visit', '3rd Visit', '4th Visit', '5th Visit', '10th Visit'],
                 axisLine: { show: false },
                 axisTick: { show: false },
-                axisLabel: chartFont
+                axisLabel: { fontFamily: 'Manrope', fontSize: 11, color: '#000' }
             },
             yAxis: {
                 type: 'value',
+                min: 0,
+                max: 100,
                 axisLabel: { formatter: '{value}%', fontFamily: 'Manrope', fontSize: 12, color: '#000' },
                 splitLine: { lineStyle: { color: '#eee' } },
                 axisLine: { show: false },
                 axisTick: { show: false }
             },
-            series: [
-                {
-                    name: 'Enrollment Rate',
-                    type: 'line',
-                    data: [36.4, 37.1, 36.8, 37.5, 38.0, 38.6, 37.9],
-                    smooth: false,
-                    symbol: 'circle',
-                    symbolSize: 8,
-                    showSymbol: false,
-                    emphasis: { scale: true },
-                    areaStyle: {
-                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                            { offset: 0, color: 'rgba(90,85,227,0.18)' },
-                            { offset: 1, color: 'rgba(90,85,227,0)' }
-                        ])
+            series: [{
+                type: 'bar',
+                data: [
+                    { value: 48.1, itemStyle: { color: colors.indigo300 } },
+                    { value: 72.4, itemStyle: { color: colors.indigo300 } },
+                    {
+                        value: 72.4,
+                        itemStyle: { color: colors.indigo900 },
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: '72.4%\nStickiness\nthreshold',
+                            fontFamily: 'Manrope',
+                            fontSize: 11,
+                            fontWeight: 600,
+                            color: colors.indigo900,
+                            lineHeight: 14,
+                            align: 'center'
+                        }
                     },
-                    lineStyle: { color: colors.indigo900, width: 2 },
-                    itemStyle: { color: colors.indigo900 }
+                    { value: 68.2, itemStyle: { color: colors.indigo300 } },
+                    { value: 55.1, itemStyle: { color: colors.indigo300 } },
+                    { value: 78.6, itemStyle: { color: colors.indigo300 } }
+                ],
+                barWidth: '50%',
+                label: {
+                    show: true,
+                    position: 'top',
+                    formatter: '{c}%',
+                    fontFamily: 'Manrope',
+                    fontSize: 11,
+                    color: '#60696c'
                 },
-                {
-                    name: 'Prior Period',
-                    type: 'line',
-                    data: [34.8, 35.4, 35.0, 35.9, 36.2, 36.8, 36.1],
-                    smooth: false,
-                    symbol: 'circle',
-                    symbolSize: 8,
-                    showSymbol: false,
-                    emphasis: { scale: true },
-                    lineStyle: { color: colors.indigo300, width: 2, type: 'dashed' },
-                    itemStyle: { color: colors.indigo300 }
-                }
-            ],
+                itemStyle: { borderRadius: [4, 4, 0, 0] }
+            }],
             animation: false
         });
 
         // ══════════════════════════════════════════════════════════════
-        // 5. Acquisition by Location — table with inline sparklines
+        // 6. Retention Cohort — ECharts heatmap
         // ══════════════════════════════════════════════════════════════
-        var locationData = [
-            { name: 'Downtown',    guests: 1840, prevGuests: 1556, change: 18.2, trend: [120, 140, 130, 160, 180, 210, 240] },
-            { name: 'Westside',    guests: 1620, prevGuests: 1445, change: 12.1, trend: [100, 110, 120, 130, 140, 150, 162] },
-            { name: 'Northpark',   guests: 1480, prevGuests: 1365, change: 8.4,  trend: [90, 100, 110, 105, 120, 130, 148] },
-            { name: 'Lakewood',    guests: 1420, prevGuests: 1337, change: 6.2,  trend: [95, 100, 108, 112, 118, 126, 142] },
-            { name: 'Riverside',   guests: 1380, prevGuests: 1317, change: 4.8,  trend: [88, 92, 98, 102, 110, 120, 138] },
-            { name: 'Summit Hill', guests: 1240, prevGuests: 1214, change: 2.1,  trend: [80, 82, 86, 88, 94, 100, 124] },
-            { name: 'Harbor View', guests: 1180, prevGuests: 1175, change: 0.4,  trend: [78, 80, 82, 84, 86, 90, 118] },
-            { name: 'Oakdale',     guests: 1120, prevGuests: 1150, change: -2.6, trend: [90, 88, 86, 84, 82, 80, 112] },
-            { name: 'Midtown',     guests: 1080, prevGuests: 1127, change: -4.2, trend: [98, 94, 90, 86, 82, 78, 108] },
-            { name: 'Eastgate',    guests: 920,  prevGuests: 1006, change: -8.6, trend: [110, 100, 95, 90, 85, 80, 92] }
+        var cohortChart = echarts.init(document.getElementById('cohort-heatmap'));
+        var months = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
+        var periods = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6'];
+
+        var cohortData = [
+            // [periodIndex, cohortIndex, value]
+            [0, 0, 100], [1, 0, 42], [2, 0, 34], [3, 0, 28], [4, 0, 24], [5, 0, 22],
+            [0, 1, 100], [1, 1, 44], [2, 1, 36], [3, 1, 30], [4, 1, 26],
+            [0, 2, 100], [1, 2, 40], [2, 2, 32], [3, 2, 27],
+            [0, 3, 100], [1, 3, 38], [2, 3, 31],
+            [0, 4, 100], [1, 4, 41],
+            [0, 5, 100]
         ];
 
-        var tbody = document.getElementById('location-table-body');
-        var sparklineCharts = [];
-
-        locationData.forEach(function(loc, i) {
-            var tr = document.createElement('tr');
-            var changeClass = loc.change >= 0 ? 'change-up' : 'change-down';
-            var changeSign = loc.change >= 0 ? '+' : '';
-            tr.innerHTML =
-                '<td>' + loc.name + '</td>' +
-                '<td>' + loc.guests.toLocaleString() + '</td>' +
-                '<td style="color:#60696c">' + loc.prevGuests.toLocaleString() + '</td>' +
-                '<td class="' + changeClass + '">' + changeSign + loc.change + '%</td>' +
-                '<td><div id="spark-' + i + '" class="sparkline-cell"></div></td>';
-            tbody.appendChild(tr);
+        cohortChart.setOption({
+            tooltip: {
+                formatter: function(p) {
+                    return months[p.value[1]] + ' cohort, ' + periods[p.value[0]] + ': ' + p.value[2] + '%';
+                },
+                textStyle: { fontFamily: 'Manrope', fontSize: 12 }
+            },
+            grid: { left: 60, right: 40, top: 40, bottom: 24 },
+            xAxis: {
+                type: 'category',
+                data: periods,
+                position: 'top',
+                axisLine: { show: false },
+                axisTick: { show: false },
+                axisLabel: { fontFamily: 'Manrope', fontSize: 12, fontWeight: 600, color: '#000' },
+                splitArea: { show: false }
+            },
+            yAxis: {
+                type: 'category',
+                data: months,
+                axisLine: { show: false },
+                axisTick: { show: false },
+                axisLabel: { fontFamily: 'Manrope', fontSize: 12, color: '#000' },
+                inverse: true
+            },
+            visualMap: {
+                min: 20,
+                max: 100,
+                calculable: false,
+                orient: 'horizontal',
+                left: 'center',
+                bottom: -5,
+                show: false,
+                inRange: {
+                    color: ['#EAE9FB', '#A9A6F0', '#7874EA', '#5A55E3', '#3D38B8']
+                }
+            },
+            series: [{
+                type: 'heatmap',
+                data: cohortData,
+                label: {
+                    show: true,
+                    formatter: function(p) { return p.value[2] + '%'; },
+                    fontFamily: 'Manrope',
+                    fontSize: 12,
+                    color: function(p) { return p.value[2] > 60 ? '#fff' : '#000'; }
+                },
+                itemStyle: {
+                    borderColor: '#fff',
+                    borderWidth: 3,
+                    borderRadius: 4
+                },
+                emphasis: {
+                    itemStyle: { borderColor: '#5A55E3', borderWidth: 2 }
+                }
+            }],
+            animation: false
         });
 
-        // Render sparklines after DOM is ready
-        locationData.forEach(function(loc, i) {
-            var el = document.getElementById('spark-' + i);
-            var spark = echarts.init(el);
-            var sparkColor = loc.change >= 0 ? '#257469' : '#bc103e';
-            spark.setOption({
-                grid: { left: 0, right: 0, top: 2, bottom: 2 },
-                xAxis: { type: 'category', show: false, data: loc.trend.map(function(_, j) { return j; }) },
-                yAxis: { type: 'value', show: false },
-                series: [{
-                    type: 'line',
-                    data: loc.trend,
-                    smooth: true,
-                    symbol: 'none',
-                    lineStyle: { color: sparkColor, width: 1.5 },
-                    areaStyle: { opacity: 0.08, color: sparkColor }
-                }],
+        // ══════════════════════════════════════════════════════════════
+        // 7. Retention by Dimension — horizontal bar chart with tabs
+        // ══════════════════════════════════════════════════════════════
+        var dimensionChart = echarts.init(document.getElementById('dimension-chart'));
+
+        var dimensionData = {
+            location: {
+                labels: ['Eastgate', 'Midtown', 'Westside', 'Downtown'],
+                values: [36.2, 40.8, 44.1, 48.2],
+                avg: 42.3
+            },
+            channel: {
+                labels: ['Other', 'Online Order', 'Mobile App', 'In-store POS'],
+                values: [32.4, 38.6, 44.8, 46.1],
+                avg: 42.3
+            },
+            daypart: {
+                labels: ['Late Night', 'Breakfast', 'Dinner', 'Lunch'],
+                values: [28.4, 38.2, 42.6, 48.1],
+                avg: 42.3
+            },
+            loyalty: {
+                labels: ['Non-member', 'New Member', 'Active Member'],
+                values: [31.2, 42.8, 56.4],
+                avg: 42.3
+            }
+        };
+
+        function renderDimensionChart(dim) {
+            var d = dimensionData[dim];
+            dimensionChart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'none' },
+                    formatter: function(params) { return params[0].name + ': ' + params[0].value + '%'; },
+                    textStyle: { fontFamily: 'Manrope', fontSize: 12 }
+                },
+                grid: { left: 120, right: 60, top: 8, bottom: 8 },
+                xAxis: { type: 'value', show: false, max: 60 },
+                yAxis: {
+                    type: 'category',
+                    data: d.labels,
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    axisLabel: { fontFamily: 'Manrope', fontSize: 12, color: '#000' }
+                },
+                series: [
+                    {
+                        type: 'bar',
+                        data: d.values.map(function(v, i) {
+                            var colorPalette = [colors.indigo900, colors.vermilion900, colors.periwinkle900, colors.amber900, colors.crimson900];
+                            return { value: v, itemStyle: { color: colorPalette[d.values.length - 1 - i] || colors.indigo900 } };
+                        }),
+                        barCategoryGap: 8,
+                        label: {
+                            show: true,
+                            position: 'right',
+                            formatter: '{c}%',
+                            fontFamily: 'Manrope',
+                            fontSize: 12,
+                            color: '#000'
+                        },
+                        itemStyle: { borderRadius: 4 },
+                        markLine: {
+                            silent: true,
+                            symbol: 'none',
+                            lineStyle: { color: '#60696c', type: 'dashed', width: 1 },
+                            label: {
+                                formatter: 'Avg: ' + d.avg + '%',
+                                fontFamily: 'Manrope',
+                                fontSize: 11,
+                                color: '#60696c'
+                            },
+                            data: [{ xAxis: d.avg }]
+                        }
+                    }
+                ],
                 animation: false
-            });
-            sparklineCharts.push(spark);
-        });
+            }, true);
+        }
+
+        renderDimensionChart('location');
 
         // ══════════════════════════════════════════════════════════════
         // Resize all charts on window resize + container resize
         // ══════════════════════════════════════════════════════════════
-        var allCharts = [newGuestsChart, conversionTrendChart, channelChart, enrollmentChart].concat(sparklineCharts);
+        var allCharts = [returnRateChart, freqDistChart, freqTrendChart, latencyChart, funnelChart, visitNumberChart, cohortChart, dimensionChart];
         window.addEventListener('resize', function() {
             allCharts.forEach(function(c) { if (c) c.resize(); });
         });
@@ -1297,13 +1582,8 @@
             var ro = new ResizeObserver(function() {
                 allCharts.forEach(function(c) { if (c) c.resize(); });
             });
-            ['new-guests-chart','conversion-funnel-chart','conversion-trend-chart','channel-chart','enrollment-chart'].forEach(function(id) {
+            ['return-rate-chart','frequency-distribution-chart','frequency-trend-chart','latency-chart','engagement-funnel-chart','visit-number-chart','cohort-heatmap','dimension-chart'].forEach(function(id) {
                 var el = document.getElementById(id);
-                if (el) ro.observe(el);
-            });
-            // Observe sparkline containers too
-            locationData.forEach(function(_, i) {
-                var el = document.getElementById('spark-' + i);
                 if (el) ro.observe(el);
             });
         }
@@ -1353,31 +1633,6 @@
             chatArea.appendChild(userMsg);
             input.value = '';
             setTimeout(function() { chatViewport.scrollTop = chatViewport.scrollHeight; }, 0);
-
-            setTimeout(function() {
-                var botText = document.createElement('div');
-                botText.className = 'ava-message bot';
-                botText.innerHTML = '<div class="ava-message-text">Based on the current filters, I\'ve identified a key insight:</div>';
-                chatArea.appendChild(botText);
-
-                setTimeout(function() {
-                    var insightCard = document.createElement('div');
-                    insightCard.className = 'ava-insight-card';
-                    insightCard.innerHTML = '<div class="ava-insight-title">Acquisition Insight</div>' +
-                        '<div class="ava-insight-text">Your In-store POS channel accounts for 42% of new guest acquisition. Mobile App has grown +12% vs prior period, suggesting an opportunity to accelerate digital adoption through targeted promotions.</div>';
-                    chatArea.appendChild(insightCard);
-
-                    var actionButtons = document.createElement('div');
-                    actionButtons.className = 'ava-action-buttons';
-                    actionButtons.innerHTML = '<button class="ava-action-btn"><i class="ph ph-copy"></i><span>Copy</span></button>' +
-                        '<button class="ava-action-btn"><i class="ph ph-share-network"></i><span>Share</span></button>' +
-                        '<button class="ava-action-btn"><i class="ph ph-link"></i><span>Sources (3)</span></button>' +
-                        '<button class="ava-action-btn-icon-only"><i class="ph ph-thumbs-up"></i></button>' +
-                        '<button class="ava-action-btn-icon-only"><i class="ph ph-thumbs-down"></i></button>';
-                    chatArea.appendChild(actionButtons);
-                    setTimeout(function() { chatViewport.scrollTop = chatViewport.scrollHeight; }, 0);
-                }, 1000);
-            }, 800);
         }
     </script>
 </body>
