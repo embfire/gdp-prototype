@@ -10,39 +10,33 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Bento table overrides */
+        .card-table table thead tr {
+            background-color: #dfe1e2;
+        }
+        .card-table table thead tr th {
+            text-transform: none;
+            font-size: 1rem;
+            font-weight: 800;
+            color: #000;
+            height: 3.5rem;
+            padding: 1rem;
+            border-bottom: none;
+        }
+        .card-table table tbody tr td {
+            padding: 1rem;
+        }
+
         .profiles-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .search-bar {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            flex: 1;
-            max-width: 500px;
-        }
-
-        .search-input {
-            flex: 1;
-            padding: var(--spacing-sm) var(--spacing-md);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            font-family: inherit;
-            font-size: 14px;
-        }
-
-        .search-input:focus {
-            outline: 2px solid var(--accent-blue);
-            border-color: var(--accent-blue);
         }
 
         .filters-bar {
             display: flex;
+            align-items: center;
             gap: var(--spacing-md);
-            margin-bottom: var(--spacing-lg);
         }
 
         .guest-cell {
@@ -51,47 +45,8 @@
             gap: var(--spacing-md);
         }
 
-        .guest-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .guest-avatar-placeholder {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-subdued);
-            font-size: 20px;
-        }
-
         .guest-name {
             font-weight: 600;
-        }
-
-        .loyalty-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 12px;
-            border-radius: 100px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .loyalty-badge.member {
-            background: #fff3e0;
-            color: #f57c00;
-        }
-
-        .loyalty-badge.non-member {
-            background: #f4f4f4;
-            color: var(--text-subdued);
         }
 
         .table-link {
@@ -102,6 +57,10 @@
         tbody tr {
             cursor: pointer;
             transition: background-color 0.2s;
+        }
+
+        .filters-bar .dropdown {
+            min-width: 210px;
         }
 
         tbody tr:hover {
@@ -184,7 +143,7 @@
                             <a href="analytics.html" class="nav-sub-item">Overview</a>
                             <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
                             <a href="analytics-retention.html" class="nav-sub-item">Retention</a>
-                            <a href="#" class="nav-sub-item">At risk</a>
+                            <a href="analytics-atrisk.html" class="nav-sub-item">At risk</a>
                         </div>
                         <a href="profiles.html" class="nav-item active">
                             <i class="ph-duotone ph-user-circle"></i>
@@ -257,52 +216,77 @@
             <!-- Main Content -->
             <main class="main-content">
                 <div class="content-area">
-                    <!-- Header with Search -->
+                    <!-- Header -->
                     <div class="profiles-header">
                         <h1>Guest Profiles</h1>
-                        <div class="search-bar">
-                            <i class="ph ph-magnifying-glass" style="color: var(--text-subdued);"></i>
-                            <input type="text" class="search-input" placeholder="Search by name, email, or phone...">
-                        </div>
+                        <button class="button outlined body1">
+                            <i class="material-symbols-rounded">download</i>
+                            <span>Export</span>
+                        </button>
                     </div>
 
                     <!-- Filters -->
                     <div class="filters-bar">
-                        <div class="dropdown-wrapper">
-                            <select>
-                                <option>All Loyalty Status</option>
-                                <option>Members</option>
-                                <option>Non-Members</option>
-                            </select>
-                            <i class="ph ph-caret-down"></i>
+                        <div class="search-bar" style="display:flex; align-items:center; border:none; border-radius:0.5rem; box-shadow:0px 0px 0px 1px #000 inset; padding:0.5rem 1rem; gap:0.5rem; flex:0 1 300px;">
+                            <i class="material-symbols-rounded" style="color:var(--text-subdued); font-size:20px;">search</i>
+                            <input type="text" placeholder="Find by name, email or phone" style="border:none; outline:none; font-family:inherit; font-size:1rem; flex:1; background:transparent;">
                         </div>
-                        <div class="dropdown-wrapper">
-                            <select>
-                                <option>All Lifecycle Stages</option>
-                                <option>New</option>
-                                <option>Active</option>
-                                <option>At-Risk</option>
-                                <option>Lapsed</option>
-                            </select>
-                            <i class="ph ph-caret-down"></i>
+                        <div class="dropdown" id="filter-loyalty">
+                            <div class="dropdown__wrapper">
+                                <button class="dropdown__button body1" onclick="toggleDropdown('filter-loyalty')">
+                                    <span>All loyalty status</span>
+                                    <i class="material-symbols-rounded">expand_more</i>
+                                </button>
+                            </div>
+                            <div class="dropdown__options">
+                                <ul>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>All loyalty status</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Platinum Member</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Gold Member</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Silver Member</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Non-Member</span></button></li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="dropdown-wrapper">
-                            <select id="segment-dropdown">
-                                <option>All segments</option>
-                                <option>Dormant High Spenders</option>
-                                <option>Breakfast Regulars</option>
-                                <option>Vegetarian Segment</option>
-                            </select>
-                            <i class="ph ph-caret-down"></i>
+                        <div class="dropdown" id="filter-lifecycle">
+                            <div class="dropdown__wrapper">
+                                <button class="dropdown__button body1" onclick="toggleDropdown('filter-lifecycle')">
+                                    <span>All lifecycle stages</span>
+                                    <i class="material-symbols-rounded">expand_more</i>
+                                </button>
+                            </div>
+                            <div class="dropdown__options">
+                                <ul>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>All lifecycle stages</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>First-time</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Returning</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Loyal</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>At risk</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Churned</span></button></li>
+                                </ul>
+                            </div>
                         </div>
-                        <button class="btn btn-secondary">
-                            <i class="ph ph-export"></i> Export
-                        </button>
+                        <div class="dropdown" id="filter-segments">
+                            <div class="dropdown__wrapper">
+                                <button class="dropdown__button body1" onclick="toggleDropdown('filter-segments')">
+                                    <span>All segments</span>
+                                    <i class="material-symbols-rounded">expand_more</i>
+                                </button>
+                            </div>
+                            <div class="dropdown__options">
+                                <ul>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>All segments</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Dormant High Spenders</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Breakfast Regulars</span></button></li>
+                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Vegetarian Segment</span></button></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Profiles Table -->
                     <div class="card card-table">
-                        <table>
+                        <table class="table" style="border: none; border-radius: 0;">
                             <thead>
                                 <tr>
                                     <th>Guest</th>
@@ -320,13 +304,12 @@
                                 <tr onclick="window.location.href='profile.html'" style="cursor: pointer;">
                                     <td>
                                         <div class="guest-cell">
-                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150" alt="Marcus Thompson" class="guest-avatar">
                                             <span class="guest-name">Marcus Thompson</span>
                                         </div>
                                     </td>
                                     <td>marcus.t@example.com</td>
                                     <td>(555) 234-5678</td>
-                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
                                     <td>$3,428.50</td>
                                     <td>67</td>
                                     <td>Punchh, POS</td>
@@ -336,15 +319,12 @@
                                 <tr onclick="window.location.href='guest-profile.html'" style="cursor: pointer;">
                                     <td>
                                         <div class="guest-cell">
-                                            <div class="guest-avatar-placeholder">
-                                                <i class="ph ph-user"></i>
-                                            </div>
                                             <span class="guest-name">Isabella Chen</span>
                                         </div>
                                     </td>
                                     <td>isabella.c@example.com</td>
                                     <td>(555) 012-3456</td>
-                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
                                     <td>$1,240.50</td>
                                     <td>48</td>
                                     <td>Web App, POS</td>
@@ -354,13 +334,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150" alt="Sarah Martinez" class="guest-avatar">
                                             <span class="guest-name">Sarah Martinez</span>
                                         </div>
                                     </td>
                                     <td>sarah.m@example.com</td>
                                     <td>(555) 789-0123</td>
-                                    <td><span class="loyalty-badge member">Platinum Member</span></td>
+                                    <td><span class="tag tag__finished"><span>Platinum Member</span></span></td>
                                     <td>$5,892.00</td>
                                     <td>124</td>
                                     <td>Punchh, POS, Web App</td>
@@ -369,15 +348,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <div class="guest-avatar-placeholder">
-                                                <i class="ph ph-user"></i>
-                                            </div>
                                             <span class="guest-name">David Kim</span>
                                         </div>
                                     </td>
                                     <td>d.kim@example.com</td>
                                     <td>(555) 456-7890</td>
-                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
                                     <td>$287.50</td>
                                     <td>12</td>
                                     <td>POS</td>
@@ -386,13 +362,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150" alt="James Wilson" class="guest-avatar">
                                             <span class="guest-name">James Wilson</span>
                                         </div>
                                     </td>
                                     <td>j.wilson@example.com</td>
                                     <td>(555) 321-6547</td>
-                                    <td><span class="loyalty-badge member">Silver Member</span></td>
+                                    <td><span class="tag tag__neutral"><span>Silver Member</span></span></td>
                                     <td>$1,782.20</td>
                                     <td>42</td>
                                     <td>Punchh, POS</td>
@@ -401,15 +376,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <div class="guest-avatar-placeholder">
-                                                <i class="ph ph-user"></i>
-                                            </div>
                                             <span class="guest-name">Emily Rodriguez</span>
                                         </div>
                                     </td>
                                     <td>emily.r@example.com</td>
                                     <td>(555) 654-3210</td>
-                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
                                     <td>$542.80</td>
                                     <td>23</td>
                                     <td>Web App</td>
@@ -418,13 +390,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150&h=150" alt="Jessica Park" class="guest-avatar">
                                             <span class="guest-name">Jessica Park</span>
                                         </div>
                                     </td>
                                     <td>jessica.park@example.com</td>
                                     <td>(555) 987-1234</td>
-                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
                                     <td>$2,945.60</td>
                                     <td>58</td>
                                     <td>Punchh, Web App</td>
@@ -433,15 +404,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <div class="guest-avatar-placeholder">
-                                                <i class="ph ph-user"></i>
-                                            </div>
                                             <span class="guest-name">Robert Taylor</span>
                                         </div>
                                     </td>
                                     <td>r.taylor@example.com</td>
                                     <td>(555) 159-7531</td>
-                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
                                     <td>$95.00</td>
                                     <td>4</td>
                                     <td>POS</td>
@@ -455,8 +423,8 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-md); color: var(--text-subdued); font-size: 14px;">
                         <span id="pagination-info">Showing 1-8 of 1,248,392 guests</span>
                         <div style="display: flex; gap: var(--spacing-sm);">
-                            <button class="btn btn-secondary" style="padding: 4px 12px;" disabled>Previous</button>
-                            <button class="btn btn-secondary" style="padding: 4px 12px;">Next</button>
+                            <button class="button outlined"><span>Previous</span></button>
+                            <button class="button outlined"><span>Next</span></button>
                         </div>
                     </div>
                 </div>
@@ -510,6 +478,26 @@
     </div>
 
     <script>
+        function toggleDropdown(id) {
+            var dd = document.getElementById(id);
+            var opts = dd.querySelector('.dropdown__options');
+            opts.classList.toggle('dropdown__options_open');
+        }
+        function selectDropdownOption(btn) {
+            var dd = btn.closest('.dropdown');
+            var label = dd.querySelector('.dropdown__button span:first-child');
+            label.textContent = btn.querySelector('span').textContent;
+            dd.querySelector('.dropdown__options').classList.remove('dropdown__options_open');
+        }
+        document.addEventListener('click', function(e) {
+            document.querySelectorAll('.dropdown').forEach(function(dd) {
+                if (!dd.contains(e.target)) {
+                    var opts = dd.querySelector('.dropdown__options');
+                    if (opts) opts.classList.remove('dropdown__options_open');
+                }
+            });
+        });
+
         Chart.defaults.animation = false;
         Chart.defaults.plugins.tooltip.animation = false;
 
@@ -520,13 +508,12 @@
                                 <tr onclick="window.location.href='profile.html'" style="cursor: pointer;">
                                     <td>
                                         <div class="guest-cell">
-                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150" alt="Marcus Thompson" class="guest-avatar">
                                             <span class="guest-name">Marcus Thompson</span>
                                         </div>
                                     </td>
                                     <td>marcus.t@example.com</td>
                                     <td>(555) 234-5678</td>
-                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
                                     <td>$3,428.50</td>
                                     <td>67</td>
                                     <td>Punchh, POS</td>
@@ -536,15 +523,12 @@
                                 <tr onclick="window.location.href='guest-profile.html'" style="cursor: pointer;">
                                     <td>
                                         <div class="guest-cell">
-                                            <div class="guest-avatar-placeholder">
-                                                <i class="ph ph-user"></i>
-                                            </div>
                                             <span class="guest-name">Isabella Chen</span>
                                         </div>
                                     </td>
                                     <td>isabella.c@example.com</td>
                                     <td>(555) 012-3456</td>
-                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
                                     <td>$1,240.50</td>
                                     <td>48</td>
                                     <td>Web App, POS</td>
@@ -554,13 +538,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150" alt="Sarah Martinez" class="guest-avatar">
                                             <span class="guest-name">Sarah Martinez</span>
                                         </div>
                                     </td>
                                     <td>sarah.m@example.com</td>
                                     <td>(555) 789-0123</td>
-                                    <td><span class="loyalty-badge member">Platinum Member</span></td>
+                                    <td><span class="tag tag__finished"><span>Platinum Member</span></span></td>
                                     <td>$5,892.00</td>
                                     <td>124</td>
                                     <td>Punchh, POS, Web App</td>
@@ -569,15 +552,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <div class="guest-avatar-placeholder">
-                                                <i class="ph ph-user"></i>
-                                            </div>
                                             <span class="guest-name">David Kim</span>
                                         </div>
                                     </td>
                                     <td>d.kim@example.com</td>
                                     <td>(555) 456-7890</td>
-                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
                                     <td>$287.50</td>
                                     <td>12</td>
                                     <td>POS</td>
@@ -586,13 +566,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150" alt="James Wilson" class="guest-avatar">
                                             <span class="guest-name">James Wilson</span>
                                         </div>
                                     </td>
                                     <td>j.wilson@example.com</td>
                                     <td>(555) 321-6547</td>
-                                    <td><span class="loyalty-badge member">Silver Member</span></td>
+                                    <td><span class="tag tag__neutral"><span>Silver Member</span></span></td>
                                     <td>$1,782.20</td>
                                     <td>42</td>
                                     <td>Punchh, POS</td>
@@ -601,15 +580,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <div class="guest-avatar-placeholder">
-                                                <i class="ph ph-user"></i>
-                                            </div>
                                             <span class="guest-name">Emily Rodriguez</span>
                                         </div>
                                     </td>
                                     <td>emily.r@example.com</td>
                                     <td>(555) 654-3210</td>
-                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
                                     <td>$542.80</td>
                                     <td>23</td>
                                     <td>Web App</td>
@@ -618,13 +594,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150&h=150" alt="Jessica Park" class="guest-avatar">
                                             <span class="guest-name">Jessica Park</span>
                                         </div>
                                     </td>
                                     <td>jessica.park@example.com</td>
                                     <td>(555) 987-1234</td>
-                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
                                     <td>$2,945.60</td>
                                     <td>58</td>
                                     <td>Punchh, Web App</td>
@@ -633,15 +608,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <div class="guest-avatar-placeholder">
-                                                <i class="ph ph-user"></i>
-                                            </div>
                                             <span class="guest-name">Robert Taylor</span>
                                         </div>
                                     </td>
                                     <td>r.taylor@example.com</td>
                                     <td>(555) 159-7531</td>
-                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
                                     <td>$95.00</td>
                                     <td>4</td>
                                     <td>POS</td>
@@ -655,13 +627,12 @@
                                 <tr onclick="window.location.href='profile.html'" style="cursor: pointer;">
                                     <td>
                                         <div class="guest-cell">
-                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150" alt="Marcus Thompson" class="guest-avatar">
                                             <span class="guest-name">Marcus Thompson</span>
                                         </div>
                                     </td>
                                     <td>marcus.t@example.com</td>
                                     <td>(555) 234-5678</td>
-                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
                                     <td>$3,428.50</td>
                                     <td>67</td>
                                     <td>Punchh, POS</td>
@@ -676,7 +647,7 @@
                                     </td>
                                     <td>elena.rod@example.com</td>
                                     <td>(555) 876-5432</td>
-                                    <td><span class="loyalty-badge member">Platinum Member</span></td>
+                                    <td><span class="tag tag__finished"><span>Platinum Member</span></span></td>
                                     <td>$4,892.00</td>
                                     <td>92</td>
                                     <td>Punchh, POS</td>
@@ -685,15 +656,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <div class="guest-avatar-placeholder">
-                                                <i class="ph ph-user"></i>
-                                            </div>
                                             <span class="guest-name">Thomas Wright</span>
                                         </div>
                                     </td>
                                     <td>t.wright@example.com</td>
                                     <td>(555) 231-9876</td>
-                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
                                     <td>$2,150.40</td>
                                     <td>54</td>
                                     <td>Web App, POS</td>
@@ -708,7 +676,7 @@
                                     </td>
                                     <td>a.morgan@example.com</td>
                                     <td>(555) 444-5555</td>
-                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
                                     <td>$1,875.00</td>
                                     <td>32</td>
                                     <td>POS</td>
@@ -717,13 +685,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150&h=150" alt="James Wilson" class="guest-avatar">
                                             <span class="guest-name">James Wilson</span>
                                         </div>
                                     </td>
                                     <td>j.wilson@example.com</td>
                                     <td>(555) 321-6547</td>
-                                    <td><span class="loyalty-badge member">Silver Member</span></td>
+                                    <td><span class="tag tag__neutral"><span>Silver Member</span></span></td>
                                     <td>$1,782.20</td>
                                     <td>42</td>
                                     <td>Punchh, POS</td>
@@ -737,15 +704,12 @@
                                 <tr onclick="window.location.href='guest-profile.html'" style="cursor: pointer;">
                                     <td>
                                         <div class="guest-cell">
-                                            <div class="guest-avatar-placeholder">
-                                                <i class="ph ph-user"></i>
-                                            </div>
                                             <span class="guest-name">Isabella Chen</span>
                                         </div>
                                     </td>
                                     <td>isabella.c@example.com</td>
                                     <td>(555) 012-3456</td>
-                                    <td><span class="loyalty-badge non-member">Non-Member</span></td>
+                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
                                     <td>$1,240.50</td>
                                     <td>48</td>
                                     <td>Web App, POS</td>
@@ -754,13 +718,12 @@
                                 <tr>
                                     <td>
                                         <div class="guest-cell">
-                                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150&h=150" alt="Jessica Park" class="guest-avatar">
                                             <span class="guest-name">Jessica Park</span>
                                         </div>
                                     </td>
                                     <td>jessica.park@example.com</td>
                                     <td>(555) 987-1234</td>
-                                    <td><span class="loyalty-badge member">Gold Member</span></td>
+                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
                                     <td>$2,945.60</td>
                                     <td>58</td>
                                     <td>Punchh, Web App</td>

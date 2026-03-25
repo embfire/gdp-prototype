@@ -27,6 +27,10 @@
             font-weight: 500;
         }
 
+        .content-area {
+            gap: 0;
+        }
+
         .profile-header-main {
             display: flex;
             align-items: center;
@@ -69,9 +73,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: var(--spacing-xl);
-            margin-bottom: var(--spacing-xl);
             padding-bottom: var(--spacing-lg);
-            border-bottom: 1px solid var(--border-color);
         }
 
         .contact-col-label {
@@ -101,8 +103,8 @@
 
         .metric-card-bikky {
             background: white;
-            box-shadow: var(--card-shadow);
-            border-radius: 12px;
+            border: 1px solid #dfe1e2;
+            border-radius: 0.5rem;
             padding: var(--spacing-lg);
         }
 
@@ -271,7 +273,7 @@
                             <a href="analytics.html" class="nav-sub-item">Overview</a>
                             <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
                             <a href="analytics-retention.html" class="nav-sub-item">Retention</a>
-                            <a href="#" class="nav-sub-item">At risk</a>
+                            <a href="analytics-atrisk.html" class="nav-sub-item">At risk</a>
                         </div>
                         <a href="profiles.html" class="nav-item active">
                             <i class="ph-duotone ph-user-circle"></i>
@@ -359,7 +361,6 @@
 
                     <!-- Profile Header -->
                     <div class="profile-header-main">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150" alt="Marcus Thompson" class="profile-avatar-img">
                         <div class="profile-name-area">
                             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
                                 <h1>Marcus Thompson</h1>
@@ -369,15 +370,14 @@
                                     <span class="badge badge-segment">Weekend Regular</span>
                                 </div>
                             </div>
-                            <div class="status-pill" style="background: #fff1f2; color: #991b1b;">
-                                <div class="status-dot" style="background: #ef4444;"></div>
-                                Dormant member
+                            <div class="status-pill" style="background:#fde8ee; color:#bc103e;">
+                                <div class="status-dot" style="background:#bc103e;"></div>
+                                At Risk
                             </div>
                         </div>
                         <a href="segments.html?new=true" style="text-decoration: none;">
-                            <button class="btn btn-primary">
-                                <i class="ph ph-plus-circle"></i>
-                                Create segment from profile
+                            <button class="button primary">
+                                <span>Create segment from profile</span>
                             </button>
                         </a>
                     </div>
@@ -417,7 +417,7 @@
                             </div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Lifecycle stage</span>
-                                <span class="metric-detail-value" style="color: #ef4444; font-weight: 700;">At-Risk (Dormant)</span>
+                                <span class="metric-detail-value" style="color: #bc103e; font-weight: 600;">At risk</span>
                             </div>
                             <div class="metric-detail-row">
                                 <span class="metric-detail-label">Order frequency</span>

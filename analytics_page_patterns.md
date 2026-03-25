@@ -1,7 +1,9 @@
 # Analytics Page Patterns
 
 ## Chart Color Palette
-Fixed order: indigo → vermilion → periwinkle → amber → crimson → teal → sky, always top to bottom.
+Bento defines 12 chart colors (900 shades). Never invent custom colors — always use from this palette:
+indigo → vermilion → periwinkle → amber → crimson → sky → golden → teal → emerald → coral → lavender → cyan.
+Use `chartPalette12` array for charts with many categories. For charts with fewer series, use the first N colors in order.
 
 ## Global Filters
 Date range + compare to, no per-chart granularity (auto-determined).
@@ -52,10 +54,12 @@ Green/yellow/red icons matching Dashboard.
 Preconnect + `document.fonts.ready` wrapper to prevent canvas font flash.
 
 ## Bento Table
-- Proper structure, header style overrides (title case, black, 800 weight)
-- Compact row sizing
-- Flush-in-card pattern
-- Border specs
+- Table element: `class="table"` with `style="border: none; border-radius: 0;"` inside a card.
+- Heading row (`thead tr`): `background-color: #dfe1e2`, no border-bottom.
+- Heading cells (`th`): `text-transform: none`, `font-size: 1rem`, `font-weight: 800`, `color: #000`, `height: 3.5rem`, `padding: 1rem`. NOT uppercase/12px/subdued (that is the old styles.css default and must always be overridden).
+- Body cells (`td`): `padding: 1rem`.
+- Wrap in `<div class="table-container">` inside `<div class="card__content" style="padding: 0;">`.
+- Flush-in-card pattern, no outer border.
 
 ## Info Icon
 Bento's custom SVG, tooltip caption style.
@@ -65,3 +69,10 @@ Horizontal orientation, label positioning, abbreviated numbers, node colors/styl
 
 ## Writing Style
 Never use em dash.
+
+## Bento Button Component
+- Canonical `.button` rule is at bento.css line 373 — do not create duplicates.
+- Padding: `0.5rem 1rem` (vertical horizontal). Use `.no-content` for icon-only buttons (`padding: 0.5rem`).
+- Font size: `1rem`, font weight: `400` (body1 regular) — set explicitly on `.button`.
+- Never add inline font overrides to buttons.
+- Never use `.button.secondary`. Use `.button.primary` or `.button.outlined` only.
