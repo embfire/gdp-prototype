@@ -9,6 +9,7 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
     <style>
         .content-area {
             gap: 0;
@@ -1222,7 +1223,7 @@
         .sp-legend-dot {
             width: 12px;
             height: 12px;
-            border-radius: 50%;
+            border-radius: 2px;
             flex-shrink: 0;
         }
 
@@ -1241,28 +1242,74 @@
         .sp-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
+            font-size: 16px;
+            font-family: inherit;
+            color: #000;
+        }
+
+        .sp-table thead tr {
+            background: #dfe1e2;
         }
 
         .sp-table th {
-            background: var(--bg-subdued);
-            padding: 10px 12px;
-            text-align: left;
+            padding: 16px;
+            text-align: right;
             font-size: 16px;
             font-weight: 800;
             color: #000;
             text-transform: none;
-            border-bottom: 1px solid #dfe1e2;
+            white-space: nowrap;
+        }
+
+        .sp-table th:first-child {
+            text-align: left;
+        }
+
+        .sp-table th .sp-th-inner {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sp-table th .sp-sort-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
         }
 
         .sp-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #dfe1e2;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 400;
+            color: #000;
+            border-bottom: 2px solid #f4f4f4;
+            text-align: right;
         }
 
-        .sp-table tr:last-child td { border-bottom: none; }
-        .sp-table .sp-col-check { width: 40px; }
-        .sp-table .sp-col-menu { width: 40px; }
+        .sp-table td:first-child {
+            text-align: left;
+        }
+
+        .sp-table tbody tr:hover {
+            background: #f4f4f4;
+        }
+
+        .sp-table tbody tr:last-child td { border-bottom: none; }
+
+        .sp-pagination-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background: #fff url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 8px center;
+            border: none;
+            box-shadow: 0px 0px 0px 1px #000 inset;
+            border-radius: 8px;
+            padding: 6px 28px 6px 12px;
+            font-family: inherit;
+            font-size: 16px;
+            color: #000;
+            cursor: pointer;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body data-v-app>
@@ -1619,45 +1666,34 @@
                             </div>
 
                             <div class="sp-charts-grid">
-                                <div class="sp-card">
-                                    <div>
-                                        <div class="sp-card-title">Reach &amp; responsiveness</div>
-                                        <div class="sp-card-subtitle">Potential reach and past campaign performance by channel.</div>
+                                <div class="sp-card" style="padding: 0; gap: 0;">
+                                    <div style="display: flex; align-items: center; padding: 16px; border-bottom: 1px solid #dfe1e2;">
+                                        <div style="flex: 1;">
+                                            <div class="sp-card-title">Reach and responsiveness</div>
+                                            <div class="sp-card-subtitle">Potential reach and past campaign performance by channel</div>
+                                        </div>
+                                        <button type="button" class="button transparent no-content" style="flex-shrink: 0;"><i class="ph ph-dots-three-vertical icon-md"></i></button>
                                     </div>
-                                    <div class="sp-reach-controls">
+                                    <div class="sp-reach-controls" style="padding: 16px 16px 0;">
                                         <label class="sp-show-unknown-label">
                                             <input type="checkbox" id="spShowPerformance">
                                             <span class="sp-show-unknown-text">Show campaign performance</span>
                                         </label>
-                                        <div class="sp-reach-legend" id="spReachLegend" style="display: none;">
-                                            <div class="sp-reach-legend-item">
-                                                <div class="sp-reach-legend-dot" style="background: #5A55E3;"></div>
-                                                Reach
-                                            </div>
-                                            <div class="sp-reach-legend-item">
-                                                <div class="sp-reach-legend-dot" style="background: #FFA800;"></div>
-                                                CTR
-                                            </div>
-                                            <div class="sp-reach-legend-item">
-                                                <div class="sp-reach-legend-dot" style="background: #FF3B30;"></div>
-                                                Conversion
-                                            </div>
-                                        </div>
                                     </div>
-                                    <div class="sp-chart-wrap" style="flex: 1; min-height: 180px; position: relative;">
-                                        <canvas id="spChartReach"></canvas>
+                                    <div class="sp-chart-wrap" style="flex: 1; min-height: 230px; position: relative; padding: 0 16px 16px;">
+                                        <div id="spChartReach" style="width: 100%; height: 100%;"></div>
                                         <div class="sp-reach-skeleton" id="spReachSkeleton">
                                             <div class="skeleton-bone" style="width: 100%; height: 100%; border-radius: 8px;"></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="sp-card">
-                                    <div>
-                                        <div class="sp-card-title">Composition</div>
-                                        <div class="sp-card-subtitle">User distribution by user attribute.</div>
-                                    </div>
-                                    <div class="sp-composition-controls">
-                                        <div class="cs-pill-wrap" id="spCompPillWrap">
+                                <div class="sp-card" style="padding: 0; gap: 0;">
+                                    <div style="display: flex; align-items: center; padding: 16px; border-bottom: 1px solid #dfe1e2;">
+                                        <div style="flex: 1;">
+                                            <div class="sp-card-title">Composition</div>
+                                            <div class="sp-card-subtitle">User distribution by user attribute</div>
+                                        </div>
+                                        <div class="cs-pill-wrap" id="spCompPillWrap" style="flex-shrink: 0;">
                                             <button class="cs-select-pill" type="button" id="spCompPill">By channel <i class="ph ph-caret-down"></i></button>
                                             <div class="cs-operator-dropdown" id="spCompDropdown">
                                                 <button class="cs-op-item active" type="button" data-comp="channel">By channel</button>
@@ -1669,47 +1705,68 @@
                                                 <button class="cs-op-item" type="button" data-comp="sms">By SMS opt-in</button>
                                             </div>
                                         </div>
+                                        <button type="button" class="button transparent no-content" style="flex-shrink: 0;"><i class="ph ph-dots-three-vertical icon-md"></i></button>
+                                    </div>
+                                    <div style="padding: 16px 16px 0;">
                                         <label class="sp-show-unknown-label">
                                             <input type="checkbox" id="spShowUnknown" checked>
                                             <span class="sp-show-unknown-text">Show unknown</span>
                                         </label>
                                     </div>
-                                    <div class="sp-composition-chart-legend">
-                                        <div class="sp-chart-wrap" style="width: 232px; height: 232px;">
-                                            <canvas id="spChartComposition"></canvas>
-                                        </div>
+                                    <div class="sp-composition-chart-legend" style="padding: 0 16px 16px;">
+                                        <div id="spChartComposition" style="width: 232px; height: 232px;"></div>
                                         <div class="sp-composition-legend" id="spCompositionLegend"></div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="sp-table-wrap">
+                            <div class="sp-table-wrap" style="border-bottom: none;">
                                 <table class="sp-table">
                                     <thead>
                                         <tr>
-                                            <th class="sp-col-check"><input type="checkbox"></th>
                                             <th>Name</th>
-                                            <th>Total orders</th>
-                                            <th>Avg. check size</th>
-                                            <th>Lifetime value</th>
-                                            <th>Last seen</th>
-                                            <th>Guest for</th>
-                                            <th class="sp-col-menu"></th>
+                                            <th><span class="sp-th-inner">Total orders <svg class="sp-sort-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.25 18H3.75C3.5375 18 3.35938 17.9277 3.21563 17.7831C3.07188 17.6385 3 17.4594 3 17.2456C3 17.0319 3.07188 16.8542 3.21563 16.7125C3.35938 16.5708 3.5375 16.5 3.75 16.5H8.25C8.4625 16.5 8.64063 16.5723 8.78438 16.7169C8.92813 16.8615 9 17.0406 9 17.2544C9 17.4681 8.92813 17.6458 8.78438 17.7875C8.64063 17.9292 8.4625 18 8.25 18ZM20.25 7.5H3.75C3.5375 7.5 3.35938 7.42771 3.21563 7.28313C3.07188 7.13853 3 6.95936 3 6.74563C3 6.53188 3.07188 6.35417 3.21563 6.2125C3.35938 6.07083 3.5375 6 3.75 6H20.25C20.4625 6 20.6406 6.07229 20.7844 6.21687C20.9281 6.36147 21 6.54064 21 6.75437C21 6.96812 20.9281 7.14583 20.7844 7.2875C20.6406 7.42917 20.4625 7.5 20.25 7.5ZM14.25 12.75H3.75C3.5375 12.75 3.35938 12.6777 3.21563 12.5331C3.07188 12.3885 3 12.2094 3 11.9956C3 11.7819 3.07188 11.6042 3.21563 11.4625C3.35938 11.3208 3.5375 11.25 3.75 11.25H14.25C14.4625 11.25 14.6406 11.3223 14.7844 11.4669C14.9281 11.6115 15 11.7906 15 12.0044C15 12.2181 14.9281 12.3958 14.7844 12.5375C14.6406 12.6792 14.4625 12.75 14.25 12.75Z" fill="black"/></svg></span></th>
+                                            <th><span class="sp-th-inner">Avg. check size <svg class="sp-sort-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.25 18H3.75C3.5375 18 3.35938 17.9277 3.21563 17.7831C3.07188 17.6385 3 17.4594 3 17.2456C3 17.0319 3.07188 16.8542 3.21563 16.7125C3.35938 16.5708 3.5375 16.5 3.75 16.5H8.25C8.4625 16.5 8.64063 16.5723 8.78438 16.7169C8.92813 16.8615 9 17.0406 9 17.2544C9 17.4681 8.92813 17.6458 8.78438 17.7875C8.64063 17.9292 8.4625 18 8.25 18ZM20.25 7.5H3.75C3.5375 7.5 3.35938 7.42771 3.21563 7.28313C3.07188 7.13853 3 6.95936 3 6.74563C3 6.53188 3.07188 6.35417 3.21563 6.2125C3.35938 6.07083 3.5375 6 3.75 6H20.25C20.4625 6 20.6406 6.07229 20.7844 6.21687C20.9281 6.36147 21 6.54064 21 6.75437C21 6.96812 20.9281 7.14583 20.7844 7.2875C20.6406 7.42917 20.4625 7.5 20.25 7.5ZM14.25 12.75H3.75C3.5375 12.75 3.35938 12.6777 3.21563 12.5331C3.07188 12.3885 3 12.2094 3 11.9956C3 11.7819 3.07188 11.6042 3.21563 11.4625C3.35938 11.3208 3.5375 11.25 3.75 11.25H14.25C14.4625 11.25 14.6406 11.3223 14.7844 11.4669C14.9281 11.6115 15 11.7906 15 12.0044C15 12.2181 14.9281 12.3958 14.7844 12.5375C14.6406 12.6792 14.4625 12.75 14.25 12.75Z" fill="black"/></svg></span></th>
+                                            <th><span class="sp-th-inner">Lifetime value <svg class="sp-sort-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.25 18H3.75C3.5375 18 3.35938 17.9277 3.21563 17.7831C3.07188 17.6385 3 17.4594 3 17.2456C3 17.0319 3.07188 16.8542 3.21563 16.7125C3.35938 16.5708 3.5375 16.5 3.75 16.5H8.25C8.4625 16.5 8.64063 16.5723 8.78438 16.7169C8.92813 16.8615 9 17.0406 9 17.2544C9 17.4681 8.92813 17.6458 8.78438 17.7875C8.64063 17.9292 8.4625 18 8.25 18ZM20.25 7.5H3.75C3.5375 7.5 3.35938 7.42771 3.21563 7.28313C3.07188 7.13853 3 6.95936 3 6.74563C3 6.53188 3.07188 6.35417 3.21563 6.2125C3.35938 6.07083 3.5375 6 3.75 6H20.25C20.4625 6 20.6406 6.07229 20.7844 6.21687C20.9281 6.36147 21 6.54064 21 6.75437C21 6.96812 20.9281 7.14583 20.7844 7.2875C20.6406 7.42917 20.4625 7.5 20.25 7.5ZM14.25 12.75H3.75C3.5375 12.75 3.35938 12.6777 3.21563 12.5331C3.07188 12.3885 3 12.2094 3 11.9956C3 11.7819 3.07188 11.6042 3.21563 11.4625C3.35938 11.3208 3.5375 11.25 3.75 11.25H14.25C14.4625 11.25 14.6406 11.3223 14.7844 11.4669C14.9281 11.6115 15 11.7906 15 12.0044C15 12.2181 14.9281 12.3958 14.7844 12.5375C14.6406 12.6792 14.4625 12.75 14.25 12.75Z" fill="black"/></svg></span></th>
+                                            <th><span class="sp-th-inner">Last seen <svg class="sp-sort-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.25 18H3.75C3.5375 18 3.35938 17.9277 3.21563 17.7831C3.07188 17.6385 3 17.4594 3 17.2456C3 17.0319 3.07188 16.8542 3.21563 16.7125C3.35938 16.5708 3.5375 16.5 3.75 16.5H8.25C8.4625 16.5 8.64063 16.5723 8.78438 16.7169C8.92813 16.8615 9 17.0406 9 17.2544C9 17.4681 8.92813 17.6458 8.78438 17.7875C8.64063 17.9292 8.4625 18 8.25 18ZM20.25 7.5H3.75C3.5375 7.5 3.35938 7.42771 3.21563 7.28313C3.07188 7.13853 3 6.95936 3 6.74563C3 6.53188 3.07188 6.35417 3.21563 6.2125C3.35938 6.07083 3.5375 6 3.75 6H20.25C20.4625 6 20.6406 6.07229 20.7844 6.21687C20.9281 6.36147 21 6.54064 21 6.75437C21 6.96812 20.9281 7.14583 20.7844 7.2875C20.6406 7.42917 20.4625 7.5 20.25 7.5ZM14.25 12.75H3.75C3.5375 12.75 3.35938 12.6777 3.21563 12.5331C3.07188 12.3885 3 12.2094 3 11.9956C3 11.7819 3.07188 11.6042 3.21563 11.4625C3.35938 11.3208 3.5375 11.25 3.75 11.25H14.25C14.4625 11.25 14.6406 11.3223 14.7844 11.4669C14.9281 11.6115 15 11.7906 15 12.0044C15 12.2181 14.9281 12.3958 14.7844 12.5375C14.6406 12.6792 14.4625 12.75 14.25 12.75Z" fill="black"/></svg></span></th>
+                                            <th><span class="sp-th-inner">Guest for <svg class="sp-sort-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.25 18H3.75C3.5375 18 3.35938 17.9277 3.21563 17.7831C3.07188 17.6385 3 17.4594 3 17.2456C3 17.0319 3.07188 16.8542 3.21563 16.7125C3.35938 16.5708 3.5375 16.5 3.75 16.5H8.25C8.4625 16.5 8.64063 16.5723 8.78438 16.7169C8.92813 16.8615 9 17.0406 9 17.2544C9 17.4681 8.92813 17.6458 8.78438 17.7875C8.64063 17.9292 8.4625 18 8.25 18ZM20.25 7.5H3.75C3.5375 7.5 3.35938 7.42771 3.21563 7.28313C3.07188 7.13853 3 6.95936 3 6.74563C3 6.53188 3.07188 6.35417 3.21563 6.2125C3.35938 6.07083 3.5375 6 3.75 6H20.25C20.4625 6 20.6406 6.07229 20.7844 6.21687C20.9281 6.36147 21 6.54064 21 6.75437C21 6.96812 20.9281 7.14583 20.7844 7.2875C20.6406 7.42917 20.4625 7.5 20.25 7.5ZM14.25 12.75H3.75C3.5375 12.75 3.35938 12.6777 3.21563 12.5331C3.07188 12.3885 3 12.2094 3 11.9956C3 11.7819 3.07188 11.6042 3.21563 11.4625C3.35938 11.3208 3.5375 11.25 3.75 11.25H14.25C14.4625 11.25 14.6406 11.3223 14.7844 11.4669C14.9281 11.6115 15 11.7906 15 12.0044C15 12.2181 14.9281 12.3958 14.7844 12.5375C14.6406 12.6792 14.4625 12.75 14.25 12.75Z" fill="black"/></svg></span></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr><td><input type="checkbox"></td><td>Serena Williams</td><td>15</td><td>$12.75</td><td>$120.45</td><td>18 days ago</td><td>2 years</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
-                                        <tr><td><input type="checkbox"></td><td>Elon Musk</td><td>19</td><td>$25.30</td><td>$350.99</td><td>21 days ago</td><td>9 months</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
-                                        <tr><td><input type="checkbox"></td><td>Greta Thunberg</td><td>22</td><td>$45.60</td><td>$200.75</td><td>20 days ago</td><td>3 years</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
-                                        <tr><td><input type="checkbox"></td><td>Lin Manuel</td><td>7</td><td>$10.00</td><td>$90.00</td><td>26 days ago</td><td>1 year</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
-                                        <tr><td><input type="checkbox"></td><td>Usain Bolt</td><td>11</td><td>$30.15</td><td>$150.25</td><td>22 days ago</td><td>5 months</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
-                                        <tr><td><input type="checkbox"></td><td>Jon Batiste</td><td>23</td><td>$58.90</td><td>$300.10</td><td>29 days ago</td><td>3 months</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
-                                        <tr><td><input type="checkbox"></td><td>Naomi Watts</td><td>18</td><td>$22.50</td><td>$85.60</td><td>1 month ago</td><td>2 years</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
-                                        <tr><td><input type="checkbox"></td><td>Carter Beauford</td><td>3</td><td>$9.99</td><td>$75.69</td><td>19 days ago</td><td>3 years</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
-                                        <tr><td><input type="checkbox"></td><td>Amelia Earhart</td><td>20</td><td>$64.22</td><td>$439.53</td><td>21 days ago</td><td>7 months</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
-                                        <tr><td><input type="checkbox"></td><td>Robin Denaut</td><td>12</td><td>$15.75</td><td>$110.00</td><td>24 days ago</td><td>4 months</td><td><button type="button" class="cs-rule-overflow" style="padding:4px"><i class="ph ph-dots-three-vertical"></i></button></td></tr>
+                                        <tr><td>Serena Williams</td><td>15</td><td>$12.75</td><td>$120.45</td><td>18 days ago</td><td>2 years</td></tr>
+                                        <tr><td>Elon Musk</td><td>19</td><td>$25.30</td><td>$350.99</td><td>21 days ago</td><td>9 months</td></tr>
+                                        <tr><td>Greta Thunberg</td><td>22</td><td>$45.60</td><td>$200.75</td><td>20 days ago</td><td>3 years</td></tr>
+                                        <tr><td>Lin Manuel</td><td>7</td><td>$10.00</td><td>$90.00</td><td>26 days ago</td><td>1 year</td></tr>
+                                        <tr><td>Usain Bolt</td><td>11</td><td>$30.15</td><td>$150.25</td><td>22 days ago</td><td>5 months</td></tr>
+                                        <tr><td>Jon Batiste</td><td>23</td><td>$58.90</td><td>$300.10</td><td>29 days ago</td><td>3 months</td></tr>
+                                        <tr><td>Naomi Watts</td><td>18</td><td>$22.50</td><td>$85.60</td><td>1 month ago</td><td>2 years</td></tr>
+                                        <tr><td>Carter Beauford</td><td>3</td><td>$9.99</td><td>$75.69</td><td>19 days ago</td><td>3 years</td></tr>
+                                        <tr><td>Amelia Earhart</td><td>20</td><td>$64.22</td><td>$439.53</td><td>21 days ago</td><td>7 months</td></tr>
+                                        <tr><td>Robin Denaut</td><td>12</td><td>$15.75</td><td>$110.00</td><td>24 days ago</td><td>4 months</td></tr>
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class="pagination" style="margin-top: 16px; align-items: center;">
+                                <div class="pagination__items-per-page">
+                                    <label style="font-size: 12px; color: #000;">Items per page</label>
+                                    <select class="sp-pagination-select" style="font-size: 16px;">
+                                        <option>10</option>
+                                        <option>25</option>
+                                        <option>50</option>
+                                    </select>
+                                </div>
+                                <div class="pagination__navigation">
+                                    <select class="sp-pagination-select" style="font-size: 16px;">
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                    </select>
+                                    <label style="font-size: 12px; color: #000;">of 10 pages</label>
+                                    <div class="pagination__navigation__arrows">
+                                        <button type="button" class="button outlined no-content"><i class="ph ph-caret-left"></i></button>
+                                        <button type="button" class="button outlined no-content"><i class="ph ph-caret-right"></i></button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2652,71 +2709,73 @@
         /* ── Segment Preview Charts ── */
         let spCharts = { reach: null, composition: null };
 
+        const CHART_PALETTE = ['#5A55E3', '#FF6600', '#8C9FFF', '#F8931C', '#E83162', '#30ACEE', '#FFBA00', '#1196BB', '#0CC281', '#FF857A', '#E886F5', '#2ECABF'];
+
         const COMPOSITION_DATA = {
             channel: {
                 label: 'By channel',
                 slices: [
-                    { label: 'Unknown',   value: 8,  color: '#5A55E3' },
-                    { label: 'Mobile App',value: 35, color: '#ACAAF1' },
-                    { label: 'Web App',   value: 22, color: '#FFA800' },
-                    { label: 'In store',  value: 20, color: '#FF3B30' },
-                    { label: 'Kiosk',     value: 9,  color: '#8CC3FF' },
-                    { label: '3rd party', value: 6,  color: '#007AFF' }
+                    { label: 'Unknown',   value: 8  },
+                    { label: 'Mobile App',value: 35 },
+                    { label: 'Web App',   value: 22 },
+                    { label: 'In store',  value: 20 },
+                    { label: 'Kiosk',     value: 9  },
+                    { label: '3rd party', value: 6  }
                 ]
             },
             daypart: {
                 label: 'By daypart',
                 slices: [
-                    { label: 'Unknown',   value: 5,  color: '#5A55E3' },
-                    { label: 'Breakfast', value: 28, color: '#ACAAF1' },
-                    { label: 'Lunch',     value: 42, color: '#FFA800' },
-                    { label: 'Dinner',    value: 25, color: '#FF3B30' }
+                    { label: 'Unknown',   value: 5  },
+                    { label: 'Breakfast', value: 28 },
+                    { label: 'Lunch',     value: 42 },
+                    { label: 'Dinner',    value: 25 }
                 ]
             },
             location: {
                 label: 'By location',
                 slices: [
-                    { label: 'Unknown', value: 74, color: '#5A55E3' },
-                    { label: 'Other',   value: 28, color: '#ACAAF1' },
-                    { label: 'Florida', value: 9,  color: '#FFA800' },
-                    { label: 'Georgia', value: 12, color: '#FF3B30' },
-                    { label: 'New York',value: 3,  color: '#8CC3FF' }
+                    { label: 'Unknown', value: 74 },
+                    { label: 'Other',   value: 28 },
+                    { label: 'Florida', value: 9  },
+                    { label: 'Georgia', value: 12 },
+                    { label: 'New York',value: 3  }
                 ]
             },
             age: {
                 label: 'By age',
                 slices: [
-                    { label: 'Unknown', value: 18, color: '#5A55E3' },
-                    { label: '18–24',   value: 12, color: '#ACAAF1' },
-                    { label: '25–34',   value: 27, color: '#FFA800' },
-                    { label: '35–44',   value: 24, color: '#FF3B30' },
-                    { label: '45–54',   value: 13, color: '#8CC3FF' },
-                    { label: '55+',     value: 6,  color: '#007AFF' }
+                    { label: 'Unknown', value: 18 },
+                    { label: '18–24',   value: 12 },
+                    { label: '25–34',   value: 27 },
+                    { label: '35–44',   value: 24 },
+                    { label: '45–54',   value: 13 },
+                    { label: '55+',     value: 6  }
                 ]
             },
             gender: {
                 label: 'By gender',
                 slices: [
-                    { label: 'Unknown',    value: 22, color: '#5A55E3' },
-                    { label: 'Male',       value: 41, color: '#ACAAF1' },
-                    { label: 'Female',     value: 32, color: '#FFA800' },
-                    { label: 'Non-binary', value: 5,  color: '#FF3B30' }
+                    { label: 'Unknown',    value: 22 },
+                    { label: 'Male',       value: 41 },
+                    { label: 'Female',     value: 32 },
+                    { label: 'Non-binary', value: 5  }
                 ]
             },
             email: {
                 label: 'By email opt-in',
                 slices: [
-                    { label: 'Unknown',   value: 15, color: '#5A55E3' },
-                    { label: 'Opted in',  value: 68, color: '#ACAAF1' },
-                    { label: 'Opted out', value: 17, color: '#FFA800' }
+                    { label: 'Unknown',   value: 15 },
+                    { label: 'Opted in',  value: 68 },
+                    { label: 'Opted out', value: 17 }
                 ]
             },
             sms: {
                 label: 'By SMS opt-in',
                 slices: [
-                    { label: 'Unknown',   value: 19, color: '#5A55E3' },
-                    { label: 'Opted in',  value: 54, color: '#ACAAF1' },
-                    { label: 'Opted out', value: 27, color: '#FFA800' }
+                    { label: 'Unknown',   value: 19 },
+                    { label: 'Opted in',  value: 54 },
+                    { label: 'Opted out', value: 27 }
                 ]
             }
         };
@@ -2732,17 +2791,47 @@
 
             const chart = spCharts.composition;
             if (chart) {
-                chart.data.labels = slices.map(s => s.label);
-                chart.data.datasets[0].data = slices.map(s => s.value);
-                chart.data.datasets[0].backgroundColor = slices.map(s => s.color);
-                chart.update();
+                chart.setOption({
+                    textStyle: { fontFamily: 'Manrope, sans-serif' },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{b}: {d}%'
+                    },
+                    series: [{
+                        type: 'pie',
+                        radius: ['48%', '88%'],
+                        center: ['50%', '50%'],
+                        data: slices.map(s => {
+                            const origIdx = data.slices.indexOf(s);
+                            return {
+                                name: s.label,
+                                value: s.value,
+                                itemStyle: { color: CHART_PALETTE[origIdx % CHART_PALETTE.length] }
+                            };
+                        }),
+                        label: { show: false },
+                        emphasis: {
+                            scale: true,
+                            scaleSize: 6,
+                            focus: 'none',
+                            itemStyle: {
+                                borderWidth: 0,
+                                shadowBlur: 0
+                            }
+                        },
+                        itemStyle: {
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }
+                    }]
+                }, true);
             }
 
             const legend = document.getElementById('spCompositionLegend');
             if (legend) {
-                legend.innerHTML = data.slices.map(s =>
+                legend.innerHTML = data.slices.map((s, i) =>
                     `<div class="sp-legend-row"${s.label === 'Unknown' ? ' id="spLegendUnknown"' : ''}${s.label === 'Unknown' && !showUnknown ? ' style="display:none"' : ''}>
-                        <span class="sp-legend-dot" style="background:${s.color}"></span> ${s.label} ${s.value}%
+                        <span class="sp-legend-dot" style="background:${CHART_PALETTE[i % CHART_PALETTE.length]}"></span> ${s.label} ${s.value}%
                     </div>`
                 ).join('');
             }
@@ -2762,78 +2851,126 @@
         function initSegmentPreviewCharts() {
             destroySegmentPreviewCharts();
 
-            function computeReachAxisMax(chart) {
-                const datasets = chart ? chart.data.datasets : [];
-                let peak = 0;
-                datasets.forEach(ds => {
-                    if (!ds.hidden) peak = Math.max(peak, ...ds.data);
-                });
+            /* --- Reach & responsiveness ECharts --- */
+            const REACH_COLORS = { reach: '#5A55E3', ctr: '#FF6600', conversion: '#8C9FFF' };
+            const REACH_CATEGORIES = ['Push', 'SMS', 'Email', 'Unreachable'];
+            let reachShowPerformance = false;
+
+            const reachData = {
+                reach:      [27, 38, 68, 42],
+                ctr:        [7.2, 3.5, 4.8, 0],
+                conversion: [3.8, 1.5, 2.1, 0]
+            };
+
+            function computeReachAxisMax() {
+                let peak = Math.max(...reachData.reach);
+                if (reachShowPerformance) {
+                    peak = Math.max(peak, ...reachData.ctr, ...reachData.conversion);
+                }
                 return Math.min(100, Math.ceil(peak / 20) * 20) || 20;
             }
 
-            const reachCtx = document.getElementById('spChartReach');
-            if (reachCtx) {
-                spCharts.reach = new Chart(reachCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Unreachable', 'Email', 'SMS', 'Push'],
-                        datasets: [
-                            {
-                                label: 'Reach',
-                                data: [42, 68, 38, 27],
-                                backgroundColor: '#5A55E3',
-                                borderWidth: 0,
-                                barThickness: 34,
-                                borderRadius: 2
-                            },
-                            {
-                                label: 'CTR',
-                                data: [0, 4.8, 3.5, 7.2],
-                                backgroundColor: '#FFA800',
-                                borderWidth: 0,
-                                barThickness: 10,
-                                borderRadius: 2,
-                                hidden: true
-                            },
-                            {
-                                label: 'Conversion',
-                                data: [0, 2.1, 1.5, 3.8],
-                                backgroundColor: '#FF3B30',
-                                borderWidth: 0,
-                                barThickness: 10,
-                                borderRadius: 2,
-                                hidden: true
-                            }
-                        ]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(ctx) {
-                                        return ' ' + ctx.dataset.label + ': ' + ctx.raw + '%';
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                min: 0,
-                                max: 80,
-                                ticks: { stepSize: 20, callback: v => v + '%', font: { size: 11 } },
-                                grid: { color: '#eee' }
-                            },
-                            y: {
-                                grid: { display: false },
-                                ticks: { font: { size: 12 } }
-                            }
-                        }
+            function buildReachOption() {
+                const showPerf = reachShowPerformance;
+                const barWidth = showPerf ? 8 : 40;
+                const barCategoryGap = showPerf ? '40%' : '20%';
+
+                const series = [
+                    {
+                        name: 'Reach',
+                        type: 'bar',
+                        data: reachData.reach,
+                        itemStyle: { color: REACH_COLORS.reach, borderRadius: [0, 4, 4, 0] },
+                        barWidth: barWidth,
+                        barCategoryGap: barCategoryGap
                     }
+                ];
+
+                if (showPerf) {
+                    series.push(
+                        {
+                            name: 'Click-through rate',
+                            type: 'bar',
+                            data: reachData.ctr,
+                            itemStyle: { color: REACH_COLORS.ctr, borderRadius: [0, 4, 4, 0] },
+                            barWidth: barWidth
+                        },
+                        {
+                            name: 'Conversion',
+                            type: 'bar',
+                            data: reachData.conversion,
+                            itemStyle: { color: REACH_COLORS.conversion, borderRadius: [0, 4, 4, 0] },
+                            barWidth: barWidth
+                        }
+                    );
+                }
+
+                return {
+                    textStyle: { fontFamily: 'Manrope, sans-serif' },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: { type: 'none' },
+                        formatter: function(params) {
+                            let html = '<strong>' + params[0].axisValueLabel + '</strong>';
+                            params.forEach(p => {
+                                html += '<br/>' + p.marker + ' ' + p.seriesName + ': ' + p.value + '%';
+                            });
+                            return html;
+                        }
+                    },
+                    legend: {
+                        show: showPerf,
+                        bottom: 0,
+                        left: 16,
+                        icon: 'roundRect',
+                        itemWidth: 12,
+                        itemHeight: 12,
+                        itemGap: 16,
+                        textStyle: {
+                            fontSize: 12,
+                            fontFamily: 'Manrope, sans-serif',
+                            color: '#000',
+                            verticalAlign: 'middle',
+                            lineHeight: 12
+                        }
+                    },
+                    grid: {
+                        left: 16,
+                        right: 16,
+                        top: 16,
+                        bottom: showPerf ? 48 : 16,
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'value',
+                        min: 0,
+                        max: computeReachAxisMax(),
+                        interval: 20,
+                        axisLabel: { formatter: '{value}%', fontSize: 12, fontFamily: 'Manrope, sans-serif', color: '#000' },
+                        splitLine: { lineStyle: { color: '#eee' } },
+                        axisLine: { show: false },
+                        axisTick: { show: false }
+                    },
+                    yAxis: {
+                        type: 'category',
+                        data: REACH_CATEGORIES,
+                        axisLine: { show: false },
+                        axisTick: { show: false },
+                        axisLabel: { fontSize: 12, fontFamily: 'Manrope, sans-serif', color: '#000' }
+                    },
+                    series: series
+                };
+            }
+
+            const reachEl = document.getElementById('spChartReach');
+            if (reachEl) {
+                spCharts.reach = echarts.init(reachEl);
+                spCharts.reach.setOption(buildReachOption());
+
+                const reachRo = new ResizeObserver(() => {
+                    if (spCharts.reach) spCharts.reach.resize();
                 });
+                reachRo.observe(reachEl);
             }
 
             let perfSkeletonTimer = null;
@@ -2841,49 +2978,36 @@
             if (perfCheckbox) {
                 perfCheckbox.addEventListener('change', function () {
                     const show = this.checked;
-                    const chart = spCharts.reach;
-                    if (!chart) return;
+                    if (!spCharts.reach) return;
                     const skeleton = document.getElementById('spReachSkeleton');
 
                     if (show) {
                         if (perfSkeletonTimer) clearTimeout(perfSkeletonTimer);
                         skeleton.classList.add('visible');
-                        document.getElementById('spReachLegend').style.display = 'flex';
                         perfSkeletonTimer = setTimeout(() => {
-                            chart.data.datasets[1].hidden = false;
-                            chart.data.datasets[2].hidden = false;
-                            chart.data.datasets[0].barThickness = 10;
-                            chart.options.scales.x.max = computeReachAxisMax(chart);
-                            chart.update();
+                            reachShowPerformance = true;
+                            spCharts.reach.setOption(buildReachOption(), true);
                             skeleton.classList.remove('visible');
                             perfSkeletonTimer = null;
                         }, 1000);
                     } else {
                         if (perfSkeletonTimer) { clearTimeout(perfSkeletonTimer); perfSkeletonTimer = null; }
                         skeleton.classList.remove('visible');
-                        chart.data.datasets[1].hidden = true;
-                        chart.data.datasets[2].hidden = true;
-                        chart.data.datasets[0].barThickness = 34;
-                        chart.options.scales.x.max = computeReachAxisMax(chart);
-                        chart.update();
-                        document.getElementById('spReachLegend').style.display = 'none';
+                        reachShowPerformance = false;
+                        spCharts.reach.setOption(buildReachOption(), true);
                     }
                 });
             }
 
-            const compCtx = document.getElementById('spChartComposition');
-            if (compCtx) {
-                spCharts.composition = new Chart(compCtx, {
-                    type: 'doughnut',
-                    data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 0 }] },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '55%',
-                        plugins: { legend: { display: false } }
-                    }
-                });
+            const compEl = document.getElementById('spChartComposition');
+            if (compEl) {
+                spCharts.composition = echarts.init(compEl);
                 renderCompositionView(currentCompKey);
+
+                const compRo = new ResizeObserver(() => {
+                    if (spCharts.composition) spCharts.composition.resize();
+                });
+                compRo.observe(compEl);
             }
 
             const showUnknownCheckbox = document.getElementById('spShowUnknown');
@@ -2916,13 +3040,12 @@
             }
 
             if (spCharts.reach) {
-                spCharts.reach.data.datasets[0].data = data.reach.data;
+                reachData.reach = data.reach.data;
                 if (data.performance) {
-                    spCharts.reach.data.datasets[1].data = data.performance.ctr;
-                    spCharts.reach.data.datasets[2].data = data.performance.conversion;
+                    reachData.ctr = data.performance.ctr;
+                    reachData.conversion = data.performance.conversion;
                 }
-                spCharts.reach.options.scales.x.max = computeReachAxisMax(spCharts.reach);
-                spCharts.reach.update();
+                spCharts.reach.setOption(buildReachOption(), true);
             }
 
             Object.assign(COMPOSITION_DATA, data.composition);
@@ -2933,12 +3056,14 @@
             if (skeletonTimer) { clearTimeout(skeletonTimer); skeletonTimer = null; }
             const skeleton = document.getElementById('spSkeleton');
             if (skeleton) skeleton.classList.remove('visible');
-            ['reach', 'composition'].forEach(key => {
-                if (spCharts[key]) {
-                    spCharts[key].destroy();
-                    spCharts[key] = null;
-                }
-            });
+            if (spCharts.reach) {
+                spCharts.reach.dispose();
+                spCharts.reach = null;
+            }
+            if (spCharts.composition) {
+                spCharts.composition.dispose();
+                spCharts.composition = null;
+            }
         }
 
         function addNewRule() {
