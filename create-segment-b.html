@@ -823,8 +823,8 @@
             top: calc(100% + 8px);
             left: 0;
             z-index: 200;
-            flex-direction: row;
-            align-items: stretch;
+            flex-direction: column;
+            width: 372px;
             background: white;
             border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
@@ -836,18 +836,13 @@
             display: flex;
         }
 
-        .fd-panel {
-            background: white;
-            padding: 16px;
+        /* ── Version B: Top zone (search + tabs) ── */
+        .cs-dd-top {
+            padding: 32px 16px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            min-width: 180px;
-            flex-shrink: 0;
-        }
-
-        .fd-panel + .fd-panel {
-            border-left: 2px solid var(--border-color);
+            gap: 24px;
+            background: white;
         }
 
         .fd-search-wrap {
@@ -857,7 +852,6 @@
             border: 2px solid var(--text-normal);
             border-radius: var(--border-radius);
             padding: 6px 12px;
-            margin-bottom: 4px;
         }
 
         .fd-search-wrap i {
@@ -873,7 +867,7 @@
             font-size: 16px;
             font-weight: 400;
             color: var(--text-normal);
-            width: 140px;
+            width: 100%;
             background: transparent;
         }
 
@@ -881,76 +875,145 @@
             color: var(--text-subdued);
         }
 
-        .fd-subheading {
-            font-size: 16px;
-            font-weight: 800;
-            color: var(--text-normal);
-            line-height: 1.5;
-            padding-bottom: 8px;
+        /* Tab bar */
+        .cs-dd-tab-bar {
+            display: inline-flex;
+            border-radius: 8px;
+            overflow: hidden;
+            align-self: flex-start;
         }
 
-        .fd-item {
+        .cs-dd-tab {
+            flex: 0 0 auto;
+            padding: 8px 16px;
+            font-family: var(--font-family);
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--text-normal);
+            background: white;
+            border: 1px solid black;
+            border-right-width: 0;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s ease;
+        }
+
+        .cs-dd-tab:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .cs-dd-tab:last-child {
+            border-radius: 0 8px 8px 0;
+            border-right-width: 1px;
+        }
+
+        .cs-dd-tab:hover {
+            background: #f4f4f4;
+        }
+
+        .cs-dd-tab.active {
+            background: #5A55E3;
+            color: white;
+            pointer-events: none;
+        }
+
+        /* ── Version B: Body (scrollable accordion) ── */
+        .cs-dd-body {
+            max-height: 408px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .cs-dd-body-inner {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Custom scrollbar */
+        .cs-dd-body::-webkit-scrollbar {
+            width: 8px;
+        }
+        .cs-dd-body::-webkit-scrollbar-track {
+            background: #f4f4f4;
+        }
+        .cs-dd-body::-webkit-scrollbar-thumb {
+            background: #5a55e3;
+            border-radius: 8px;
+        }
+
+        /* Accordion section header */
+        .cs-dd-section {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
-            padding: 8px;
-            border-radius: 4px;
+            padding: 8px 8px 8px 8px;
+            font-family: var(--font-family);
             font-size: 16px;
             font-weight: 400;
-            color: var(--text-normal);
-            cursor: pointer;
-            white-space: nowrap;
             line-height: 1.5;
+            color: var(--text-normal);
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
             user-select: none;
         }
 
-        .fd-item:hover,
-        .fd-item.active {
+        .cs-dd-section:hover {
             background: var(--bg-subdued);
         }
 
-        .fd-item i {
+        .cs-dd-section i {
             font-size: 18px;
             color: var(--text-subdued);
             flex-shrink: 0;
+            transition: transform 0.15s ease;
         }
 
-        .fd-separator {
-            height: 1px;
-            background: var(--border-color);
-            margin: 4px 0;
+        .cs-dd-section.expanded i {
+            transform: rotate(90deg);
         }
 
-        /* Third-level: description items */
-        .fd-desc-item {
-            padding: 8px;
-            border-radius: 4px;
-            cursor: pointer;
+        /* Accordion section items container */
+        .cs-dd-section-items {
+            display: none;
+            flex-direction: column;
+            gap: 0;
+            border-bottom: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .cs-dd-section-items.open {
+            display: flex;
+        }
+
+        /* Sub-item with title + description */
+        .cs-dd-sub-item {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 4px;
+            padding: 8px 8px 8px 24px;
+            cursor: pointer;
         }
 
-        .fd-desc-item:hover {
+        .cs-dd-sub-item:hover {
             background: var(--bg-subdued);
         }
 
-        .fd-desc-title {
+        .cs-dd-sub-title {
             font-size: 16px;
             font-weight: 400;
             color: var(--text-normal);
             line-height: 1.5;
-            width: 240px;
         }
 
-        .fd-desc-sub {
-            font-size: 14px;
+        .cs-dd-sub-desc {
+            font-size: 12px;
             font-weight: 400;
-            color: var(--text-subdued);
-            line-height: 1.5;
-            white-space: normal;
-            width: 240px;
+            color: #60696c;
+            line-height: 1.36;
         }
 
         /* ── Segment Preview (populated) ── */
@@ -1517,38 +1580,28 @@
                                     Select filter type...
                                 </button>
 
-                                <!-- Cascading dropdown (data-driven) -->
+                                <!-- Version B: single-panel accordion dropdown -->
                                 <div class="cs-dropdown" id="filterDropdown">
 
-                                    <!-- Level 1: root categories (static) -->
-                                    <div class="fd-panel" id="fdPanel1">
+                                    <!-- Top zone: search + tab bar -->
+                                    <div class="cs-dd-top">
                                         <div class="fd-search-wrap">
                                             <i class="ph ph-magnifying-glass"></i>
                                             <input type="text" placeholder="Find by name" id="fdSearch" oninput="filterDropdownItems(this.value)" autocomplete="off">
                                         </div>
-                                        <div class="fd-item" onmouseenter="showL2('Orders')">
-                                            Orders
-                                            <i class="ph ph-caret-right"></i>
-                                        </div>
-                                        <div class="fd-item" onmouseenter="showL2('Guests')">
-                                            Guests
-                                            <i class="ph ph-caret-right"></i>
-                                        </div>
-                                        <div class="fd-item" onmouseenter="showL2('Menu')">
-                                            Menu
-                                            <i class="ph ph-caret-right"></i>
-                                        </div>
-                                        <div class="fd-item" onmouseenter="showL2('Source')">
-                                            Source
-                                            <i class="ph ph-caret-right"></i>
+                                        <div class="cs-dd-tab-bar" id="ddTabBar">
+                                            <button class="cs-dd-tab active" type="button" onclick="switchTab('Orders')">Orders</button>
+                                            <button class="cs-dd-tab" type="button" onclick="switchTab('Guests')">Guests</button>
+                                            <button class="cs-dd-tab" type="button" onclick="switchTab('Menu')">Menu</button>
                                         </div>
                                     </div>
 
-                                    <!-- Level 2: populated dynamically -->
-                                    <div class="fd-panel" id="fdPanel2" style="display:none;"></div>
-
-                                    <!-- Level 3: populated dynamically -->
-                                    <div class="fd-panel" id="fdPanel3" style="display:none;"></div>
+                                    <!-- Body: scrollable accordion -->
+                                    <div class="cs-dd-body" id="ddBody">
+                                        <div class="cs-dd-body-inner" id="ddBodyInner">
+                                            <!-- populated dynamically by switchTab() -->
+                                        </div>
+                                    </div>
 
                                 </div>
                             </div>
@@ -2332,6 +2385,9 @@
             }
         };
 
+        let activeTab = 'Orders';
+        let expandedSection = null;
+
         function toggleFilterDropdown(e) {
             e.stopPropagation();
             activeRuleBlockId = null;
@@ -2340,10 +2396,8 @@
                 closeFilterDropdown();
             } else {
                 dd.classList.add('open');
-                document.getElementById('fdPanel2').style.display = 'none';
-                document.getElementById('fdPanel3').style.display = 'none';
-                document.querySelectorAll('#fdPanel1 .fd-item').forEach(el => el.classList.remove('active'));
                 document.getElementById('fdSearch').value = '';
+                switchTab('Orders');
                 document.getElementById('fdSearch').focus();
             }
         }
@@ -2352,7 +2406,140 @@
             document.getElementById('filterDropdown').classList.remove('open');
         }
 
+        // Track that a dropdown-internal click is in progress so the close handler skips it
+        let ddInternalClick = false;
+
+        function switchTab(category) {
+            activeTab = category;
+            expandedSection = null;
+            document.querySelectorAll('#ddTabBar .cs-dd-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.textContent.trim() === category);
+            });
+            renderAccordion(category);
+        }
+
+        function renderAccordion(category, filterQuery) {
+            const container = document.getElementById('ddBodyInner');
+            container.innerHTML = '';
+            const filters = MENU_DATA[category];
+            if (!filters) return;
+
+            const q = (filterQuery || '').toLowerCase().trim();
+
+            Object.keys(filters).forEach(sectionName => {
+                const data = filters[sectionName];
+                const hasItems = data.items && data.items.length > 0;
+
+                // Filter: check if section name or any item matches
+                let matchingItems = hasItems ? data.items : [];
+                if (q) {
+                    const sectionMatch = sectionName.toLowerCase().includes(q);
+                    matchingItems = hasItems
+                        ? data.items.filter(item => item.toLowerCase().includes(q))
+                        : [];
+                    if (!sectionMatch && matchingItems.length === 0) return;
+                }
+
+                // Section header
+                const header = document.createElement('div');
+                header.className = 'cs-dd-section';
+                if (expandedSection === sectionName) header.classList.add('expanded');
+                header.innerHTML = `${sectionName} <i class="ph ph-caret-right"></i>`;
+
+                if (hasItems) {
+                    header.addEventListener('click', () => { ddInternalClick = true; toggleSection(sectionName); });
+                } else {
+                    // Leaf item — no children, click selects it
+                    header.addEventListener('click', () => selectFilter(sectionName));
+                }
+
+                container.appendChild(header);
+
+                // Items container (only if section has children)
+                if (hasItems) {
+                    const itemsContainer = document.createElement('div');
+                    itemsContainer.className = 'cs-dd-section-items';
+                    itemsContainer.id = 'section-' + sectionName.replace(/\s+/g, '-');
+                    if (expandedSection === sectionName || (q && matchingItems.length > 0)) {
+                        itemsContainer.classList.add('open');
+                        header.classList.add('expanded');
+                    }
+
+                    const itemsToShow = q ? matchingItems : data.items;
+                    itemsToShow.forEach(itemName => {
+                        const desc = data.descriptions && data.descriptions[itemName];
+                        const item = document.createElement('div');
+                        item.className = 'cs-dd-sub-item';
+                        item.innerHTML = `<div class="cs-dd-sub-title">${itemName}</div>${desc ? `<div class="cs-dd-sub-desc">${desc}</div>` : ''}`;
+                        item.addEventListener('click', () => selectFilter(itemName));
+                        itemsContainer.appendChild(item);
+                    });
+
+                    container.appendChild(itemsContainer);
+                }
+            });
+        }
+
+        function toggleSection(sectionName) {
+            expandedSection = expandedSection === sectionName ? null : sectionName;
+            renderAccordion(activeTab, document.getElementById('fdSearch').value);
+        }
+
+        function filterDropdownItems(query) {
+            const q = query.toLowerCase().trim();
+            if (!q) {
+                renderAccordion(activeTab);
+                return;
+            }
+            // Search across all categories, not just active tab
+            renderSearchResults(q);
+        }
+
+        function renderSearchResults(q) {
+            const container = document.getElementById('ddBodyInner');
+            container.innerHTML = '';
+
+            Object.keys(MENU_DATA).forEach(category => {
+                const subcats = MENU_DATA[category];
+                Object.keys(subcats).forEach(subcatName => {
+                    const data = subcats[subcatName];
+                    const hasItems = data.items && data.items.length > 0;
+                    if (hasItems) {
+                        data.items.forEach(item => {
+                            if (item.toLowerCase().includes(q)) {
+                                const desc = data.descriptions && data.descriptions[item];
+                                const el = document.createElement('div');
+                                el.className = 'cs-dd-sub-item';
+                                el.style.paddingLeft = '16px';
+                                el.innerHTML = `<div class="cs-dd-sub-title">${item}</div><div class="cs-dd-sub-desc">${category} › ${subcatName}</div>`;
+                                el.addEventListener('click', () => selectFilter(item));
+                                container.appendChild(el);
+                            }
+                        });
+                    } else {
+                        if (subcatName.toLowerCase().includes(q)) {
+                            const el = document.createElement('div');
+                            el.className = 'cs-dd-sub-item';
+                            el.style.paddingLeft = '16px';
+                            el.innerHTML = `<div class="cs-dd-sub-title">${subcatName}</div><div class="cs-dd-sub-desc">${category}</div>`;
+                            el.addEventListener('click', () => selectFilter(subcatName));
+                            container.appendChild(el);
+                        }
+                    }
+                });
+            });
+
+            if (container.children.length === 0) {
+                const noResult = document.createElement('div');
+                noResult.className = 'cs-dd-sub-item';
+                noResult.style.cssText = 'color: var(--text-subdued); cursor: default; padding-left: 16px;';
+                noResult.innerHTML = '<div class="cs-dd-sub-title" style="color:var(--text-subdued)">No results found</div>';
+                container.appendChild(noResult);
+            }
+        }
+
         document.addEventListener('click', function(e) {
+            if (ddInternalClick) { ddInternalClick = false; return; }
             const dd = document.getElementById('filterDropdown');
             if (e.target.closest('.cs-filter-type-btn')) return;
             if (dd && !dd.contains(e.target)) {
@@ -2436,145 +2623,7 @@
             }
         });
 
-        function showL2(category) {
-            // Highlight L1 item
-            document.querySelectorAll('#fdPanel1 .fd-item').forEach(el => {
-                el.classList.toggle('active', el.textContent.trim() === category);
-            });
-
-            const panel2 = document.getElementById('fdPanel2');
-            const panel3 = document.getElementById('fdPanel3');
-            panel3.style.display = 'none';
-
-            const filters = MENU_DATA[category];
-            if (!filters || Object.keys(filters).length === 0) {
-                panel2.style.display = 'none';
-                return;
-            }
-
-            panel2.innerHTML = '';
-            const hasAnyDescription = Object.values(filters).some(d => d.description);
-            panel2.style.minWidth = hasAnyDescription ? '272px' : '180px';
-            Object.keys(filters).forEach(filterName => {
-                const data = filters[filterName];
-                const hasChildren = data.items && data.items.length > 0;
-                const el = document.createElement('div');
-                if (!hasChildren && data.description) {
-                    el.className = 'fd-desc-item';
-                    el.innerHTML = `<div class="fd-desc-title">${filterName}</div><div class="fd-desc-sub">${data.description}</div>`;
-                    el.style.cursor = 'pointer';
-                    el.addEventListener('click', () => selectFilter(filterName));
-                } else {
-                    el.className = 'fd-item';
-                    el.innerHTML = hasChildren
-                        ? `${filterName} <i class="ph ph-caret-right"></i>`
-                        : filterName;
-                    if (hasChildren) {
-                        el.addEventListener('mouseenter', () => showL3(filterName, data));
-                    } else {
-                        el.addEventListener('mouseenter', () => {
-                            document.querySelectorAll('#fdPanel2 .fd-item').forEach(i => i.classList.remove('active'));
-                            el.classList.add('active');
-                            panel3.style.display = 'none';
-                        });
-                        el.addEventListener('click', () => selectFilter(filterName));
-                    }
-                }
-                panel2.appendChild(el);
-            });
-
-            panel2.style.display = 'flex';
-        }
-
-        function showL3(filterName, data) {
-            // Highlight L2 item
-            document.querySelectorAll('#fdPanel2 .fd-item').forEach(el => {
-                el.classList.toggle('active', el.textContent.trim() === filterName);
-            });
-
-            const panel3 = document.getElementById('fdPanel3');
-            const hasDescriptions = data.descriptions && Object.keys(data.descriptions).length > 0;
-
-            panel3.innerHTML = '';
-            panel3.style.minWidth = hasDescriptions ? '272px' : '180px';
-            data.items.forEach(subItem => {
-                const desc = data.descriptions && data.descriptions[subItem];
-                const el = document.createElement('div');
-                if (hasDescriptions) {
-                    el.className = 'fd-desc-item';
-                    el.innerHTML = `<div class="fd-desc-title">${subItem}</div>${desc ? `<div class="fd-desc-sub">${desc}</div>` : ''}`;
-                } else {
-                    el.className = 'fd-item';
-                    el.textContent = subItem;
-                }
-                el.style.cursor = 'pointer';
-                el.addEventListener('click', () => selectFilter(subItem));
-                panel3.appendChild(el);
-            });
-
-            panel3.style.display = 'flex';
-        }
-
-        function filterDropdownItems(query) {
-            const q = query.toLowerCase().trim();
-            const panel1 = document.getElementById('fdPanel1');
-            const panel2 = document.getElementById('fdPanel2');
-            const panel3 = document.getElementById('fdPanel3');
-
-            // Remove any previously injected search results
-            panel1.querySelectorAll('.fd-search-result').forEach(el => el.remove());
-
-            if (!q) {
-                // Restore original L1 items and reset panels
-                panel1.querySelectorAll('.fd-item').forEach(el => el.style.display = '');
-                return;
-            }
-
-            // Hide L1 category items and cascading panels while searching
-            panel1.querySelectorAll('.fd-item').forEach(el => el.style.display = 'none');
-            panel2.style.display = 'none';
-            panel3.style.display = 'none';
-
-            // Collect all matching items across all categories
-            const results = [];
-            Object.keys(MENU_DATA).forEach(category => {
-                const subcats = MENU_DATA[category];
-                Object.keys(subcats).forEach(subcatName => {
-                    const data = subcats[subcatName];
-                    const hasItems = data.items && data.items.length > 0;
-                    if (hasItems) {
-                        data.items.forEach(item => {
-                            if (item.toLowerCase().includes(q)) {
-                                const desc = data.descriptions && data.descriptions[item];
-                                results.push({ name: item, path: `${category} › ${subcatName}`, desc });
-                            }
-                        });
-                    } else {
-                        // Leaf subcategory (no children)
-                        if (subcatName.toLowerCase().includes(q)) {
-                            results.push({ name: subcatName, path: category, desc: data.description || null });
-                        }
-                    }
-                });
-            });
-
-            if (results.length === 0) {
-                const noResult = document.createElement('div');
-                noResult.className = 'fd-item fd-search-result';
-                noResult.style.cssText = 'color: var(--text-subdued); cursor: default;';
-                noResult.textContent = 'No results found';
-                panel1.appendChild(noResult);
-                return;
-            }
-
-            results.forEach(result => {
-                const el = document.createElement('div');
-                el.className = 'fd-desc-item fd-search-result';
-                el.innerHTML = `<div class="fd-desc-title">${result.name}</div><div class="fd-desc-sub">${result.path}</div>`;
-                el.addEventListener('click', () => selectFilter(result.name));
-                panel1.appendChild(el);
-            });
-        }
+        /* showL2 / showL3 removed — Version B uses accordion via renderAccordion() */
 
         /* ── Combo box logic ── */
         const COMBO_OPTIONS = {
@@ -3214,10 +3263,8 @@
                     closeFilterDropdown();
                 } else {
                     dropdown.classList.add('open');
-                    document.getElementById('fdPanel2').style.display = 'none';
-                    document.getElementById('fdPanel3').style.display = 'none';
-                    document.querySelectorAll('#fdPanel1 .fd-item').forEach(el => el.classList.remove('active'));
                     document.getElementById('fdSearch').value = '';
+                    switchTab('Orders');
                     document.getElementById('fdSearch').focus();
                 }
             });
