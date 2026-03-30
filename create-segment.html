@@ -2349,7 +2349,15 @@
         }
 
         function closeFilterDropdown() {
-            document.getElementById('filterDropdown').classList.remove('open');
+            const dd = document.getElementById('filterDropdown');
+            dd.classList.remove('open');
+            dd.style.top = '';
+            dd.style.left = '';
+            // Return dropdown to its anchor if it was moved
+            const anchor = document.getElementById('csDropdownAnchor');
+            if (dd.parentElement !== anchor) {
+                anchor.appendChild(dd);
+            }
         }
 
         document.addEventListener('click', function(e) {
@@ -3317,24 +3325,73 @@
                 setOperatorUI(ruleRow, filterName);
 
                 const ruleArea = document.getElementById('csRuleArea' + id);
-                const newOpRow = document.createElement('div');
-                newOpRow.className = 'cs-operator-row';
-                newOpRow.style.display = 'flex';
-                newOpRow.innerHTML = `
-                    <div class="cs-btn-group">
-                        <button class="cs-btn-group-item active" type="button">And</button>
-                        <button class="cs-btn-group-item" type="button">Or</button>
-                        <button class="cs-btn-group-item" type="button">Exclude</button>
-                    </div>
-                    <button class="cs-add-rule-btn" type="button" onclick="addNewRule()">
-                        <i class="ph ph-plus"></i> Add new rule
-                    </button>
-                `;
-                ruleArea.after(newOpRow);
+                // Only create operator row if one doesn't already exist after this rule area
+                const nextSibling = ruleArea.nextElementSibling;
+                if (!nextSibling || !nextSibling.classList.contains('cs-operator-row')) {
+                    const newOpRow = document.createElement('div');
+                    newOpRow.className = 'cs-operator-row';
+                    newOpRow.style.display = 'flex';
+                    newOpRow.innerHTML = `
+                        <div class="cs-btn-group">
+                            <button class="cs-btn-group-item active" type="button">And</button>
+                            <button class="cs-btn-group-item" type="button">Or</button>
+                            <button class="cs-btn-group-item" type="button">Exclude</button>
+                        </div>
+                        <button class="cs-add-rule-btn" type="button" onclick="addNewRule()">
+                            <i class="ph ph-plus"></i> Add new rule
+                        </button>
+                    `;
+                    ruleArea.after(newOpRow);
+                }
                 initDynamicComboBox(id, filterName);
                 activeRuleBlockId = null;
             }
         }
+
+        /* ── Click rule-label to re-open filter dropdown ── */
+        document.addEventListener('click', function(e) {
+            const label = e.target.closest('.cs-rule-label');
+            if (!label) return;
+            e.stopPropagation();
+
+            const ruleRow = label.closest('.cs-rule-row');
+            if (!ruleRow) return;
+
+            // Determine if this is the primary rule or a dynamic one
+            if (ruleRow.id === 'csRuleRow') {
+                activeRuleBlockId = null;
+                // Position dropdown below the rule row without disturbing layout
+                const dd = document.getElementById('filterDropdown');
+                ruleRow.style.position = 'relative';
+                ruleRow.appendChild(dd);
+                dd.style.top = ruleRow.offsetHeight + 8 + 'px';
+                dd.style.left = '0';
+                dd.classList.add('open');
+                document.getElementById('fdPanel2').style.display = 'none';
+                document.getElementById('fdPanel3').style.display = 'none';
+                document.querySelectorAll('#fdPanel1 .fd-item').forEach(el => { el.classList.remove('active'); el.style.display = ''; });
+                document.getElementById('fdSearch').value = '';
+                // Remove any stale search results
+                document.getElementById('fdPanel1').querySelectorAll('.fd-search-result').forEach(el => el.remove());
+                document.getElementById('fdSearch').focus();
+            } else {
+                // Dynamic rule block: extract the numeric id
+                const id = ruleRow.id.replace('csRuleRow', '');
+                activeRuleBlockId = id;
+                const dd = document.getElementById('filterDropdown');
+                ruleRow.style.position = 'relative';
+                ruleRow.appendChild(dd);
+                dd.style.top = ruleRow.offsetHeight + 8 + 'px';
+                dd.style.left = '0';
+                dd.classList.add('open');
+                document.getElementById('fdPanel2').style.display = 'none';
+                document.getElementById('fdPanel3').style.display = 'none';
+                document.querySelectorAll('#fdPanel1 .fd-item').forEach(el => { el.classList.remove('active'); el.style.display = ''; });
+                document.getElementById('fdPanel1').querySelectorAll('.fd-search-result').forEach(el => el.remove());
+                document.getElementById('fdSearch').value = '';
+                document.getElementById('fdSearch').focus();
+            }
+        });
 
         /* ── Ask Ava ── */
         function toggleNavExpand(btn) {
