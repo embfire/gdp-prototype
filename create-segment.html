@@ -1439,7 +1439,7 @@
                             <i class="ph-duotone ph-database"></i>
                             Data Sources
                         </a>
-                        <a href="#" class="nav-item">
+                        <a href="identity-resolution.html" class="nav-item">
                             <i class="ph-duotone ph-fingerprint-simple"></i>
                             Identity Resolution
                         </a>
@@ -2286,13 +2286,15 @@
             },
             Guests: {
                 'Guest information': {
-                    items: ['Lifecycle stage', 'Order frequency', 'Guest type', 'Profile details', 'Guest preferences'],
+                    items: ['Lifecycle stage', 'Order frequency', 'Guest type', 'Profile details', 'Guest preferences', 'Email opt-in status', 'SMS opt-in status'],
                     descriptions: {
                         'Lifecycle stage': "Guest's current stage in their relationship with the brand",
                         'Order frequency': 'How often a guest places orders',
                         'Guest type': 'Some longer description that explains the concept',
                         'Profile details': 'Some longer description that explains the concept',
-                        'Guest preferences': 'Some longer description that explains the concept'
+                        'Guest preferences': 'Some longer description that explains the concept',
+                        'Email opt-in status': 'Whether the guest has opted in or out of email communications',
+                        'SMS opt-in status': 'Whether the guest has opted in or out of SMS communications'
                     }
                 },
                 Engagement: {
@@ -2589,6 +2591,8 @@
             'Lifecycle Stage':   ['First-time', 'Onboarding', 'Engaged', 'Late', 'Churned', 'Re-onboarding'],
             'Order Frequency':   ['Daily', 'Weekly', 'Monthly', 'Quarterly', 'Irregular'],
             'First item ordered': ['Buffalo Deluxe', 'Crispy Clucker', 'Club Crunch', 'Double Delight Burger', 'Fresh Garden Ham Sandwich', 'French Fries'],
+            'Email opt-in status': ['Opted in', 'Opted out', 'Not set'],
+            'SMS opt-in status': ['Opted in', 'Opted out', 'Not set'],
         };
 
         const ITEM_IDS = {
