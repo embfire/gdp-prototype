@@ -268,13 +268,13 @@
 
     var DEFAULT_LAYOUT = [
       { id: 'total-guests',              x: 0, y: 0 },
-      { id: 'guest-lifecycle-breakdown', x: 6, y: 0 },
-      { id: 'retention-cohort',          x: 0, y: 1 },
-      { id: 'reachability',              x: 6, y: 1 },
+      { id: 'retention-cohort',          x: 6, y: 0 },
+      { id: 'reachability',              x: 0, y: 1 },
+      { id: 'visit-frequency',           x: 6, y: 1 },
     ];
 
-    // v2: bumped to flush any saved layouts from the old 2-column system
-    var LS_KEY = 'g360-dashboard-layout-v2';
+    // v4: removed ECharts comparison card
+    var LS_KEY = 'g360-dashboard-layout-v4';
 
     /* ═══════════════════════════════════════════════════
        GridStack
@@ -507,6 +507,7 @@
       if (id === 'total-guests' && totalGuestsChart) {
         totalGuestsChart.destroy();
         totalGuestsChart = null;
+        totalGuestsChartOptions = null;
       }
       var el = document.querySelector('.grid-stack-item[gs-id="' + id + '"]');
       if (el) dashGrid.removeWidget(el);
@@ -619,17 +620,18 @@
       if (id !== 'total-guests') return '';
       return (
         '<div class="chart-card__legend">' +
-          '<div class="chart-card__legend-item">' +
+          '<button type="button" class="chart-card__legend-item" data-series-key="current" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleAGSeries(this, \'current\')" aria-pressed="true">' +
             '<span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>' +
             '<span>This period</span>' +
-          '</div>' +
-          '<div class="chart-card__legend-item">' +
+          '</button>' +
+          '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleAGSeries(this, \'prev\')" aria-pressed="true">' +
             '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
             '<span>Prev period</span>' +
-          '</div>' +
+          '</button>' +
         '</div>'
       );
     }
+
 
     function createCardHTML(id, title) {
       var breakdownHTML = '';
@@ -889,15 +891,50 @@
        AG Charts — Total Guests
     ═══════════════════════════════════════════════════ */
     var totalGuestsChart = null;
+    // Source-of-truth options object. Built fresh in initTotalGuestsChart and
+    // mutated in place by toggleAGSeries before re-pushing through update().
+    var totalGuestsChartOptions = null;
+
+    // Track visibility per series key (index in totalGuestsChartOptions.series).
+    // Series order: [prev, current].
+    var totalGuestsVisibility = { current: true, prev: true };
+
+    function toggleAGSeries(btn, seriesKey) {
+      if (!totalGuestsChart || !totalGuestsChartOptions) return;
+      // Don't allow hiding the last visible series — keeps the chart non-empty.
+      var nextValue = !totalGuestsVisibility[seriesKey];
+      var someoneElseVisible = Object.keys(totalGuestsVisibility).some(function(k) {
+        return k !== seriesKey && totalGuestsVisibility[k];
+      });
+      if (!nextValue && !someoneElseVisible) return;
+
+      totalGuestsVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+
+      // AG Charts diffs options by reference — mutating the same series objects
+      // that were passed to create() produces no visible diff. We must produce
+      // NEW series objects so the engine detects the visibility change.
+      var newSeries = totalGuestsChartOptions.series.map(function(s, i) {
+        var vis = (i === 0) ? totalGuestsVisibility.prev : totalGuestsVisibility.current;
+        return Object.assign({}, s, { visible: vis });
+      });
+      var updateOpts = Object.assign({}, totalGuestsChartOptions, { series: newSeries });
+      // Keep stored options in sync so future toggles start from the right state.
+      totalGuestsChartOptions = updateOpts;
+      totalGuestsChart.update(updateOpts);
+    }
 
     // 30 days of data: Mar 28 – Apr 26, 2026
     // current = this period, prev = prior period aligned to same dates
     var TOTAL_GUESTS_DATA = (function() {
-      var baseDate = new Date(2026, 2, 28);
-      // Values stored in millions (e.g. 1.155 = 1,155,000)
-      // Shape mirrors the Figma reference: flat ~1.15, sharp peak Apr 5,
-      // mid-month dip, then a sharp uptick at the end.
+      // Start Mar 19 — 10 days before the first tick label (Mar 29).
+      // This ensures the line begins right at the Y-axis with no leading gap.
+      var baseDate = new Date(2026, 2, 19);
       var curr = [
+        // Mar 19–27 (pre-label lead-in, 9 points)
+        1.152, 1.155, 1.153, 1.158, 1.160,
+        1.157, 1.154, 1.156, 1.158,
+        // Mar 28 – Apr 26 (30 points, shape mirrors Figma)
         1.155, 1.148, 1.142, 1.156, 1.160,
         1.165, 1.190, 1.238, 1.182, 1.165,
         1.160, 1.158, 1.150, 1.140, 1.137,
@@ -906,6 +943,10 @@
         1.175, 1.205, 1.218, 1.214, 1.215,
       ];
       var prev = [
+        // Mar 19–27
+        1.128, 1.131, 1.129, 1.133, 1.136,
+        1.134, 1.130, 1.132, 1.134,
+        // Mar 28 – Apr 26
         1.135, 1.140, 1.138, 1.146, 1.150,
         1.156, 1.161, 1.158, 1.150, 1.146,
         1.144, 1.142, 1.146, 1.150, 1.148,
@@ -934,9 +975,12 @@
       if (!container) return;
       if (totalGuestsChart) { totalGuestsChart.destroy(); totalGuestsChart = null; }
 
+      // Reset visibility tracking on (re)init.
+      totalGuestsVisibility = { current: true, prev: true };
+
       var fmtM = function(v) { return (+v).toFixed(2).replace(/\.?0+$/, '') + 'M'; };
 
-      totalGuestsChart = agCharts.AgCharts.create({
+      totalGuestsChartOptions = {
         container: container,
         theme: { params: { fontFamily: 'Manrope, sans-serif' } },
         background: { fill: '#ffffff' },
@@ -952,7 +996,6 @@
             stroke: '#5A55E3',
             strokeWidth: 1.5,
             lineDash: [1, 4],
-            lineCap: 'round',
             marker: {
               enabled: true,
               size: 0,
@@ -963,21 +1006,7 @@
                 return { size: 0 };
               },
             },
-            tooltip: {
-              renderer: function(p) {
-                var d = p.datum;
-                return (
-                  '<div style="font-family:Manrope,sans-serif;padding:10px 12px;">' +
-                  '<div style="font-size:11px;font-weight:700;margin-bottom:8px;color:#161616;">Prev period</div>' +
-                  '<div style="display:flex;align-items:center;gap:6px;">' +
-                    '<div style="width:10px;height:10px;background-color:#ffffff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 4px);box-shadow:inset 0 0 0 1px #5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
-                    '<span style="font-size:11px;color:#525252;">' + fmtChartDate(d.date) + '</span>' +
-                    '<span style="font-size:13px;font-weight:700;margin-left:auto;padding-left:12px;">' + fmtM(d.prev) + '</span>' +
-                  '</div>' +
-                  '</div>'
-                );
-              },
-            },
+            tooltip: { enabled: false },
           },
           {
             type: 'line',
@@ -1000,25 +1029,32 @@
               renderer: function(p) {
                 var d = p.datum;
                 var pctRaw = (d.current - d.prev) / d.prev * 100;
-                var pct = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(1) + '%';
+                var pct = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
                 var pctColor = pctRaw >= 0 ? '#257469' : '#b1294a';
                 var pctBg    = pctRaw >= 0 ? '#effaf9' : '#fdecef';
+                var stripeMarker = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
                 return (
-                  '<div style="font-family:Manrope,sans-serif;padding:10px 12px;min-width:190px;">' +
-                  '<div style="font-size:11px;font-weight:700;margin-bottom:8px;color:#161616;">Total guests</div>' +
-                  '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">' +
-                    '<div style="width:10px;height:10px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
-                    '<span style="font-size:11px;color:#525252;">' + fmtChartDate(d.date) + '</span>' +
-                    '<span style="font-size:13px;font-weight:700;margin-left:auto;padding-left:12px;">' + fmtM(d.current) + '</span>' +
+                  '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+                  '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Total guests</p>' +
+                  '<div style="display:flex;flex-direction:column;gap:8px;">' +
+                    '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                      '<div style="display:flex;align-items:center;gap:4px;">' +
+                        '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                        '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(d.date) + '</span>' +
+                      '</div>' +
+                      '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtM(d.current) + '</span>' +
+                    '</div>' +
+                    '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+                      '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;white-space:nowrap;">' + pct + '</span>' +
+                      '<span style="font-size:12px;font-weight:400;color:#60696C;">vs prev period</span>' +
+                    '</div>' +
                   '</div>' +
-                  '<div style="font-size:11px;color:#525252;padding-left:16px;margin-bottom:6px;">' +
-                    '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:1px 5px;border-radius:4px;font-weight:600;">' + pct + '</span>' +
-                    ' vs prev period' +
-                  '</div>' +
-                  '<div style="display:flex;align-items:center;gap:6px;">' +
-                    '<div style="width:10px;height:10px;background-color:#ffffff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 4px);box-shadow:inset 0 0 0 1px #5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
-                    '<span style="font-size:11px;color:#525252;">Prev period</span>' +
-                    '<span style="font-size:11px;font-weight:600;margin-left:auto;padding-left:12px;color:#525252;">' + fmtM(d.prev) + '</span>' +
+                  '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                    '<div style="display:flex;align-items:center;gap:4px;">' +
+                      stripeMarker +
+                      '<span style="font-size:12px;font-weight:400;color:#60696C;">Prev period</span>' +
+                    '</div>' +
+                    '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtM(d.prev) + '</span>' +
                   '</div>' +
                   '</div>'
                 );
@@ -1030,7 +1066,11 @@
           {
             type: 'time',
             position: 'bottom',
+            min: new Date(2026, 2, 19),  // Mar 19 — first data point, line starts at Y-axis
+            max: new Date(2026, 3, 26),  // Apr 26 — last data point, no trailing gap
             gridLine: { enabled: false },
+            // X-axis line is disabled — the bottom Y-axis gridline at 1.10
+            // already provides the baseline, and stacking both makes it darker.
             line: { enabled: false },
             tick: { enabled: true, size: 4, width: 1, stroke: '#000000' },
             label: {
@@ -1053,10 +1093,16 @@
           {
             type: 'number',
             position: 'left',
-            min: 1.10,
-            max: 1.25,
-            interval: { step: 0.05 },
-            gridLine: { enabled: false },
+            // min is set just below 1.10 so the first gridline (1.10) is not
+            // flush with the chart area bottom edge — that overlap caused a
+            // double-painted (darker) line. max is just above 1.25 for symmetry.
+            min: 1.097,
+            max: 1.253,
+            interval: { values: [1.10, 1.15, 1.20, 1.25] },
+            gridLine: {
+              enabled: true,
+              style: [{ stroke: '#DFE1E2', lineDash: [] }],
+            },
             line: { enabled: false },
             tick: { enabled: false },
             label: {
@@ -1069,7 +1115,9 @@
             },
           },
         ],
-      });
+      };
+
+      totalGuestsChart = agCharts.AgCharts.create(totalGuestsChartOptions);
     }
 
     /* ═══════════════════════════════════════════════════

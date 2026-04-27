@@ -916,11 +916,31 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 0;
+  background: none;
+  border: 0;
   font-family: 'Manrope', sans-serif;
   font-size: 12px;
   font-weight: 400;
   line-height: 1.36;
   color: #000000;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+
+.chart-card__legend-item:hover { opacity: 0.7; }
+.chart-card__legend-item:focus-visible {
+  outline: 2px solid #5A55E3;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.chart-card__legend-item[aria-pressed="false"] {
+  color: #8c9296;
+}
+.chart-card__legend-item[aria-pressed="false"] .chart-card__legend-marker {
+  opacity: 0.35;
 }
 
 .chart-card__legend-marker {
@@ -936,14 +956,14 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 
 .chart-card__legend-marker--striped {
   background-color: #ffffff;
+  /* 1.5px line + 1.5px gap = 3px period, 5 visible lines on a 12x12 square. */
   background-image: repeating-linear-gradient(
     -45deg,
     #5A55E3 0,
     #5A55E3 1.5px,
     transparent 1.5px,
-    transparent 4px
+    transparent 3px
   );
-  box-shadow: inset 0 0 0 1px #5A55E3;
 }
 
 .chart-card__placeholder {
@@ -953,15 +973,22 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   overflow: hidden;
 }
 
-/* Total guests card uses the legend block, so the chart fills remaining space */
-.chart-card[data-metric-id="total-guests"] .chart-card__body {
+/* Total guests cards: the chart fills remaining body space */
+.chart-card[data-metric-id="total-guests"] .chart-card__body,
+.chart-card[data-metric-id="total-guests-echarts"] .chart-card__body {
   flex: 1;
   min-height: 0;
 }
-.chart-card[data-metric-id="total-guests"] .chart-card__placeholder {
+.chart-card[data-metric-id="total-guests"] .chart-card__placeholder,
+.chart-card[data-metric-id="total-guests-echarts"] .chart-card__placeholder {
   flex: 1;
   height: auto;
   min-height: 0;
+}
+
+/* Strip the placeholder background once a real chart has rendered */
+#chart-area-total-guests-echarts {
+  background: transparent;
 }
 
 .metric-delta {
@@ -975,9 +1002,14 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   background: transparent;
 }
 
-/* AG Charts tooltip font */
+/* AG Charts tooltip — strip all defaults so the renderer HTML owns every style */
 .ag-charts-tooltip {
   font-family: 'Manrope', sans-serif !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
 }
 
 /* Dropdown right-aligned inside card headers */
