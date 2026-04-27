@@ -508,6 +508,10 @@
         totalGuestsChart.destroy();
         totalGuestsChart = null;
         totalGuestsChartOptions = null;
+        if (totalGuestsTooltipEl && totalGuestsTooltipEl.parentNode) {
+          totalGuestsTooltipEl.parentNode.removeChild(totalGuestsTooltipEl);
+          totalGuestsTooltipEl = null;
+        }
       }
       var el = document.querySelector('.grid-stack-item[gs-id="' + id + '"]');
       if (el) dashGrid.removeWidget(el);
@@ -899,6 +903,12 @@
     // Series order: [prev, current].
     var totalGuestsVisibility = { current: true, prev: true };
 
+    // Manual tooltip state — bypasses AG Charts per-series tooltip so a single
+    // tooltip fires anywhere in the chart area (both lines trigger it).
+    var totalGuestsTooltipEl   = null;
+    var totalGuestsMouseMove   = null;
+    var totalGuestsMouseLeave  = null;
+
     function toggleAGSeries(btn, seriesKey) {
       if (!totalGuestsChart || !totalGuestsChartOptions) return;
       // Don't allow hiding the last visible series — keeps the chart non-empty.
@@ -984,7 +994,7 @@
         container: container,
         theme: { params: { fontFamily: 'Manrope, sans-serif' } },
         background: { fill: '#ffffff' },
-        padding: { top: 8, right: 16, bottom: 0, left: 0 },
+        padding: { top: 8, right: 0, bottom: 0, left: 0 },
         data: TOTAL_GUESTS_DATA,
         legend: { enabled: false },
         series: [
@@ -1001,7 +1011,7 @@
               size: 0,
               itemStyler: function(params) {
                 if (params.highlightState === 'highlighted-item') {
-                  return { size: 7, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
                 }
                 return { size: 0 };
               },
@@ -1020,57 +1030,25 @@
               size: 0,
               itemStyler: function(params) {
                 if (params.highlightState === 'highlighted-item') {
-                  return { size: 8, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
                 }
                 return { size: 0 };
               },
             },
-            tooltip: {
-              renderer: function(p) {
-                var d = p.datum;
-                var pctRaw = (d.current - d.prev) / d.prev * 100;
-                var pct = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
-                var pctColor = pctRaw >= 0 ? '#257469' : '#b1294a';
-                var pctBg    = pctRaw >= 0 ? '#effaf9' : '#fdecef';
-                var stripeMarker = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
-                return (
-                  '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
-                  '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Total guests</p>' +
-                  '<div style="display:flex;flex-direction:column;gap:8px;">' +
-                    '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
-                      '<div style="display:flex;align-items:center;gap:4px;">' +
-                        '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
-                        '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(d.date) + '</span>' +
-                      '</div>' +
-                      '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtM(d.current) + '</span>' +
-                    '</div>' +
-                    '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
-                      '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;white-space:nowrap;">' + pct + '</span>' +
-                      '<span style="font-size:12px;font-weight:400;color:#60696C;">vs prev period</span>' +
-                    '</div>' +
-                  '</div>' +
-                  '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
-                    '<div style="display:flex;align-items:center;gap:4px;">' +
-                      stripeMarker +
-                      '<span style="font-size:12px;font-weight:400;color:#60696C;">Prev period</span>' +
-                    '</div>' +
-                    '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtM(d.prev) + '</span>' +
-                  '</div>' +
-                  '</div>'
-                );
-              },
-            },
+            tooltip: { enabled: false },
           },
         ],
-        axes: [
-          {
+        // AG Charts v13 uses an OBJECT for axes (keyed by x/y), not an array.
+        // Passing an array silently rejects the whole config and the chart
+        // falls back to defaults — which is what was causing the gap.
+        axes: {
+          x: {
             type: 'time',
             position: 'bottom',
-            min: new Date(2026, 2, 19),  // Mar 19 — first data point, line starts at Y-axis
-            max: new Date(2026, 3, 26),  // Apr 26 — last data point, no trailing gap
+            nice: false,
+            min: new Date(2026, 2, 19),
+            max: new Date(2026, 3, 26),
             gridLine: { enabled: false },
-            // X-axis line is disabled — the bottom Y-axis gridline at 1.10
-            // already provides the baseline, and stacking both makes it darker.
             line: { enabled: false },
             tick: { enabled: true, size: 4, width: 1, stroke: '#000000' },
             label: {
@@ -1090,12 +1068,9 @@
             },
             crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
           },
-          {
+          y: {
             type: 'number',
             position: 'left',
-            // min is set just below 1.10 so the first gridline (1.10) is not
-            // flush with the chart area bottom edge — that overlap caused a
-            // double-painted (darker) line. max is just above 1.25 for symmetry.
             min: 1.097,
             max: 1.253,
             interval: { values: [1.10, 1.15, 1.20, 1.25] },
@@ -1114,10 +1089,109 @@
               },
             },
           },
-        ],
+        },
       };
 
       totalGuestsChart = agCharts.AgCharts.create(totalGuestsChartOptions);
+
+      // ── Manual tooltip ──────────────────────────────────────────────────
+      // AG Charts per-series tooltips only fire near their own line. We bypass
+      // that entirely and drive the tooltip from mousemove on the container so
+      // it works anywhere in the chart area (both lines trigger it).
+
+      // Clean up any leftover tooltip from a previous init.
+      if (totalGuestsTooltipEl && totalGuestsTooltipEl.parentNode) {
+        totalGuestsTooltipEl.parentNode.removeChild(totalGuestsTooltipEl);
+      }
+      if (totalGuestsMouseMove) {
+        container.removeEventListener('mousemove',  totalGuestsMouseMove);
+        container.removeEventListener('mouseleave', totalGuestsMouseLeave);
+      }
+
+      totalGuestsTooltipEl = document.createElement('div');
+      totalGuestsTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(totalGuestsTooltipEl);
+
+      // Approximate left boundary of the plot area (Y-axis label width + padding).
+      // Y-axis labels are "1.10M"–"1.25M" (5 chars × ~7px) + 8px label.padding ≈ 43px.
+      var PLOT_LEFT        = 46;
+      var PLOT_RIGHT_PAD   = 0;   // matches chart padding.right
+      var AXIS_MIN_TIME    = new Date(2026, 2, 19).getTime();
+      var AXIS_MAX_TIME    = new Date(2026, 3, 26).getTime();
+
+      totalGuestsMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+
+        if (mx < PLOT_LEFT || mx > plotRight) {
+          totalGuestsTooltipEl.style.display = 'none';
+          return;
+        }
+
+        // Map cursor X → date → nearest data point.
+        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
+        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
+        var d = TOTAL_GUESTS_DATA.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+
+        // Only show tooltip for visible series — if current hidden, suppress.
+        if (!totalGuestsVisibility.current) { totalGuestsTooltipEl.style.display = 'none'; return; }
+
+        var pctRaw   = (d.current - d.prev) / d.prev * 100;
+        var pct      = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
+        var pctColor = pctRaw >= 0 ? '#257469' : '#b1294a';
+        var pctBg    = pctRaw >= 0 ? '#effaf9' : '#fdecef';
+        var stripe   = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+
+        totalGuestsTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Total guests</p>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:4px;">' +
+                '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(d.date) + '</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtM(d.current) + '</span>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+              '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pct + '</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs prev period</span>' +
+            '</div>' +
+          '</div>' +
+          (totalGuestsVisibility.prev
+            ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Prev period</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtM(d.prev) + '</span>' +
+              '</div>'
+            : '') +
+          '</div>'
+        );
+
+        totalGuestsTooltipEl.style.display = 'block';
+
+        // Position: right of cursor, flip left if near the right viewport edge.
+        var tw = totalGuestsTooltipEl.offsetWidth;
+        var th = totalGuestsTooltipEl.offsetHeight;
+        var tx = e.clientX + 16;
+        var ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8)                           ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        totalGuestsTooltipEl.style.left = tx + 'px';
+        totalGuestsTooltipEl.style.top  = ty + 'px';
+      };
+
+      totalGuestsMouseLeave = function() {
+        totalGuestsTooltipEl.style.display = 'none';
+      };
+
+      container.addEventListener('mousemove',  totalGuestsMouseMove);
+      container.addEventListener('mouseleave', totalGuestsMouseLeave);
     }
 
     /* ═══════════════════════════════════════════════════
