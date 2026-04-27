@@ -53,13 +53,64 @@ Clicking anywhere in the card header navigates to that chart's dedicated detail 
 
 ## Detail Page
 
-Each chart has its own separate detail page (e.g. `beta/dashboard-[chart-name].html`). It contains:
+Each chart has its own dedicated detail page at `beta/dashboard-[chart-name].html`. The dashboard's `openChartDetail(metricId)` function maps each metric ID to its detail page; charts without a custom page fall back to the generic `dashboard-chart-detail.html`.
 
-1. Chart title as page heading, description as subheading
-2. Same global filter bar
-3. Larger version of the chart
-4. The underlying **data table** that was used to build the chart
-5. **Ava insights** (AI-generated commentary) — TBD placement
+### Page structure
+
+Top-to-bottom:
+
+1. **Breadcrumb** — `Dashboard › [Chart name]`
+2. **Title bar** — chart title (h1), chart description, optional Help button
+3. **Global filter bar** — same component as the dashboard
+4. **Chart card** — wider / taller version of the dashboard card
+5. **Data table** — the rows that produced the chart, paginated
+6. **Ava insights** — TBD placement
+
+### Chart card adaptations
+
+The chart on the detail page uses the same data and series colors as the dashboard card, but takes advantage of the extra space:
+
+- **More granular X-axis ticks** — for time series, switch from weekly labels to ~3-day intervals (or daily, depending on range)
+- **More Y-axis intervals** — finer subdivisions (e.g. every 0.02M instead of every 0.05M)
+- **Taller plot area** — apply the `.chart-card__placeholder--detail` modifier (currently 389px)
+- **Same hero metric and legend** — value + change pill and series-toggle legend stay in their dashboard positions; never redraw the chart with different data here
+
+### Data table
+
+Standardized layout for time-series charts — one row per data point:
+
+| Column      | Notes                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------- |
+| Date        | Left-aligned. Header uses `.chart-th-inner--start`                                       |
+| This period | Right-aligned. Full-precision value (e.g. `1,156,237`), not the chart's M-shorthand      |
+| Prev period | Right-aligned. Same precision rules as This period                                       |
+| Δ           | Right-aligned. Signed full-precision integer (e.g. `+27,396`)                            |
+| Δ%          | Right-aligned pill — green `#effaf9` / `#257469` if ≥ 0, red `#fdecef` / `#b1294a` if negative. Font weight 500 |
+
+Sort affordances live in column headers. Series-toggle checkboxes do **not** belong in the table — the legend buttons above the chart are the canonical control.
+
+### Pagination
+
+10 rows per page, sharing the same component as `cockpit-admins.html`:
+
+- Items-per-page dropdown on the left (currently fixed at 10)
+- Page-selector dropdown + "of N pages" label + prev / next arrows on the right
+- Styles: `.pagination__*` classes in `bento.css` + `beta.css`
+
+### Number formatting
+
+Detail-page tables show full-precision values, not the M-shorthand used on the dashboard:
+
+- Dashboard card: `1.24M`
+- Detail page table: `1,238,427`
+
+Where source data only has M-precision (e.g. `1.156`), derive a stable trailing-three-digit offset from the date so cells look like real measurements but stay deterministic across renders.
+
+### Data-point interactions
+
+Clicking a data point opens the context menu defined under [Data Point Interactions § Click → Context Menu](#click--context-menu). The interaction is currently wired only on detail pages — clicking a card on the dashboard navigates to its detail page first. The menu is series-aware: clicking near the dashed prev-period line opens the menu for that series (with the striped marker), not the primary series.
+
+Reference implementation: `beta/dashboard-total-guests.html`. Reusable plumbing — markup, CSS class, and the `attachChartPointMenu(container, opts)` helper — is documented in `analytics_page_patterns.md` so other charts can drop it in by passing the same plot-area math their tooltip already uses.
 
 ---
 
@@ -77,13 +128,21 @@ Design reference: Mixpanel-style tooltip. Final visual design TBD (custom design
 
 ### Click → Context Menu
 
-Clicking a data point opens a small context menu with actions:
+Clicking a data point opens a small context menu anchored next to the cursor and snapped to the nearest data point. The menu has two parts:
 
-- **Create a segment** — opens segment creation flow scoped to that data point
-- **View users** — shows the users behind that data point
-- **Get insight from textQL** — triggers a textQL query/insight for that data point
+**Header** — identifies the clicked point:
 
-Final visual design TBD (custom design, not Mixpanel's).
+- Color marker (solid for primary series, striped for the dashed prev-period series)
+- Date (e.g. `Apr 8, 2026`) on the left, value (e.g. `1.16M`) on the right
+- 1px `#dfe1e2` separator below
+
+**Actions:**
+
+- **View users** — shows the users behind that data point (`group` icon)
+- **Create segment** — opens the segment creation flow scoped to that data point (`stroke_partial` icon)
+- **Ask Ava about this…** — triggers an Ava insight for that data point (Ava avatar)
+
+Visual spec from Figma node `4711:7268`: 2px `#dfe1e2` border, 8px radius, 16px padding, `0 4px 12px rgba(0,0,0,0.12)` shadow. No item is highlighted by default — items use a `:hover` background with 8px radius. The menu is series-aware and supports clicking either line on multi-series charts.
 
 ---
 
@@ -156,9 +215,8 @@ If a specific chart's data is older than the page-level refresh timestamp (e.g. 
 ## Open Items
 
 - Define the full list of 14 available charts and their categories
-- Design for the data point context menu (Create segment / View users / Get insight)
 - Design for the filter incompatibility indicator on chart cards
 - Ava insights placement on detail pages
 - textQL integration details
-- Detail page table structure — varies per chart or standardized?
+- Detail-page table structure for non-time-series charts (the time-series standard is in place; bar / pie / sankey / etc. TBD)
 

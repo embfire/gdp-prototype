@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Total guests — PAR Guest360 Beta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="../assets/bento.css">
+  <link rel="stylesheet" href="beta.css">
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+          <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+        </a>
+        <span class="header-brand-divider" aria-hidden="true"></span>
+        <button class="header-brand-btn" aria-label="Select brand">
+          Life Alive
+          <i class="ph ph-caret-down"></i>
+        </button>
+      </div>
+      <div class="header-right">
+        <button class="header-btn">
+          <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
+          Ava
+        </button>
+        <button class="header-btn">
+          <span class="material-symbols-rounded">school</span>
+          PAR Academy
+        </button>
+        <button class="header-btn header-btn--icon" aria-label="Profile">
+          <span class="material-symbols-rounded">person</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="app-shell__body">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Main navigation">
+
+          <div class="nav-group" data-nav-group-id="top">
+            <a href="index.html" class="nav-item active">
+              <i class="ph-duotone ph-chart-bar" aria-hidden="true"></i>
+              <span class="nav-item__label">Dashboard</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="guests">
+            <div class="nav-group-title">Guests</div>
+            <a href="guest-profiles.html" class="nav-item">
+              <i class="ph-duotone ph-user-circle" aria-hidden="true"></i>
+              <span class="nav-item__label">Guest profiles</span>
+            </a>
+            <a href="guest-segments.html" class="nav-item">
+              <i class="ph-duotone ph-users-three" aria-hidden="true"></i>
+              <span class="nav-item__label">Segments</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="bottom">
+            <a href="settings.html" class="nav-item">
+              <i class="ph-duotone ph-gear" aria-hidden="true"></i>
+              <span class="nav-item__label">Settings</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </a>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
+              <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
+              <span class="nav-item__label">Cockpit</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group" id="cockpit-sub">
+              <a href="cockpit-features.html" class="nav-sub-item">Features</a>
+              <a href="cockpit-admins.html" class="nav-sub-item">Admins</a>
+            </div>
+          </div>
+
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+        <div class="content-area content-area--chart-detail">
+
+          <!-- Breadcrumbs -->
+          <nav class="chart-breadcrumbs" aria-label="Breadcrumb">
+            <a href="index.html" class="chart-breadcrumbs__link">Dashboard</a>
+            <span class="chart-breadcrumbs__separator" aria-hidden="true">
+              <span class="material-symbols-rounded">chevron_right</span>
+            </span>
+            <span class="chart-breadcrumbs__current">Total guests</span>
+          </nav>
+
+          <!-- Title bar -->
+          <div class="chart-detail-title-bar">
+            <div class="chart-detail-title-bar__top">
+              <h1 class="chart-detail-title-bar__title">Total guests</h1>
+              <div class="chart-detail-title-bar__actions">
+                <button class="button transparent dashboard-btn">
+                  <span class="material-symbols-rounded dashboard-btn__icon">help</span>
+                  <span class="dashboard-btn__label">Help</span>
+                </button>
+              </div>
+            </div>
+            <p class="chart-detail-title-bar__subtitle">Chart explanation</p>
+          </div>
+
+          <!-- Filter bar -->
+          <div class="dashboard-filter-bar">
+            <div class="date-range-wrapper">
+              <div class="btn-group" role="group" aria-label="Date range">
+                <button class="btn-group__item btn-group__item--active" onclick="setDateRange(this, '7D')">7D</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '30D')">30D</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '90D')">90D</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '12M')">12M</button>
+                <button class="btn-group__item" onclick="setDateRange(this, 'YTD')">YTD</button>
+                <button class="btn-group__item btn-group__item--icon" id="btn-custom-range" onclick="setDateRange(this, 'custom')">
+                  <span class="material-symbols-rounded">calendar_month</span>
+                  Custom
+                </button>
+              </div>
+
+              <!-- Date range picker panel -->
+              <div class="date-picker-panel" id="date-picker-panel">
+
+                <div class="dp-input-row">
+                  <div class="dp-input-group">
+                    <label class="dp-input-label">Start date</label>
+                    <div class="dp-input-field">
+                      <span class="material-symbols-rounded">calendar_month</span>
+                      <span class="dp-input-value" id="dp-start-value">MM/DD/YYYY</span>
+                    </div>
+                  </div>
+                  <div class="dp-input-group">
+                    <label class="dp-input-label">End date</label>
+                    <div class="dp-input-field">
+                      <span class="material-symbols-rounded">calendar_month</span>
+                      <span class="dp-input-value" id="dp-end-value">MM/DD/YYYY</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="dp-calendars-row" id="dp-calendars-row">
+                  <div class="dp-calendar" id="dp-cal-left">
+                    <div class="dp-cal-header">
+                      <button class="dp-cal-nav" onclick="dpNavigate('left-back')" aria-label="Previous month">
+                        <span class="material-symbols-rounded">chevron_left</span>
+                      </button>
+                      <span class="dp-cal-header__title" id="dp-title-left"></span>
+                      <div class="dp-cal-nav-spacer"></div>
+                    </div>
+                    <div class="dp-day-headers">
+                      <div class="dp-day-header">MON</div>
+                      <div class="dp-day-header">TUE</div>
+                      <div class="dp-day-header">WED</div>
+                      <div class="dp-day-header">THU</div>
+                      <div class="dp-day-header">FRI</div>
+                      <div class="dp-day-header">SAT</div>
+                      <div class="dp-day-header">SUN</div>
+                    </div>
+                    <div class="dp-cal-grid" id="dp-grid-left"></div>
+                  </div>
+
+                  <div class="dp-calendar" id="dp-cal-right">
+                    <div class="dp-cal-header">
+                      <div class="dp-cal-nav-spacer"></div>
+                      <span class="dp-cal-header__title" id="dp-title-right"></span>
+                      <button class="dp-cal-nav" onclick="dpNavigate('right-forward')" aria-label="Next month">
+                        <span class="material-symbols-rounded">chevron_right</span>
+                      </button>
+                    </div>
+                    <div class="dp-day-headers">
+                      <div class="dp-day-header">MON</div>
+                      <div class="dp-day-header">TUE</div>
+                      <div class="dp-day-header">WED</div>
+                      <div class="dp-day-header">THU</div>
+                      <div class="dp-day-header">FRI</div>
+                      <div class="dp-day-header">SAT</div>
+                      <div class="dp-day-header">SUN</div>
+                    </div>
+                    <div class="dp-cal-grid" id="dp-grid-right"></div>
+                  </div>
+                </div>
+
+                <div class="dp-footer">
+                  <button class="button transparent" onclick="cancelDatePicker()">
+                    <span>Cancel</span>
+                  </button>
+                  <button class="button primary" onclick="applyDateRange()">
+                    <span style="color:#fff;">Apply</span>
+                  </button>
+                </div>
+
+              </div>
+              <!-- /date-picker-panel -->
+            </div>
+
+            <span class="dashboard-filter-label">compared to</span>
+
+            <div class="dropdown" id="dd-compare">
+              <div class="dropdown__wrapper">
+                <button class="dropdown__button" onclick="toggleDropdown('dd-compare')">
+                  <span>Previous period</span>
+                  <i class="material-symbols-rounded">expand_more</i>
+                </button>
+              </div>
+              <div class="dropdown__options">
+                <ul>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous period</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous year</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>No comparison</span></button></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="dashboard-filter-spacer"></div>
+
+            <button class="button outlined dashboard-btn">
+              <span class="material-symbols-rounded dashboard-btn__icon">filter_alt</span>
+              <span class="dashboard-btn__label">More filters...</span>
+            </button>
+          </div>
+          <!-- /filter bar -->
+
+          <!-- Chart card -->
+          <div class="chart-card">
+            <div class="chart-card__header chart-card__header--detail">
+              <div class="chart-card__header-text">
+                <p class="chart-card__title">Total guests</p>
+                <p class="chart-card__subtitle">Chart explanation</p>
+              </div>
+              <div class="chart-card__header-controls">
+                <div class="dropdown" id="dd-breakdown">
+                  <div class="dropdown__wrapper">
+                    <button class="dropdown__button" onclick="toggleDropdown('dd-breakdown')">
+                      <span>By location</span>
+                      <i class="material-symbols-rounded">expand_more</i>
+                    </button>
+                  </div>
+                  <div class="dropdown__options dropdown__options--right">
+                    <ul>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By location</span></button></li>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By channel</span></button></li>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By daypart</span></button></li>
+                    </ul>
+                  </div>
+                </div>
+                <button class="button outlined dashboard-btn">
+                  <img src="../assets/ava-assistant.svg" alt="" width="20" height="20">
+                  <span class="dashboard-btn__label">Get insight</span>
+                </button>
+                <div class="chart-context-wrap">
+                  <button class="button transparent no-content chart-card__dots-btn" onclick="toggleChartMenu(event, 'detail')" aria-label="More options" aria-expanded="false">
+                    <i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i>
+                  </button>
+                  <div class="chart-context-menu" id="chart-menu-detail">
+                    <ul>
+                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
+                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
+                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava about this...</span></button></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="chart-card__body">
+              <div class="chart-card__metric">
+                <div class="chart-card__metric-row">
+                  <p class="chart-card__metric-value">1.24M</p>
+                  <span class="chart-card__metric-pill chart-card__metric-pill--up">+5.32%</span>
+                </div>
+                <p class="chart-card__metric-period">1.13M prev period</p>
+              </div>
+              <div class="chart-card__legend">
+                <button type="button" class="chart-card__legend-item" data-series-key="current" onclick="toggleAGSeries(this, 'current')" aria-pressed="true">
+                  <span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>
+                  <span>This period</span>
+                </button>
+                <button type="button" class="chart-card__legend-item" data-series-key="prev" onclick="toggleAGSeries(this, 'prev')" aria-pressed="true">
+                  <span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>
+                  <span>Prev period</span>
+                </button>
+              </div>
+              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-total-guests"></div>
+            </div>
+          </div>
+          <!-- /chart card -->
+
+          <!-- Data table -->
+          <div class="chart-detail-table-wrap">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr style="background-color: #dfe1e2; border-bottom: none;">
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner chart-th-inner--start">Date <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner">This period <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner">Prev period <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner">Δ <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner">Δ% <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="total-guests-table-body"></tbody>
+              </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination-bar">
+              <div class="pagination__items-per-page">
+                <label>Items per page</label>
+                <div class="pagination-dropdown">
+                  <div class="dropdown__wrapper" style="min-width:80px;">
+                    <button class="dropdown__button">
+                      <span>10</span>
+                      <i class="ph ph-caret-down" style="font-size:14px; flex-shrink:0;"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="pagination__navigation">
+                <div class="pagination-dropdown">
+                  <div class="dropdown__wrapper" style="min-width:80px;">
+                    <button class="dropdown__button" id="page-dropdown-btn" onclick="togglePageDropdown()">
+                      <span id="page-dropdown-label">1</span>
+                      <i class="ph ph-caret-down" style="font-size:14px; flex-shrink:0;"></i>
+                    </button>
+                  </div>
+                  <div class="dropdown__options" id="page-options" style="bottom:calc(100% + 8px); top:auto;">
+                    <ul id="page-options-list"></ul>
+                  </div>
+                </div>
+                <label id="total-pages-text">of 4 pages</label>
+                <div class="pagination__navigation__arrows">
+                  <button class="pagination__nav-arrow" id="prev-btn" onclick="prevPage()" disabled>
+                    <i class="ph ph-caret-left"></i>
+                  </button>
+                  <button class="pagination__nav-arrow" id="next-btn" onclick="nextPage()">
+                    <i class="ph ph-caret-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- /pagination -->
+          </div>
+          <!-- /data table -->
+
+        </div>
+        <!-- /content-area--chart-detail -->
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Chart data-point context menu (anchored to click position on chart) -->
+  <div class="chart-point-menu" id="chart-point-menu" role="menu" aria-hidden="true">
+    <div class="chart-point-menu__header">
+      <div class="chart-point-menu__header-left">
+        <span class="chart-point-menu__color-dot"></span>
+        <span class="chart-point-menu__date" id="chart-point-menu-date">—</span>
+      </div>
+      <span class="chart-point-menu__value" id="chart-point-menu-value">—</span>
+    </div>
+    <div class="chart-point-menu__separator" aria-hidden="true"></div>
+    <ul class="chart-point-menu__list">
+      <li>
+        <button type="button" class="chart-point-menu__item" onclick="onPointMenuAction('view-users')">
+          <span class="material-symbols-rounded">group</span>
+          <span>View users</span>
+        </button>
+      </li>
+      <li>
+        <button type="button" class="chart-point-menu__item" onclick="onPointMenuAction('create-segment')">
+          <span class="material-symbols-rounded">stroke_partial</span>
+          <span>Create segment</span>
+        </button>
+      </li>
+      <li>
+        <button type="button" class="chart-point-menu__item" onclick="onPointMenuAction('ask-ava')">
+          <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
+          <span>Ask Ava about this...</span>
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ag-charts-community@13.2.1/dist/umd/ag-charts-community.min.js"></script>
+  <script>
+    /* ── Sidebar / dropdowns / date range picker / filter bar ── */
+    function toggleCockpit(btn) {
+      const isOpen = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      document.getElementById('cockpit-sub').classList.toggle('open', isOpen);
+    }
+
+    function setDateRange(btn, range) {
+      btn.closest('.btn-group').querySelectorAll('.btn-group__item').forEach(function(b) {
+        b.classList.remove('btn-group__item--active');
+      });
+      btn.classList.add('btn-group__item--active');
+      if (range === 'custom') { openDatePicker(); } else { closeDatePicker(); }
+    }
+
+    function toggleChartMenu(event, id) {
+      event.stopPropagation();
+      var menu = document.getElementById('chart-menu-' + id);
+      var isOpen = menu.classList.toggle('chart-context-menu--open');
+      var btn = menu.previousElementSibling;
+      btn.setAttribute('aria-expanded', isOpen);
+      if (isOpen) {
+        document.addEventListener('click', function closeMenu(e) {
+          if (!menu.closest('.chart-context-wrap').contains(e.target)) {
+            menu.classList.remove('chart-context-menu--open');
+            btn.setAttribute('aria-expanded', 'false');
+            document.removeEventListener('click', closeMenu);
+          }
+        });
+      }
+    }
+
+    function toggleDropdown(id) {
+      var dd = document.getElementById(id);
+      var opts = dd.querySelector('.dropdown__options');
+      var isOpen = opts.classList.toggle('dropdown__options_open');
+      if (isOpen) {
+        document.addEventListener('click', function closeOnOutside(e) {
+          if (!dd.contains(e.target)) {
+            opts.classList.remove('dropdown__options_open');
+            document.removeEventListener('click', closeOnOutside);
+          }
+        });
+      }
+    }
+
+    function selectDropdownOption(btn) {
+      var dd = btn.closest('.dropdown');
+      dd.querySelector('.dropdown__button span:first-child').textContent = btn.querySelector('span').textContent;
+      dd.querySelector('.dropdown__options').classList.remove('dropdown__options_open');
+    }
+
+    /* ── Date range picker (verbatim from dashboard-chart-detail.html) ── */
+    var dpStartDate = null, dpEndDate = null, dpHoverDate = null;
+    var dpLeftMonth = null, dpRightMonth = null, dpOutsideHandler = null;
+    var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    function openDatePicker() {
+      var panel = document.getElementById('date-picker-panel');
+      if (panel.classList.contains('date-picker-panel--open')) return;
+      var now = new Date();
+      dpRightMonth = { year: now.getFullYear(), month: now.getMonth() };
+      dpLeftMonth  = prevMonth(dpRightMonth);
+      dpStartDate = null; dpEndDate = null; dpHoverDate = null;
+      renderDatePicker();
+      panel.classList.add('date-picker-panel--open');
+      document.getElementById('dp-calendars-row').addEventListener('mouseleave', dpClearHover);
+      setTimeout(function() {
+        dpOutsideHandler = function(e) {
+          var wrapper = document.getElementById('date-picker-panel').closest('.date-range-wrapper');
+          if (!wrapper.contains(e.target)) closeDatePicker();
+        };
+        document.addEventListener('click', dpOutsideHandler);
+      }, 0);
+    }
+    function closeDatePicker() {
+      var panel = document.getElementById('date-picker-panel');
+      panel.classList.remove('date-picker-panel--open');
+      if (dpOutsideHandler) { document.removeEventListener('click', dpOutsideHandler); dpOutsideHandler = null; }
+      document.getElementById('dp-calendars-row').removeEventListener('mouseleave', dpClearHover);
+    }
+    function cancelDatePicker() {
+      closeDatePicker();
+      var customBtn = document.getElementById('btn-custom-range');
+      if (!dpStartDate || !dpEndDate) {
+        customBtn.classList.remove('btn-group__item--active');
+        var firstBtn = customBtn.closest('.btn-group').querySelector('.btn-group__item');
+        firstBtn.classList.add('btn-group__item--active');
+      }
+    }
+    function applyDateRange() {
+      if (dpStartDate && dpEndDate) {
+        var label = fmtDate(dpStartDate) + ' – ' + fmtDate(dpEndDate);
+        var customBtn = document.getElementById('btn-custom-range');
+        customBtn.querySelector('.dp-custom-label') && (customBtn.querySelector('.dp-custom-label').textContent = label);
+      }
+      closeDatePicker();
+    }
+    function dpClearHover() {
+      if (dpStartDate && !dpEndDate) { dpHoverDate = null; renderDatePicker(); }
+    }
+    function dpNavigate(direction) {
+      if (direction === 'left-back') { dpLeftMonth = prevMonth(dpLeftMonth); dpRightMonth = nextMonth(dpLeftMonth); }
+      else { dpRightMonth = nextMonth(dpRightMonth); dpLeftMonth = prevMonth(dpRightMonth); }
+      renderDatePicker();
+    }
+    function prevMonth(m) { return m.month === 0 ? { year: m.year-1, month: 11 } : { year: m.year, month: m.month-1 }; }
+    function nextMonth(m) { return m.month === 11 ? { year: m.year+1, month: 0 } : { year: m.year, month: m.month+1 }; }
+    function renderDatePicker() {
+      renderCalendar('left',  dpLeftMonth,  'dp-title-left',  'dp-grid-left');
+      renderCalendar('right', dpRightMonth, 'dp-title-right', 'dp-grid-right');
+      updateDpInputs();
+    }
+    function renderCalendar(side, mo, titleId, gridId) {
+      document.getElementById(titleId).textContent = MONTH_NAMES[mo.month] + ' ' + mo.year;
+      var grid = document.getElementById(gridId); grid.innerHTML = '';
+      var firstDayOfWeek = new Date(mo.year, mo.month, 1).getDay();
+      var startCol = (firstDayOfWeek + 6) % 7;
+      var daysInMonth = new Date(mo.year, mo.month + 1, 0).getDate();
+      var daysInPrev  = new Date(mo.year, mo.month, 0).getDate();
+      var effectiveEnd = dpEndDate ? dpEndDate.getTime() : (dpHoverDate && dpStartDate && dpHoverDate >= dpStartDate ? dpHoverDate.getTime() : null);
+      for (var i = 0; i < 42; i++) {
+        var cellDate, isOut = false;
+        if (i < startCol) { cellDate = new Date(mo.year, mo.month-1, daysInPrev - startCol + i + 1); isOut = true; }
+        else if (i >= startCol + daysInMonth) { cellDate = new Date(mo.year, mo.month+1, i - startCol - daysInMonth + 1); isOut = true; }
+        else { cellDate = new Date(mo.year, mo.month, i - startCol + 1); }
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'dp-cal-cell'; btn.textContent = cellDate.getDate();
+        if (isOut) btn.classList.add('dp-cal-cell--out');
+        var ts = cellDate.getTime(), startTs = dpStartDate ? dpStartDate.getTime() : null;
+        if (startTs && ts === startTs) btn.classList.add('dp-cal-cell--start');
+        else if (effectiveEnd && ts === effectiveEnd && startTs) btn.classList.add('dp-cal-cell--end');
+        else if (startTs && effectiveEnd && ts > startTs && ts < effectiveEnd) btn.classList.add('dp-cal-cell--range');
+        (function(d) {
+          btn.addEventListener('click', function() { onDpCellClick(d); });
+          btn.addEventListener('mouseenter', function() { onDpCellHover(d); });
+        })(new Date(cellDate));
+        grid.appendChild(btn);
+      }
+    }
+    function onDpCellClick(date) {
+      if (!dpStartDate || (dpStartDate && dpEndDate)) { dpStartDate = date; dpEndDate = null; dpHoverDate = null; }
+      else {
+        if (date.getTime() < dpStartDate.getTime()) { dpEndDate = dpStartDate; dpStartDate = date; }
+        else dpEndDate = date;
+        dpHoverDate = null;
+      }
+      renderDatePicker();
+    }
+    function onDpCellHover(date) { if (dpStartDate && !dpEndDate) { dpHoverDate = date; renderDatePicker(); } }
+    function updateDpInputs() {
+      var sv = document.getElementById('dp-start-value'), ev = document.getElementById('dp-end-value');
+      sv.textContent = dpStartDate ? fmtDate(dpStartDate) : 'MM/DD/YYYY';
+      ev.textContent = dpEndDate   ? fmtDate(dpEndDate)   : 'MM/DD/YYYY';
+      sv.classList.toggle('dp-input-value--set', !!dpStartDate);
+      ev.classList.toggle('dp-input-value--set', !!dpEndDate);
+    }
+    function fmtDate(d) {
+      return String(d.getMonth()+1).padStart(2,'0') + '/' + String(d.getDate()).padStart(2,'0') + '/' + d.getFullYear();
+    }
+
+    /* ═══════════════════════════════════════════════════
+       AG Charts — Total Guests (mirrors beta/index.html)
+    ═══════════════════════════════════════════════════ */
+    var totalGuestsChart = null;
+    var totalGuestsChartOptions = null;
+    var totalGuestsVisibility = { current: true, prev: true };
+    var totalGuestsTooltipEl = null, totalGuestsMouseMove = null, totalGuestsMouseLeave = null;
+
+    var TOTAL_GUESTS_DATA = (function() {
+      var baseDate = new Date(2026, 2, 19);
+      var curr = [
+        1.152, 1.155, 1.153, 1.158, 1.160, 1.157, 1.154, 1.156, 1.158,
+        1.155, 1.148, 1.142, 1.156, 1.160,
+        1.165, 1.190, 1.238, 1.182, 1.165,
+        1.160, 1.158, 1.150, 1.140, 1.137,
+        1.150, 1.158, 1.155, 1.152, 1.156,
+        1.160, 1.158, 1.154, 1.150, 1.158,
+        1.175, 1.205, 1.218, 1.214, 1.215,
+      ];
+      var prev = [
+        1.128, 1.131, 1.129, 1.133, 1.136, 1.134, 1.130, 1.132, 1.134,
+        1.135, 1.140, 1.138, 1.146, 1.150,
+        1.156, 1.161, 1.158, 1.150, 1.146,
+        1.144, 1.142, 1.146, 1.150, 1.148,
+        1.144, 1.146, 1.150, 1.152, 1.150,
+        1.148, 1.152, 1.156, 1.158, 1.156,
+        1.153, 1.156, 1.160, 1.162, 1.160,
+      ];
+      return curr.map(function(c, i) {
+        var d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() + i);
+        return { date: d, current: c, prev: prev[i] };
+      });
+    }());
+
+    function fmtChartDate(d) {
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+    function fmtM(v) { return (+v).toFixed(2).replace(/\.?0+$/, '') + 'M'; }
+
+    function toggleAGSeries(btn, seriesKey) {
+      if (!totalGuestsChart || !totalGuestsChartOptions) return;
+      var nextValue = !totalGuestsVisibility[seriesKey];
+      var someoneElseVisible = Object.keys(totalGuestsVisibility).some(function(k) {
+        return k !== seriesKey && totalGuestsVisibility[k];
+      });
+      if (!nextValue && !someoneElseVisible) return;
+
+      totalGuestsVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+
+      var newSeries = totalGuestsChartOptions.series.map(function(s, i) {
+        var vis = (i === 0) ? totalGuestsVisibility.prev : totalGuestsVisibility.current;
+        return Object.assign({}, s, { visible: vis });
+      });
+      var updateOpts = Object.assign({}, totalGuestsChartOptions, { series: newSeries });
+      totalGuestsChartOptions = updateOpts;
+      totalGuestsChart.update(updateOpts);
+    }
+
+    function initTotalGuestsChart() {
+      var container = document.getElementById('chart-area-total-guests');
+      if (!container) return;
+      if (totalGuestsChart) { totalGuestsChart.destroy(); totalGuestsChart = null; }
+      totalGuestsVisibility = { current: true, prev: true };
+
+      totalGuestsChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 0, bottom: 0, left: 0 },
+        data: TOTAL_GUESTS_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'line', xKey: 'date', yKey: 'prev', yName: 'Prev period',
+            stroke: '#5A55E3', strokeWidth: 2, lineDash: [2, 2],
+            marker: {
+              enabled: true, size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+          {
+            type: 'line', xKey: 'date', yKey: 'current', yName: 'This period',
+            stroke: '#5A55E3', strokeWidth: 2,
+            marker: {
+              enabled: true, size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+        ],
+        axes: {
+          x: {
+            type: 'time', position: 'bottom', nice: false,
+            min: new Date(2026, 2, 19),
+            max: new Date(2026, 3, 26),
+            gridLine: { enabled: false },
+            line: { enabled: false },
+            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
+            label: { fontSize: 12, color: '#000000', format: '%b %-d', padding: 8, avoidCollisions: true },
+            // Wider container → more granular ticks (every 3 days from Mar 22).
+            interval: {
+              values: (function() {
+                var ticks = [];
+                var d = new Date(2026, 2, 22);
+                var end = new Date(2026, 3, 25);
+                while (d <= end) {
+                  ticks.push(new Date(d));
+                  d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 3);
+                }
+                return ticks;
+              }()),
+            },
+            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+          },
+          y: {
+            type: 'number', position: 'left',
+            min: 1.097, max: 1.253,
+            // More intervals now that there's vertical room.
+            interval: { values: [1.10, 1.12, 1.14, 1.16, 1.18, 1.20, 1.22, 1.24] },
+            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
+            line: { enabled: false },
+            tick: { enabled: false },
+            label: {
+              fontSize: 12, color: '#000000', padding: 8,
+              formatter: function(params) { return (+params.value).toFixed(2).replace(/\.?0+$/, '') + 'M'; },
+            },
+          },
+        },
+      };
+
+      totalGuestsChart = agCharts.AgCharts.create(totalGuestsChartOptions);
+
+      /* ── Manual tooltip (mirror dashboard) ── */
+      if (totalGuestsTooltipEl && totalGuestsTooltipEl.parentNode) {
+        totalGuestsTooltipEl.parentNode.removeChild(totalGuestsTooltipEl);
+      }
+      if (totalGuestsMouseMove) {
+        container.removeEventListener('mousemove',  totalGuestsMouseMove);
+        container.removeEventListener('mouseleave', totalGuestsMouseLeave);
+      }
+      totalGuestsTooltipEl = document.createElement('div');
+      totalGuestsTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(totalGuestsTooltipEl);
+
+      var PLOT_LEFT = 46;
+      var PLOT_RIGHT_PAD = 0;
+      var AXIS_MIN_TIME = new Date(2026, 2, 19).getTime();
+      var AXIS_MAX_TIME = new Date(2026, 3, 26).getTime();
+
+      totalGuestsMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+        if (mx < PLOT_LEFT || mx > plotRight) { totalGuestsTooltipEl.style.display = 'none'; return; }
+        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
+        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
+        var d = TOTAL_GUESTS_DATA.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+        if (!totalGuestsVisibility.current) { totalGuestsTooltipEl.style.display = 'none'; return; }
+
+        var pctRaw = (d.current - d.prev) / d.prev * 100;
+        var pct = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
+        var pctColor = pctRaw >= 0 ? '#257469' : '#b1294a';
+        var pctBg    = pctRaw >= 0 ? '#effaf9' : '#fdecef';
+        var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+
+        totalGuestsTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Total guests</p>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:4px;">' +
+                '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(d.date) + '</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtM(d.current) + '</span>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+              '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pct + '</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs prev period</span>' +
+            '</div>' +
+          '</div>' +
+          (totalGuestsVisibility.prev
+            ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Prev period</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtM(d.prev) + '</span>' +
+              '</div>'
+            : '') +
+          '</div>'
+        );
+        totalGuestsTooltipEl.style.display = 'block';
+        var tw = totalGuestsTooltipEl.offsetWidth, th = totalGuestsTooltipEl.offsetHeight;
+        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8) ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        totalGuestsTooltipEl.style.left = tx + 'px';
+        totalGuestsTooltipEl.style.top  = ty + 'px';
+      };
+      totalGuestsMouseLeave = function() { totalGuestsTooltipEl.style.display = 'none'; };
+      container.addEventListener('mousemove',  totalGuestsMouseMove);
+      container.addEventListener('mouseleave', totalGuestsMouseLeave);
+
+      attachChartPointMenu(container, {
+        plotLeft: PLOT_LEFT,
+        plotRightPad: PLOT_RIGHT_PAD,
+        axisMinTime: AXIS_MIN_TIME,
+        axisMaxTime: AXIS_MAX_TIME,
+        axisMinValue: 1.097,
+        axisMaxValue: 1.253,
+        plotTop: 8,         // matches chart padding.top
+        xAxisHeight: 30,    // approx label area at the bottom
+        data: TOTAL_GUESTS_DATA,
+        // Map series-key → which value field on the data row.
+        seriesValueKeys: { current: 'current', prev: 'prev' },
+      });
+    }
+
+    /* ── Reusable: anchor a context menu to a chart click ──
+       Click anywhere in the plot area → menu opens next to the cursor.
+       Snap-to-point logic is shared with the tooltip so the menu is implicitly
+       "for the nearest data point". Exposed as a pattern for other charts. */
+    var pointMenuAnchor = null;
+    var pointMenuSeries = 'current';
+    var pointMenuOpts   = null;
+    function attachChartPointMenu(container, opts) {
+      pointMenuOpts = opts;
+      container.style.cursor = 'pointer';
+      container.addEventListener('click', function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var my = e.clientY - rect.top;
+        var plotRight = rect.width - opts.plotRightPad;
+        if (mx < opts.plotLeft || mx > plotRight) return;
+
+        // Don't let this click bubble to the document outside-listener that
+        // a previously-open menu installed — otherwise the new menu we're
+        // about to open would be closed in the same event.
+        e.stopPropagation();
+
+        // Snap to nearest data point on X.
+        var relX = (mx - opts.plotLeft) / (plotRight - opts.plotLeft);
+        var targetTime = opts.axisMinTime + relX * (opts.axisMaxTime - opts.axisMinTime);
+        var d = opts.data.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+
+        // Pick the series whose projected Y is closer to the cursor — so
+        // clicking near the dashed prev-period line opens the menu for it.
+        var seriesKey = 'current';
+        if (opts.axisMinValue != null && opts.axisMaxValue != null && opts.seriesValueKeys) {
+          var plotH = rect.height - (opts.plotTop || 0) - (opts.xAxisHeight || 0);
+          var range = opts.axisMaxValue - opts.axisMinValue;
+          var bestDist = Infinity;
+          Object.keys(opts.seriesValueKeys).forEach(function(key) {
+            // Skip series the user has hidden via the legend.
+            if (typeof totalGuestsVisibility !== 'undefined' && totalGuestsVisibility[key] === false) return;
+            var v = d[opts.seriesValueKeys[key]];
+            var y = (opts.plotTop || 0) + (1 - (v - opts.axisMinValue) / range) * plotH;
+            var dist = Math.abs(my - y);
+            if (dist < bestDist) { bestDist = dist; seriesKey = key; }
+          });
+        }
+
+        pointMenuAnchor = d;
+        pointMenuSeries = seriesKey;
+        openPointMenu(e.clientX, e.clientY);
+      });
+    }
+
+    function openPointMenu(clientX, clientY) {
+      var menu = document.getElementById('chart-point-menu');
+      // Make sure any previous outside-listener is gone before we attach a new one.
+      document.removeEventListener('click', closePointMenuOnOutside);
+
+      // Populate header from the clicked data point + series.
+      if (pointMenuAnchor) {
+        var dateEl  = document.getElementById('chart-point-menu-date');
+        var valueEl = document.getElementById('chart-point-menu-value');
+        var dotEl   = menu.querySelector('.chart-point-menu__color-dot');
+        var valueKey = (pointMenuOpts && pointMenuOpts.seriesValueKeys && pointMenuOpts.seriesValueKeys[pointMenuSeries]) || pointMenuSeries;
+        if (dateEl)  dateEl.textContent  = fmtChartDate(pointMenuAnchor.date) + ', ' + pointMenuAnchor.date.getFullYear();
+        if (valueEl) valueEl.textContent = fmtM(pointMenuAnchor[valueKey]);
+        if (dotEl)   dotEl.classList.toggle('chart-point-menu__color-dot--striped', pointMenuSeries === 'prev');
+      }
+
+      menu.classList.add('chart-point-menu--open');
+      menu.setAttribute('aria-hidden', 'false');
+
+      // Hide the tooltip while the menu is open (it would hover over the menu).
+      if (totalGuestsTooltipEl) totalGuestsTooltipEl.style.display = 'none';
+
+      var mw = menu.offsetWidth, mh = menu.offsetHeight;
+      var x = clientX + 12, y = clientY + 12;
+      if (x + mw > window.innerWidth  - 8) x = clientX - mw - 12;
+      if (y + mh > window.innerHeight - 8) y = clientY - mh - 12;
+      if (y < 8) y = 8;
+      menu.style.left = x + 'px';
+      menu.style.top  = y + 'px';
+
+      setTimeout(function() {
+        document.addEventListener('click', closePointMenuOnOutside);
+      }, 0);
+    }
+
+    function closePointMenu() {
+      var menu = document.getElementById('chart-point-menu');
+      menu.classList.remove('chart-point-menu--open');
+      menu.setAttribute('aria-hidden', 'true');
+      document.removeEventListener('click', closePointMenuOnOutside);
+    }
+
+    function closePointMenuOnOutside(e) {
+      if (!e.target.closest('#chart-point-menu')) closePointMenu();
+    }
+
+    function onPointMenuAction(action) {
+      // Stub — wire up real behavior per chart later.
+      // pointMenuAnchor holds the data row for the clicked point.
+      console.log('chart-point-menu action:', action, pointMenuAnchor);
+      closePointMenu();
+    }
+
+    /* ── Full-precision numbers ──
+       Source data is at M-scale (e.g. 1.156). Multiply to integers and add
+       a deterministic 0–999 offset derived from the date so the trailing
+       digits look real and stay stable across renders. */
+    function seedFromDate(d) {
+      var s = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+      return ((s * 9301 + 49297) % 233280);
+    }
+    function fullNumber(mValue, d, salt) {
+      var base = Math.round(mValue * 1000) * 1000; // e.g. 1.156 → 1,156,000
+      var seed = (seedFromDate(d) + salt * 7919) % 1000;
+      return base + seed;
+    }
+    function fmtFull(n) {
+      var sign = n < 0 ? '-' : '';
+      var abs = Math.abs(Math.round(n));
+      return sign + abs.toLocaleString('en-US');
+    }
+    function fmtFullSigned(n) {
+      var sign = n >= 0 ? '+' : '-';
+      return sign + Math.abs(Math.round(n)).toLocaleString('en-US');
+    }
+
+    /* ── Pagination state ── */
+    var PER_PAGE = 10;
+    var currentPage = 1;
+
+    function totalPages() {
+      return Math.max(1, Math.ceil(TOTAL_GUESTS_DATA.length / PER_PAGE));
+    }
+
+    function renderTable() {
+      var tbody = document.getElementById('total-guests-table-body');
+      var tp = totalPages();
+      if (currentPage > tp) currentPage = tp;
+      var start = (currentPage - 1) * PER_PAGE;
+      var pageRows = TOTAL_GUESTS_DATA.slice(start, start + PER_PAGE);
+
+      tbody.innerHTML = pageRows.map(function(d) {
+        var curFull  = fullNumber(d.current, d.date, 1);
+        var prevFull = fullNumber(d.prev,    d.date, 2);
+        var delta    = curFull - prevFull;
+        var deltaPct = delta / prevFull * 100;
+        var pctSign  = deltaPct >= 0 ? '+' : '';
+        var pctColor = deltaPct >= 0 ? '#257469' : '#b1294a';
+        var pctBg    = deltaPct >= 0 ? '#effaf9' : '#fdecef';
+        return (
+          '<tr>' +
+            '<td>' + fmtChartDate(d.date) + ', 2026</td>' +
+            '<td class="chart-data-col">' + fmtFull(curFull) + '</td>' +
+            '<td class="chart-data-col">' + fmtFull(prevFull) + '</td>' +
+            '<td class="chart-data-col">' + fmtFullSigned(delta) + '</td>' +
+            '<td class="chart-data-col">' +
+              '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 6px;border-radius:4px;font-size:0.875rem;font-weight:500;">' +
+                pctSign + deltaPct.toFixed(2) + '%' +
+              '</span>' +
+            '</td>' +
+          '</tr>'
+        );
+      }).join('');
+
+      document.getElementById('page-dropdown-label').textContent = currentPage;
+      document.getElementById('total-pages-text').textContent = 'of ' + tp + ' page' + (tp !== 1 ? 's' : '');
+      document.getElementById('prev-btn').disabled = currentPage <= 1;
+      document.getElementById('next-btn').disabled = currentPage >= tp;
+      document.getElementById('page-options-list').innerHTML = Array.from({ length: tp }, function(_, i) { return i + 1; })
+        .map(function(p) {
+          return '<li><button onclick="goToPage(' + p + ')" style="background:none;border:none;width:100%;text-align:left;padding:8px 12px;cursor:pointer;font-family:\'Manrope\',sans-serif;font-size:16px;font-weight:' + (p === currentPage ? 700 : 400) + ';">' + p + '</button></li>';
+        }).join('');
+    }
+
+    function prevPage() { if (currentPage > 1) { currentPage--; renderTable(); } }
+    function nextPage() { if (currentPage < totalPages()) { currentPage++; renderTable(); } }
+    function goToPage(p) {
+      currentPage = p;
+      document.getElementById('page-options').classList.remove('dropdown__options_open');
+      renderTable();
+    }
+    function togglePageDropdown() {
+      document.getElementById('page-options').classList.toggle('dropdown__options_open');
+    }
+
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#page-dropdown-btn') && !e.target.closest('#page-options')) {
+        document.getElementById('page-options').classList.remove('dropdown__options_open');
+      }
+    });
+
+    /* ── Boot ── */
+    document.addEventListener('DOMContentLoaded', function() {
+      renderTable();
+      Promise.all([
+        document.fonts.load('400 12px Manrope'),
+        document.fonts.load('700 12px Manrope'),
+        document.fonts.load('800 12px Manrope'),
+      ]).then(function() { requestAnimationFrame(initTotalGuestsChart); });
+    });
+  </script>
+
+</body>
+</html>

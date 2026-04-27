@@ -1419,6 +1419,11 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   width: 100%;
 }
 
+/* Left-aligned variant — for text columns where cells are left-aligned. */
+.chart-th-inner--start {
+  justify-content: flex-start;
+}
+
 .chart-sort-icon {
   flex-shrink: 0;
   color: #60696c;
@@ -1614,6 +1619,126 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 
 .chart-context-menu__item .material-symbols-rounded,
 .chart-context-menu__item img {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: #000000;
+}
+
+/* ── Chart data-point context menu ──
+   Anchored to a click on a chart data point. Viewport-positioned
+   (position: fixed) — JS sets explicit `left` / `top` on open. Spec
+   from Figma node 4711:7268: 2px border, 8px radius, 16px padding,
+   header row (color dot + date / value), separator, then list. */
+.chart-point-menu {
+  display: none;
+  position: fixed;
+  background: #ffffff;
+  border: 2px solid #dfe1e2;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 9999;
+  min-width: 220px;
+  padding: 16px;
+  flex-direction: column;
+}
+
+.chart-point-menu--open {
+  display: flex;
+}
+
+.chart-point-menu__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.chart-point-menu__header-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chart-point-menu__color-dot {
+  width: 12px;
+  height: 12px;
+  background: #5A55E3;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* Striped variant — matches the legend marker for the prev-period series. */
+.chart-point-menu__color-dot--striped {
+  background-color: #ffffff;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #5A55E3 0,
+    #5A55E3 1.5px,
+    transparent 1.5px,
+    transparent 3px
+  );
+}
+
+.chart-point-menu__date {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.36;
+  color: #60696c;
+  white-space: nowrap;
+}
+
+.chart-point-menu__value {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.36;
+  color: #000000;
+  white-space: nowrap;
+}
+
+.chart-point-menu__separator {
+  height: 1px;
+  background: #dfe1e2;
+  margin: 16px 0;
+}
+
+.chart-point-menu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-point-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #000000;
+  text-align: left;
+  white-space: nowrap;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.chart-point-menu__item:hover {
+  background: #f4f4f4;
+}
+
+.chart-point-menu__item .material-symbols-rounded,
+.chart-point-menu__item img {
   font-size: 24px;
   width: 24px;
   height: 24px;

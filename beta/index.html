@@ -704,7 +704,10 @@
     ═══════════════════════════════════════════════════ */
     function openChartDetail(metricId) {
       if (document.querySelector('.app-shell').classList.contains('app-shell--customize')) return;
-      window.location.href = 'dashboard-chart-detail.html';
+      var perChartPages = {
+        'total-guests': 'dashboard-total-guests.html'
+      };
+      window.location.href = perChartPages[metricId] || 'dashboard-chart-detail.html';
     }
 
     function toggleCockpit(btn) {
@@ -1004,8 +1007,8 @@
             yKey: 'prev',
             yName: 'Prev period',
             stroke: '#5A55E3',
-            strokeWidth: 1.5,
-            lineDash: [1, 4],
+            strokeWidth: 2,
+            lineDash: [2, 2],
             marker: {
               enabled: true,
               size: 0,
@@ -1050,7 +1053,7 @@
             max: new Date(2026, 3, 26),
             gridLine: { enabled: false },
             line: { enabled: false },
-            tick: { enabled: true, size: 4, width: 1, stroke: '#000000' },
+            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
             label: {
               fontSize: 12,
               color: '#000000',

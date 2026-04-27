@@ -76,3 +76,63 @@ Never use em dash.
 - Font size: `1rem`, font weight: `400` (body1 regular) — set explicitly on `.button`.
 - Never add inline font overrides to buttons.
 - Never use `.button.secondary`. Use `.button.primary` or `.button.outlined` only.
+
+## Chart data-point context menu (inner / detail pages)
+
+Pattern for detail-page charts where clicking a data point should open an action menu next to it. First implementation: `beta/dashboard-total-guests.html` (Total guests inner page), with reusable plumbing.
+
+### Markup
+Single hidden menu in the page (placed before the AG Charts `<script>` tag). Header shows the clicked point (color dot + date / value), then a separator, then the action list.
+
+```html
+<div class="chart-point-menu" id="chart-point-menu" role="menu" aria-hidden="true">
+  <div class="chart-point-menu__header">
+    <div class="chart-point-menu__header-left">
+      <span class="chart-point-menu__color-dot"></span>
+      <span class="chart-point-menu__date" id="chart-point-menu-date">—</span>
+    </div>
+    <span class="chart-point-menu__value" id="chart-point-menu-value">—</span>
+  </div>
+  <div class="chart-point-menu__separator" aria-hidden="true"></div>
+  <ul class="chart-point-menu__list">
+    <li><button class="chart-point-menu__item" onclick="onPointMenuAction('view-users')">
+      <span class="material-symbols-rounded">group</span><span>View users</span>
+    </button></li>
+    <li><button class="chart-point-menu__item" onclick="onPointMenuAction('create-segment')">
+      <span class="material-symbols-rounded">stroke_partial</span><span>Create segment</span>
+    </button></li>
+    <li><button class="chart-point-menu__item" onclick="onPointMenuAction('ask-ava')">
+      <img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava about this...</span>
+    </button></li>
+  </ul>
+</div>
+```
+
+### CSS
+`.chart-point-menu` lives in `beta/beta.css` (Figma node 4711:7268). Spec: 2px solid `#dfe1e2` border, 8px radius, 16px padding, `0 4px 12px rgba(0,0,0,0.12)` shadow, viewport-anchored (`position: fixed`). Items use their own `.chart-point-menu__item` class with a 4px-radius `:hover` background (`#f4f4f4`) — there is no permanently-highlighted item; the design's first-row grey is the hover state. The segment icon is Material Symbols `stroke_partial`.
+
+### JS contract
+`attachChartPointMenu(container, opts)` is called inside the chart init function (after the manual-tooltip wiring). It expects the same plot-area math the manual tooltip uses, plus Y-axis bounds for series detection:
+- `plotLeft` — px from container left where the plot area begins (≈ Y-axis label width + padding).
+- `plotRightPad` — right padding inside the chart (often 0).
+- `axisMinTime`, `axisMaxTime` — ms epoch bounds of the X-axis.
+- `axisMinValue`, `axisMaxValue` — Y-axis numeric bounds.
+- `plotTop` — y-offset of the plot area inside the container (matches chart `padding.top`).
+- `xAxisHeight` — approx height of the X-axis label area (≈ 30 for a 12px label).
+- `data` — array with a `.date` field.
+- `seriesValueKeys` — map of series-key → field on the data row, e.g. `{ current: 'current', prev: 'prev' }`. Drives both which series the menu represents and the value to display.
+
+Click flow: cursor X → relative position in plot area → target time → nearest data row. Then for each series in `seriesValueKeys`, project the value to a Y in container space and pick the series whose projected Y is closest to the cursor Y — so clicking near the dashed prev-period line opens the menu for that series. Series hidden via legend (`totalGuestsVisibility[key] === false`) are skipped.
+
+The chosen series-key is stored in `pointMenuSeries`; `openPointMenu` uses it to pick the value field and toggle the `.chart-point-menu__color-dot--striped` modifier on the marker (solid for primary series, striped pattern for the dashed prev-period line, matching the legend swatch).
+
+The tooltip is hidden when the menu opens so it doesn't cover it. Outside-click closes via a deferred `document` listener; `e.stopPropagation()` on the chart click prevents same-event close when re-clicking.
+
+### Action stubs
+`onPointMenuAction(action)` receives `'view-users' | 'create-segment' | 'ask-ava'`. `pointMenuAnchor` (the data row) is in scope — wire to per-chart behavior later.
+
+### When adding to a new chart
+1. Drop the same `<div class="chart-point-menu">` markup in the page.
+2. Inside the chart's `init` function, call `attachChartPointMenu(container, { plotLeft, plotRightPad, axisMinTime, axisMaxTime, data })`.
+3. Cursor-pointer styling is set on the container by the helper.
+4. The menu must remain a viewport-level overlay (not nested in the chart card) so it can flip past chart edges.
