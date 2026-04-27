@@ -1,1 +1,5 @@
 .claude/
+!.claude/commands/
+!.claude/commands/**
+!.claude/bento-ux/
+!.claude/bento-ux/**

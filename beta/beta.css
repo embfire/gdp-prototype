@@ -1,0 +1,1590 @@
+/* ═══════════════════════════════════════════════════════════════
+   beta.css — PAR Guest360 Beta prototype shell styles
+   Mirrors G360 Vue app layout. Supplements ../assets/bento.css.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: 'Manrope', sans-serif; }
+
+/* ── Button text label — Body 1 ── */
+/* Targets text spans only; icon spans carry a class (material-symbols-rounded) */
+.button > span:not([class]) {
+  color: #000000;
+  text-align: center;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+}
+
+/* ── App Shell ── */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  background-color: #ffffff;
+}
+.app-shell__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+/* ── Header ── */
+.header {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  height: 60px;
+  padding: 0 16px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+}
+.header-left {
+  display: flex;
+  align-items: center;
+}
+.header-brand {
+  display: inline-flex;
+  align-items: center;
+  padding-right: 16px;
+  text-decoration: none;
+}
+.header-brand img {
+  display: block;
+  width: 124px;
+  height: 40px;
+}
+.header-brand-divider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 24px;
+  margin-left: 0.5rem;
+  margin-right: 8px;
+  background-color: #DFE1E2;
+}
+.header-brand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  color: #000000;
+  border-radius: 8px;
+}
+.header-brand-btn:hover {
+  background: #f4f4f4;
+  box-shadow: none;
+}
+.header-brand-btn i { font-size: 16px; color: #60696c; }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.header-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  min-height: 34px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  color: #141414;
+  border-radius: 4px;
+  line-height: 22px;
+  white-space: nowrap;
+}
+.header-btn:hover { background: #f4f4f4; }
+.header-btn--icon {
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  justify-content: center;
+  padding: 0;
+}
+.header-btn img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.header-btn .material-symbols-rounded {
+  font-size: 24px;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 256px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  background-color: #212438;
+  color: #ffffff;
+}
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 8px 0;
+}
+.nav-group {
+  display: flex;
+  flex-direction: column;
+}
+.nav-group + .nav-group { margin-top: 24px; }
+.nav-group[data-nav-group-id='guests'] + .nav-group { margin-top: 1rem; }
+
+.nav-group-title {
+  padding: 8px 24px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.066px;
+  line-height: 12px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 2px 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: -0.154px;
+  color: #ffffff;
+  text-decoration: none;
+  transition: background 0.2s;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.nav-item:hover { background-color: #2f3452; }
+.nav-item.active {
+  background-color: #2f3452;
+  color: #9aa4ff;
+  font-weight: 700;
+}
+.nav-item.active .nav-item__chevron { color: #9aa4ff; }
+
+/* Expandable parent with active child — no fill, tinted text */
+.nav-item-expandable.active {
+  background-color: transparent;
+  font-weight: 500;
+  color: #9aa4ff;
+}
+.nav-item-expandable.active i { color: #9aa4ff; }
+.nav-item-expandable.active:hover { background-color: #2f3452; }
+
+/* Lead icon sizing */
+.nav-item > i:not(.nav-item__chevron) {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.nav-item__label { flex: 1; min-width: 0; }
+.nav-item__chevron {
+  flex-shrink: 0;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #484e7f;
+  transition: transform 0.2s;
+}
+.nav-item-expandable { width: calc(100% - 24px); }
+.nav-item-expandable.open .nav-item__chevron { transform: rotate(90deg); }
+
+.nav-sub-group { display: none; flex-direction: column; }
+.nav-sub-group.open { display: flex; }
+.nav-sub-item {
+  display: flex;
+  align-items: center;
+  margin: 2px 12px;
+  padding: 8px 12px 8px 48px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: -0.154px;
+  color: #ffffff;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.nav-sub-item:hover { background-color: #2f3452; }
+.nav-sub-item.active {
+  background-color: #2f3452;
+  color: #9aa4ff;
+  font-weight: 700;
+}
+
+/* ── Title bar h1 — Header/H1: 28px / 400 / lh 1.44 ── */
+/* bento.css h1 styles are scoped to [data-v-app], so plain HTML needs explicit override */
+.title-bar__page-title h1 {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.44;
+  color: #000000;
+}
+
+/* ── Content Area (shared) ── */
+.content-area {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 48px 48px 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+/* ── Features Page ── */
+/* content-area--features: Figma py=64px, px=48px, gap=32px */
+.content-area--features {
+  padding: 64px 48px;
+  gap: 32px;
+}
+
+/* Title bar subtitle — Header/Subtitle: 16px / 800 */
+.title-bar__subtitle_text {
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.5;
+  color: #000000;
+}
+
+/* "Available features" form label — Header/Subtitle: 16px / 800 */
+.form-label .form-label__label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.5;
+  color: #000000;
+}
+
+/* SVG icon toggle — triggered by Bento's .checkbox__background class */
+.feature-check { display: inline-flex; flex-shrink: 0; }
+.feature-check .icon-checked   { display: none; }
+.feature-check .icon-unchecked { display: block; }
+.checkbox__background .feature-check .icon-checked   { display: block; }
+.checkbox__background .feature-check .icon-unchecked { display: none; }
+/* ── Features save bar — fixed bottom, matches create-segment style ── */
+.features-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 256px; /* sidebar width */
+  right: 0;
+  height: 80px;
+  background: #eeeefc;
+  box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  padding: 0 48px;
+  align-items: center;
+  gap: 24px;
+}
+.features-action-bar__cancel {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #DFE1E2;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #141414;
+  cursor: pointer;
+  padding: 0 0 2px 0;
+}
+
+/* ── Admins Page ── */
+.content-area--admins {
+  gap: 32px;
+  overflow-x: clip;
+}
+.content-area__tip {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.admins-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+.admins-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.admins-body {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 32px;
+  width: calc(100% + 96px);
+  min-width: 0;
+  margin-right: -48px;
+  margin-left: -48px;
+  padding: 32px 48px 64px;
+  border-top: 2px solid #DFE1E2;
+  background-color: #F4F4F4;
+}
+.admins-controls {
+  width: 100%;
+  max-width: 360px;
+}
+.admins-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.admins-table-header__count {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.36;
+  color: #000000;
+}
+.admins-table-header__sort {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.admins-table-header__sort-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: #000000;
+  white-space: nowrap;
+}
+.admins-table-wrap {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+/* Compact rows for admin table */
+.admins-table-wrap .table-container .table tbody tr td {
+  height: 3.5rem;
+  padding: 8px 16px;
+}
+/* Override border width from 2px to 1px on all sides */
+.admins-table-wrap .table-container .table thead tr,
+.admins-table-wrap .table-container .table tbody tr {
+  border-left-width: 1px;
+  border-right-width: 1px;
+}
+.admins-table-wrap .table-container .table tbody tr:last-child {
+  border-bottom-width: 1px;
+}
+
+/* ── Tags — Caption style (Figma: 12px / 400 / 1.36) ── */
+/* bento.css .tag span only sets white-space:nowrap — no font size */
+.tag span {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.36;
+}
+
+/* Admin name cell */
+.admin-name-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.admin-name-cell__name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  color: #141414;
+}
+.admin-name-cell__email {
+  font-size: 12px;
+  line-height: 16px;
+  color: #666;
+}
+
+/* ── Search input ── */
+/* <input> does not inherit font by default — must be explicit */
+.text-input__container__box__input-field {
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 150%;
+  color: #000000;
+}
+.text-input__container__box__input-field::placeholder {
+  color: #60696c;
+  font-weight: 400;
+}
+/* Search icon color */
+.text-input__container__box_icon-left {
+  color: #60696c;
+}
+
+/* ── Sort dropdown ── */
+.sort-dropdown .dropdown__wrapper {
+  min-width: 200px;
+}
+/* Match Body 1 spec from Figma — same as search input */
+.dropdown__wrapper .dropdown__button span:first-child {
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 150%;
+  color: #000000;
+}
+
+/* ── Pagination ── */
+/* Reset bento margin-top — admins-body gap handles spacing */
+.admins-body > .pagination { margin-top: 0; }
+
+/* Caption labels: "Items per page", "of N pages" */
+.pagination__items-per-page label,
+.pagination__navigation label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.36;
+  color: #000000;
+  white-space: nowrap;
+}
+
+/* Pagination dropdowns — match Sort by black border (bento default) */
+.pagination-dropdown { position: relative; }
+/* Hide collapsed options panel — bento's max-height:0 can't fully suppress padding+border */
+.pagination-dropdown .dropdown__options { visibility: hidden; }
+.pagination-dropdown .dropdown__options.dropdown__options_open { visibility: visible; }
+.pagination-dropdown .dropdown__button {
+  padding: 6px 10px;
+  gap: 6px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 150%;
+  color: #000000;
+}
+
+/* Prev / Next arrow buttons */
+.pagination__nav-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  box-shadow: 0 0 0 1px #000000 inset;
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 18px;
+  color: #000000;
+  transition: background 0.2s;
+}
+.pagination__nav-arrow:hover:not(:disabled) { background: #f4f4f4; }
+.pagination__nav-arrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Placeholder Page ── */
+.placeholder-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px;
+  text-align: center;
+}
+.placeholder-page__icon {
+  font-size: 48px;
+  color: #DFE1E2;
+}
+.placeholder-page__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #141414;
+  margin: 0;
+}
+.placeholder-page__desc {
+  font-size: 14px;
+  color: #60696c;
+  margin: 0;
+}
+
+/* ── Dashboard — Material Symbols Rounded icon settings ── */
+/* Applies bento-standard variation settings to all icons in the main content area */
+.content-area--dashboard .material-symbols-rounded {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  font-size: 24px;
+  line-height: 1;
+  display: inline-block;
+  color: inherit;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'liga';
+}
+
+/* ── Dashboard Page ── */
+.content-area--dashboard {
+  padding: 64px 48px 64px;
+  gap: 32px;
+}
+
+.dashboard-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-title-bar__title {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.44;
+  color: #000000;
+}
+
+.dashboard-title-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Dashboard button — Body 1 sizing, icon + label */
+.dashboard-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 400;
+}
+.dashboard-btn__icon {
+  flex-shrink: 0;
+}
+.dashboard-btn__label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+/* Keep primary button text white */
+.button.primary .dashboard-btn__label { color: #ffffff; }
+
+/* ── Filter bar ── */
+.dashboard-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-filter-label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #000000;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dashboard-filter-spacer { flex: 1; }
+
+/* Dropdowns hug their content by default (bento sets width:100% on the button which causes stretching in flex containers) */
+.dropdown,
+.dropdown__wrapper {
+  width: fit-content;
+}
+
+/* Prevent option text from wrapping — panel sizes to longest option naturally */
+.dropdown__options li button span {
+  white-space: nowrap;
+}
+
+/* ── Segmented button group ── */
+.btn-group {
+  display: flex;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.btn-group__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  height: 40px;
+  border: none;
+  border-right: 1px solid #000000;
+  background: #ffffff;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #000000;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.btn-group__item:last-child { border-right: none; }
+
+.btn-group__item--active {
+  background: #5a55e3;
+  color: #ffffff;
+}
+
+.btn-group__item:hover:not(.btn-group__item--active) { background: #f4f4f4; }
+
+/* ── Meta bar ── */
+.dashboard-meta-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-last-updated {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dashboard-last-updated__icon {
+  font-size: 16px;
+  color: #60696c;
+}
+
+.dashboard-last-updated__text {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.72;
+  color: #000000;
+}
+
+/* ── Chart grid (GridStack) ── */
+.grid-stack {
+  width: calc(100% + 16px);
+  margin-left: -8px;            /* compensate item marginLeft  */
+  margin-right: -8px;           /* compensate item marginRight */
+  margin-top: -16px;            /* compensate item marginTop on first row */
+}
+
+.grid-stack-item-content {
+  overflow: visible !important;
+}
+
+.grid-stack-placeholder > .placeholder-content {
+  background: #f4f4f4 !important;
+  border-radius: 8px !important;
+  border: 1px dashed #dfe1e2 !important;
+}
+
+/* Sidebar-drop preview rectangle (shown while dragging from the metrics list) */
+.drop-placeholder {
+  position: absolute;
+  background: #f4f4f4;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 5;
+  box-sizing: border-box;
+  transition: left 0.12s ease, top 0.12s ease;
+}
+
+/* Block text-selection on sidebar items themselves so click-and-hold doesn't
+   start a selection before our drag threshold kicks in. */
+.sidebar-customize__item,
+.sidebar-customize__item * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Kill any resize handles GridStack might emit (#2) */
+.grid-stack-item .ui-resizable-handle,
+.grid-stack-item .ui-resizable-se,
+.grid-stack-item .ui-resizable-sw,
+.grid-stack-item .ui-resizable-ne,
+.grid-stack-item .ui-resizable-nw,
+.grid-stack-item .ui-resizable-n,
+.grid-stack-item .ui-resizable-e,
+.grid-stack-item .ui-resizable-s,
+.grid-stack-item .ui-resizable-w,
+.grid-stack-item > .gs-resize-handle,
+.grid-stack-item > .grid-stack-resize-handle {
+  display: none !important;
+}
+
+/* Lift shadow + blue inset outline on the card being dragged (#6) */
+.grid-stack-item.ui-draggable-dragging .chart-card,
+.grid-stack-item.gs-dragging .chart-card {
+  box-shadow:
+    inset 0 0 0 2px #1d5eff,
+    0px 0px 0px 1px rgba(0,0,0,0.05),
+    0px 5px 20px 0px rgba(0,0,0,0.1) !important;
+}
+
+/* Suppress hover blue outline on other cards while a drag is in flight (#7) */
+body.is-dragging-card .app-shell--customize .chart-card:hover {
+  box-shadow: none;
+}
+
+@keyframes card-add-flash {
+  0%   { box-shadow: inset 0 0 0 2px #1d5eff; }
+  60%  { box-shadow: inset 0 0 0 2px #1d5eff; }
+  100% { box-shadow: none; }
+}
+
+.chart-card--added {
+  animation: card-add-flash 1s ease-out forwards;
+}
+
+/* ── Chart card ── */
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid #dfe1e2;
+  border-radius: 8px;
+  overflow: visible;
+  background: #ffffff;
+}
+
+.chart-card__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border-bottom: 1px solid #dfe1e2;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  transition: background 0.15s;
+  user-select: none;
+}
+
+.chart-card__header:hover { background: #f4f4f4; }
+
+.chart-card__header-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chart-card__title {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.5;
+  color: #000000;
+}
+
+.chart-card__subtitle {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.72;
+  color: #60696c;
+}
+
+.chart-card__header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.chart-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.chart-card__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chart-card__metric-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-card__metric-value {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.6;
+  color: #000000;
+}
+
+.chart-card__metric-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.36;
+}
+.chart-card__metric-pill--up   { background: #effaf9; color: #257469; }
+.chart-card__metric-pill--down { background: #fdecef; color: #b1294a; }
+
+.chart-card__metric-period {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.36;
+  color: #000000;
+}
+
+.chart-card__legend {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.chart-card__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.36;
+  color: #000000;
+}
+
+.chart-card__legend-marker {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.chart-card__legend-marker--solid {
+  background: #5A55E3;
+}
+
+.chart-card__legend-marker--striped {
+  background-color: #ffffff;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #5A55E3 0,
+    #5A55E3 1.5px,
+    transparent 1.5px,
+    transparent 4px
+  );
+  box-shadow: inset 0 0 0 1px #5A55E3;
+}
+
+.chart-card__placeholder {
+  height: 256px;
+  background: #f4f4f4;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Total guests card uses the legend block, so the chart fills remaining space */
+.chart-card[data-metric-id="total-guests"] .chart-card__body {
+  flex: 1;
+  min-height: 0;
+}
+.chart-card[data-metric-id="total-guests"] .chart-card__placeholder {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
+.metric-delta {
+  font-weight: 700;
+}
+.metric-delta--up   { color: #0CC281; }
+.metric-delta--down { color: #E83162; }
+
+/* Remove placeholder background once a real chart occupies the container */
+#chart-area-total-guests {
+  background: transparent;
+}
+
+/* AG Charts tooltip font */
+.ag-charts-tooltip {
+  font-family: 'Manrope', sans-serif !important;
+}
+
+/* Dropdown right-aligned inside card headers */
+.dropdown__options--right {
+  right: 0;
+  left: auto;
+}
+
+/* ── Date Range Picker ── */
+.date-range-wrapper {
+  position: relative;
+}
+
+.date-picker-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 200;
+  flex-direction: column;
+  gap: 8px;
+  width: 640px;
+  padding: 16px 8px 8px;
+  background: #ffffff;
+  border: 1px solid #dfe1e2;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.date-picker-panel--open {
+  display: flex;
+}
+
+/* Input row */
+.dp-input-row {
+  display: flex;
+  gap: 32px;
+  padding: 0 8px 4px;
+}
+
+.dp-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.dp-input-label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.44;
+  color: #141414;
+}
+
+.dp-input-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #dfe1e2;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.dp-input-field .material-symbols-rounded {
+  color: #60696c;
+  flex-shrink: 0;
+}
+
+.dp-input-value {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #60696c;
+}
+
+.dp-input-value--set {
+  color: #141414;
+}
+
+/* Calendars row */
+.dp-calendars-row {
+  display: flex;
+}
+
+.dp-calendar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 16px 8px;
+}
+
+.dp-calendar:first-child {
+  border-right: 1px solid #dfe1e2;
+}
+
+/* Calendar header */
+.dp-cal-header {
+  display: flex;
+  align-items: center;
+  height: 32px;
+}
+
+.dp-cal-header__title {
+  flex: 1;
+  text-align: center;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.44;
+  color: #141414;
+}
+
+.dp-cal-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 6px;
+  color: #141414;
+  padding: 0;
+  transition: background 0.15s;
+}
+
+.dp-cal-nav:hover { background: #f4f4f4; }
+
+.dp-cal-nav .material-symbols-rounded {
+  font-size: 20px !important;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20 !important;
+}
+
+.dp-cal-nav-spacer {
+  width: 32px;
+  flex-shrink: 0;
+}
+
+/* Day headers row */
+.dp-day-headers {
+  display: grid;
+  grid-template-columns: repeat(7, 40px);
+  justify-content: center;
+}
+
+.dp-day-header {
+  width: 40px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #60696c;
+}
+
+/* Date grid */
+.dp-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 40px);
+  justify-content: center;
+}
+
+.dp-cal-cell {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #141414;
+  border-radius: 8px;
+  transition: background 0.1s;
+  padding: 0;
+}
+
+.dp-cal-cell:hover:not(.dp-cal-cell--start):not(.dp-cal-cell--end):not(.dp-cal-cell--range) {
+  background: #f4f4f4;
+}
+
+.dp-cal-cell--out { color: #60696c; }
+
+/* Range start — gray pill */
+.dp-cal-cell--start {
+  background: #60696c;
+  color: #ffffff;
+  border-radius: 8px 0 0 8px;
+}
+
+/* In-between — light blue band */
+.dp-cal-cell--range {
+  background: #ebf0ff;
+  color: #141414;
+  border-radius: 0;
+}
+
+/* Range end — indigo pill */
+.dp-cal-cell--end {
+  background: #5a55e3;
+  color: #ffffff;
+  border-radius: 0 8px 8px 0;
+}
+
+/* When start and end are same day */
+.dp-cal-cell--start.dp-cal-cell--end {
+  border-radius: 8px;
+}
+
+/* Picker footer */
+.dp-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 8px 0;
+  border-top: 1px solid #dfe1e2;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Chart Detail Page
+   ═══════════════════════════════════════════════════════════════ */
+
+.content-area--chart-detail {
+  padding: 32px 48px 64px;
+}
+
+/* Material Symbols — same variation settings as dashboard */
+.content-area--chart-detail .material-symbols-rounded {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  font-size: 24px;
+  line-height: 1;
+  display: inline-block;
+  color: inherit;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'liga';
+}
+
+/* ── Breadcrumbs ── */
+.chart-breadcrumbs {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.chart-breadcrumbs__link {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.72;
+  color: #60696c;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.chart-breadcrumbs__link:hover {
+  text-decoration: underline;
+}
+
+.chart-breadcrumbs__separator {
+  display: inline-flex;
+  align-items: center;
+  color: #60696c;
+}
+
+.chart-breadcrumbs .material-symbols-rounded {
+  font-size: 20px;
+  color: #60696c;
+}
+
+.chart-breadcrumbs__current {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.72;
+  color: #000000;
+  white-space: nowrap;
+}
+
+/* ── Title bar ── */
+.chart-detail-title-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.chart-detail-title-bar__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.chart-detail-title-bar__title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.44;
+  color: #000000;
+}
+
+.chart-detail-title-bar__subtitle {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.5;
+  color: #000000;
+}
+
+/* ── Filter bar spacing ── */
+.content-area--chart-detail .dashboard-filter-bar {
+  margin-bottom: 32px;
+}
+
+/* ── Chart card (full-width, detail view) ── */
+.content-area--chart-detail .chart-card {
+  margin-bottom: 32px;
+}
+
+/* Header is not a navigation target on the detail page */
+.chart-card__header--detail {
+  cursor: default;
+}
+
+.chart-card__header--detail:hover {
+  background: transparent;
+}
+
+/* Taller chart placeholder on detail page */
+.chart-card__placeholder--detail {
+  height: 389px;
+}
+
+/* ── Table series color indicators ── */
+/* Filled checkbox icon colored per chart series */
+.chart-series-icon {
+  display: block;
+}
+
+.content-area--chart-detail .chart-series-icon {
+  font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ── Compact data table (mirrors admins page) ── */
+.chart-detail-table-wrap {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Compact body rows */
+.chart-detail-table-wrap .table-container .table tbody tr td {
+  height: 3.5rem;
+  padding: 8px 16px;
+}
+
+/* 1px borders (Bento default is 2px on left/right) */
+.chart-detail-table-wrap .table-container .table thead tr,
+.chart-detail-table-wrap .table-container .table tbody tr {
+  border-left-width: 1px;
+  border-right-width: 1px;
+}
+
+.chart-detail-table-wrap .table-container .table tbody tr:last-child {
+  border-bottom-width: 1px;
+}
+
+/* Series indicator column — clickable */
+.chart-series-col {
+  width: 56px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.chart-series-th {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Right-aligned data columns */
+.chart-data-col {
+  text-align: right;
+}
+
+/* Sort icon in table column headers */
+.chart-th-inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  width: 100%;
+}
+
+.chart-sort-icon {
+  flex-shrink: 0;
+  color: #60696c;
+}
+
+.content-area--chart-detail .chart-sort-icon {
+  font-size: 24px;
+}
+
+/* ── Primary button — text always white ── */
+.button.primary > span:not([class]) {
+  color: #ffffff;
+}
+
+/* ── Customize Sidebar ── */
+.sidebar-customize {
+  display: none;
+  box-sizing: border-box;
+  width: 256px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  background-color: #212438;
+  border-right: 1px solid #dfe1e2;
+}
+
+.sidebar-customize__inner {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  gap: 8px;
+}
+
+.sidebar-customize__label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.5;
+  color: #ffffff;
+}
+
+.sidebar-customize__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-customize__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: #ffffff;
+  border: 1px solid #dfe1e2;
+  border-radius: 8px;
+  cursor: grab;
+  min-height: 40px;
+}
+
+.sidebar-customize__drag-icon {
+  flex-shrink: 0;
+  font-size: 20px;
+  color: #60696c;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'liga';
+}
+
+.sidebar-customize__item-label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.72;
+  color: #000000;
+}
+
+/* ── Card drag icon — hidden until customize mode ── */
+.chart-card .chart-card__drag-icon {
+  display: none;
+  flex-shrink: 0;
+  font-size: 20px;
+  color: #60696c;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'liga';
+}
+
+/* ── Customize mode — layout overrides ── */
+.app-shell--customize .sidebar { display: none; }
+.app-shell--customize .sidebar-customize { display: flex; flex-direction: column; }
+.app-shell--customize .dashboard-title-bar__actions { display: none; }
+.app-shell--customize .dashboard-filter-bar { display: none; }
+.app-shell--customize .dashboard-meta-bar { display: none; }
+.app-shell--customize .chart-context-wrap { display: none; }
+.app-shell--customize .chart-card__breakdown { display: none; }
+.app-shell--customize .chart-card__header { cursor: default; }
+.app-shell--customize .chart-card__header:hover { background: transparent; }
+.app-shell--customize .chart-card__drag-icon { display: inline-block; }
+.app-shell--customize .chart-card { cursor: grab; }
+.app-shell--customize .chart-card:hover { box-shadow: inset 0 0 0 2px #1d5eff; }
+.app-shell--customize .chart-remove-wrap button { cursor: pointer; }
+
+/* ── Chart remove button & tooltip ── */
+.chart-remove-wrap {
+  position: relative;
+  display: none;
+}
+
+.app-shell--customize .chart-remove-wrap {
+  display: inline-flex;
+}
+
+.chart-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: calc(100% + 4px);
+  right: 0;
+  background: #141414;
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  z-index: 10;
+}
+
+.chart-remove-wrap:hover .chart-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* ── Chart context menu (three-dot dropdown) ── */
+.chart-context-wrap {
+  position: relative;
+}
+
+.chart-context-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 200;
+  min-width: 196px;
+  padding: 6px 0;
+}
+
+.chart-context-menu--open {
+  display: block;
+}
+
+.chart-context-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chart-context-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #000000;
+  text-align: left;
+  white-space: nowrap;
+  transition: background 0.15s;
+  border-radius: 0;
+}
+
+.chart-context-menu__item:hover {
+  background: #f4f4f4;
+}
+
+.chart-context-menu__item .material-symbols-rounded,
+.chart-context-menu__item img {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: #000000;
+}

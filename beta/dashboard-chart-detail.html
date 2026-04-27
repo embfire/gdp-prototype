@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chart name — PAR Guest360 Beta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="../assets/bento.css">
+  <link rel="stylesheet" href="beta.css">
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+          <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+        </a>
+        <span class="header-brand-divider" aria-hidden="true"></span>
+        <button class="header-brand-btn" aria-label="Select brand">
+          Life Alive
+          <i class="ph ph-caret-down"></i>
+        </button>
+      </div>
+      <div class="header-right">
+        <button class="header-btn">
+          <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
+          Ava
+        </button>
+        <button class="header-btn">
+          <span class="material-symbols-rounded">school</span>
+          PAR Academy
+        </button>
+        <button class="header-btn header-btn--icon" aria-label="Profile">
+          <span class="material-symbols-rounded">person</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="app-shell__body">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Main navigation">
+
+          <div class="nav-group" data-nav-group-id="top">
+            <a href="index.html" class="nav-item active">
+              <i class="ph-duotone ph-chart-bar" aria-hidden="true"></i>
+              <span class="nav-item__label">Dashboard</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="guests">
+            <div class="nav-group-title">Guests</div>
+            <a href="guest-profiles.html" class="nav-item">
+              <i class="ph-duotone ph-user-circle" aria-hidden="true"></i>
+              <span class="nav-item__label">Guest profiles</span>
+            </a>
+            <a href="guest-segments.html" class="nav-item">
+              <i class="ph-duotone ph-users-three" aria-hidden="true"></i>
+              <span class="nav-item__label">Segments</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="bottom">
+            <a href="settings.html" class="nav-item">
+              <i class="ph-duotone ph-gear" aria-hidden="true"></i>
+              <span class="nav-item__label">Settings</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </a>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
+              <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
+              <span class="nav-item__label">Cockpit</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group" id="cockpit-sub">
+              <a href="cockpit-features.html" class="nav-sub-item">Features</a>
+              <a href="cockpit-admins.html" class="nav-sub-item">Admins</a>
+            </div>
+          </div>
+
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+        <div class="content-area content-area--chart-detail">
+
+          <!-- Breadcrumbs -->
+          <nav class="chart-breadcrumbs" aria-label="Breadcrumb">
+            <a href="index.html" class="chart-breadcrumbs__link">Dashboard</a>
+            <span class="chart-breadcrumbs__separator" aria-hidden="true">
+              <span class="material-symbols-rounded">chevron_right</span>
+            </span>
+            <span class="chart-breadcrumbs__current">Chart name</span>
+          </nav>
+
+          <!-- Title bar -->
+          <div class="chart-detail-title-bar">
+            <div class="chart-detail-title-bar__top">
+              <h1 class="chart-detail-title-bar__title">Chart name</h1>
+              <div class="chart-detail-title-bar__actions">
+                <button class="button transparent dashboard-btn">
+                  <span class="material-symbols-rounded dashboard-btn__icon">help</span>
+                  <span class="dashboard-btn__label">Help</span>
+                </button>
+              </div>
+            </div>
+            <p class="chart-detail-title-bar__subtitle">Chart explanation</p>
+          </div>
+
+          <!-- Filter bar -->
+          <div class="dashboard-filter-bar">
+            <div class="date-range-wrapper">
+              <div class="btn-group" role="group" aria-label="Date range">
+                <button class="btn-group__item btn-group__item--active" onclick="setDateRange(this, '7D')">7D</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '30D')">30D</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '90D')">90D</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '12M')">12M</button>
+                <button class="btn-group__item" onclick="setDateRange(this, 'YTD')">YTD</button>
+                <button class="btn-group__item btn-group__item--icon" id="btn-custom-range" onclick="setDateRange(this, 'custom')">
+                  <span class="material-symbols-rounded">calendar_month</span>
+                  Custom
+                </button>
+              </div>
+
+              <!-- Date range picker panel -->
+              <div class="date-picker-panel" id="date-picker-panel">
+
+                <div class="dp-input-row">
+                  <div class="dp-input-group">
+                    <label class="dp-input-label">Start date</label>
+                    <div class="dp-input-field">
+                      <span class="material-symbols-rounded">calendar_month</span>
+                      <span class="dp-input-value" id="dp-start-value">MM/DD/YYYY</span>
+                    </div>
+                  </div>
+                  <div class="dp-input-group">
+                    <label class="dp-input-label">End date</label>
+                    <div class="dp-input-field">
+                      <span class="material-symbols-rounded">calendar_month</span>
+                      <span class="dp-input-value" id="dp-end-value">MM/DD/YYYY</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="dp-calendars-row" id="dp-calendars-row">
+                  <div class="dp-calendar" id="dp-cal-left">
+                    <div class="dp-cal-header">
+                      <button class="dp-cal-nav" onclick="dpNavigate('left-back')" aria-label="Previous month">
+                        <span class="material-symbols-rounded">chevron_left</span>
+                      </button>
+                      <span class="dp-cal-header__title" id="dp-title-left"></span>
+                      <div class="dp-cal-nav-spacer"></div>
+                    </div>
+                    <div class="dp-day-headers">
+                      <div class="dp-day-header">MON</div>
+                      <div class="dp-day-header">TUE</div>
+                      <div class="dp-day-header">WED</div>
+                      <div class="dp-day-header">THU</div>
+                      <div class="dp-day-header">FRI</div>
+                      <div class="dp-day-header">SAT</div>
+                      <div class="dp-day-header">SUN</div>
+                    </div>
+                    <div class="dp-cal-grid" id="dp-grid-left"></div>
+                  </div>
+
+                  <div class="dp-calendar" id="dp-cal-right">
+                    <div class="dp-cal-header">
+                      <div class="dp-cal-nav-spacer"></div>
+                      <span class="dp-cal-header__title" id="dp-title-right"></span>
+                      <button class="dp-cal-nav" onclick="dpNavigate('right-forward')" aria-label="Next month">
+                        <span class="material-symbols-rounded">chevron_right</span>
+                      </button>
+                    </div>
+                    <div class="dp-day-headers">
+                      <div class="dp-day-header">MON</div>
+                      <div class="dp-day-header">TUE</div>
+                      <div class="dp-day-header">WED</div>
+                      <div class="dp-day-header">THU</div>
+                      <div class="dp-day-header">FRI</div>
+                      <div class="dp-day-header">SAT</div>
+                      <div class="dp-day-header">SUN</div>
+                    </div>
+                    <div class="dp-cal-grid" id="dp-grid-right"></div>
+                  </div>
+                </div>
+
+                <div class="dp-footer">
+                  <button class="button transparent" onclick="cancelDatePicker()">
+                    <span>Cancel</span>
+                  </button>
+                  <button class="button primary" onclick="applyDateRange()">
+                    <span style="color:#fff;">Apply</span>
+                  </button>
+                </div>
+
+              </div>
+              <!-- /date-picker-panel -->
+            </div>
+
+            <span class="dashboard-filter-label">compared to</span>
+
+            <div class="dropdown" id="dd-compare">
+              <div class="dropdown__wrapper">
+                <button class="dropdown__button" onclick="toggleDropdown('dd-compare')">
+                  <span>Previous period</span>
+                  <i class="material-symbols-rounded">expand_more</i>
+                </button>
+              </div>
+              <div class="dropdown__options">
+                <ul>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous period</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous year</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>No comparison</span></button></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="dashboard-filter-spacer"></div>
+
+            <button class="button outlined dashboard-btn">
+              <span class="material-symbols-rounded dashboard-btn__icon">filter_alt</span>
+              <span class="dashboard-btn__label">More filters...</span>
+            </button>
+          </div>
+          <!-- /filter bar -->
+
+          <!-- Chart card -->
+          <div class="chart-card">
+            <div class="chart-card__header chart-card__header--detail">
+              <div class="chart-card__header-text">
+                <p class="chart-card__title">Chart name</p>
+                <p class="chart-card__subtitle">Chart explanation</p>
+              </div>
+              <div class="chart-card__header-controls">
+                <div class="dropdown" id="dd-breakdown">
+                  <div class="dropdown__wrapper">
+                    <button class="dropdown__button" onclick="toggleDropdown('dd-breakdown')">
+                      <span>By location</span>
+                      <i class="material-symbols-rounded">expand_more</i>
+                    </button>
+                  </div>
+                  <div class="dropdown__options dropdown__options--right">
+                    <ul>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By location</span></button></li>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By channel</span></button></li>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By daypart</span></button></li>
+                    </ul>
+                  </div>
+                </div>
+                <button class="button outlined dashboard-btn">
+                  <img src="../assets/ava-assistant.svg" alt="" width="20" height="20">
+                  <span class="dashboard-btn__label">Get insight</span>
+                </button>
+                <div class="chart-context-wrap">
+                  <button class="button transparent no-content chart-card__dots-btn" onclick="toggleChartMenu(event, 'detail')" aria-label="More options" aria-expanded="false">
+                    <i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i>
+                  </button>
+                  <div class="chart-context-menu" id="chart-menu-detail">
+                    <ul>
+                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
+                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
+                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava about this...</span></button></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="chart-card__body">
+              <div class="chart-card__metric">
+                <p class="chart-card__metric-value">0</p>
+                <p class="chart-card__metric-period">0 prev period</p>
+              </div>
+              <div class="chart-card__placeholder chart-card__placeholder--detail"></div>
+            </div>
+          </div>
+          <!-- /chart card -->
+
+          <!-- Data table -->
+          <div class="chart-detail-table-wrap">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr style="background-color: #dfe1e2; border-bottom: none;">
+                    <th class="chart-series-th" style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px; width: 56px;" onclick="toggleAllSeries()">
+                      <span id="header-series-icon" class="material-symbols-rounded chart-series-icon" style="color: var(--chart-indigo-900);">check_box</span>
+                    </th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">Name</th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner">Heading <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner">Heading <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner">Heading <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner">Heading <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner">Heading <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="chart-series-col" onclick="toggleSeries(0)">
+                      <span id="series-icon-0" class="material-symbols-rounded chart-series-icon" style="color: var(--chart-indigo-900);">check_box</span>
+                    </td>
+                    <td>Value</td>
+                    <td class="chart-data-col">Value</td>
+                    <td class="chart-data-col">Value</td>
+                    <td class="chart-data-col">Value</td>
+                    <td class="chart-data-col">Value</td>
+                    <td class="chart-data-col">Value</td>
+                  </tr>
+                  <tr>
+                    <td class="chart-series-col" onclick="toggleSeries(1)">
+                      <span id="series-icon-1" class="material-symbols-rounded chart-series-icon" style="color: var(--chart-vermilion-700);">check_box</span>
+                    </td>
+                    <td>Value</td>
+                    <td class="chart-data-col">Value</td>
+                    <td class="chart-data-col">Value</td>
+                    <td class="chart-data-col">Value</td>
+                    <td class="chart-data-col">Value</td>
+                    <td class="chart-data-col">Value</td>
+                  </tr>
+                  <tr>
+                    <td class="chart-series-col" onclick="toggleSeries(2)">
+                      <span id="series-icon-2" class="material-symbols-rounded chart-series-icon" style="color: var(--chart-periwinkle-700);">check_box</span>
+                    </td>
+                    <td>Value</td>
+                    <td class="chart-data-col">Value</td>
+                    <td class="chart-data-col">Value</td>
+                    <td class="chart-data-col">Value</td>
+                    <td class="chart-data-col">Value</td>
+                    <td class="chart-data-col">Value</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- /data table -->
+
+        </div>
+        <!-- /content-area--chart-detail -->
+      </main>
+
+    </div>
+  </div>
+
+  <script>
+    function toggleCockpit(btn) {
+      const isOpen = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      document.getElementById('cockpit-sub').classList.toggle('open', isOpen);
+    }
+
+    function setDateRange(btn, range) {
+      btn.closest('.btn-group').querySelectorAll('.btn-group__item').forEach(function(b) {
+        b.classList.remove('btn-group__item--active');
+      });
+      btn.classList.add('btn-group__item--active');
+      if (range === 'custom') {
+        openDatePicker();
+      } else {
+        closeDatePicker();
+      }
+    }
+
+    function toggleChartMenu(event, id) {
+      event.stopPropagation();
+      var menu = document.getElementById('chart-menu-' + id);
+      var isOpen = menu.classList.toggle('chart-context-menu--open');
+      var btn = menu.previousElementSibling;
+      btn.setAttribute('aria-expanded', isOpen);
+      if (isOpen) {
+        document.addEventListener('click', function closeMenu(e) {
+          if (!menu.closest('.chart-context-wrap').contains(e.target)) {
+            menu.classList.remove('chart-context-menu--open');
+            btn.setAttribute('aria-expanded', 'false');
+            document.removeEventListener('click', closeMenu);
+          }
+        });
+      }
+    }
+
+    function toggleDropdown(id) {
+      var dd = document.getElementById(id);
+      var opts = dd.querySelector('.dropdown__options');
+      var isOpen = opts.classList.toggle('dropdown__options_open');
+      if (isOpen) {
+        document.addEventListener('click', function closeOnOutside(e) {
+          if (!dd.contains(e.target)) {
+            opts.classList.remove('dropdown__options_open');
+            document.removeEventListener('click', closeOnOutside);
+          }
+        });
+      }
+    }
+
+    function selectDropdownOption(btn) {
+      var dd = btn.closest('.dropdown');
+      dd.querySelector('.dropdown__button span:first-child').textContent = btn.querySelector('span').textContent;
+      dd.querySelector('.dropdown__options').classList.remove('dropdown__options_open');
+    }
+
+    /* ── Date range picker ── */
+    var dpStartDate = null;
+    var dpEndDate = null;
+    var dpHoverDate = null;
+    var dpLeftMonth = null;
+    var dpRightMonth = null;
+    var dpOutsideHandler = null;
+
+    var MONTH_NAMES = ['January','February','March','April','May','June',
+                       'July','August','September','October','November','December'];
+
+    function openDatePicker() {
+      var panel = document.getElementById('date-picker-panel');
+      if (panel.classList.contains('date-picker-panel--open')) return;
+
+      var now = new Date();
+      dpRightMonth = { year: now.getFullYear(), month: now.getMonth() };
+      dpLeftMonth  = prevMonth(dpRightMonth);
+      dpStartDate  = null;
+      dpEndDate    = null;
+      dpHoverDate  = null;
+
+      renderDatePicker();
+      panel.classList.add('date-picker-panel--open');
+
+      document.getElementById('dp-calendars-row').addEventListener('mouseleave', dpClearHover);
+
+      setTimeout(function() {
+        dpOutsideHandler = function(e) {
+          var wrapper = document.getElementById('date-picker-panel').closest('.date-range-wrapper');
+          if (!wrapper.contains(e.target)) {
+            closeDatePicker();
+          }
+        };
+        document.addEventListener('click', dpOutsideHandler);
+      }, 0);
+    }
+
+    function closeDatePicker() {
+      var panel = document.getElementById('date-picker-panel');
+      panel.classList.remove('date-picker-panel--open');
+      if (dpOutsideHandler) {
+        document.removeEventListener('click', dpOutsideHandler);
+        dpOutsideHandler = null;
+      }
+      document.getElementById('dp-calendars-row').removeEventListener('mouseleave', dpClearHover);
+    }
+
+    function cancelDatePicker() {
+      closeDatePicker();
+      var customBtn = document.getElementById('btn-custom-range');
+      if (!dpStartDate || !dpEndDate) {
+        customBtn.classList.remove('btn-group__item--active');
+        var firstBtn = customBtn.closest('.btn-group').querySelector('.btn-group__item');
+        firstBtn.classList.add('btn-group__item--active');
+      }
+    }
+
+    function applyDateRange() {
+      if (dpStartDate && dpEndDate) {
+        var label = fmtDate(dpStartDate) + ' – ' + fmtDate(dpEndDate);
+        var customBtn = document.getElementById('btn-custom-range');
+        customBtn.querySelector('.dp-custom-label') && (customBtn.querySelector('.dp-custom-label').textContent = label);
+      }
+      closeDatePicker();
+    }
+
+    function dpClearHover() {
+      if (dpStartDate && !dpEndDate) {
+        dpHoverDate = null;
+        renderDatePicker();
+      }
+    }
+
+    function dpNavigate(direction) {
+      if (direction === 'left-back') {
+        dpLeftMonth = prevMonth(dpLeftMonth);
+        dpRightMonth = nextMonth(dpLeftMonth);
+      } else {
+        dpRightMonth = nextMonth(dpRightMonth);
+        dpLeftMonth  = prevMonth(dpRightMonth);
+      }
+      renderDatePicker();
+    }
+
+    function prevMonth(m) {
+      if (m.month === 0) return { year: m.year - 1, month: 11 };
+      return { year: m.year, month: m.month - 1 };
+    }
+
+    function nextMonth(m) {
+      if (m.month === 11) return { year: m.year + 1, month: 0 };
+      return { year: m.year, month: m.month + 1 };
+    }
+
+    function renderDatePicker() {
+      renderCalendar('left',  dpLeftMonth,  'dp-title-left',  'dp-grid-left');
+      renderCalendar('right', dpRightMonth, 'dp-title-right', 'dp-grid-right');
+      updateDpInputs();
+    }
+
+    function renderCalendar(side, mo, titleId, gridId) {
+      document.getElementById(titleId).textContent = MONTH_NAMES[mo.month] + ' ' + mo.year;
+
+      var grid = document.getElementById(gridId);
+      grid.innerHTML = '';
+
+      var firstDayOfWeek = new Date(mo.year, mo.month, 1).getDay();
+      var startCol = (firstDayOfWeek + 6) % 7;
+      var daysInMonth = new Date(mo.year, mo.month + 1, 0).getDate();
+      var daysInPrev  = new Date(mo.year, mo.month, 0).getDate();
+
+      var effectiveEnd = dpEndDate ? dpEndDate.getTime() : (dpHoverDate && dpStartDate && dpHoverDate >= dpStartDate ? dpHoverDate.getTime() : null);
+
+      for (var i = 0; i < 42; i++) {
+        var cellDate, isOut = false;
+        if (i < startCol) {
+          cellDate = new Date(mo.year, mo.month - 1, daysInPrev - startCol + i + 1);
+          isOut = true;
+        } else if (i >= startCol + daysInMonth) {
+          cellDate = new Date(mo.year, mo.month + 1, i - startCol - daysInMonth + 1);
+          isOut = true;
+        } else {
+          cellDate = new Date(mo.year, mo.month, i - startCol + 1);
+        }
+
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'dp-cal-cell';
+        btn.textContent = cellDate.getDate();
+        if (isOut) btn.classList.add('dp-cal-cell--out');
+
+        var ts = cellDate.getTime();
+        var startTs = dpStartDate ? dpStartDate.getTime() : null;
+
+        if (startTs && ts === startTs) {
+          btn.classList.add('dp-cal-cell--start');
+        } else if (effectiveEnd && ts === effectiveEnd && startTs) {
+          btn.classList.add('dp-cal-cell--end');
+        } else if (startTs && effectiveEnd && ts > startTs && ts < effectiveEnd) {
+          btn.classList.add('dp-cal-cell--range');
+        }
+
+        (function(d) {
+          btn.addEventListener('click', function() { onDpCellClick(d); });
+          btn.addEventListener('mouseenter', function() { onDpCellHover(d); });
+        })(new Date(cellDate));
+
+        grid.appendChild(btn);
+      }
+    }
+
+    function onDpCellClick(date) {
+      if (!dpStartDate || (dpStartDate && dpEndDate)) {
+        dpStartDate = date;
+        dpEndDate   = null;
+        dpHoverDate = null;
+      } else {
+        if (date.getTime() < dpStartDate.getTime()) {
+          dpEndDate   = dpStartDate;
+          dpStartDate = date;
+        } else {
+          dpEndDate = date;
+        }
+        dpHoverDate = null;
+      }
+      renderDatePicker();
+    }
+
+    function onDpCellHover(date) {
+      if (dpStartDate && !dpEndDate) {
+        dpHoverDate = date;
+        renderDatePicker();
+      }
+    }
+
+    function updateDpInputs() {
+      var sv = document.getElementById('dp-start-value');
+      var ev = document.getElementById('dp-end-value');
+      sv.textContent = dpStartDate ? fmtDate(dpStartDate) : 'MM/DD/YYYY';
+      ev.textContent = dpEndDate   ? fmtDate(dpEndDate)   : 'MM/DD/YYYY';
+      sv.classList.toggle('dp-input-value--set', !!dpStartDate);
+      ev.classList.toggle('dp-input-value--set', !!dpEndDate);
+    }
+
+    function fmtDate(d) {
+      var m   = String(d.getMonth() + 1).padStart(2, '0');
+      var day = String(d.getDate()).padStart(2, '0');
+      return m + '/' + day + '/' + d.getFullYear();
+    }
+
+    /* ── Series visibility toggles ── */
+    var seriesStates = [true, true, true];
+    var seriesColors = [
+      'var(--chart-indigo-900)',
+      'var(--chart-vermilion-700)',
+      'var(--chart-periwinkle-700)'
+    ];
+
+    function setSeriesIcon(icon, checked, color) {
+      if (checked) {
+        icon.textContent = 'check_box';
+        icon.style.color = color;
+        icon.classList.remove('chart-series-icon--empty');
+      } else {
+        icon.textContent = 'check_box_outline_blank';
+        icon.style.color = '#000000';
+        icon.classList.add('chart-series-icon--empty');
+      }
+    }
+
+    function syncHeaderIcon() {
+      var icon = document.getElementById('header-series-icon');
+      var checkedCount = seriesStates.filter(Boolean).length;
+      icon.classList.remove('chart-series-icon--empty');
+      if (checkedCount === seriesStates.length) {
+        icon.textContent = 'check_box';
+        icon.style.color = 'var(--chart-indigo-900)';
+      } else if (checkedCount === 0) {
+        icon.textContent = 'check_box_outline_blank';
+        icon.style.color = '#000000';
+        icon.classList.add('chart-series-icon--empty');
+      } else {
+        icon.textContent = 'indeterminate_check_box';
+        icon.style.color = 'var(--chart-indigo-900)';
+      }
+    }
+
+    function toggleSeries(index) {
+      seriesStates[index] = !seriesStates[index];
+      setSeriesIcon(
+        document.getElementById('series-icon-' + index),
+        seriesStates[index],
+        seriesColors[index]
+      );
+      syncHeaderIcon();
+    }
+
+    function toggleAllSeries() {
+      var allChecked = seriesStates.every(Boolean);
+      var newState = !allChecked;
+      seriesStates = seriesStates.map(function() { return newState; });
+      seriesStates.forEach(function(state, i) {
+        setSeriesIcon(
+          document.getElementById('series-icon-' + i),
+          state,
+          seriesColors[i]
+        );
+      });
+      syncHeaderIcon();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — PAR Guest360 Beta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@10.3.1/dist/gridstack.min.css">
+  <link rel="stylesheet" href="../assets/bento.css">
+  <link rel="stylesheet" href="beta.css">
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+          <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+        </a>
+        <span class="header-brand-divider" aria-hidden="true"></span>
+        <button class="header-brand-btn" aria-label="Select brand">
+          Life Alive
+          <i class="ph ph-caret-down"></i>
+        </button>
+      </div>
+      <div class="header-right">
+        <button class="header-btn">
+          <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
+          Ava
+        </button>
+        <button class="header-btn">
+          <span class="material-symbols-rounded">school</span>
+          PAR Academy
+        </button>
+        <button class="header-btn header-btn--icon" aria-label="Profile">
+          <span class="material-symbols-rounded">person</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="app-shell__body">
+
+      <!-- Nav sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Main navigation">
+
+          <div class="nav-group" data-nav-group-id="top">
+            <a href="index.html" class="nav-item active">
+              <i class="ph-duotone ph-chart-bar" aria-hidden="true"></i>
+              <span class="nav-item__label">Dashboard</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="guests">
+            <div class="nav-group-title">Guests</div>
+            <a href="guest-profiles.html" class="nav-item">
+              <i class="ph-duotone ph-user-circle" aria-hidden="true"></i>
+              <span class="nav-item__label">Guest profiles</span>
+            </a>
+            <a href="guest-segments.html" class="nav-item">
+              <i class="ph-duotone ph-users-three" aria-hidden="true"></i>
+              <span class="nav-item__label">Segments</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="bottom">
+            <a href="settings.html" class="nav-item">
+              <i class="ph-duotone ph-gear" aria-hidden="true"></i>
+              <span class="nav-item__label">Settings</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </a>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
+              <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
+              <span class="nav-item__label">Cockpit</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group" id="cockpit-sub">
+              <a href="cockpit-features.html" class="nav-sub-item">Features</a>
+              <a href="cockpit-admins.html" class="nav-sub-item">Admins</a>
+            </div>
+          </div>
+
+        </nav>
+      </aside>
+
+      <!-- Customize sidebar -->
+      <aside class="sidebar-customize">
+        <div class="sidebar-customize__inner">
+          <div class="sidebar-customize__label">Metrics</div>
+          <div class="sidebar-customize__list" id="sidebar-list"></div>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+        <div class="content-area content-area--dashboard">
+
+          <!-- Title bar -->
+          <div class="dashboard-title-bar">
+            <h1 class="dashboard-title-bar__title">Dashboard</h1>
+            <div class="dashboard-title-bar__actions">
+              <button class="button transparent dashboard-btn">
+                <span class="material-symbols-rounded dashboard-btn__icon">help</span>
+                <span class="dashboard-btn__label">Help</span>
+              </button>
+              <button class="button primary dashboard-btn">
+                <span class="material-symbols-rounded dashboard-btn__icon">add</span>
+                <span class="dashboard-btn__label">Create with AI...</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter bar -->
+          <div class="dashboard-filter-bar">
+            <div class="date-range-wrapper">
+              <div class="btn-group" role="group" aria-label="Date range">
+                <button class="btn-group__item btn-group__item--active" onclick="setDateRange(this, '7D')">7D</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '30D')">30D</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '90D')">90D</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '12M')">12M</button>
+                <button class="btn-group__item" onclick="setDateRange(this, 'YTD')">YTD</button>
+                <button class="btn-group__item btn-group__item--icon" id="btn-custom-range" onclick="setDateRange(this, 'custom')">
+                  <span class="material-symbols-rounded">calendar_month</span>
+                  Custom
+                </button>
+              </div>
+
+              <div class="date-picker-panel" id="date-picker-panel">
+                <div class="dp-input-row">
+                  <div class="dp-input-group">
+                    <label class="dp-input-label">Start date</label>
+                    <div class="dp-input-field">
+                      <span class="material-symbols-rounded">calendar_month</span>
+                      <span class="dp-input-value" id="dp-start-value">MM/DD/YYYY</span>
+                    </div>
+                  </div>
+                  <div class="dp-input-group">
+                    <label class="dp-input-label">End date</label>
+                    <div class="dp-input-field">
+                      <span class="material-symbols-rounded">calendar_month</span>
+                      <span class="dp-input-value" id="dp-end-value">MM/DD/YYYY</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="dp-calendars-row" id="dp-calendars-row">
+                  <div class="dp-calendar" id="dp-cal-left">
+                    <div class="dp-cal-header">
+                      <button class="dp-cal-nav" onclick="dpNavigate('left-back')" aria-label="Previous month">
+                        <span class="material-symbols-rounded">chevron_left</span>
+                      </button>
+                      <span class="dp-cal-header__title" id="dp-title-left"></span>
+                      <div class="dp-cal-nav-spacer"></div>
+                    </div>
+                    <div class="dp-day-headers">
+                      <div class="dp-day-header">MON</div><div class="dp-day-header">TUE</div>
+                      <div class="dp-day-header">WED</div><div class="dp-day-header">THU</div>
+                      <div class="dp-day-header">FRI</div><div class="dp-day-header">SAT</div>
+                      <div class="dp-day-header">SUN</div>
+                    </div>
+                    <div class="dp-cal-grid" id="dp-grid-left"></div>
+                  </div>
+                  <div class="dp-calendar" id="dp-cal-right">
+                    <div class="dp-cal-header">
+                      <div class="dp-cal-nav-spacer"></div>
+                      <span class="dp-cal-header__title" id="dp-title-right"></span>
+                      <button class="dp-cal-nav" onclick="dpNavigate('right-forward')" aria-label="Next month">
+                        <span class="material-symbols-rounded">chevron_right</span>
+                      </button>
+                    </div>
+                    <div class="dp-day-headers">
+                      <div class="dp-day-header">MON</div><div class="dp-day-header">TUE</div>
+                      <div class="dp-day-header">WED</div><div class="dp-day-header">THU</div>
+                      <div class="dp-day-header">FRI</div><div class="dp-day-header">SAT</div>
+                      <div class="dp-day-header">SUN</div>
+                    </div>
+                    <div class="dp-cal-grid" id="dp-grid-right"></div>
+                  </div>
+                </div>
+                <div class="dp-footer">
+                  <button class="button transparent" onclick="cancelDatePicker()"><span>Cancel</span></button>
+                  <button class="button primary" onclick="applyDateRange()"><span style="color:#fff;">Apply</span></button>
+                </div>
+              </div>
+            </div>
+
+            <span class="dashboard-filter-label">compared to</span>
+
+            <div class="dropdown" id="dd-compare">
+              <div class="dropdown__wrapper">
+                <button class="dropdown__button" onclick="toggleDropdown('dd-compare')">
+                  <span>Previous period</span>
+                  <i class="material-symbols-rounded">expand_more</i>
+                </button>
+              </div>
+              <div class="dropdown__options">
+                <ul>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous period</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous year</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>No comparison</span></button></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="dashboard-filter-spacer"></div>
+
+            <button class="button outlined dashboard-btn">
+              <span class="material-symbols-rounded dashboard-btn__icon">filter_alt</span>
+              <span class="dashboard-btn__label">More filters...</span>
+            </button>
+          </div>
+
+          <!-- Meta bar -->
+          <div class="dashboard-meta-bar">
+            <div class="dashboard-last-updated">
+              <span class="material-symbols-rounded dashboard-last-updated__icon">info</span>
+              <span class="dashboard-last-updated__text">Last updated Apr 20, 2:14 AM</span>
+            </div>
+            <button class="button outlined dashboard-btn" id="btn-customize" onclick="enterCustomizeMode()">
+              <span class="dashboard-btn__label">Customize</span>
+            </button>
+          </div>
+
+          <!-- Chart grid (GridStack) -->
+          <div class="grid-stack grid-stack-animate" id="dashboard-grid"></div>
+
+        </div>
+        <!-- /content-area--dashboard -->
+
+        <!-- Customize action bar -->
+        <div class="features-action-bar" id="dashboard-action-bar" style="display: none;">
+          <button class="button primary" onclick="saveCustomize()">
+            <span>Save</span>
+          </button>
+          <button class="features-action-bar__cancel" onclick="cancelCustomize()">Cancel</button>
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gridstack@10.3.1/dist/gridstack-all.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ag-charts-community@13.2.1/dist/umd/ag-charts-community.min.js"></script>
+  <script>
+    /* ═══════════════════════════════════════════════════
+       Metric definitions
+    ═══════════════════════════════════════════════════ */
+    var ALL_METRICS = [
+      { id: 'total-guests',               title: 'Total guests' },
+      { id: 'guest-lifecycle-breakdown',  title: 'Guest lifecycle breakdown' },
+      { id: 'retention-cohort',           title: 'Retention cohort' },
+      { id: 'reachability',               title: 'Reachability' },
+      { id: 'visit-frequency',            title: 'Visit frequency' },
+      { id: 'loyalty-spend-lift',         title: 'Loyalty spend lift' },
+      { id: 'guest-repeat-rate',          title: 'Guest repeat rate' },
+      { id: 'avg-days-between-visits',    title: 'Avg days between visits' },
+      { id: 'loyalty-penetration',        title: 'Loyalty penetration' },
+      { id: 'active-guests',              title: 'Active guests' },
+      { id: 'avg-order-value',            title: 'Avg order value' },
+      { id: 'return-visit-funnel',        title: 'Return visit funnel' },
+      { id: 'avg-visits-per-guest',       title: 'Avg visits per guest' },
+    ];
+
+    var DEFAULT_LAYOUT = [
+      { id: 'total-guests',              x: 0, y: 0 },
+      { id: 'guest-lifecycle-breakdown', x: 6, y: 0 },
+      { id: 'retention-cohort',          x: 0, y: 1 },
+      { id: 'reachability',              x: 6, y: 1 },
+    ];
+
+    // v2: bumped to flush any saved layouts from the old 2-column system
+    var LS_KEY = 'g360-dashboard-layout-v2';
+
+    /* ═══════════════════════════════════════════════════
+       GridStack
+    ═══════════════════════════════════════════════════ */
+    var dashGrid;
+    var originalItems = null; // snapshot when entering customize
+
+    // cellHeight: card content (435px) + marginBottom (32px) = 467
+    // margin: 16px all sides → 32px row-gap, 32px col-gap
+    var CELL_HEIGHT = 467;
+
+    function initGrid() {
+      dashGrid = GridStack.init({
+        column: 12,               // 12-col system; cards use w:6 (50%)
+        cellHeight: CELL_HEIGHT,
+        marginTop: 16,            // 32px row gap between cards
+        marginBottom: 16,
+        marginLeft: 8,            // 16px column gap between cards
+        marginRight: 8,
+        animate: true,
+        // Not staticGrid — staticGrid:true tears down the accept-widget drop
+        // target, and setStatic(false) doesn't always rebuild it reliably in
+        // v10. Instead start with disable() and enable() in customize mode.
+        disableResize: true,      // grid-level resize off (resizable:false isn't a valid DDResizeOpt)
+        draggable: {
+          handle: '.chart-card',
+          cancel: 'button, .dropdown, .chart-context-wrap, .chart-remove-wrap',
+          scroll: false,
+        },
+        // acceptWidgets removed — sidebar drops are handled manually via
+        // startSidebarDrag/onSidebarDragEnd; GridStack only manages internal
+        // reorder of existing cards.
+        disableOneColumnMode: true,
+        float: false,
+      }, '#dashboard-grid');
+
+      // Lock interactions in normal mode (sidebar is hidden so no source for
+      // sidebar drops anyway); enable() flips on internal move in customize.
+      dashGrid.disable();
+
+      // Track drag state on body for hover-state suppression (#7).
+      // 'dragstart'/'dragstop' fire only for in-grid reorders.
+      dashGrid.on('dragstart', function() {
+        document.body.classList.add('is-dragging-card');
+      });
+      dashGrid.on('dragstop', function() {
+        document.body.classList.remove('is-dragging-card');
+      });
+
+      loadLayout();
+    }
+
+    function loadLayout() {
+      var saved = localStorage.getItem(LS_KEY);
+      var items = saved ? JSON.parse(saved) : DEFAULT_LAYOUT;
+      dashGrid.removeAll();
+      items.forEach(function(item) {
+        var metric = metricById(item.id);
+        if (metric) addCardToGrid(metric.id, metric.title, item.x, item.y, false);
+      });
+    }
+
+    function addCardToGrid(id, title, x, y, flash) {
+      var widget = dashGrid.addWidget({
+        id: id,
+        x: x,
+        y: y,
+        w: 6,
+        h: 1,
+        noResize: true,
+        content: createCardHTML(id, title),
+      });
+      if (flash) {
+        var card = widget.querySelector('.chart-card');
+        if (card) {
+          card.classList.add('chart-card--added');
+          setTimeout(function() { card.classList.remove('chart-card--added'); }, 1000);
+        }
+      }
+      if (id === 'total-guests') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() { requestAnimationFrame(initTotalGuestsChart); });
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Manual sidebar → grid drag-drop.
+       GridStack v10.3.1's acceptWidgets drop pipeline doesn't
+       reliably register the grid as a drop target in our setup, so we
+       handle sidebar drops ourselves. Internal reorders still go through
+       GridStack's own drag-drop and are unaffected.
+    ═══════════════════════════════════════════════════ */
+    var sidebarDragState = null;
+    var SIDEBAR_DRAG_THRESHOLD = 4; // px before we treat mousedown as drag
+
+    function startSidebarDrag(e) {
+      if (e.button !== 0) return;
+      e.preventDefault();   // stop browser from starting a text selection
+      var item = e.currentTarget;
+      sidebarDragState = {
+        metricId: item.getAttribute('data-metric-id'),
+        metricTitle: item.getAttribute('data-metric-title'),
+        sourceItem: item,
+        startX: e.clientX,
+        startY: e.clientY,
+        offsetX: 0,
+        offsetY: 0,
+        helper: null,
+        moved: false,
+        rect: item.getBoundingClientRect(),
+      };
+      sidebarDragState.offsetX = e.clientX - sidebarDragState.rect.left;
+      sidebarDragState.offsetY = e.clientY - sidebarDragState.rect.top;
+
+      document.addEventListener('mousemove', onSidebarDragMove);
+      document.addEventListener('mouseup', onSidebarDragEnd);
+    }
+
+    // Compute the target grid coords (x:0|6, y:row) from a mouse event,
+    // or null if the cursor is outside the grid.
+    function targetCoordsFromEvent(e) {
+      var gridEl = document.getElementById('dashboard-grid');
+      if (!gridEl) return null;
+      var r = gridEl.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return null;
+      return {
+        x: (e.clientX - r.left) < r.width / 2 ? 0 : 6,
+        y: Math.max(0, Math.floor((e.clientY - r.top) / CELL_HEIGHT)),
+        gridEl: gridEl,
+      };
+    }
+
+    function showDropPlaceholder(target) {
+      var ph = document.getElementById('drop-placeholder');
+      if (!ph) {
+        ph = document.createElement('div');
+        ph.id = 'drop-placeholder';
+        ph.className = 'drop-placeholder';
+        target.gridEl.appendChild(ph);
+      }
+      // Match the visual box of a grid cell at (x,y), w:6 h:1, accounting for the
+      // 8px h / 16px v inner margin that grid items use.
+      var leftPct = (target.x / 12) * 100;
+      ph.style.left   = 'calc(' + leftPct + '% + 8px)';
+      ph.style.top    = (target.y * CELL_HEIGHT + 16) + 'px';
+      ph.style.width  = 'calc(50% - 16px)';
+      ph.style.height = (CELL_HEIGHT - 32) + 'px';
+    }
+
+    function hideDropPlaceholder() {
+      var ph = document.getElementById('drop-placeholder');
+      if (ph) ph.remove();
+    }
+
+    function onSidebarDragMove(e) {
+      if (!sidebarDragState) return;
+      var s = sidebarDragState;
+      e.preventDefault();
+
+      if (!s.moved) {
+        var dx = e.clientX - s.startX;
+        var dy = e.clientY - s.startY;
+        if (Math.abs(dx) < SIDEBAR_DRAG_THRESHOLD && Math.abs(dy) < SIDEBAR_DRAG_THRESHOLD) return;
+        s.moved = true;
+
+        // Build helper (clone of sidebar item) on first real move
+        var helper = s.sourceItem.cloneNode(true);
+        helper.style.position = 'fixed';
+        helper.style.zIndex = '10000';
+        helper.style.width = s.rect.width + 'px';
+        helper.style.pointerEvents = 'none';
+        helper.style.opacity = '0.95';
+        helper.style.boxShadow = '0px 5px 20px rgba(0,0,0,0.18)';
+        document.body.appendChild(helper);
+        s.helper = helper;
+        document.body.classList.add('is-dragging-card');
+        s.sourceItem.style.opacity = '0.4';
+      }
+
+      s.helper.style.left = (e.clientX - s.offsetX) + 'px';
+      s.helper.style.top = (e.clientY - s.offsetY) + 'px';
+
+      var target = targetCoordsFromEvent(e);
+      if (target) showDropPlaceholder(target);
+      else hideDropPlaceholder();
+    }
+
+    function onSidebarDragEnd(e) {
+      if (!sidebarDragState) return;
+      var s = sidebarDragState;
+      sidebarDragState = null;
+
+      document.removeEventListener('mousemove', onSidebarDragMove);
+      document.removeEventListener('mouseup', onSidebarDragEnd);
+
+      if (s.helper) s.helper.remove();
+      hideDropPlaceholder();
+      document.body.classList.remove('is-dragging-card');
+      if (s.sourceItem) s.sourceItem.style.opacity = '';
+
+      if (!s.moved) return; // treat as click — nothing to do
+
+      var target = targetCoordsFromEvent(e);
+      if (!target) return;
+
+      var metric = metricById(s.metricId);
+      if (!metric) return;
+
+      // Insert at the requested row by first shifting any item at row >= y
+      // down by one. With float:false GridStack will then compact, but the
+      // newly-added item at (x, y) holds its row, so neighbours below stay
+      // displaced (and the other column compacts up if it has a gap).
+      dashGrid.batchUpdate();
+      var nodes = dashGrid.engine.nodes.slice().sort(function(a, b) { return b.y - a.y; });
+      nodes.forEach(function(n) {
+        if (n.y >= target.y) {
+          dashGrid.update(n.el, { y: n.y + 1 });
+        }
+      });
+      addCardToGrid(metric.id, metric.title, target.x, target.y, true);
+      dashGrid.commit();
+
+      if (s.sourceItem && s.sourceItem.parentNode) s.sourceItem.parentNode.removeChild(s.sourceItem);
+    }
+
+    function removeCard(id) {
+      if (id === 'total-guests' && totalGuestsChart) {
+        totalGuestsChart.destroy();
+        totalGuestsChart = null;
+      }
+      var el = document.querySelector('.grid-stack-item[gs-id="' + id + '"]');
+      if (el) dashGrid.removeWidget(el);
+      updateSidebar();
+    }
+
+    function getLayoutSnapshot() {
+      return dashGrid.getGridItems().map(function(el) {
+        return {
+          id:  el.getAttribute('gs-id') || '',
+          x:   parseInt(el.getAttribute('gs-x')  || '0', 10),
+          y:   parseInt(el.getAttribute('gs-y')  || '0', 10),
+        };
+      }).filter(function(i) { return i.id; });
+    }
+
+    function getOnDashboardIds() {
+      return dashGrid.getGridItems().map(function(el) {
+        return el.getAttribute('gs-id');
+      }).filter(Boolean);
+    }
+
+    function metricById(id) {
+      return ALL_METRICS.find(function(m) { return m.id === id; }) || null;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Sidebar (customize mode)
+    ═══════════════════════════════════════════════════ */
+    function updateSidebar() {
+      var onDash = getOnDashboardIds();
+      var list = document.getElementById('sidebar-list');
+      list.innerHTML = '';
+      ALL_METRICS.forEach(function(metric) {
+        if (onDash.indexOf(metric.id) !== -1) return;
+        var item = document.createElement('div');
+        item.className = 'sidebar-customize__item';
+        item.setAttribute('data-metric-id', metric.id);
+        item.setAttribute('data-metric-title', metric.title);
+        item.setAttribute('gs-id', metric.id);   // surfaces as newWidget.id on drop
+        item.setAttribute('gs-w', '6');
+        item.setAttribute('gs-h', '1');
+        item.setAttribute('gs-no-resize', 'true');
+        item.innerHTML =
+          '<span class="material-symbols-rounded sidebar-customize__drag-icon">drag_indicator</span>' +
+          '<span class="sidebar-customize__item-label">' + metric.title + '</span>';
+        list.appendChild(item);
+      });
+      // Manual drag handlers for sidebar items (see startSidebarDrag).
+      list.querySelectorAll('.sidebar-customize__item').forEach(function(el) {
+        el.addEventListener('mousedown', startSidebarDrag);
+      });
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Customize mode enter / exit
+    ═══════════════════════════════════════════════════ */
+    function enterCustomizeMode() {
+      originalItems = getLayoutSnapshot();
+      document.querySelector('.app-shell').classList.add('app-shell--customize');
+      document.getElementById('dashboard-action-bar').style.display = 'flex';
+      dashGrid.enable();
+      updateSidebar();
+    }
+
+    function exitCustomizeMode() {
+      dashGrid.disable();
+      document.querySelector('.app-shell').classList.remove('app-shell--customize');
+      document.getElementById('dashboard-action-bar').style.display = 'none';
+      originalItems = null;
+    }
+
+    function saveCustomize() {
+      var layout = getLayoutSnapshot();
+      localStorage.setItem(LS_KEY, JSON.stringify(layout));
+      exitCustomizeMode();
+    }
+
+    function cancelCustomize() {
+      if (originalItems) {
+        dashGrid.removeAll();
+        originalItems.forEach(function(item) {
+          var metric = metricById(item.id);
+          if (metric) addCardToGrid(metric.id, metric.title, item.x, item.y, false);
+        });
+      }
+      exitCustomizeMode();
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Card HTML factory
+    ═══════════════════════════════════════════════════ */
+    function buildMetricHTML(id) {
+      if (id === 'total-guests') {
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">1.24M</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+5.32%</span>' +
+          '</div>' +
+          '<p class="chart-card__metric-period">1.13M prev period</p>'
+        );
+      }
+      return (
+        '<p class="chart-card__metric-value">--</p>' +
+        '<p class="chart-card__metric-period">-- prev period</p>'
+      );
+    }
+
+    function buildLegendHTML(id) {
+      if (id !== 'total-guests') return '';
+      return (
+        '<div class="chart-card__legend">' +
+          '<div class="chart-card__legend-item">' +
+            '<span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>' +
+            '<span>This period</span>' +
+          '</div>' +
+          '<div class="chart-card__legend-item">' +
+            '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
+            '<span>Prev period</span>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    function createCardHTML(id, title) {
+      var breakdownHTML = '';
+      if (id === 'total-guests') {
+        breakdownHTML =
+          '<div class="chart-card__breakdown dropdown" id="dd-breakdown-' + id + '">' +
+            '<div class="dropdown__wrapper">' +
+              '<button class="dropdown__button" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleDropdown(\'dd-breakdown-' + id + '\')">' +
+                '<span>By location</span>' +
+                '<i class="material-symbols-rounded">expand_more</i>' +
+              '</button>' +
+            '</div>' +
+            '<div class="dropdown__options dropdown__options--right">' +
+              '<ul>' +
+                '<li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By location</span></button></li>' +
+                '<li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By channel</span></button></li>' +
+                '<li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By daypart</span></button></li>' +
+              '</ul>' +
+            '</div>' +
+          '</div>';
+      }
+
+      return (
+        '<div class="chart-card" data-metric-id="' + id + '">' +
+          '<div class="chart-card__header" onclick="openChartDetail(\'' + id + '\')" role="button" tabindex="0">' +
+            '<span class="material-symbols-rounded chart-card__drag-icon">drag_indicator</span>' +
+            '<div class="chart-card__header-text">' +
+              '<p class="chart-card__title">' + title + '</p>' +
+              '<p class="chart-card__subtitle">Chart explanation</p>' +
+            '</div>' +
+            '<div class="chart-card__header-controls">' +
+              breakdownHTML +
+              '<div class="chart-context-wrap">' +
+                '<button class="button transparent no-content chart-card__dots-btn" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleChartMenu(event, \'' + id + '\')" aria-label="More options" aria-expanded="false">' +
+                  '<i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i>' +
+                '</button>' +
+                '<div class="chart-context-menu" id="chart-menu-' + id + '">' +
+                  '<ul>' +
+                    '<li><button class="chart-context-menu__item" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>' +
+                    '<li><button class="chart-context-menu__item" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>' +
+                    '<li><button class="chart-context-menu__item chart-context-menu__item--ava" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava about this...</span></button></li>' +
+                  '</ul>' +
+                '</div>' +
+              '</div>' +
+              '<div class="chart-remove-wrap">' +
+                '<button class="button transparent no-content" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); removeCard(\'' + id + '\')" aria-label="Remove chart">' +
+                  '<span class="material-symbols-rounded">do_not_disturb_on</span>' +
+                '</button>' +
+                '<div class="chart-tooltip">Remove</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="chart-card__body">' +
+            '<div class="chart-card__metric">' +
+              buildMetricHTML(id) +
+            '</div>' +
+            buildLegendHTML(id) +
+            '<div class="chart-card__placeholder" id="chart-area-' + id + '"></div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Navigation & dropdowns
+    ═══════════════════════════════════════════════════ */
+    function openChartDetail(metricId) {
+      if (document.querySelector('.app-shell').classList.contains('app-shell--customize')) return;
+      window.location.href = 'dashboard-chart-detail.html';
+    }
+
+    function toggleCockpit(btn) {
+      var isOpen = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      document.getElementById('cockpit-sub').classList.toggle('open', isOpen);
+    }
+
+    function setDateRange(btn, range) {
+      btn.closest('.btn-group').querySelectorAll('.btn-group__item').forEach(function(b) {
+        b.classList.remove('btn-group__item--active');
+      });
+      btn.classList.add('btn-group__item--active');
+      if (range === 'custom') { openDatePicker(); } else { closeDatePicker(); }
+    }
+
+    function toggleChartMenu(event, id) {
+      event.stopPropagation();
+      var menu = document.getElementById('chart-menu-' + id);
+      var isOpen = menu.classList.toggle('chart-context-menu--open');
+      var btn = menu.previousElementSibling;
+      btn.setAttribute('aria-expanded', isOpen);
+      if (isOpen) {
+        document.querySelectorAll('.chart-context-menu--open').forEach(function(m) {
+          if (m !== menu) {
+            m.classList.remove('chart-context-menu--open');
+            m.previousElementSibling.setAttribute('aria-expanded', 'false');
+          }
+        });
+        document.addEventListener('click', function closeMenu(e) {
+          if (!menu.closest('.chart-context-wrap').contains(e.target)) {
+            menu.classList.remove('chart-context-menu--open');
+            btn.setAttribute('aria-expanded', 'false');
+            document.removeEventListener('click', closeMenu);
+          }
+        });
+      }
+    }
+
+    function toggleDropdown(id) {
+      var dd = document.getElementById(id);
+      var opts = dd.querySelector('.dropdown__options');
+      var isOpen = opts.classList.toggle('dropdown__options_open');
+      if (isOpen) {
+        document.addEventListener('click', function closeOnOutside(e) {
+          if (!dd.contains(e.target)) {
+            opts.classList.remove('dropdown__options_open');
+            document.removeEventListener('click', closeOnOutside);
+          }
+        });
+      }
+    }
+
+    function selectDropdownOption(btn) {
+      var dd = btn.closest('.dropdown');
+      dd.querySelector('.dropdown__button span:first-child').textContent = btn.querySelector('span').textContent;
+      dd.querySelector('.dropdown__options').classList.remove('dropdown__options_open');
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Date range picker
+    ═══════════════════════════════════════════════════ */
+    var dpStartDate = null, dpEndDate = null, dpHoverDate = null;
+    var dpLeftMonth = null, dpRightMonth = null, dpOutsideHandler = null;
+    var MONTH_NAMES = ['January','February','March','April','May','June',
+                       'July','August','September','October','November','December'];
+
+    function openDatePicker() {
+      var panel = document.getElementById('date-picker-panel');
+      if (panel.classList.contains('date-picker-panel--open')) return;
+      var now = new Date();
+      dpRightMonth = { year: now.getFullYear(), month: now.getMonth() };
+      dpLeftMonth  = prevMonth(dpRightMonth);
+      dpStartDate = dpEndDate = dpHoverDate = null;
+      renderDatePicker();
+      panel.classList.add('date-picker-panel--open');
+      document.getElementById('dp-calendars-row').addEventListener('mouseleave', dpClearHover);
+      setTimeout(function() {
+        dpOutsideHandler = function(e) {
+          var wrapper = document.getElementById('date-picker-panel').closest('.date-range-wrapper');
+          if (!wrapper.contains(e.target)) closeDatePicker();
+        };
+        document.addEventListener('click', dpOutsideHandler);
+      }, 0);
+    }
+
+    function closeDatePicker() {
+      document.getElementById('date-picker-panel').classList.remove('date-picker-panel--open');
+      if (dpOutsideHandler) {
+        document.removeEventListener('click', dpOutsideHandler);
+        dpOutsideHandler = null;
+      }
+      document.getElementById('dp-calendars-row').removeEventListener('mouseleave', dpClearHover);
+    }
+
+    function cancelDatePicker() {
+      closeDatePicker();
+      var customBtn = document.getElementById('btn-custom-range');
+      if (!dpStartDate || !dpEndDate) {
+        customBtn.classList.remove('btn-group__item--active');
+        customBtn.closest('.btn-group').querySelector('.btn-group__item').classList.add('btn-group__item--active');
+      }
+    }
+
+    function applyDateRange() {
+      closeDatePicker();
+    }
+
+    function dpClearHover() {
+      if (dpStartDate && !dpEndDate) { dpHoverDate = null; renderDatePicker(); }
+    }
+
+    function dpNavigate(direction) {
+      if (direction === 'left-back') {
+        dpLeftMonth = prevMonth(dpLeftMonth); dpRightMonth = nextMonth(dpLeftMonth);
+      } else {
+        dpRightMonth = nextMonth(dpRightMonth); dpLeftMonth = prevMonth(dpRightMonth);
+      }
+      renderDatePicker();
+    }
+
+    function prevMonth(m) { return m.month === 0 ? { year: m.year-1, month: 11 } : { year: m.year, month: m.month-1 }; }
+    function nextMonth(m) { return m.month === 11 ? { year: m.year+1, month: 0 } : { year: m.year, month: m.month+1 }; }
+
+    function renderDatePicker() {
+      renderCalendar('left',  dpLeftMonth,  'dp-title-left',  'dp-grid-left');
+      renderCalendar('right', dpRightMonth, 'dp-title-right', 'dp-grid-right');
+      updateDpInputs();
+    }
+
+    function renderCalendar(side, mo, titleId, gridId) {
+      document.getElementById(titleId).textContent = MONTH_NAMES[mo.month] + ' ' + mo.year;
+      var grid = document.getElementById(gridId);
+      grid.innerHTML = '';
+      var firstDayOfWeek = new Date(mo.year, mo.month, 1).getDay();
+      var startCol = (firstDayOfWeek + 6) % 7;
+      var daysInMonth = new Date(mo.year, mo.month + 1, 0).getDate();
+      var daysInPrev  = new Date(mo.year, mo.month, 0).getDate();
+      var effectiveEnd = dpEndDate ? dpEndDate.getTime() : (dpHoverDate && dpStartDate && dpHoverDate >= dpStartDate ? dpHoverDate.getTime() : null);
+      for (var i = 0; i < 42; i++) {
+        var cellDate, isOut = false;
+        if (i < startCol) { cellDate = new Date(mo.year, mo.month-1, daysInPrev - startCol + i + 1); isOut = true; }
+        else if (i >= startCol + daysInMonth) { cellDate = new Date(mo.year, mo.month+1, i - startCol - daysInMonth + 1); isOut = true; }
+        else { cellDate = new Date(mo.year, mo.month, i - startCol + 1); }
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'dp-cal-cell';
+        btn.textContent = cellDate.getDate();
+        if (isOut) btn.classList.add('dp-cal-cell--out');
+        var ts = cellDate.getTime(), startTs = dpStartDate ? dpStartDate.getTime() : null;
+        if (startTs && ts === startTs) btn.classList.add('dp-cal-cell--start');
+        else if (effectiveEnd && ts === effectiveEnd && startTs) btn.classList.add('dp-cal-cell--end');
+        else if (startTs && effectiveEnd && ts > startTs && ts < effectiveEnd) btn.classList.add('dp-cal-cell--range');
+        (function(d) {
+          btn.addEventListener('click', function() { onDpCellClick(d); });
+          btn.addEventListener('mouseenter', function() { onDpCellHover(d); });
+        })(new Date(cellDate));
+        grid.appendChild(btn);
+      }
+    }
+
+    function onDpCellClick(date) {
+      if (!dpStartDate || (dpStartDate && dpEndDate)) { dpStartDate = date; dpEndDate = dpHoverDate = null; }
+      else {
+        if (date.getTime() < dpStartDate.getTime()) { dpEndDate = dpStartDate; dpStartDate = date; }
+        else { dpEndDate = date; }
+        dpHoverDate = null;
+      }
+      renderDatePicker();
+    }
+
+    function onDpCellHover(date) {
+      if (dpStartDate && !dpEndDate) { dpHoverDate = date; renderDatePicker(); }
+    }
+
+    function updateDpInputs() {
+      var sv = document.getElementById('dp-start-value'), ev = document.getElementById('dp-end-value');
+      sv.textContent = dpStartDate ? fmtDate(dpStartDate) : 'MM/DD/YYYY';
+      ev.textContent = dpEndDate   ? fmtDate(dpEndDate)   : 'MM/DD/YYYY';
+      sv.classList.toggle('dp-input-value--set', !!dpStartDate);
+      ev.classList.toggle('dp-input-value--set', !!dpEndDate);
+    }
+
+    function fmtDate(d) {
+      return String(d.getMonth()+1).padStart(2,'0') + '/' + String(d.getDate()).padStart(2,'0') + '/' + d.getFullYear();
+    }
+
+    /* ═══════════════════════════════════════════════════
+       AG Charts — Total Guests
+    ═══════════════════════════════════════════════════ */
+    var totalGuestsChart = null;
+
+    // 30 days of data: Mar 28 – Apr 26, 2026
+    // current = this period, prev = prior period aligned to same dates
+    var TOTAL_GUESTS_DATA = (function() {
+      var baseDate = new Date(2026, 2, 28);
+      // Values stored in millions (e.g. 1.155 = 1,155,000)
+      // Shape mirrors the Figma reference: flat ~1.15, sharp peak Apr 5,
+      // mid-month dip, then a sharp uptick at the end.
+      var curr = [
+        1.155, 1.148, 1.142, 1.156, 1.160,
+        1.165, 1.190, 1.238, 1.182, 1.165,
+        1.160, 1.158, 1.150, 1.140, 1.137,
+        1.150, 1.158, 1.155, 1.152, 1.156,
+        1.160, 1.158, 1.154, 1.150, 1.158,
+        1.175, 1.205, 1.218, 1.214, 1.215,
+      ];
+      var prev = [
+        1.135, 1.140, 1.138, 1.146, 1.150,
+        1.156, 1.161, 1.158, 1.150, 1.146,
+        1.144, 1.142, 1.146, 1.150, 1.148,
+        1.144, 1.146, 1.150, 1.152, 1.150,
+        1.148, 1.152, 1.156, 1.158, 1.156,
+        1.153, 1.156, 1.160, 1.162, 1.160,
+      ];
+      return curr.map(function(c, i) {
+        var d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() + i);
+        return { date: d, current: c, prev: prev[i] };
+      });
+    }());
+
+    function fmtGuestNum(v) {
+      if (v >= 1000000) return (v / 1000000).toFixed(2).replace(/\.?0+$/, '') + 'M';
+      if (v >= 1000)    return (v / 1000).toFixed(1).replace(/\.?0+$/, '') + 'K';
+      return String(v);
+    }
+
+    function fmtChartDate(d) {
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function initTotalGuestsChart() {
+      var container = document.getElementById('chart-area-total-guests');
+      if (!container) return;
+      if (totalGuestsChart) { totalGuestsChart.destroy(); totalGuestsChart = null; }
+
+      var fmtM = function(v) { return (+v).toFixed(2).replace(/\.?0+$/, '') + 'M'; };
+
+      totalGuestsChart = agCharts.AgCharts.create({
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 16, bottom: 0, left: 0 },
+        data: TOTAL_GUESTS_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'line',
+            xKey: 'date',
+            yKey: 'prev',
+            yName: 'Prev period',
+            stroke: '#5A55E3',
+            strokeWidth: 1.5,
+            lineDash: [1, 4],
+            lineCap: 'round',
+            marker: {
+              enabled: true,
+              size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 7, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: {
+              renderer: function(p) {
+                var d = p.datum;
+                return (
+                  '<div style="font-family:Manrope,sans-serif;padding:10px 12px;">' +
+                  '<div style="font-size:11px;font-weight:700;margin-bottom:8px;color:#161616;">Prev period</div>' +
+                  '<div style="display:flex;align-items:center;gap:6px;">' +
+                    '<div style="width:10px;height:10px;background-color:#ffffff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 4px);box-shadow:inset 0 0 0 1px #5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                    '<span style="font-size:11px;color:#525252;">' + fmtChartDate(d.date) + '</span>' +
+                    '<span style="font-size:13px;font-weight:700;margin-left:auto;padding-left:12px;">' + fmtM(d.prev) + '</span>' +
+                  '</div>' +
+                  '</div>'
+                );
+              },
+            },
+          },
+          {
+            type: 'line',
+            xKey: 'date',
+            yKey: 'current',
+            yName: 'This period',
+            stroke: '#5A55E3',
+            strokeWidth: 2,
+            marker: {
+              enabled: true,
+              size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 8, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: {
+              renderer: function(p) {
+                var d = p.datum;
+                var pctRaw = (d.current - d.prev) / d.prev * 100;
+                var pct = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(1) + '%';
+                var pctColor = pctRaw >= 0 ? '#257469' : '#b1294a';
+                var pctBg    = pctRaw >= 0 ? '#effaf9' : '#fdecef';
+                return (
+                  '<div style="font-family:Manrope,sans-serif;padding:10px 12px;min-width:190px;">' +
+                  '<div style="font-size:11px;font-weight:700;margin-bottom:8px;color:#161616;">Total guests</div>' +
+                  '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">' +
+                    '<div style="width:10px;height:10px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                    '<span style="font-size:11px;color:#525252;">' + fmtChartDate(d.date) + '</span>' +
+                    '<span style="font-size:13px;font-weight:700;margin-left:auto;padding-left:12px;">' + fmtM(d.current) + '</span>' +
+                  '</div>' +
+                  '<div style="font-size:11px;color:#525252;padding-left:16px;margin-bottom:6px;">' +
+                    '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:1px 5px;border-radius:4px;font-weight:600;">' + pct + '</span>' +
+                    ' vs prev period' +
+                  '</div>' +
+                  '<div style="display:flex;align-items:center;gap:6px;">' +
+                    '<div style="width:10px;height:10px;background-color:#ffffff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 4px);box-shadow:inset 0 0 0 1px #5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                    '<span style="font-size:11px;color:#525252;">Prev period</span>' +
+                    '<span style="font-size:11px;font-weight:600;margin-left:auto;padding-left:12px;color:#525252;">' + fmtM(d.prev) + '</span>' +
+                  '</div>' +
+                  '</div>'
+                );
+              },
+            },
+          },
+        ],
+        axes: [
+          {
+            type: 'time',
+            position: 'bottom',
+            gridLine: { enabled: false },
+            line: { enabled: false },
+            tick: { enabled: true, size: 4, width: 1, stroke: '#000000' },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              format: '%b %-d',
+              padding: 8,
+              avoidCollisions: true,
+            },
+            interval: {
+              values: [
+                new Date(2026, 2, 29),  // Mar 29
+                new Date(2026, 3, 5),   // Apr 5
+                new Date(2026, 3, 12),  // Apr 12
+                new Date(2026, 3, 19),  // Apr 19
+              ],
+            },
+            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+          },
+          {
+            type: 'number',
+            position: 'left',
+            min: 1.10,
+            max: 1.25,
+            interval: { step: 0.05 },
+            gridLine: { enabled: false },
+            line: { enabled: false },
+            tick: { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              formatter: function(params) {
+                return (+params.value).toFixed(2).replace(/\.?0+$/, '') + 'M';
+              },
+            },
+          },
+        ],
+      });
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Boot
+    ═══════════════════════════════════════════════════ */
+    document.addEventListener('DOMContentLoaded', initGrid);
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <path d="M10.1538 18.4615L7.84617 13.3846L2.76927 11.077L7.84617 8.76928L10.1538 3.69238L12.4615 8.76928L17.5384 11.077L12.4615 13.3846L10.1538 18.4615ZM17.5384 20.3077L16.3846 17.7692L13.8461 16.6154L16.3846 15.4616L17.5384 12.9231L18.6923 15.4616L21.2307 16.6154L18.6923 17.7692L17.5384 20.3077Z" fill="url(#paint0_linear_headerAva)"/>
+  <defs>
+    <linearGradient id="paint0_linear_headerAva" x1="12" y1="3.69238" x2="12" y2="20.3077" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5A55E3"/>
+      <stop offset="1" stop-color="#F8931C"/>
+    </linearGradient>
+  </defs>
+</svg>
