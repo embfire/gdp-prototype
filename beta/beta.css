@@ -896,6 +896,9 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 }
 .chart-card__metric-pill--up   { background: #effaf9; color: #257469; }
 .chart-card__metric-pill--down { background: #fdecef; color: #b1294a; }
+/* Inverse semantics: for "lower is better" metrics (At-Risk, Churn) — up = bad (red), down = good (green). */
+.chart-card__metric-pill--up.chart-card__metric-pill--inverse   { background: #fdecef; color: #b1294a; }
+.chart-card__metric-pill--down.chart-card__metric-pill--inverse { background: #effaf9; color: #257469; }
 
 .chart-card__metric-period {
   margin: 0;
@@ -986,9 +989,97 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   min-height: 0;
 }
 
+/* Guest lifecycle breakdown: same flex-fill treatment */
+.chart-card[data-metric-id="guest-lifecycle-breakdown"] .chart-card__body {
+  flex: 1;
+  min-height: 0;
+}
+.chart-card[data-metric-id="guest-lifecycle-breakdown"] .chart-card__placeholder {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
+/* Retention cohort: same flex-fill treatment */
+.chart-card[data-metric-id="retention-cohort"] .chart-card__body {
+  flex: 1;
+  min-height: 0;
+}
+.chart-card[data-metric-id="retention-cohort"] .chart-card__placeholder {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
 /* Strip the placeholder background once a real chart has rendered */
-#chart-area-total-guests-echarts {
+#chart-area-total-guests-echarts,
+#chart-area-guest-lifecycle-breakdown,
+#chart-area-retention-cohort {
   background: transparent;
+}
+
+/* Retention heatmap color-scale legend (detail page) */
+.retention-heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 0 12px;
+  font-size: 12px;
+  color: #60696c;
+}
+.retention-heatmap-legend__bar {
+  flex: 0 0 200px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #eef0fc, #5A55E3);
+}
+.retention-heatmap-legend__label {
+  font-weight: 500;
+}
+
+/* Metric area — horizontal layout for metric + optional info banner.
+   Figma node 4825:42960: gap 24px, banner sits to the right of the metric. */
+.chart-card__metric-area {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.chart-card__metric-area > .chart-card__metric {
+  flex-shrink: 0;
+}
+
+/* Filter-compatibility info banner — Bento .info-banner_informational palette,
+   inline with the metric. Hidden by default; shown via --shown modifier. */
+.chart-card__filter-banner {
+  display: none;
+  flex: 1 1 200px;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px 8px 12px;
+  border-left: 4px solid #1d5eff;
+  background: #ebf0ff;
+  border-radius: 2px;
+}
+/* Dashboard override — center icon + text vertically. */
+.content-area--dashboard .chart-card__filter-banner {
+  align-items: center;
+}
+.chart-card__filter-banner--shown { display: flex; }
+.chart-card__filter-banner__icon {
+  flex-shrink: 0;
+  font-size: 20px;
+  color: #1d5eff;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  line-height: 1.36;
+}
+.chart-card__filter-banner__text {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.36;
+  color: #000000;
 }
 
 .metric-delta {
@@ -1246,6 +1337,9 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 
 .content-area--chart-detail {
   padding: 32px 48px 64px;
+  /* Establishes a positioning context for `.chart-point-menu` so the menu
+     scrolls with the chart instead of staying fixed in the viewport. */
+  position: relative;
 }
 
 /* Material Symbols — same variation settings as dashboard */
@@ -1633,7 +1727,9 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
    header row (color dot + date / value), separator, then list. */
 .chart-point-menu {
   display: none;
-  position: fixed;
+  /* Page-anchored (not viewport-anchored) so the menu scrolls with the
+     chart when the user scrolls the detail page. */
+  position: absolute;
   background: #ffffff;
   border: 2px solid #dfe1e2;
   border-radius: 8px;

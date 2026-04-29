@@ -267,14 +267,15 @@
     ];
 
     var DEFAULT_LAYOUT = [
-      { id: 'total-guests',              x: 0, y: 0 },
-      { id: 'retention-cohort',          x: 6, y: 0 },
-      { id: 'reachability',              x: 0, y: 1 },
-      { id: 'visit-frequency',           x: 6, y: 1 },
+      { id: 'total-guests',               x: 0, y: 0 },
+      { id: 'guest-lifecycle-breakdown',  x: 6, y: 0 },
+      { id: 'retention-cohort',           x: 0, y: 1 },
+      { id: 'reachability',               x: 6, y: 1 },
+      { id: 'visit-frequency',            x: 0, y: 2 },
     ];
 
-    // v4: removed ECharts comparison card
-    var LS_KEY = 'g360-dashboard-layout-v4';
+    // v5: added guest-lifecycle-breakdown to default layout
+    var LS_KEY = 'g360-dashboard-layout-v5';
 
     /* ═══════════════════════════════════════════════════
        GridStack
@@ -335,6 +336,7 @@
         var metric = metricById(item.id);
         if (metric) addCardToGrid(metric.id, metric.title, item.x, item.y, false);
       });
+      applyFilterCompatibility(currentDateRange);
     }
 
     function addCardToGrid(id, title, x, y, flash) {
@@ -361,6 +363,22 @@
           document.fonts.load('800 12px Manrope'),
         ]).then(function() { requestAnimationFrame(initTotalGuestsChart); });
       }
+      if (id === 'guest-lifecycle-breakdown') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() { requestAnimationFrame(initLifecycleChart); });
+      }
+      if (id === 'retention-cohort') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() { requestAnimationFrame(initRetentionCohortChart); });
+      }
+      // Sync the new card's filter notice with the current date range.
+      applyFilterCompatibility(currentDateRange);
     }
 
     /* ═══════════════════════════════════════════════════
@@ -513,6 +531,11 @@
           totalGuestsTooltipEl = null;
         }
       }
+      if (id === 'guest-lifecycle-breakdown' && lifecycleChart) {
+        lifecycleChart.destroy();
+        lifecycleChart = null;
+        lifecycleChartOptions = null;
+      }
       var el = document.querySelector('.grid-stack-item[gs-id="' + id + '"]');
       if (el) dashGrid.removeWidget(el);
       updateSidebar();
@@ -614,28 +637,142 @@
           '<p class="chart-card__metric-period">1.13M prev period</p>'
         );
       }
+      if (id === 'guest-lifecycle-breakdown') {
+        // Hero is At-Risk count. Inverse pill: At-Risk growing = bad = red.
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">142.8K</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up chart-card__metric-pill--inverse">+3.4%</span>' +
+          '</div>' +
+          '<p class="chart-card__metric-period">At-Risk · 138.1K prev period</p>'
+        );
+      }
+      if (id === 'retention-cohort') {
+        // Hero = M+1 retention for the latest complete cohort (Mar 2026).
+        // Higher is better, so default (non-inverse) pill.
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">34.2%</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+10.3%</span>' +
+          '</div>' +
+          '<p class="chart-card__metric-period">31.0% prev period</p>'
+        );
+      }
       return (
         '<p class="chart-card__metric-value">--</p>' +
         '<p class="chart-card__metric-period">-- prev period</p>'
       );
     }
 
+    // Lifecycle stages — order, label, color (Bento palette, first 6 in defined order).
+    var LIFECYCLE_STAGES = [
+      { key: 'firstTime',    label: 'First-time',   color: '#5A55E3' },  // indigo-900
+      { key: 'returning',    label: 'Returning',    color: '#FF6600' },  // vermilion-900
+      { key: 'winBack', label: 'Win-back', color: '#8C9FFF' },  // periwinkle-900
+      { key: 'loyal',        label: 'Loyal',        color: '#F8931C' },  // amber-900
+      { key: 'atRisk',       label: 'At-Risk',      color: '#E83162' },  // crimson-900
+      { key: 'churned',      label: 'Churned',      color: '#30ACEE' },  // sky-900
+    ];
+
     function buildLegendHTML(id) {
-      if (id !== 'total-guests') return '';
+      if (id === 'total-guests') {
+        return (
+          '<div class="chart-card__legend">' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="current" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleAGSeries(this, \'current\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>' +
+              '<span>This period</span>' +
+            '</button>' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleAGSeries(this, \'prev\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
+              '<span>Prev period</span>' +
+            '</button>' +
+          '</div>'
+        );
+      }
+      if (id === 'guest-lifecycle-breakdown') {
+        return '<div class="chart-card__legend">' + LIFECYCLE_STAGES.map(function(stage) {
+          return (
+            '<button type="button" class="chart-card__legend-item" data-series-key="' + stage.key + '" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleLifecycleSeries(this, \'' + stage.key + '\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker" style="background:' + stage.color + ';"></span>' +
+              '<span>' + stage.label + '</span>' +
+            '</button>'
+          );
+        }).join('') + '</div>';
+      }
+      if (id === 'retention-cohort') {
+        return (
+          '<div class="chart-card__legend">' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="current" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleRetentionSeries(this, \'current\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>' +
+              '<span>This period</span>' +
+            '</button>' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleRetentionSeries(this, \'prev\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
+              '<span>Prev period</span>' +
+            '</button>' +
+          '</div>'
+        );
+      }
+      return '';
+    }
+
+
+    function getChartSubtitle(id) {
+      if (id === 'total-guests') return 'Identified guests over time';
+      if (id === 'guest-lifecycle-breakdown') return 'Distribution of identified guests across lifecycle stages';
+      if (id === 'retention-cohort') return 'M+1 retention rate by acquisition cohort';
+      return 'Chart explanation';
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Filter compatibility per chart
+       Each entry declares the smallest date range a chart can meaningfully
+       render. When the global filter is below that floor, the card shows a
+       small notice instead of being hidden — chart still renders at its
+       minimum supported range. (Spec: "Showing 30D min" / "Not available for 7D".)
+    ═══════════════════════════════════════════════════ */
+    var RANGE_DAYS = { '7D': 7, '30D': 30, '90D': 90, 'YTD': 90, '12M': 365, 'custom': 365 };
+    var CHART_CONSTRAINTS = {
+      // Cohort retention needs at least 3 monthly cohorts to draw a trend.
+      'retention-cohort': { minDays: 90, minLabel: '90D', reason: 'needs ≥3 months of cohort data' },
+    };
+
+    function getChartFilterNotice(id, range) {
+      var c = CHART_CONSTRAINTS[id];
+      if (!c) return null;
+      var days = RANGE_DAYS[range] != null ? RANGE_DAYS[range] : 365;
+      if (days >= c.minDays) return null;
+      return 'Showing ' + c.minLabel + ' minimum — ' + c.reason;
+    }
+
+    function buildFilterNoticeHTML(id) {
+      if (!CHART_CONSTRAINTS[id]) return '';
       return (
-        '<div class="chart-card__legend">' +
-          '<button type="button" class="chart-card__legend-item" data-series-key="current" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleAGSeries(this, \'current\')" aria-pressed="true">' +
-            '<span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>' +
-            '<span>This period</span>' +
-          '</button>' +
-          '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleAGSeries(this, \'prev\')" aria-pressed="true">' +
-            '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
-            '<span>Prev period</span>' +
-          '</button>' +
+        '<div class="chart-card__filter-banner" data-filter-notice="' + id + '">' +
+          '<span class="material-symbols-rounded chart-card__filter-banner__icon">info</span>' +
+          '<span class="chart-card__filter-banner__text"></span>' +
         '</div>'
       );
     }
 
+    var currentDateRange = '7D';
+
+    function applyFilterCompatibility(range) {
+      currentDateRange = range;
+      document.querySelectorAll('.chart-card[data-metric-id]').forEach(function(card) {
+        var id = card.getAttribute('data-metric-id');
+        var banner = card.querySelector('[data-filter-notice="' + id + '"]');
+        if (!banner) return;
+        var msg = getChartFilterNotice(id, range);
+        var text = banner.querySelector('.chart-card__filter-banner__text');
+        if (msg) {
+          text.textContent = msg;
+          banner.classList.add('chart-card__filter-banner--shown');
+        } else {
+          banner.classList.remove('chart-card__filter-banner--shown');
+        }
+      });
+    }
 
     function createCardHTML(id, title) {
       var breakdownHTML = '';
@@ -664,7 +801,7 @@
             '<span class="material-symbols-rounded chart-card__drag-icon">drag_indicator</span>' +
             '<div class="chart-card__header-text">' +
               '<p class="chart-card__title">' + title + '</p>' +
-              '<p class="chart-card__subtitle">Chart explanation</p>' +
+              '<p class="chart-card__subtitle">' + getChartSubtitle(id) + '</p>' +
             '</div>' +
             '<div class="chart-card__header-controls">' +
               breakdownHTML +
@@ -689,8 +826,11 @@
             '</div>' +
           '</div>' +
           '<div class="chart-card__body">' +
-            '<div class="chart-card__metric">' +
-              buildMetricHTML(id) +
+            '<div class="chart-card__metric-area">' +
+              '<div class="chart-card__metric">' +
+                buildMetricHTML(id) +
+              '</div>' +
+              buildFilterNoticeHTML(id) +
             '</div>' +
             buildLegendHTML(id) +
             '<div class="chart-card__placeholder" id="chart-area-' + id + '"></div>' +
@@ -705,7 +845,9 @@
     function openChartDetail(metricId) {
       if (document.querySelector('.app-shell').classList.contains('app-shell--customize')) return;
       var perChartPages = {
-        'total-guests': 'dashboard-total-guests.html'
+        'total-guests': 'dashboard-total-guests.html',
+        'guest-lifecycle-breakdown': 'dashboard-guest-lifecycle.html',
+        'retention-cohort': 'dashboard-retention-cohort.html'
       };
       window.location.href = perChartPages[metricId] || 'dashboard-chart-detail.html';
     }
@@ -722,6 +864,7 @@
       });
       btn.classList.add('btn-group__item--active');
       if (range === 'custom') { openDatePicker(); } else { closeDatePicker(); }
+      applyFilterCompatibility(range);
     }
 
     function toggleChartMenu(event, id) {
@@ -1195,6 +1338,512 @@
 
       container.addEventListener('mousemove',  totalGuestsMouseMove);
       container.addEventListener('mouseleave', totalGuestsMouseLeave);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       AG Charts — Guest Lifecycle Breakdown (stacked area)
+    ═══════════════════════════════════════════════════ */
+    var lifecycleChart = null;
+    var lifecycleChartOptions = null;
+    var lifecycleVisibility = {
+      firstTime: true, returning: true, winBack: true,
+      loyal: true, atRisk: true, churned: true,
+    };
+    var lifecycleTooltipEl = null;
+    var lifecycleLineEl = null;
+    var lifecycleMouseMove = null;
+    var lifecycleMouseLeave = null;
+
+    function toggleLifecycleSeries(btn, seriesKey) {
+      if (!lifecycleChart || !lifecycleChartOptions) return;
+      var nextValue = !lifecycleVisibility[seriesKey];
+      var someoneElseVisible = Object.keys(lifecycleVisibility).some(function(k) {
+        return k !== seriesKey && lifecycleVisibility[k];
+      });
+      if (!nextValue && !someoneElseVisible) return;
+
+      lifecycleVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+
+      var newSeries = lifecycleChartOptions.series.map(function(s) {
+        return Object.assign({}, s, { visible: lifecycleVisibility[s.yKey] !== false });
+      });
+      var updateOpts = Object.assign({}, lifecycleChartOptions, { series: newSeries });
+      lifecycleChartOptions = updateOpts;
+      lifecycleChart.update(updateOpts);
+    }
+
+    // 39 days of synthetic data (Mar 19 – Apr 26, 2026), values in K guests.
+    // At-Risk drifts upward over the window to match the +3.4% hero pill.
+    var LIFECYCLE_DATA = (function() {
+      var baseDate = new Date(2026, 2, 19);
+      var rows = [];
+      var days = 39;
+      var seeded = function(seed, i) { return Math.sin(seed * 1.7 + i * 0.41) * 0.5 + 0.5; };
+      for (var i = 0; i < days; i++) {
+        var d = new Date(baseDate);
+        d.setDate(d.getDate() + i);
+        var t = i / (days - 1);
+        rows.push({
+          date: d,
+          firstTime:    Math.round((110 + seeded(1, i) * 8)            * 10) / 10,
+          returning:    Math.round((132 + seeded(2, i) * 10)           * 10) / 10,
+          winBack: Math.round((32  + seeded(3, i) * 5)            * 10) / 10,
+          loyal:        Math.round((451 - t * 12 + seeded(4, i) * 14)  * 10) / 10,
+          atRisk:       Math.round((138 + t * 6  + seeded(5, i) * 6)   * 10) / 10,
+          churned:      Math.round((285 + seeded(6, i) * 12)           * 10) / 10,
+        });
+      }
+      return rows;
+    })();
+
+    function initLifecycleChart() {
+      var container = document.getElementById('chart-area-guest-lifecycle-breakdown');
+      if (!container) return;
+      if (lifecycleChart) { lifecycleChart.destroy(); lifecycleChart = null; }
+
+      lifecycleVisibility = {
+        firstTime: true, returning: true, winBack: true,
+        loyal: true, atRisk: true, churned: true,
+      };
+
+      lifecycleChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 0, bottom: 0, left: 0 },
+        data: LIFECYCLE_DATA,
+        legend: { enabled: false },
+        series: LIFECYCLE_STAGES.map(function(stage) {
+          return {
+            type: 'area',
+            xKey: 'date',
+            yKey: stage.key,
+            yName: stage.label,
+            stacked: true,
+            stackGroup: 'lifecycle',
+            fill: stage.color,
+            fillOpacity: 0.9,
+            stroke: '#ffffff',
+            strokeWidth: 1,
+            marker: { enabled: false },
+            tooltip: { enabled: false },
+          };
+        }),
+        axes: {
+          x: {
+            type: 'time',
+            position: 'bottom',
+            nice: false,
+            min: new Date(2026, 2, 19),
+            max: new Date(2026, 3, 26),
+            gridLine: { enabled: false },
+            line: { enabled: false },
+            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              format: '%b %-d',
+              padding: 8,
+              avoidCollisions: true,
+            },
+            interval: {
+              values: [
+                new Date(2026, 2, 29),
+                new Date(2026, 3, 5),
+                new Date(2026, 3, 12),
+                new Date(2026, 3, 19),
+              ],
+            },
+            crosshair: { enabled: false },
+          },
+          y: {
+            type: 'number',
+            position: 'left',
+            min: 0,
+            max: 1200,
+            nice: false,
+            gridLine: {
+              enabled: true,
+              style: [{ stroke: '#DFE1E2', lineDash: [] }],
+            },
+            line: { enabled: false },
+            tick: { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              formatter: function(params) {
+                return (+params.value).toFixed(0) + 'K';
+              },
+            },
+            interval: { values: [0, 300, 600, 900, 1200] },
+          },
+        },
+      };
+
+      lifecycleChart = agCharts.AgCharts.create(lifecycleChartOptions);
+
+      // ── Manual tooltip + dashed vertical line ───────────────────────────
+      // AG Charts native crosshair only fires on series hover; with a stacked
+      // area the line should follow the cursor anywhere in the plot area.
+      // Both elements float on document.body to avoid AG Charts repaints.
+
+      if (lifecycleTooltipEl && lifecycleTooltipEl.parentNode) {
+        lifecycleTooltipEl.parentNode.removeChild(lifecycleTooltipEl);
+      }
+      if (lifecycleLineEl && lifecycleLineEl.parentNode) {
+        lifecycleLineEl.parentNode.removeChild(lifecycleLineEl);
+      }
+      if (lifecycleMouseMove) {
+        container.removeEventListener('mousemove',  lifecycleMouseMove);
+        container.removeEventListener('mouseleave', lifecycleMouseLeave);
+      }
+
+      lifecycleTooltipEl = document.createElement('div');
+      lifecycleTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(lifecycleTooltipEl);
+
+      lifecycleLineEl = document.createElement('div');
+      lifecycleLineEl.style.cssText = (
+        'position:fixed;pointer-events:none;display:none;z-index:9998;width:1px;' +
+        'background-image:linear-gradient(to bottom,#c6c6c6 50%,transparent 50%);' +
+        'background-size:1px 8px;background-repeat:repeat-y;'
+      );
+      document.body.appendChild(lifecycleLineEl);
+
+      var L_PLOT_LEFT      = 46;
+      var L_PLOT_RIGHT_PAD = 0;
+      var L_PLOT_TOP       = 8;   // matches chart padding.top
+      var L_X_AXIS_H       = 28;  // approx X-axis label area
+      var L_AXIS_MIN_TIME  = new Date(2026, 2, 19).getTime();
+      var L_AXIS_MAX_TIME  = new Date(2026, 3, 26).getTime();
+      var fmtK = function(v) { return (+v).toFixed(1) + 'K'; };
+
+      lifecycleMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - L_PLOT_RIGHT_PAD;
+
+        if (mx < L_PLOT_LEFT || mx > plotRight) {
+          lifecycleTooltipEl.style.display = 'none';
+          lifecycleLineEl.style.display = 'none';
+          return;
+        }
+
+        var relX = (mx - L_PLOT_LEFT) / (plotRight - L_PLOT_LEFT);
+        var targetTime = L_AXIS_MIN_TIME + relX * (L_AXIS_MAX_TIME - L_AXIS_MIN_TIME);
+        var d = LIFECYCLE_DATA.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+
+        var rowsHTML = LIFECYCLE_STAGES
+          .filter(function(s) { return lifecycleVisibility[s.key] !== false; })
+          .map(function(s) {
+            return (
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:6px;">' +
+                  '<div style="width:12px;height:12px;background:' + s.color + ';border-radius:2px;flex-shrink:0;"></div>' +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + s.label + '</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtK(d[s.key]) + '</span>' +
+              '</div>'
+            );
+          })
+          .join('');
+
+        if (!rowsHTML) {
+          lifecycleTooltipEl.style.display = 'none';
+          lifecycleLineEl.style.display = 'none';
+          return;
+        }
+
+        lifecycleTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 4px;line-height:1.5;white-space:nowrap;">Guest lifecycle</p>' +
+            '<p style="font-size:12px;font-weight:400;color:#60696C;margin:0 0 12px;line-height:1.5;white-space:nowrap;">' + fmtChartDate(d.date) + '</p>' +
+            '<div style="display:flex;flex-direction:column;gap:8px;">' + rowsHTML + '</div>' +
+          '</div>'
+        );
+        lifecycleTooltipEl.style.display = 'block';
+
+        // Position the dashed line at the snapped data X.
+        var dataRelX = (d.date.getTime() - L_AXIS_MIN_TIME) / (L_AXIS_MAX_TIME - L_AXIS_MIN_TIME);
+        var dataX    = L_PLOT_LEFT + dataRelX * (plotRight - L_PLOT_LEFT);
+        lifecycleLineEl.style.left    = (rect.left + dataX) + 'px';
+        lifecycleLineEl.style.top     = (rect.top + L_PLOT_TOP) + 'px';
+        lifecycleLineEl.style.height  = (rect.height - L_PLOT_TOP - L_X_AXIS_H) + 'px';
+        lifecycleLineEl.style.display = 'block';
+
+        // Tooltip position: right of cursor, flip near the right edge.
+        var tw = lifecycleTooltipEl.offsetWidth, th = lifecycleTooltipEl.offsetHeight;
+        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8)                           ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        lifecycleTooltipEl.style.left = tx + 'px';
+        lifecycleTooltipEl.style.top  = ty + 'px';
+      };
+
+      lifecycleMouseLeave = function() {
+        lifecycleTooltipEl.style.display = 'none';
+        lifecycleLineEl.style.display = 'none';
+      };
+
+      container.addEventListener('mousemove',  lifecycleMouseMove);
+      container.addEventListener('mouseleave', lifecycleMouseLeave);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       AG Charts — Retention Cohort (M+1 by acquisition month)
+    ═══════════════════════════════════════════════════ */
+    var retentionCohortChart = null;
+    var retentionCohortChartOptions = null;
+    var retentionCohortVisibility = { current: true, prev: true };
+    var retentionCohortTooltipEl = null;
+    var retentionCohortMouseMove = null;
+    var retentionCohortMouseLeave = null;
+
+    function toggleRetentionSeries(btn, seriesKey) {
+      if (!retentionCohortChart || !retentionCohortChartOptions) return;
+      var nextValue = !retentionCohortVisibility[seriesKey];
+      var someoneElseVisible = Object.keys(retentionCohortVisibility).some(function(k) {
+        return k !== seriesKey && retentionCohortVisibility[k];
+      });
+      if (!nextValue && !someoneElseVisible) return;
+
+      retentionCohortVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+
+      var newSeries = retentionCohortChartOptions.series.map(function(s, i) {
+        var vis = (i === 0) ? retentionCohortVisibility.prev : retentionCohortVisibility.current;
+        return Object.assign({}, s, { visible: vis });
+      });
+      var updateOpts = Object.assign({}, retentionCohortChartOptions, { series: newSeries });
+      retentionCohortChartOptions = updateOpts;
+      retentionCohortChart.update(updateOpts);
+    }
+
+    // 12 monthly cohorts: Apr 2025 – Mar 2026 (current), Apr 2024 – Mar 2025 (prev).
+    // Each point = M+1 retention rate of guests acquired that month
+    // (% of cohort that returned within their first month). Industry baseline ~25%,
+    // top performers 35–45% (Bloom Intelligence 2025 Restaurant Guest Retention Report).
+    var RETENTION_COHORT_DATA = (function() {
+      var curr = [
+        0.295, 0.302, 0.298, 0.308, 0.314, 0.310,
+        0.319, 0.325, 0.321, 0.328, 0.336, 0.342,
+      ];
+      var prev = [
+        0.275, 0.282, 0.279, 0.285, 0.289, 0.291,
+        0.294, 0.298, 0.301, 0.305, 0.307, 0.310,
+      ];
+      // Apr 2025 = month index 3 of year 2025.
+      return curr.map(function(c, i) {
+        var d = new Date(2025, 3 + i, 1);
+        return { date: d, current: c, prev: prev[i] };
+      });
+    }());
+
+    function fmtPct(v) { return (v * 100).toFixed(1).replace(/\.0$/, '') + '%'; }
+    function fmtCohortMonth(d) {
+      return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }).replace(' ', " '");
+    }
+
+    function initRetentionCohortChart() {
+      var container = document.getElementById('chart-area-retention-cohort');
+      if (!container) return;
+      if (retentionCohortChart) { retentionCohortChart.destroy(); retentionCohortChart = null; }
+
+      retentionCohortVisibility = { current: true, prev: true };
+
+      retentionCohortChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 0, bottom: 0, left: 0 },
+        data: RETENTION_COHORT_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'line',
+            xKey: 'date',
+            yKey: 'prev',
+            yName: 'Prev period',
+            stroke: '#5A55E3',
+            strokeWidth: 2,
+            lineDash: [2, 2],
+            marker: {
+              enabled: true,
+              size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+          {
+            type: 'line',
+            xKey: 'date',
+            yKey: 'current',
+            yName: 'This period',
+            stroke: '#5A55E3',
+            strokeWidth: 2,
+            marker: {
+              enabled: true,
+              size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+        ],
+        axes: {
+          x: {
+            type: 'time',
+            position: 'bottom',
+            nice: false,
+            min: new Date(2025, 3, 1),
+            max: new Date(2026, 2, 1),
+            gridLine: { enabled: false },
+            line: { enabled: false },
+            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              avoidCollisions: true,
+              formatter: function(params) { return fmtCohortMonth(new Date(params.value)); },
+            },
+            interval: {
+              values: [
+                new Date(2025, 3, 1),  // Apr '25
+                new Date(2025, 6, 1),  // Jul '25
+                new Date(2025, 9, 1),  // Oct '25
+                new Date(2026, 0, 1),  // Jan '26
+              ],
+            },
+            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+          },
+          y: {
+            type: 'number',
+            position: 'left',
+            min: 0.26,
+            max: 0.36,
+            interval: { values: [0.26, 0.28, 0.30, 0.32, 0.34, 0.36] },
+            gridLine: {
+              enabled: true,
+              style: [{ stroke: '#DFE1E2', lineDash: [] }],
+            },
+            line: { enabled: false },
+            tick: { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              formatter: function(params) { return fmtPct(+params.value); },
+            },
+          },
+        },
+      };
+
+      retentionCohortChart = agCharts.AgCharts.create(retentionCohortChartOptions);
+
+      // ── Manual tooltip (mirror of total-guests pattern) ─────────────────
+      if (retentionCohortTooltipEl && retentionCohortTooltipEl.parentNode) {
+        retentionCohortTooltipEl.parentNode.removeChild(retentionCohortTooltipEl);
+      }
+      if (retentionCohortMouseMove) {
+        container.removeEventListener('mousemove',  retentionCohortMouseMove);
+        container.removeEventListener('mouseleave', retentionCohortMouseLeave);
+      }
+
+      retentionCohortTooltipEl = document.createElement('div');
+      retentionCohortTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(retentionCohortTooltipEl);
+
+      // Y-axis labels are "26%"–"36%" (3 chars) + 8px label.padding ≈ 36px.
+      var PLOT_LEFT      = 38;
+      var PLOT_RIGHT_PAD = 0;
+      var AXIS_MIN_TIME  = new Date(2025, 3, 1).getTime();
+      var AXIS_MAX_TIME  = new Date(2026, 2, 1).getTime();
+
+      retentionCohortMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+
+        if (mx < PLOT_LEFT || mx > plotRight) {
+          retentionCohortTooltipEl.style.display = 'none';
+          return;
+        }
+
+        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
+        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
+        var d = RETENTION_COHORT_DATA.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+
+        if (!retentionCohortVisibility.current) { retentionCohortTooltipEl.style.display = 'none'; return; }
+
+        var pctRaw   = (d.current - d.prev) / d.prev * 100;
+        var pct      = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
+        var pctColor = pctRaw >= 0 ? '#257469' : '#b1294a';
+        var pctBg    = pctRaw >= 0 ? '#effaf9' : '#fdecef';
+        var stripe   = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+
+        retentionCohortTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">M+1 retention</p>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:4px;">' +
+                '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtCohortMonth(d.date) + ' cohort</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtPct(d.current) + '</span>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+              '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pct + '</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs prev period</span>' +
+            '</div>' +
+          '</div>' +
+          (retentionCohortVisibility.prev
+            ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Prev period</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtPct(d.prev) + '</span>' +
+              '</div>'
+            : '') +
+          '</div>'
+        );
+
+        retentionCohortTooltipEl.style.display = 'block';
+
+        var tw = retentionCohortTooltipEl.offsetWidth;
+        var th = retentionCohortTooltipEl.offsetHeight;
+        var tx = e.clientX + 16;
+        var ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8)                           ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        retentionCohortTooltipEl.style.left = tx + 'px';
+        retentionCohortTooltipEl.style.top  = ty + 'px';
+      };
+
+      retentionCohortMouseLeave = function() {
+        retentionCohortTooltipEl.style.display = 'none';
+      };
+
+      container.addEventListener('mousemove',  retentionCohortMouseMove);
+      container.addEventListener('mouseleave', retentionCohortMouseLeave);
     }
 
     /* ═══════════════════════════════════════════════════

@@ -109,7 +109,23 @@ Single hidden menu in the page (placed before the AG Charts `<script>` tag). Hea
 ```
 
 ### CSS
-`.chart-point-menu` lives in `beta/beta.css` (Figma node 4711:7268). Spec: 2px solid `#dfe1e2` border, 8px radius, 16px padding, `0 4px 12px rgba(0,0,0,0.12)` shadow, viewport-anchored (`position: fixed`). Items use their own `.chart-point-menu__item` class with a 4px-radius `:hover` background (`#f4f4f4`) — there is no permanently-highlighted item; the design's first-row grey is the hover state. The segment icon is Material Symbols `stroke_partial`.
+`.chart-point-menu` lives in `beta/beta.css` (Figma node 4711:7268). Spec: 2px solid `#dfe1e2` border, 8px radius, 16px padding, `0 4px 12px rgba(0,0,0,0.12)` shadow, `position: absolute`. Items use their own `.chart-point-menu__item` class with an 8px-radius `:hover` background (`#f4f4f4`) — there is no permanently-highlighted item; the design's first-row grey is the hover state. The segment icon is Material Symbols `stroke_partial`.
+
+### Anchoring (must scroll with the chart)
+The menu must scroll with the chart, not stay pinned to the viewport. Three requirements, all of which must hold:
+
+1. **The menu DOM lives inside the scrolling content**, not as a sibling of `.app-shell`. On detail pages this means inside `.content-area--chart-detail`.
+2. **A scoped positioned ancestor.** `.content-area--chart-detail` has `position: relative` so the menu's `position: absolute` resolves against it.
+3. **Add `scrollTop` / `scrollLeft` when computing coordinates.** This is the easy one to miss. `.content-area` is itself a scroll container (`overflow-y: auto`). For an absolutely-positioned child of a scroll container, `top`/`left` are relative to the *unscrolled* content origin, not the visible viewport top. So:
+
+```js
+var ref = menu.offsetParent;
+var refRect = ref.getBoundingClientRect();
+menu.style.left = (x - refRect.left + ref.scrollLeft) + 'px';
+menu.style.top  = (y - refRect.top  + ref.scrollTop)  + 'px';
+```
+
+`window.scrollX/Y` is **not** correct here — page scroll lives on `.main-content` and `.content-area`, so window-level scroll is always 0. Always anchor through `offsetParent` and add its own scroll offset.
 
 ### JS contract
 `attachChartPointMenu(container, opts)` is called inside the chart init function (after the manual-tooltip wiring). It expects the same plot-area math the manual tooltip uses, plus Y-axis bounds for series detection:

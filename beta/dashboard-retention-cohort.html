@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chart name — PAR Guest360 Beta</title>
+  <title>Retention cohort — PAR Guest360 Beta</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
@@ -97,13 +97,13 @@
             <span class="chart-breadcrumbs__separator" aria-hidden="true">
               <span class="material-symbols-rounded">chevron_right</span>
             </span>
-            <span class="chart-breadcrumbs__current">Chart name</span>
+            <span class="chart-breadcrumbs__current">Retention cohort</span>
           </nav>
 
           <!-- Title bar -->
           <div class="chart-detail-title-bar">
             <div class="chart-detail-title-bar__top">
-              <h1 class="chart-detail-title-bar__title">Chart name</h1>
+              <h1 class="chart-detail-title-bar__title">Retention cohort</h1>
               <div class="chart-detail-title-bar__actions">
                 <button class="button transparent dashboard-btn">
                   <span class="material-symbols-rounded dashboard-btn__icon">help</span>
@@ -117,10 +117,10 @@
           <div class="dashboard-filter-bar">
             <div class="date-range-wrapper">
               <div class="btn-group" role="group" aria-label="Date range">
-                <button class="btn-group__item btn-group__item--active" onclick="setDateRange(this, '7D')">7D</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '7D')">7D</button>
                 <button class="btn-group__item" onclick="setDateRange(this, '30D')">30D</button>
                 <button class="btn-group__item" onclick="setDateRange(this, '90D')">90D</button>
-                <button class="btn-group__item" onclick="setDateRange(this, '12M')">12M</button>
+                <button class="btn-group__item btn-group__item--active" onclick="setDateRange(this, '12M')">12M</button>
                 <button class="btn-group__item" onclick="setDateRange(this, 'YTD')">YTD</button>
                 <button class="btn-group__item btn-group__item--icon" id="btn-custom-range" onclick="setDateRange(this, 'custom')">
                   <span class="material-symbols-rounded">calendar_month</span>
@@ -231,28 +231,13 @@
           <!-- /filter bar -->
 
           <!-- Chart card -->
-          <div class="chart-card">
+          <div class="chart-card" data-metric-id="retention-cohort">
             <div class="chart-card__header chart-card__header--detail">
               <div class="chart-card__header-text">
-                <p class="chart-card__title">Chart name</p>
-                <p class="chart-card__subtitle">Chart explanation</p>
+                <p class="chart-card__title">Retention cohort</p>
+                <p class="chart-card__subtitle">M+1 retention rate by acquisition cohort. Each row tracks how a single month's new guests return over time.</p>
               </div>
               <div class="chart-card__header-controls">
-                <div class="dropdown" id="dd-breakdown">
-                  <div class="dropdown__wrapper">
-                    <button class="dropdown__button" onclick="toggleDropdown('dd-breakdown')">
-                      <span>By location</span>
-                      <i class="material-symbols-rounded">expand_more</i>
-                    </button>
-                  </div>
-                  <div class="dropdown__options dropdown__options--right">
-                    <ul>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By location</span></button></li>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By channel</span></button></li>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By daypart</span></button></li>
-                    </ul>
-                  </div>
-                </div>
                 <button class="button outlined dashboard-btn">
                   <img src="../assets/ava-assistant.svg" alt="" width="20" height="20">
                   <span class="dashboard-btn__label">Get insight</span>
@@ -273,76 +258,29 @@
             </div>
             <div class="chart-card__body">
               <div class="chart-card__metric">
-                <p class="chart-card__metric-value">0</p>
-                <p class="chart-card__metric-period">0 prev period</p>
+                <div class="chart-card__metric-row">
+                  <p class="chart-card__metric-value">34.2%</p>
+                  <span class="chart-card__metric-pill chart-card__metric-pill--up">+10.3%</span>
+                </div>
+                <p class="chart-card__metric-period">Latest M+1 cohort · 31.0% prev period</p>
               </div>
-              <div class="chart-card__placeholder chart-card__placeholder--detail"></div>
+              <!-- Color-scale legend for the heatmap -->
+              <div class="retention-heatmap-legend">
+                <span class="retention-heatmap-legend__label">Lower retention</span>
+                <span class="retention-heatmap-legend__bar" aria-hidden="true"></span>
+                <span class="retention-heatmap-legend__label">Higher retention</span>
+              </div>
+              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-retention-cohort"></div>
             </div>
           </div>
           <!-- /chart card -->
 
-          <!-- Data table -->
+          <!-- Data table — wide cohort grid (rows = cohort, cols = M+N) -->
           <div class="chart-detail-table-wrap">
             <div class="table-container">
-              <table class="table">
-                <thead>
-                  <tr style="background-color: #dfe1e2; border-bottom: none;">
-                    <th class="chart-series-th" style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px; width: 56px;" onclick="toggleAllSeries()">
-                      <span id="header-series-icon" class="material-symbols-rounded chart-series-icon" style="color: var(--chart-indigo-900);">check_box</span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">Name</th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Heading <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Heading <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Heading <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Heading <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Heading <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="chart-series-col" onclick="toggleSeries(0)">
-                      <span id="series-icon-0" class="material-symbols-rounded chart-series-icon" style="color: var(--chart-indigo-900);">check_box</span>
-                    </td>
-                    <td>Value</td>
-                    <td class="chart-data-col">Value</td>
-                    <td class="chart-data-col">Value</td>
-                    <td class="chart-data-col">Value</td>
-                    <td class="chart-data-col">Value</td>
-                    <td class="chart-data-col">Value</td>
-                  </tr>
-                  <tr>
-                    <td class="chart-series-col" onclick="toggleSeries(1)">
-                      <span id="series-icon-1" class="material-symbols-rounded chart-series-icon" style="color: var(--chart-vermilion-700);">check_box</span>
-                    </td>
-                    <td>Value</td>
-                    <td class="chart-data-col">Value</td>
-                    <td class="chart-data-col">Value</td>
-                    <td class="chart-data-col">Value</td>
-                    <td class="chart-data-col">Value</td>
-                    <td class="chart-data-col">Value</td>
-                  </tr>
-                  <tr>
-                    <td class="chart-series-col" onclick="toggleSeries(2)">
-                      <span id="series-icon-2" class="material-symbols-rounded chart-series-icon" style="color: var(--chart-periwinkle-700);">check_box</span>
-                    </td>
-                    <td>Value</td>
-                    <td class="chart-data-col">Value</td>
-                    <td class="chart-data-col">Value</td>
-                    <td class="chart-data-col">Value</td>
-                    <td class="chart-data-col">Value</td>
-                    <td class="chart-data-col">Value</td>
-                  </tr>
-                </tbody>
+              <table class="table" id="retention-cohort-table">
+                <thead id="retention-cohort-thead"></thead>
+                <tbody id="retention-cohort-tbody"></tbody>
               </table>
             </div>
           </div>
@@ -355,7 +293,9 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/ag-charts-enterprise@13.2.1/dist/umd/ag-charts-enterprise.min.js"></script>
   <script>
+    /* ── Sidebar / dropdowns / date range picker / filter bar ── */
     function toggleCockpit(btn) {
       const isOpen = btn.classList.toggle('open');
       btn.setAttribute('aria-expanded', isOpen);
@@ -367,11 +307,7 @@
         b.classList.remove('btn-group__item--active');
       });
       btn.classList.add('btn-group__item--active');
-      if (range === 'custom') {
-        openDatePicker();
-      } else {
-        closeDatePicker();
-      }
+      if (range === 'custom') { openDatePicker(); } else { closeDatePicker(); }
     }
 
     function toggleChartMenu(event, id) {
@@ -411,54 +347,35 @@
       dd.querySelector('.dropdown__options').classList.remove('dropdown__options_open');
     }
 
-    /* ── Date range picker ── */
-    var dpStartDate = null;
-    var dpEndDate = null;
-    var dpHoverDate = null;
-    var dpLeftMonth = null;
-    var dpRightMonth = null;
-    var dpOutsideHandler = null;
-
-    var MONTH_NAMES = ['January','February','March','April','May','June',
-                       'July','August','September','October','November','December'];
+    /* ── Date range picker (verbatim from dashboard-total-guests.html) ── */
+    var dpStartDate = null, dpEndDate = null, dpHoverDate = null;
+    var dpLeftMonth = null, dpRightMonth = null, dpOutsideHandler = null;
+    var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
     function openDatePicker() {
       var panel = document.getElementById('date-picker-panel');
       if (panel.classList.contains('date-picker-panel--open')) return;
-
       var now = new Date();
       dpRightMonth = { year: now.getFullYear(), month: now.getMonth() };
       dpLeftMonth  = prevMonth(dpRightMonth);
-      dpStartDate  = null;
-      dpEndDate    = null;
-      dpHoverDate  = null;
-
+      dpStartDate = null; dpEndDate = null; dpHoverDate = null;
       renderDatePicker();
       panel.classList.add('date-picker-panel--open');
-
       document.getElementById('dp-calendars-row').addEventListener('mouseleave', dpClearHover);
-
       setTimeout(function() {
         dpOutsideHandler = function(e) {
           var wrapper = document.getElementById('date-picker-panel').closest('.date-range-wrapper');
-          if (!wrapper.contains(e.target)) {
-            closeDatePicker();
-          }
+          if (!wrapper.contains(e.target)) closeDatePicker();
         };
         document.addEventListener('click', dpOutsideHandler);
       }, 0);
     }
-
     function closeDatePicker() {
       var panel = document.getElementById('date-picker-panel');
       panel.classList.remove('date-picker-panel--open');
-      if (dpOutsideHandler) {
-        document.removeEventListener('click', dpOutsideHandler);
-        dpOutsideHandler = null;
-      }
+      if (dpOutsideHandler) { document.removeEventListener('click', dpOutsideHandler); dpOutsideHandler = null; }
       document.getElementById('dp-calendars-row').removeEventListener('mouseleave', dpClearHover);
     }
-
     function cancelDatePicker() {
       closeDatePicker();
       var customBtn = document.getElementById('btn-custom-range');
@@ -468,200 +385,263 @@
         firstBtn.classList.add('btn-group__item--active');
       }
     }
-
-    function applyDateRange() {
-      if (dpStartDate && dpEndDate) {
-        var label = fmtDate(dpStartDate) + ' – ' + fmtDate(dpEndDate);
-        var customBtn = document.getElementById('btn-custom-range');
-        customBtn.querySelector('.dp-custom-label') && (customBtn.querySelector('.dp-custom-label').textContent = label);
-      }
-      closeDatePicker();
-    }
-
+    function applyDateRange() { closeDatePicker(); }
     function dpClearHover() {
-      if (dpStartDate && !dpEndDate) {
-        dpHoverDate = null;
-        renderDatePicker();
-      }
+      if (dpStartDate && !dpEndDate) { dpHoverDate = null; renderDatePicker(); }
     }
-
     function dpNavigate(direction) {
-      if (direction === 'left-back') {
-        dpLeftMonth = prevMonth(dpLeftMonth);
-        dpRightMonth = nextMonth(dpLeftMonth);
-      } else {
-        dpRightMonth = nextMonth(dpRightMonth);
-        dpLeftMonth  = prevMonth(dpRightMonth);
-      }
+      if (direction === 'left-back') { dpLeftMonth = prevMonth(dpLeftMonth); dpRightMonth = nextMonth(dpLeftMonth); }
+      else { dpRightMonth = nextMonth(dpRightMonth); dpLeftMonth = prevMonth(dpRightMonth); }
       renderDatePicker();
     }
-
-    function prevMonth(m) {
-      if (m.month === 0) return { year: m.year - 1, month: 11 };
-      return { year: m.year, month: m.month - 1 };
-    }
-
-    function nextMonth(m) {
-      if (m.month === 11) return { year: m.year + 1, month: 0 };
-      return { year: m.year, month: m.month + 1 };
-    }
-
+    function prevMonth(m) { return m.month === 0 ? { year: m.year-1, month: 11 } : { year: m.year, month: m.month-1 }; }
+    function nextMonth(m) { return m.month === 11 ? { year: m.year+1, month: 0 } : { year: m.year, month: m.month+1 }; }
     function renderDatePicker() {
       renderCalendar('left',  dpLeftMonth,  'dp-title-left',  'dp-grid-left');
       renderCalendar('right', dpRightMonth, 'dp-title-right', 'dp-grid-right');
       updateDpInputs();
     }
-
     function renderCalendar(side, mo, titleId, gridId) {
       document.getElementById(titleId).textContent = MONTH_NAMES[mo.month] + ' ' + mo.year;
-
-      var grid = document.getElementById(gridId);
-      grid.innerHTML = '';
-
+      var grid = document.getElementById(gridId); grid.innerHTML = '';
       var firstDayOfWeek = new Date(mo.year, mo.month, 1).getDay();
       var startCol = (firstDayOfWeek + 6) % 7;
       var daysInMonth = new Date(mo.year, mo.month + 1, 0).getDate();
       var daysInPrev  = new Date(mo.year, mo.month, 0).getDate();
-
       var effectiveEnd = dpEndDate ? dpEndDate.getTime() : (dpHoverDate && dpStartDate && dpHoverDate >= dpStartDate ? dpHoverDate.getTime() : null);
-
       for (var i = 0; i < 42; i++) {
         var cellDate, isOut = false;
-        if (i < startCol) {
-          cellDate = new Date(mo.year, mo.month - 1, daysInPrev - startCol + i + 1);
-          isOut = true;
-        } else if (i >= startCol + daysInMonth) {
-          cellDate = new Date(mo.year, mo.month + 1, i - startCol - daysInMonth + 1);
-          isOut = true;
-        } else {
-          cellDate = new Date(mo.year, mo.month, i - startCol + 1);
-        }
-
+        if (i < startCol) { cellDate = new Date(mo.year, mo.month-1, daysInPrev - startCol + i + 1); isOut = true; }
+        else if (i >= startCol + daysInMonth) { cellDate = new Date(mo.year, mo.month+1, i - startCol - daysInMonth + 1); isOut = true; }
+        else { cellDate = new Date(mo.year, mo.month, i - startCol + 1); }
         var btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'dp-cal-cell';
-        btn.textContent = cellDate.getDate();
+        btn.type = 'button'; btn.className = 'dp-cal-cell'; btn.textContent = cellDate.getDate();
         if (isOut) btn.classList.add('dp-cal-cell--out');
-
-        var ts = cellDate.getTime();
-        var startTs = dpStartDate ? dpStartDate.getTime() : null;
-
-        if (startTs && ts === startTs) {
-          btn.classList.add('dp-cal-cell--start');
-        } else if (effectiveEnd && ts === effectiveEnd && startTs) {
-          btn.classList.add('dp-cal-cell--end');
-        } else if (startTs && effectiveEnd && ts > startTs && ts < effectiveEnd) {
-          btn.classList.add('dp-cal-cell--range');
-        }
-
+        var ts = cellDate.getTime(), startTs = dpStartDate ? dpStartDate.getTime() : null;
+        if (startTs && ts === startTs) btn.classList.add('dp-cal-cell--start');
+        else if (effectiveEnd && ts === effectiveEnd && startTs) btn.classList.add('dp-cal-cell--end');
+        else if (startTs && effectiveEnd && ts > startTs && ts < effectiveEnd) btn.classList.add('dp-cal-cell--range');
         (function(d) {
           btn.addEventListener('click', function() { onDpCellClick(d); });
           btn.addEventListener('mouseenter', function() { onDpCellHover(d); });
         })(new Date(cellDate));
-
         grid.appendChild(btn);
       }
     }
-
     function onDpCellClick(date) {
-      if (!dpStartDate || (dpStartDate && dpEndDate)) {
-        dpStartDate = date;
-        dpEndDate   = null;
-        dpHoverDate = null;
-      } else {
-        if (date.getTime() < dpStartDate.getTime()) {
-          dpEndDate   = dpStartDate;
-          dpStartDate = date;
-        } else {
-          dpEndDate = date;
-        }
+      if (!dpStartDate || (dpStartDate && dpEndDate)) { dpStartDate = date; dpEndDate = null; dpHoverDate = null; }
+      else {
+        if (date.getTime() < dpStartDate.getTime()) { dpEndDate = dpStartDate; dpStartDate = date; }
+        else dpEndDate = date;
         dpHoverDate = null;
       }
       renderDatePicker();
     }
-
-    function onDpCellHover(date) {
-      if (dpStartDate && !dpEndDate) {
-        dpHoverDate = date;
-        renderDatePicker();
-      }
-    }
-
+    function onDpCellHover(date) { if (dpStartDate && !dpEndDate) { dpHoverDate = date; renderDatePicker(); } }
     function updateDpInputs() {
-      var sv = document.getElementById('dp-start-value');
-      var ev = document.getElementById('dp-end-value');
+      var sv = document.getElementById('dp-start-value'), ev = document.getElementById('dp-end-value');
       sv.textContent = dpStartDate ? fmtDate(dpStartDate) : 'MM/DD/YYYY';
       ev.textContent = dpEndDate   ? fmtDate(dpEndDate)   : 'MM/DD/YYYY';
       sv.classList.toggle('dp-input-value--set', !!dpStartDate);
       ev.classList.toggle('dp-input-value--set', !!dpEndDate);
     }
-
     function fmtDate(d) {
-      var m   = String(d.getMonth() + 1).padStart(2, '0');
-      var day = String(d.getDate()).padStart(2, '0');
-      return m + '/' + day + '/' + d.getFullYear();
+      return String(d.getMonth()+1).padStart(2,'0') + '/' + String(d.getDate()).padStart(2,'0') + '/' + d.getFullYear();
     }
 
-    /* ── Series visibility toggles ── */
-    var seriesStates = [true, true, true];
-    var seriesColors = [
-      'var(--chart-indigo-900)',
-      'var(--chart-vermilion-700)',
-      'var(--chart-periwinkle-700)'
+    /* ═══════════════════════════════════════════════════
+       Retention cohort — heatmap data
+       Triangular grid: rows = acquisition month (oldest → newest),
+       cols = M+1..M+12 (months since acquisition, M+12 caps at 12-mo history).
+       Newer cohorts have fewer cells (less elapsed time).
+       Numbers are synthetic but anchor to the card hero (Mar 26 → 34.2% M+1).
+    ═══════════════════════════════════════════════════ */
+    var COHORT_LABELS = [
+      'Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25',
+      'Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26'
+    ];
+    var COHORT_SIZES = [
+      9420, 9685, 9510, 9890, 10120, 10080,
+      10380, 10520, 10410, 10760, 11040, 11280
+    ];
+    var PERIOD_LABELS = [
+      'M+1','M+2','M+3','M+4','M+5','M+6','M+7','M+8','M+9','M+10','M+11','M+12'
+    ];
+    // Lower-triangular matrix. Row i has (12 - i) cells (M+1..M+(12-i)).
+    var COHORT_MATRIX = [
+      [27.6, 16.6, 12.9, 11.0, 9.7, 8.7, 8.0, 7.4, 6.8, 6.3, 5.9, 5.5],
+      [28.2, 16.9, 13.2, 11.3, 9.9, 8.9, 8.2, 7.5, 7.0, 6.5, 6.1],
+      [27.9, 16.7, 13.0, 11.2, 9.8, 8.8, 8.1, 7.4, 6.9, 6.4],
+      [28.8, 17.3, 13.4, 11.5, 10.1, 9.1, 8.4, 7.7, 7.2],
+      [29.4, 17.6, 13.7, 11.8, 10.3, 9.3, 8.5, 7.9],
+      [29.7, 17.8, 13.8, 11.9, 10.4, 9.4, 8.6],
+      [30.6, 18.4, 14.3, 12.2, 10.7, 9.7],
+      [31.2, 18.7, 14.6, 12.5, 10.9],
+      [31.5, 18.9, 14.7, 12.6],
+      [32.4, 19.4, 15.1],
+      [33.3, 20.0],
+      [34.2],
     ];
 
-    function setSeriesIcon(icon, checked, color) {
-      if (checked) {
-        icon.textContent = 'check_box';
-        icon.style.color = color;
-        icon.classList.remove('chart-series-icon--empty');
-      } else {
-        icon.textContent = 'check_box_outline_blank';
-        icon.style.color = '#000000';
-        icon.classList.add('chart-series-icon--empty');
+    // Flatten to AG Charts heatmap row format.
+    var RETENTION_HEATMAP_DATA = (function() {
+      var rows = [];
+      for (var i = 0; i < COHORT_MATRIX.length; i++) {
+        var cohort = COHORT_LABELS[i];
+        var size = COHORT_SIZES[i];
+        for (var j = 0; j < COHORT_MATRIX[i].length; j++) {
+          rows.push({
+            cohort: cohort,
+            cohortSize: size,
+            period: PERIOD_LABELS[j],
+            retention: COHORT_MATRIX[i][j],
+          });
+        }
       }
-    }
+      return rows;
+    }());
 
-    function syncHeaderIcon() {
-      var icon = document.getElementById('header-series-icon');
-      var checkedCount = seriesStates.filter(Boolean).length;
-      icon.classList.remove('chart-series-icon--empty');
-      if (checkedCount === seriesStates.length) {
-        icon.textContent = 'check_box';
-        icon.style.color = 'var(--chart-indigo-900)';
-      } else if (checkedCount === 0) {
-        icon.textContent = 'check_box_outline_blank';
-        icon.style.color = '#000000';
-        icon.classList.add('chart-series-icon--empty');
-      } else {
-        icon.textContent = 'indeterminate_check_box';
-        icon.style.color = 'var(--chart-indigo-900)';
-      }
-    }
+    /* ═══════════════════════════════════════════════════
+       Chart — AG Charts heatmap (enterprise)
+    ═══════════════════════════════════════════════════ */
+    var retentionCohortChart = null;
 
-    function toggleSeries(index) {
-      seriesStates[index] = !seriesStates[index];
-      setSeriesIcon(
-        document.getElementById('series-icon-' + index),
-        seriesStates[index],
-        seriesColors[index]
-      );
-      syncHeaderIcon();
-    }
+    function initRetentionCohortChart() {
+      var container = document.getElementById('chart-area-retention-cohort');
+      if (!container) return;
+      if (retentionCohortChart) { retentionCohortChart.destroy(); retentionCohortChart = null; }
 
-    function toggleAllSeries() {
-      var allChecked = seriesStates.every(Boolean);
-      var newState = !allChecked;
-      seriesStates = seriesStates.map(function() { return newState; });
-      seriesStates.forEach(function(state, i) {
-        setSeriesIcon(
-          document.getElementById('series-icon-' + i),
-          state,
-          seriesColors[i]
-        );
+      retentionCohortChart = agCharts.AgCharts.create({
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 16, bottom: 8, left: 8 },
+        data: RETENTION_HEATMAP_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'heatmap',
+            xKey: 'period',
+            xName: 'Months since acquisition',
+            yKey: 'cohort',
+            yName: 'Acquisition cohort',
+            colorKey: 'retention',
+            colorName: 'Retention',
+            colorRange: ['#eef0fc', '#5A55E3'],
+            colorDomain: [4, 36],
+            stroke: '#ffffff',
+            strokeWidth: 2,
+            label: {
+              enabled: true,
+              color: '#000000',
+              fontSize: 11,
+              fontWeight: 500,
+              formatter: function(p) { return (+p.value).toFixed(1) + '%'; },
+            },
+            tooltip: {
+              renderer: function(p) {
+                var d = p.datum;
+                return {
+                  title: d.cohort + ' cohort',
+                  content:
+                    d.period + ' retention: <b>' + d.retention.toFixed(1) + '%</b><br>' +
+                    'Cohort size: ' + d.cohortSize.toLocaleString(),
+                };
+              },
+            },
+          },
+        ],
+        axes: {
+          x: {
+            type: 'category',
+            position: 'top',
+            line: { enabled: false },
+            tick: { enabled: false },
+            label: { fontSize: 12, color: '#000000', padding: 8, fontWeight: 500 },
+            // Order columns left-to-right M+1 → M+12.
+            keys: PERIOD_LABELS,
+          },
+          y: {
+            type: 'category',
+            position: 'left',
+            line: { enabled: false },
+            tick: { enabled: false },
+            label: { fontSize: 12, color: '#000000', padding: 8, fontWeight: 500 },
+            // Reverse: oldest at top, newest at bottom (lower-triangular look).
+            reverse: true,
+          },
+        },
       });
-      syncHeaderIcon();
     }
+
+    /* ═══════════════════════════════════════════════════
+       Data table — wide cohort grid
+    ═══════════════════════════════════════════════════ */
+    function fmtPct(v) { return (+v).toFixed(1) + '%'; }
+    function fmtCohortSize(n) { return n.toLocaleString('en-US'); }
+
+    // Color a cell background by retention value, mirroring the heatmap.
+    function retentionCellBg(value) {
+      // Linear blend #eef0fc → #5A55E3 over [4, 36]
+      var t = Math.max(0, Math.min(1, (value - 4) / (36 - 4)));
+      var r = Math.round(0xee + (0x5A - 0xee) * t);
+      var g = Math.round(0xf0 + (0x55 - 0xf0) * t);
+      var b = Math.round(0xfc + (0xe3 - 0xfc) * t);
+      return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
+    function retentionCellFg(value) {
+      // Switch to white text once the cell goes dark enough for contrast.
+      return value > 22 ? '#ffffff' : '#000000';
+    }
+
+    function renderTable() {
+      var thead = document.getElementById('retention-cohort-thead');
+      var tbody = document.getElementById('retention-cohort-tbody');
+      var thStyle = 'text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;';
+
+      var headerCells =
+        '<th style="' + thStyle + '"><span class="chart-th-inner chart-th-inner--start">Cohort</span></th>' +
+        '<th style="' + thStyle + '"><span class="chart-th-inner">Cohort size</span></th>' +
+        PERIOD_LABELS.map(function(p) {
+          return '<th style="' + thStyle + ' text-align:center;"><span class="chart-th-inner" style="justify-content:center;">' + p + '</span></th>';
+        }).join('');
+      thead.innerHTML = '<tr style="background-color: #dfe1e2; border-bottom: none;">' + headerCells + '</tr>';
+
+      tbody.innerHTML = COHORT_LABELS.map(function(label, i) {
+        var values = COHORT_MATRIX[i];
+        var cells = '';
+        for (var j = 0; j < PERIOD_LABELS.length; j++) {
+          if (j < values.length) {
+            var v = values[j];
+            cells +=
+              '<td style="text-align:center; background:' + retentionCellBg(v) + '; color:' + retentionCellFg(v) + '; font-variant-numeric: tabular-nums; font-weight: 500;">' +
+                fmtPct(v) +
+              '</td>';
+          } else {
+            cells += '<td style="text-align:center; color:#9ca3af;">—</td>';
+          }
+        }
+        return (
+          '<tr>' +
+            '<td style="font-weight:600;">' + label + '</td>' +
+            '<td class="chart-data-col">' + fmtCohortSize(COHORT_SIZES[i]) + '</td>' +
+            cells +
+          '</tr>'
+        );
+      }).join('');
+    }
+
+    /* ── Boot ── */
+    document.addEventListener('DOMContentLoaded', function() {
+      renderTable();
+      Promise.all([
+        document.fonts.load('400 12px Manrope'),
+        document.fonts.load('500 12px Manrope'),
+        document.fonts.load('700 12px Manrope'),
+        document.fonts.load('800 12px Manrope'),
+      ]).then(function() { requestAnimationFrame(initRetentionCohortChart); });
+    });
   </script>
+
 </body>
 </html>

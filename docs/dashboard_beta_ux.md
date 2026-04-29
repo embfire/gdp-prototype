@@ -42,7 +42,7 @@ Each card has:
   - Breakdown dropdown (only on charts that support it, e.g. "By location") — visible in grid view
   - 3-dot overflow menu
 - **Hero metric**: Primary KPI value + change vs. previous period
-- **Chart area**: ECharts visualization
+- **Chart area**: AG Charts visualization
 - No per-card "Last Updated" timestamp in normal state
 
 ### Clicking the card header
@@ -191,7 +191,17 @@ If a specific chart's data is older than the page-level refresh timestamp (e.g. 
 ### General
 
 - Use Bento components and CSS classes throughout — no custom component styles where a Bento equivalent exists
-- **Manrope font everywhere** — set explicitly on chart canvases (ECharts `textStyle.fontFamily: 'Manrope'`) and all UI text
+- **Manrope font everywhere** — set explicitly on chart canvases (AG Charts `textStyle.fontFamily: 'Manrope'`) and all UI text
+
+### Chart Colors
+
+Series colors come from the Bento chart palette and are applied in a fixed order. Use the next color in sequence for each new series — never skip ahead, never pick by meaning.
+
+The full palette (12 hues × 5 shades each: `100`, `300`, `500`, `700`, `900`) is defined as CSS custom properties in `assets/bento.css` under `/* Chart palette */`. Series defaults use the `900` shade (e.g. `var(--chart-indigo-900)`); lighter shades are for backgrounds, fills, and tonal variations.
+
+For single-series charts, use **Indigo** (`var(--chart-indigo-900)` / `#5A55E3`). For comparisons, the prev-period series uses the same color as the current series but rendered as a striped / dashed marker, not a separate palette color.
+
+These are series colors only. Semantic colors — green `#effaf9` / `#257469` for positive deltas, red `#fdecef` / `#b1294a` for negative deltas — are separate and used in delta pills, not chart series.
 
 ### Bento Table
 
