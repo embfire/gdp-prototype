@@ -20,7 +20,7 @@ Located in a filter bar below the page heading. Includes:
 
 - **Date range**: 7D, 30D, 90D, 12M, YTD, Custom
 - **Compare to**: Previous period (not all charts support this — see below)
-- **Additional filters**: Location, loyalty / non-loyalty, and other dimensions TBD
+- **Additional filters**: Stores and Store groups, loyalty / non-loyalty, and Segments
 
 **Last updated timestamp** sits inline in the filter bar (e.g. `· Last updated Apr 20, 2:14 AM`). Since all data refreshes in the same daily batch, one page-level timestamp is sufficient — no per-card timestamps unless a specific card has stale data (see Data Refresh section).
 
@@ -79,13 +79,15 @@ The chart on the detail page uses the same data and series colors as the dashboa
 
 Standardized layout for time-series charts — one row per data point:
 
-| Column      | Notes                                                                                   |
-| ----------- | --------------------------------------------------------------------------------------- |
-| Date        | Left-aligned. Header uses `.chart-th-inner--start`                                       |
-| This period | Right-aligned. Full-precision value (e.g. `1,156,237`), not the chart's M-shorthand      |
-| Prev period | Right-aligned. Same precision rules as This period                                       |
-| Δ           | Right-aligned. Signed full-precision integer (e.g. `+27,396`)                            |
+
+| Column      | Notes                                                                                                           |
+| ----------- | --------------------------------------------------------------------------------------------------------------- |
+| Date        | Left-aligned. Header uses `.chart-th-inner--start`                                                              |
+| This period | Right-aligned. Full-precision value (e.g. `1,156,237`), not the chart's M-shorthand                             |
+| Prev period | Right-aligned. Same precision rules as This period                                                              |
+| Δ           | Right-aligned. Signed full-precision integer (e.g. `+27,396`)                                                   |
 | Δ%          | Right-aligned pill — green `#effaf9` / `#257469` if ≥ 0, red `#fdecef` / `#b1294a` if negative. Font weight 500 |
+
 
 Sort affordances live in column headers. Series-toggle checkboxes do **not** belong in the table — the legend buttons above the chart are the canonical control.
 
@@ -95,7 +97,7 @@ Sort affordances live in column headers. Series-toggle checkboxes do **not** bel
 
 - Items-per-page dropdown on the left (currently fixed at 10)
 - Page-selector dropdown + "of N pages" label + prev / next arrows on the right
-- Styles: `.pagination__*` classes in `bento.css` + `beta.css`
+- Styles: `.pagination__`* classes in `bento.css` + `beta.css`
 
 ### Number formatting
 

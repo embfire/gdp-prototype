@@ -2,7 +2,7 @@
 
 **Audience:** Engineering — connecting the prototype to real data
 **Last updated:** 2026-04-29
-**Reference implementation:** [`beta/index.html`](../beta/index.html) (dashboard card) and [`beta/dashboard-guest-lifecycle.html`](../beta/dashboard-guest-lifecycle.html) (detail page)
+**Reference implementation:** `[beta/index.html](../../beta/index.html)` (dashboard card) and `[beta/dashboard-guest-lifecycle.html](../../beta/dashboard-guest-lifecycle.html)` (detail page)
 
 > Visual treatment, copy, and exact pixel values are not normative — read them off the HTML/CSS. This doc covers **what data is needed, how stages are calculated, what filters do, and what the detail page must include**.
 
@@ -29,14 +29,16 @@ The stack always sums to the total identified guest base for that day. A guest i
 
 These rules are the source of truth for stage assignment. Every identified guest must resolve to exactly one of these stages on every snapshot date.
 
-| Stage | Definition | Threshold |
-|---|---|---|
-| **First-time** | One transaction ever | Visit count = 1 |
-| **Returning** | Building first-journey habit | Visit count = 2, last visit ≤ 180 days ago, has never been Loyal |
-| **Loyal** | Habit established | Visit count ≥ 3, still active per personal baseline (see At-Risk rule) |
-| **At-Risk** | Missed expected window | Time since last visit > 1.5 × personal inter-visit average. If guest has < 3 visits, use a 90-day floor instead of a personal average. |
-| **Win-back** | Re-engaged after At-Risk or Churned | First transaction following an At-Risk or Churned status. Guest retains lifetime visit count and history. |
-| **Churned** | Long inactive | Last visit > 180 days ago |
+
+| Stage          | Definition                          | Threshold                                                                                                                              |
+| -------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **First-time** | One transaction ever                | Visit count = 1                                                                                                                        |
+| **Returning**  | Building first-journey habit        | Visit count = 2, last visit ≤ 180 days ago, has never been Loyal                                                                       |
+| **Loyal**      | Habit established                   | Visit count ≥ 3, still active per personal baseline (see At-Risk rule)                                                                 |
+| **At-Risk**    | Missed expected window              | Time since last visit > 1.5 × personal inter-visit average. If guest has < 3 visits, use a 90-day floor instead of a personal average. |
+| **Win-back**   | Re-engaged after At-Risk or Churned | First transaction following an At-Risk or Churned status. Guest retains lifetime visit count and history.                              |
+| **Churned**    | Long inactive                       | Last visit > 180 days ago                                                                                                              |
+
 
 ### Notes for implementation
 
@@ -46,7 +48,7 @@ These rules are the source of truth for stage assignment. Every identified guest
 - **Hardcoded thresholds for beta**, configurable per-tenant at GA. The numeric thresholds (180 days, 90 day floor, 1.5× factor, 3 visits for Loyal) should live in config, not be hardcoded in queries.
 - **Identified guests only** — anonymous traffic is excluded from the stack.
 
-For the reasoning behind each threshold, see [`docs/lifecycle_stages_proposition.md`](lifecycle_stages_proposition.md).
+For the reasoning behind each threshold, see `[docs/lifecycle_stages_proposition.md](../lifecycle_stages_proposition.md)`.
 
 ---
 
@@ -90,16 +92,18 @@ type LifecycleSnapshot = {
 
 ## 5. Chart Specification
 
-| Property | Value |
-|---|---|
-| Library | AG Charts (Community v13) |
-| Type | Stacked area, single `stackGroup` |
-| X-axis | Time, one tick per day |
-| Y-axis | Count of guests, starts at 0 |
-| Series order (bottom → top) | First-time, Returning, Win-back, Loyal, At-Risk, Churned |
-| Series colors | Bento chart palette in order — see [`dashboard_beta_ux.md` § Chart Colors](dashboard_beta_ux.md#chart-colors) |
-| Native AG Charts tooltip | Disabled (`tooltip: { enabled: false }` on every series) — replaced with a manual tooltip |
-| Native AG Charts crosshair | Disabled — replaced with a manual dashed vertical line |
+
+| Property                    | Value                                                                                                            |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Library                     | AG Charts (Community v13)                                                                                        |
+| Type                        | Stacked area, single `stackGroup`                                                                                |
+| X-axis                      | Time, one tick per day                                                                                           |
+| Y-axis                      | Count of guests, starts at 0                                                                                     |
+| Series order (bottom → top) | First-time, Returning, Win-back, Loyal, At-Risk, Churned                                                         |
+| Series colors               | Bento chart palette in order — see `[dashboard_beta_ux.md` § Chart Colors](../dashboard_beta_ux.md#chart-colors) |
+| Native AG Charts tooltip    | Disabled (`tooltip: { enabled: false }` on every series) — replaced with a manual tooltip                        |
+| Native AG Charts crosshair  | Disabled — replaced with a manual dashed vertical line                                                           |
+
 
 The dashboard card uses a fixed Y-axis label format (`'###K'`); the detail page uses the same format with an explicit `min: 0, max: 1200, nice: false` plus an `interval: { values: [0, 300, 600, 900, 1200] }` so the gridlines lock to round numbers. **These hardcoded bounds are placeholder data scaling — replace them with values derived from the real data range when wiring up.**
 
@@ -107,24 +111,25 @@ The dashboard card uses a fixed Y-axis label format (`'###K'`); the detail page 
 
 ## 6. Filters
 
-Inherited from the global dashboard filter bar — see [`dashboard_beta_ux.md` § Global Filters](dashboard_beta_ux.md#global-filters). Every filter currently defined globally **applies to this chart**:
+Inherited from the global dashboard filter bar — see `[dashboard_beta_ux.md` § Global Filters](../dashboard_beta_ux.md#global-filters). Every filter currently defined globally **applies to this chart**:
 
-| Filter | Options | Applies | Notes |
-|---|---|---|---|
-| **Date range** | 7D, 30D, 90D, 12M, YTD, Custom | Yes — full support | Drives the X-axis range and determines which day is "latest" for the hero metric. No minimum-range constraint; even 7D renders fine because each X point is a daily snapshot. |
-| **Compare to** | Previous period | Yes — hero metric only | Used to compute the At-Risk delta pill and the "138.1K prev period" sub-text. The chart body does **not** render the prev-period stack — only the hero uses it. |
-| **Location** | Single or multi-location | Yes | Applied server-side before aggregation. See "Filter scope semantics" note below. |
-| **Loyalty / non-loyalty** | Loyalty program members / non-members | Yes | Filters which guests are counted. **Does not** redefine the lifecycle stages themselves — see "Loyalty filter vs. Loyal stage" note below. |
 
-> "Additional dimensions TBD" in `dashboard_beta_ux.md` are not yet scoped. When they're added globally, evaluate each one against this chart and update this table.
+| Filter                      | Options                               | Applies                | Notes                                                                                                                                                                                            |
+| --------------------------- | ------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Date range**              | 7D, 30D, 90D, 12M, YTD, Custom        | Yes — full support     | Drives the X-axis range and determines which day is "latest" for the hero metric. No minimum-range constraint; even 7D renders fine because each X point is a daily snapshot.                    |
+| **Compare to**              | Previous period                       | Yes — hero metric only | Used to compute the At-Risk delta pill and the "138.1K prev period" sub-text. The chart body does **not** render the prev-period stack — only the hero uses it.                                  |
+| **Stores and Store groups** | Single or multi-store / store group   | Yes                    | Applied server-side before aggregation. See "Filter scope semantics" note below.                                                                                                                 |
+| **Loyalty / non-loyalty**   | Loyalty program members / non-members | Yes                    | Filters which guests are counted. **Does not** redefine the lifecycle stages themselves — see "Loyalty filter vs. Loyal stage" note below.                                                       |
+| **Segments**                | Any saved guest segment               | Yes                    | Restricts the chart to guests who match the selected segment(s). Each stage count then reflects only that subset — useful for asking "what's the lifecycle distribution of segment X over time?" |
 
-### Filter scope semantics (Location)
 
-A guest's lifecycle stage is computed against their **full** transaction history. When a location filter is applied, the count returned for each stage should be:
+### Filter scope semantics (Stores and Store groups)
 
-> Number of guests whose current stage is X **and** who have transacted at the selected location(s) within the date range.
+A guest's lifecycle stage is computed against their **full** transaction history. When a store / store-group filter is applied, the count returned for each stage should be:
 
-So a guest who is "Loyal" overall but has never visited Location A would not appear in Location A's Loyal count. Confirm this with PM if a different interpretation (e.g. recompute the stage using only Location A's transactions) is preferred — they're meaningfully different numbers. Tracked in § 10 Open Questions.
+> Number of guests whose current stage is X **and** who have transacted at the selected store(s) / store group(s) within the date range.
+
+So a guest who is "Loyal" overall but has never visited Store A would not appear in Store A's Loyal count. Confirm this with PM if a different interpretation (e.g. recompute the stage using only Store A's transactions) is preferred — they're meaningfully different numbers. Tracked in § 10 Open Questions.
 
 ### Loyalty filter vs. "Loyal" stage — important to disambiguate
 
@@ -160,18 +165,20 @@ Same content, more space, plus a data table:
 - Chart card uses the same data and colors as the dashboard, with a taller plot area (`.chart-card__placeholder--detail`).
 - Data table columns:
 
-| Column | Format | Notes |
-|---|---|---|
-| Date | `Mar 29, 2026` | Left-aligned |
-| First-time | Integer count, comma-separated (e.g. `120,847`) | Right-aligned |
-| Returning | Integer count | Right-aligned |
-| Win-back | Integer count | Right-aligned |
-| Loyal | Integer count | Right-aligned |
-| At-Risk | Integer count | Right-aligned |
-| Churned | Integer count | Right-aligned |
-| Δ At-Risk | Signed integer count vs. previous day (e.g. `+1,247`) | Right-aligned, **inverse-colored** pill (red if growing, green if shrinking — same logic as the hero) |
 
-- Pagination: 10 rows per page (Bento `.pagination__*` classes).
+| Column     | Format                                                | Notes                                                                                                 |
+| ---------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Date       | `Mar 29, 2026`                                        | Left-aligned                                                                                          |
+| First-time | Integer count, comma-separated (e.g. `120,847`)       | Right-aligned                                                                                         |
+| Returning  | Integer count                                         | Right-aligned                                                                                         |
+| Win-back   | Integer count                                         | Right-aligned                                                                                         |
+| Loyal      | Integer count                                         | Right-aligned                                                                                         |
+| At-Risk    | Integer count                                         | Right-aligned                                                                                         |
+| Churned    | Integer count                                         | Right-aligned                                                                                         |
+| Δ At-Risk  | Signed integer count vs. previous day (e.g. `+1,247`) | Right-aligned, **inverse-colored** pill (red if growing, green if shrinking — same logic as the hero) |
+
+
+- Pagination: 10 rows per page (Bento `.pagination__`* classes).
 - Same global filter bar as the dashboard. Filter changes refetch and re-render both the chart and the table.
 
 ---
@@ -195,7 +202,7 @@ Manual implementation, not AG Charts native (see `initLifecycleChart()` in eithe
 - Clicks outside any visible band do nothing.
 - Menu items (currently stubbed): View users / Create segment / Ask Ava about this. The `onPointMenuAction(action)` handler receives the action, the snapped data row, and the selected stage object — wire to real flows when ready.
 
-This pattern is the same as the Total Guests detail page; see [`dashboard_beta_ux.md` § Click → Context Menu](dashboard_beta_ux.md#click--context-menu).
+This pattern is the same as the Total Guests detail page; see `[dashboard_beta_ux.md` § Click → Context Menu](../dashboard_beta_ux.md#click--context-menu).
 
 ---
 
@@ -213,9 +220,10 @@ These are not blockers for the chart wiring but should be settled before the met
 
 ## 11. Reference Files
 
-- **Stage rationale and customer/industry evidence** — [`docs/lifecycle_stages_proposition.md`](lifecycle_stages_proposition.md)
-- **Dashboard UX patterns (cards, filters, detail page)** — [`docs/dashboard_beta_ux.md`](dashboard_beta_ux.md)
-- **Reusable chart conventions (palette order, font, etc.)** — [`docs/dashboard_beta_ux.md` § Chart Colors](dashboard_beta_ux.md#chart-colors)
-- **Reference implementation — dashboard card** — [`beta/index.html`](../beta/index.html) (search `initLifecycleChart`, `LIFECYCLE_STAGES`, `LIFECYCLE_DATA`)
-- **Reference implementation — detail page** — [`beta/dashboard-guest-lifecycle.html`](../beta/dashboard-guest-lifecycle.html)
-- **Card layout CSS** — [`beta/beta.css`](../beta/beta.css) (search `guest-lifecycle-breakdown`)
+- **Stage rationale and customer/industry evidence** — `[docs/lifecycle_stages_proposition.md](../lifecycle_stages_proposition.md)`
+- **Dashboard UX patterns (cards, filters, detail page)** — `[docs/dashboard_beta_ux.md](../dashboard_beta_ux.md)`
+- **Reusable chart conventions (palette order, font, etc.)** — `[docs/dashboard_beta_ux.md` § Chart Colors](../dashboard_beta_ux.md#chart-colors)
+- **Reference implementation — dashboard card** — `[beta/index.html](../../beta/index.html)` (search `initLifecycleChart`, `LIFECYCLE_STAGES`, `LIFECYCLE_DATA`)
+- **Reference implementation — detail page** — `[beta/dashboard-guest-lifecycle.html](../../beta/dashboard-guest-lifecycle.html)`
+- **Card layout CSS** — `[beta/beta.css](../../beta/beta.css)` (search `guest-lifecycle-breakdown`)
+
