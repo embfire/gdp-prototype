@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="beta.css">
   <style>
     .chart-card[data-metric-id="reachability"] .chart-card__placeholder--detail {
-      height: 280px;
+      height: 320px;
       flex: none;
     }
   </style>
@@ -209,7 +209,7 @@
 
             <button class="button outlined dashboard-btn">
               <span class="material-symbols-rounded dashboard-btn__icon">filter_alt</span>
-              <span class="dashboard-btn__label">More filters...</span>
+              <span class="dashboard-btn__label">More filters</span>
             </button>
           </div>
           <!-- /filter bar -->
@@ -219,7 +219,7 @@
             <div class="chart-card__header chart-card__header--detail">
               <div class="chart-card__header-text">
                 <p class="chart-card__title">Reachability</p>
-                <p class="chart-card__subtitle">How many identified guests can actually be reached for marketing — broken down by channel. The gap between identified and reachable is the audience a brand can analyze but not yet contact.</p>
+                <p class="chart-card__subtitle">Guests reachable for marketing by channel, plus those you can analyze but not yet contact.</p>
               </div>
               <div class="chart-card__header-controls">
                 <button class="button outlined dashboard-btn">
@@ -234,7 +234,7 @@
                     <ul>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
-                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava about this...</span></button></li>
+                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava about this</span></button></li>
                     </ul>
                   </div>
                 </div>
@@ -257,6 +257,8 @@
           <!-- /chart card -->
 
           <!-- Data table -->
+          <h3 style="font-family:Manrope,sans-serif;font-size:1.25rem;font-weight:800;line-height:160%;color:#000;margin:0 0 4px;">Channel snapshot</h3>
+          <p style="font-family:Manrope,sans-serif;font-size:1rem;font-weight:400;color:#60696C;margin:0 0 1rem;">As of Apr 30, 2026</p>
           <div class="chart-detail-table-wrap">
             <div class="table-container">
               <table class="table" style="border: none; border-radius: 0;" id="reachability-table">
@@ -272,7 +274,7 @@
                       <div class="chart-th-inner">% of identified</div>
                     </th>
                     <th style="text-transform:none;font-size:1rem;font-weight:800;color:#000;height:3.5rem;padding:1rem;">
-                      <div class="chart-th-inner">vs prev period</div>
+                      <div class="chart-th-inner">vs. previous period</div>
                     </th>
                   </tr>
                 </thead>
@@ -308,7 +310,7 @@
               <li>
                 <button type="button" class="chart-point-menu__item" onclick="onPointMenuAction('ask-ava')">
                   <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
-                  <span>Ask Ava about this...</span>
+                  <span>Ask Ava about this</span>
                 </button>
               </li>
             </ul>
@@ -479,41 +481,58 @@
 
     /* ═══════════════════════════════════════════════════
        Reachability detail data
-       Per-channel inclusive counts (guests reachable via each channel,
-       can overlap — a guest with email + SMS is counted in both).
-       Full precision for data table; K values for chart.
+       Exclusive channel counts — each guest counted once in
+       their primary channel. Sums to TOTAL_REACHABLE.
     ═══════════════════════════════════════════════════ */
     var IDENTIFIED_TOTAL  = 847000;
     var TOTAL_REACHABLE   = 312000;
-    var PREV_REACHABLE    = 306000;
+    var PREV_REACHABLE    = 304000;
 
     var DETAIL_CHANNELS = [
-      { channel: 'Email',    count: 218000, prev: 215000, color: '#5A55E3' },
-      { channel: 'SMS',      count: 141000, prev: 138000, color: '#FF6600' },
-      { channel: 'Push',     count:  89000, prev:  87000, color: '#8C9FFF' },
-      { channel: 'In-store', count:  67000, prev:  65000, color: '#F8931C' },
+      { channel: 'Email',         key: 'email',   count: 156000, prev: 153000, color: '#5A55E3' },
+      { channel: 'SMS',           key: 'sms',     count:  62000, prev:  60000, color: '#FF6600' },
+      { channel: 'Push',          key: 'push',    count:  34000, prev:  33000, color: '#8C9FFF' },
+      { channel: 'In-store',      key: 'instore', count:  18000, prev:  17000, color: '#F8931C' },
+      { channel: 'Multi-channel', key: 'multi',   count:  42000, prev:  41000, color: '#E83162' },
     ];
 
-    // Chart operates in K to keep axis labels concise.
-    var DETAIL_CHART_DATA = DETAIL_CHANNELS.map(function(d) {
-      return { channel: d.channel, count: d.count / 1000, color: d.color };
-    });
+    /* ═══════════════════════════════════════════════════
+       Reachability over time — weekly data by channel (K)
+       Values are exclusive per channel; rows sum to total.
+    ═══════════════════════════════════════════════════ */
+    var AREA_CHANNELS = [
+      { key: 'email',   label: 'Email',         color: '#5A55E3' },
+      { key: 'sms',     label: 'SMS',           color: '#FF6600' },
+      { key: 'push',    label: 'Push',          color: '#8C9FFF' },
+      { key: 'instore', label: 'In-store',      color: '#F8931C' },
+      { key: 'multi',   label: 'Multi-channel', color: '#E83162' },
+    ];
+
+    var REACH_TREND = [
+      { date: 'Feb 4',  email: 148, sms: 59, push: 32, instore: 17, multi: 39 },
+      { date: 'Feb 11', email: 149, sms: 59, push: 32, instore: 17, multi: 40 },
+      { date: 'Feb 18', email: 150, sms: 59, push: 32, instore: 17, multi: 40 },
+      { date: 'Feb 25', email: 150, sms: 60, push: 33, instore: 17, multi: 40 },
+      { date: 'Mar 4',  email: 151, sms: 60, push: 33, instore: 17, multi: 40 },
+      { date: 'Mar 11', email: 152, sms: 60, push: 33, instore: 17, multi: 41 },
+      { date: 'Mar 18', email: 152, sms: 61, push: 33, instore: 18, multi: 41 },
+      { date: 'Mar 25', email: 153, sms: 61, push: 33, instore: 18, multi: 41 },
+      { date: 'Apr 1',  email: 154, sms: 61, push: 34, instore: 18, multi: 41 },
+      { date: 'Apr 8',  email: 155, sms: 61, push: 34, instore: 18, multi: 41 },
+      { date: 'Apr 15', email: 155, sms: 62, push: 34, instore: 18, multi: 41 },
+      { date: 'Apr 22', email: 156, sms: 62, push: 34, instore: 18, multi: 41 },
+      { date: 'Apr 30', email: 156, sms: 62, push: 34, instore: 18, multi: 42 },
+    ];
+    var T_Y_MAX = 320;
 
     /* ═══════════════════════════════════════════════════
-       AG Charts — per-channel horizontal bar (detail)
+       AG Charts — reachability over time (stacked area)
     ═══════════════════════════════════════════════════ */
     var reachabilityDetailChart  = null;
     var detailTooltipEl          = null;
+    var detailLineEl             = null;
     var detailMouseMove          = null;
     var detailMouseLeave         = null;
-
-    // Map channel name → row index for click/hover detection.
-    var CHANNEL_COLORS = {
-      'Email':    '#5A55E3',
-      'SMS':      '#FF6600',
-      'Push':     '#8C9FFF',
-      'In-store': '#F8931C',
-    };
 
     function initReachabilityDetailChart() {
       var container = document.getElementById('chart-area-reachability');
@@ -524,32 +543,41 @@
         container: container,
         theme: { params: { fontFamily: 'Manrope, sans-serif' } },
         background: { fill: '#ffffff' },
-        padding: { top: 8, right: 32, bottom: 8, left: 0 },
-        data: DETAIL_CHART_DATA,
+        padding: { top: 8, right: 0, bottom: 0, left: 0 },
+        data: REACH_TREND,
         legend: { enabled: false },
-        series: [{
-          type: 'bar',
-          direction: 'horizontal',
-          xKey: 'channel',
-          yKey: 'count',
-          yName: 'Reachable guests',
-          stacked: false,
-          itemStyler: function(params) {
-            var color = CHANNEL_COLORS[params.xValue] || '#5A55E3';
-            return { fill: color, stroke: 'none', strokeWidth: 0 };
-          },
-          tooltip: { enabled: false },
-        }],
+        series: AREA_CHANNELS.map(function(ch) {
+          return {
+            type: 'area',
+            xKey: 'date',
+            yKey: ch.key,
+            yName: ch.label,
+            stacked: true,
+            stackGroup: 'reachability',
+            fill: ch.color,
+            fillOpacity: 0.9,
+            stroke: '#ffffff',
+            strokeWidth: 1,
+            marker: { enabled: false },
+            tooltip: { enabled: false },
+          };
+        }),
         axes: {
           x: {
-            type: 'number',
+            type: 'category',
             position: 'bottom',
+            gridLine: { enabled: false },
+            line:     { enabled: false },
+            tick:     { enabled: false },
+            label: { fontSize: 12, color: '#000000', padding: 8 },
+          },
+          y: {
+            type: 'number',
+            position: 'left',
             min: 0,
-            max: 235,
-            gridLine: {
-              enabled: true,
-              style: [{ stroke: '#DFE1E2', lineDash: [] }],
-            },
+            max: T_Y_MAX,
+            nice: false,
+            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
             line:  { enabled: false },
             tick:  { enabled: false },
             label: {
@@ -558,29 +586,14 @@
               padding: 8,
               formatter: function(params) { return params.value + 'K'; },
             },
-          },
-          y: {
-            type: 'category',
-            position: 'left',
-            paddingInner: 0.35,
-            paddingOuter: 0.2,
-            gridLine: { enabled: false },
-            line:     { enabled: false },
-            tick:     { enabled: false },
-            label: {
-              fontSize: 12,
-              color: '#60696C',
-              fontWeight: '500',
-              padding: 12,
-            },
+            interval: { values: [0, 80, 160, 240, 320] },
           },
         },
       });
 
-      // ── Manual tooltip ────────────────────────────────────────────────
-      if (detailTooltipEl && detailTooltipEl.parentNode) {
-        detailTooltipEl.parentNode.removeChild(detailTooltipEl);
-      }
+      // ── Tooltip + crosshair line setup ────────────────────────────────
+      if (detailTooltipEl && detailTooltipEl.parentNode) detailTooltipEl.parentNode.removeChild(detailTooltipEl);
+      if (detailLineEl   && detailLineEl.parentNode)    detailLineEl.parentNode.removeChild(detailLineEl);
       if (detailMouseMove) {
         container.removeEventListener('mousemove',  detailMouseMove);
         container.removeEventListener('mouseleave', detailMouseLeave);
@@ -590,60 +603,90 @@
       detailTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
       document.body.appendChild(detailTooltipEl);
 
-      // Y-axis labels: "In-store" is the longest (~7 chars at 12px weight-500) ≈ 56px + 12px pad = ~68px total.
-      var D_PLOT_LEFT       = 72;
-      var D_PLOT_RIGHT_PAD  = 32;
-      var D_PLOT_TOP        = 8;
-      var D_PLOT_BOTTOM_PAD = 30;  // x-axis label area
+      detailLineEl = document.createElement('div');
+      detailLineEl.style.cssText = (
+        'position:fixed;pointer-events:none;display:none;z-index:9998;width:1px;' +
+        'background-image:linear-gradient(to bottom,#c6c6c6 50%,transparent 50%);' +
+        'background-size:1px 8px;background-repeat:repeat-y;'
+      );
+      document.body.appendChild(detailLineEl);
 
-      var NUM_ROWS = DETAIL_CHART_DATA.length;  // 4
+      var T_PLOT_LEFT       = 46;
+      var T_PLOT_RIGHT_PAD  = 0;
+      var T_PLOT_TOP        = 8;
+      var T_PLOT_BOTTOM_PAD = 30;
+      var N = REACH_TREND.length;
 
       detailMouseMove = function(e) {
         var rect       = container.getBoundingClientRect();
         var mx         = e.clientX - rect.left;
         var my         = e.clientY - rect.top;
-        var plotRight  = rect.width  - D_PLOT_RIGHT_PAD;
-        var plotBottom = rect.height - D_PLOT_BOTTOM_PAD;
-        var plotHeight = plotBottom  - D_PLOT_TOP;
+        var plotRight  = rect.width  - T_PLOT_RIGHT_PAD;
+        var plotBottom = rect.height - T_PLOT_BOTTOM_PAD;
+        var plotWidth  = plotRight   - T_PLOT_LEFT;
 
-        if (mx < D_PLOT_LEFT || mx > plotRight || my < D_PLOT_TOP || my > plotBottom) {
+        if (mx < T_PLOT_LEFT || mx > plotRight || my < T_PLOT_TOP || my > plotBottom) {
           detailTooltipEl.style.display = 'none';
+          detailLineEl.style.display    = 'none';
           return;
         }
 
-        var rowIndex = Math.floor((my - D_PLOT_TOP) / plotHeight * NUM_ROWS);
-        rowIndex = Math.max(0, Math.min(NUM_ROWS - 1, rowIndex));
-        var row   = DETAIL_CHANNELS[rowIndex];
-        var color = row.color;
-        var pct   = (row.count / IDENTIFIED_TOTAL * 100).toFixed(1) + '%';
+        var idx = Math.round((mx - T_PLOT_LEFT) / plotWidth * (N - 1));
+        idx = Math.max(0, Math.min(N - 1, idx));
+        var pt    = REACH_TREND[idx];
+        var total = AREA_CHANNELS.reduce(function(s, ch) { return s + pt[ch.key]; }, 0);
+
+        // ── Position crosshair line ──
+        var dataX = T_PLOT_LEFT + (idx / (N - 1)) * plotWidth;
+        detailLineEl.style.left    = (rect.left + dataX) + 'px';
+        detailLineEl.style.top     = (rect.top  + T_PLOT_TOP) + 'px';
+        detailLineEl.style.height  = (plotBottom - T_PLOT_TOP) + 'px';
+        detailLineEl.style.display = 'block';
+
+        // ── Tooltip ──
+        var rowsHTML = AREA_CHANNELS.map(function(ch) {
+          return (
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:6px;">' +
+                '<div style="width:12px;height:12px;background:' + ch.color + ';border-radius:2px;flex-shrink:0;"></div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + ch.label + '</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#000;">' + pt[ch.key] + 'K</span>' +
+            '</div>'
+          );
+        }).join('');
+        rowsHTML += (
+          '<div style="border-top:1px solid #DFE1E2;margin-top:4px;padding-top:8px;display:flex;align-items:center;justify-content:space-between;gap:24px;white-space:nowrap;">' +
+            '<span style="font-size:12px;font-weight:800;color:#000;padding-left:18px;">Total</span>' +
+            '<span style="font-size:12px;font-weight:800;color:#000;">' + total + 'K</span>' +
+          '</div>'
+        );
 
         detailTooltipEl.innerHTML = (
           '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
-            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 8px;line-height:1.5;white-space:nowrap;">' + row.channel + '</p>' +
-            '<div style="display:flex;flex-direction:column;gap:6px;">' +
-              '<div style="display:flex;align-items:center;gap:8px;white-space:nowrap;">' +
-                '<div style="width:12px;height:12px;background:' + color + ';border-radius:2px;flex-shrink:0;"></div>' +
-                '<span style="font-size:12px;font-weight:700;color:#000;">' + (row.count / 1000) + 'K</span>' +
-                '<span style="font-size:12px;color:#60696C;">reachable</span>' +
-              '</div>' +
-              '<div style="font-size:12px;color:#60696C;padding-left:20px;">' + pct + ' of 847K identified</div>' +
-            '</div>' +
+            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 4px;line-height:1.5;white-space:nowrap;">Reachability</p>' +
+            '<p style="font-size:12px;font-weight:400;color:#60696C;margin:0 0 12px;line-height:1.5;white-space:nowrap;">' + pt.date + '</p>' +
+            '<div style="display:flex;flex-direction:column;gap:8px;">' + rowsHTML + '</div>' +
           '</div>'
         );
 
         detailTooltipEl.style.display = 'block';
         var tw = detailTooltipEl.offsetWidth;
         var th = detailTooltipEl.offsetHeight;
-        var tx = e.clientX + 16;
+        var ptClientX = rect.left + dataX;
+        var tx = ptClientX + 16;
         var ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (tx + tw > window.innerWidth  - 8) tx = ptClientX - tw - 16;
         if (ty < 8)                           ty = 8;
         if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
         detailTooltipEl.style.left = tx + 'px';
         detailTooltipEl.style.top  = ty + 'px';
       };
 
-      detailMouseLeave = function() { detailTooltipEl.style.display = 'none'; };
+      detailMouseLeave = function() {
+        detailTooltipEl.style.display = 'none';
+        detailLineEl.style.display    = 'none';
+      };
       container.addEventListener('mousemove',  detailMouseMove);
       container.addEventListener('mouseleave', detailMouseLeave);
 
@@ -653,19 +696,34 @@
         var rect       = container.getBoundingClientRect();
         var mx         = e.clientX - rect.left;
         var my         = e.clientY - rect.top;
-        var plotRight  = rect.width  - D_PLOT_RIGHT_PAD;
-        var plotBottom = rect.height - D_PLOT_BOTTOM_PAD;
-        var plotHeight = plotBottom  - D_PLOT_TOP;
+        var plotRight  = rect.width  - T_PLOT_RIGHT_PAD;
+        var plotBottom = rect.height - T_PLOT_BOTTOM_PAD;
+        var plotWidth  = plotRight   - T_PLOT_LEFT;
+        var plotHeight = plotBottom  - T_PLOT_TOP;
 
-        if (mx < D_PLOT_LEFT || mx > plotRight || my < D_PLOT_TOP || my > plotBottom) return;
+        if (mx < T_PLOT_LEFT || mx > plotRight || my < T_PLOT_TOP || my > plotBottom) return;
 
-        var rowIndex = Math.floor((my - D_PLOT_TOP) / plotHeight * NUM_ROWS);
-        rowIndex = Math.max(0, Math.min(NUM_ROWS - 1, rowIndex));
-        var row = DETAIL_CHANNELS[rowIndex];
+        var idx = Math.round((mx - T_PLOT_LEFT) / plotWidth * (N - 1));
+        idx = Math.max(0, Math.min(N - 1, idx));
+        var pt = REACH_TREND[idx];
+
+        var dataY = (1 - (my - T_PLOT_TOP) / plotHeight) * T_Y_MAX;
+        var cumSum = 0;
+        var clickedCh = AREA_CHANNELS[AREA_CHANNELS.length - 1];
+        for (var i = 0; i < AREA_CHANNELS.length; i++) {
+          cumSum += pt[AREA_CHANNELS[i].key];
+          if (dataY <= cumSum) { clickedCh = AREA_CHANNELS[i]; break; }
+        }
 
         e.stopPropagation();
         if (detailTooltipEl) detailTooltipEl.style.display = 'none';
-        openReachabilityPointMenu(e.clientX, e.clientY, row);
+        if (detailLineEl)    detailLineEl.style.display    = 'none';
+        openReachabilityPointMenu(e.clientX, e.clientY, {
+          date:   pt.date + ' · ' + clickedCh.label,
+          value:  pt[clickedCh.key] + 'K reachable',
+          color:  clickedCh.color,
+          isPrev: false,
+        });
       });
     }
 
@@ -681,9 +739,13 @@
       document.removeEventListener('click', closePointMenuOnOutside);
 
       dotEl.style.background = row.color;
-      dotEl.classList.remove('chart-point-menu__color-dot--striped');
-      dateEl.textContent  = row.channel;
-      valueEl.textContent = (row.count / 1000) + 'K reachable';
+      if (row.isPrev) {
+        dotEl.classList.add('chart-point-menu__color-dot--striped');
+      } else {
+        dotEl.classList.remove('chart-point-menu__color-dot--striped');
+      }
+      dateEl.textContent  = row.date;
+      valueEl.textContent = row.value;
 
       menu.classList.add('chart-point-menu--open');
       menu.setAttribute('aria-hidden', 'false');
@@ -745,7 +807,7 @@
             '<td style="padding:1rem;">' +
               '<div style="display:flex;align-items:center;gap:8px;">' +
                 '<div style="width:12px;height:12px;background:' + d.color + ';border-radius:2px;flex-shrink:0;"></div>' +
-                '<span>' + d.channel + '</span>' +
+                d.channel +
               '</div>' +
             '</td>' +
             '<td style="padding:1rem;text-align:right;">' + fmtCount(d.count) + '</td>' +
@@ -801,14 +863,8 @@
     function renderLegend() {
       var legendEl = document.getElementById('detail-legend');
       if (!legendEl) return;
-      var channelDefs = [
-        { key: 'email',   label: 'Email',         color: '#5A55E3' },
-        { key: 'sms',     label: 'SMS',           color: '#FF6600' },
-        { key: 'push',    label: 'Push',          color: '#8C9FFF' },
-        { key: 'instore', label: 'In-store',      color: '#F8931C' },
-      ];
       legendEl.className = 'chart-card__legend';
-      legendEl.innerHTML = channelDefs.map(function(ch) {
+      legendEl.innerHTML = AREA_CHANNELS.map(function(ch) {
         return (
           '<div class="chart-card__legend-item" style="cursor:default;">' +
             '<span class="chart-card__legend-marker" style="background:' + ch.color + ';"></span>' +

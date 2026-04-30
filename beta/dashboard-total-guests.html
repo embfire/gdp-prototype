@@ -225,7 +225,7 @@
 
             <button class="button outlined dashboard-btn">
               <span class="material-symbols-rounded dashboard-btn__icon">filter_alt</span>
-              <span class="dashboard-btn__label">More filters...</span>
+              <span class="dashboard-btn__label">More filters</span>
             </button>
           </div>
           <!-- /filter bar -->
@@ -264,7 +264,7 @@
                     <ul>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
-                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava...</span></button></li>
+                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava</span></button></li>
                     </ul>
                   </div>
                 </div>
@@ -285,7 +285,7 @@
                 </button>
                 <button type="button" class="chart-card__legend-item" data-series-key="prev" onclick="toggleAGSeries(this, 'prev')" aria-pressed="true">
                   <span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>
-                  <span>Prev period</span>
+                  <span>Previous period</span>
                 </button>
               </div>
               <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-total-guests"></div>
@@ -306,7 +306,7 @@
                       <span class="chart-th-inner">This period <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
                     </th>
                     <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Prev period <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                      <span class="chart-th-inner">Previous period <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
                     </th>
                     <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
                       <span class="chart-th-inner">Δ <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
@@ -387,7 +387,7 @@
               <li>
                 <button type="button" class="chart-point-menu__item" onclick="onPointMenuAction('ask-ava')">
                   <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
-                  <span>Ask Ava...</span>
+                  <span>Ask Ava</span>
                 </button>
               </li>
             </ul>
@@ -637,7 +637,7 @@
         legend: { enabled: false },
         series: [
           {
-            type: 'line', xKey: 'date', yKey: 'prev', yName: 'Prev period',
+            type: 'line', xKey: 'date', yKey: 'prev', yName: 'Previous period',
             stroke: '#5A55E3', strokeWidth: 2, lineDash: [2, 2],
             marker: {
               enabled: true, size: 0,
@@ -755,13 +755,13 @@
             '</div>' +
             '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
               '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pct + '</span>' +
-              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs prev period</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
             '</div>' +
           '</div>' +
           (totalGuestsVisibility.prev
             ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
                 '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
-                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Prev period</span>' +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
                 '</div>' +
                 '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtM(d.prev) + '</span>' +
               '</div>'

@@ -110,7 +110,7 @@
               </button>
               <button class="button primary dashboard-btn">
                 <span class="material-symbols-rounded dashboard-btn__icon">add</span>
-                <span class="dashboard-btn__label">Create with AI...</span>
+                <span class="dashboard-btn__label">Create with AI</span>
               </button>
             </div>
           </div>
@@ -210,7 +210,7 @@
 
             <button class="button outlined dashboard-btn">
               <span class="material-symbols-rounded dashboard-btn__icon">filter_alt</span>
-              <span class="dashboard-btn__label">More filters...</span>
+              <span class="dashboard-btn__label">More filters</span>
             </button>
           </div>
 
@@ -218,7 +218,7 @@
           <div class="dashboard-meta-bar">
             <div class="dashboard-last-updated">
               <span class="material-symbols-rounded dashboard-last-updated__icon">info</span>
-              <span class="dashboard-last-updated__text">Last updated Apr 20, 2:14 AM</span>
+              <span class="dashboard-last-updated__text">Last updated Apr 20 at 2:14 AM</span>
             </div>
             <button class="button outlined dashboard-btn" id="btn-customize" onclick="enterCustomizeMode()">
               <span class="dashboard-btn__label">Customize</span>
@@ -258,12 +258,12 @@
       { id: 'visit-frequency',            title: 'Visit frequency' },
       { id: 'loyalty-spend-lift',         title: 'Loyalty spend lift' },
       { id: 'guest-repeat-rate',          title: 'Guest repeat rate' },
-      { id: 'avg-days-between-visits',    title: 'Avg days between visits' },
+      { id: 'avg-days-between-visits',    title: 'Average days between visits' },
       { id: 'loyalty-penetration',        title: 'Loyalty penetration' },
       { id: 'active-guests',              title: 'Active guests' },
-      { id: 'avg-order-value',            title: 'Avg order value' },
+      { id: 'avg-order-value',            title: 'Average order value' },
       { id: 'return-visit-funnel',        title: 'Return visit funnel' },
-      { id: 'avg-visits-per-guest',       title: 'Avg visits per guest' },
+      { id: 'avg-visits-per-guest',       title: 'Average visits per guest' },
     ];
 
     var DEFAULT_LAYOUT = [
@@ -676,7 +676,7 @@
             '<div class="chart-card__metric-info-wrap">' +
               '<span class="material-symbols-rounded chart-card__metric-info-icon">info</span>' +
               '<span class="chart-card__metric-info-text">Showing 90D minimum</span>' +
-              '<div class="chart-card__metric-info-tooltip">Showing 90 days minimum — needs more than 3 months of cohort data</div>' +
+              '<div class="chart-card__metric-info-tooltip">Showing 90 days minimum — Needs more than 3 months of cohort data</div>' +
             '</div>' +
           '</div>'
         );
@@ -716,7 +716,7 @@
             '</button>' +
             '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleAGSeries(this, \'prev\')" aria-pressed="true">' +
               '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
-              '<span>Prev period</span>' +
+              '<span>Previous period</span>' +
             '</button>' +
           '</div>'
         );
@@ -740,7 +740,7 @@
             '</button>' +
             '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleRetentionSeries(this, \'prev\')" aria-pressed="true">' +
               '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
-              '<span>Prev period</span>' +
+              '<span>Previous period</span>' +
             '</button>' +
           '</div>'
         );
@@ -783,7 +783,7 @@
     var RANGE_DAYS = { '7D': 7, '30D': 30, '90D': 90, 'YTD': 90, '12M': 365, 'custom': 365 };
     var CHART_CONSTRAINTS = {
       // Cohort retention needs at least 3 monthly cohorts to draw a trend.
-      'retention-cohort': { minDays: 90, minLabel: '90D', reason: 'needs ≥3 months of cohort data' },
+      'retention-cohort': { minDays: 90, minLabel: '90D', reason: 'Needs ≥3 months of cohort data' },
     };
 
     function getChartFilterNotice(id, range) {
@@ -855,7 +855,7 @@
                   '<ul>' +
                     '<li><button class="chart-context-menu__item" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>' +
                     '<li><button class="chart-context-menu__item" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>' +
-                    '<li><button class="chart-context-menu__item chart-context-menu__item--ava" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava...</span></button></li>' +
+                    '<li><button class="chart-context-menu__item chart-context-menu__item--ava" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava</span></button></li>' +
                   '</ul>' +
                 '</div>' +
               '</div>' +
@@ -1191,7 +1191,7 @@
             type: 'line',
             xKey: 'date',
             yKey: 'prev',
-            yName: 'Prev period',
+            yName: 'Previous period',
             stroke: '#5A55E3',
             strokeWidth: 2,
             lineDash: [2, 2],
@@ -1347,13 +1347,13 @@
             '</div>' +
             '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
               '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pct + '</span>' +
-              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs prev period</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
             '</div>' +
           '</div>' +
           (totalGuestsVisibility.prev
             ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
                 '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
-                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Prev period</span>' +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
                 '</div>' +
                 '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtM(d.prev) + '</span>' +
               '</div>'
@@ -1711,7 +1711,7 @@
             type: 'line',
             xKey: 'date',
             yKey: 'prev',
-            yName: 'Prev period',
+            yName: 'Previous period',
             stroke: '#5A55E3',
             strokeWidth: 2,
             lineDash: [2, 2],
@@ -1854,13 +1854,13 @@
             '</div>' +
             '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
               '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pct + '</span>' +
-              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs prev period</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
             '</div>' +
           '</div>' +
           (retentionCohortVisibility.prev
             ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
                 '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
-                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Prev period</span>' +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
                 '</div>' +
                 '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtPct(d.prev) + '</span>' +
               '</div>'
@@ -1959,7 +1959,8 @@
           stackGroup: 'reachability',
           fill: ch.color,
           stroke: '#ffffff',
-          strokeWidth: 2,
+          strokeWidth: 1,
+          cornerRadius: 8,
           tooltip: { enabled: false },
         };
       });
@@ -1980,9 +1981,10 @@
             yName: 'Identified',
             stacked: true,
             stackGroup: 'reachability',
-            fill: '#DFE1E2',
-            stroke: '#DFE1E2',
+            fill: '#C9CECF',
+            stroke: '#C9CECF',
             strokeWidth: 0,
+            cornerRadius: 8,
             tooltip: { enabled: false },
           },
         ].concat(channelSeries).concat([
@@ -1994,9 +1996,10 @@
             yName: 'Not reachable',
             stacked: true,
             stackGroup: 'reachability',
-            fill: '#F0F1F5',
-            stroke: '#F0F1F5',
-            strokeWidth: 0,
+            fill: '#DFE1E2',
+            stroke: '#ffffff',
+            strokeWidth: 1,
+            cornerRadius: 8,
             tooltip: { enabled: false },
           },
         ]),
