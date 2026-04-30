@@ -687,7 +687,14 @@
             '<p class="chart-card__metric-value">37%</p>' +
             '<span class="chart-card__metric-pill chart-card__metric-pill--up">+2.1%</span>' +
           '</div>' +
-          '<p class="chart-card__metric-period">312K reachable · 535K not reachable</p>'
+          '<div class="chart-card__metric-period-row">' +
+            '<span class="chart-card__metric-period">312K reachable · 535K not reachable</span>' +
+            '<div class="chart-card__metric-info-wrap">' +
+              '<span class="material-symbols-rounded chart-card__metric-info-icon">info</span>' +
+              '<span class="chart-card__metric-info-text">Snapshot: Apr 29, 2026</span>' +
+              '<div class="chart-card__metric-info-tooltip">This chart reflects the latest available snapshot and is not affected by the date filter</div>' +
+            '</div>' +
+          '</div>'
         );
       }
       return (
@@ -819,23 +826,6 @@
 
     function createCardHTML(id, title) {
       var breakdownHTML = '';
-      if (id === 'total-guests') {
-        breakdownHTML =
-          '<div class="chart-card__breakdown dropdown" id="dd-breakdown-' + id + '">' +
-            '<div class="dropdown__wrapper">' +
-              '<button class="dropdown__button" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleDropdown(\'dd-breakdown-' + id + '\')">' +
-                '<span>By channel</span>' +
-                '<i class="material-symbols-rounded">expand_more</i>' +
-              '</button>' +
-            '</div>' +
-            '<div class="dropdown__options dropdown__options--right">' +
-              '<ul>' +
-                '<li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By channel</span></button></li>' +
-                '<li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By daypart</span></button></li>' +
-              '</ul>' +
-            '</div>' +
-          '</div>';
-      }
 
       return (
         '<div class="chart-card" data-metric-id="' + id + '">' +

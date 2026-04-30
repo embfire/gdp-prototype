@@ -1,7 +1,7 @@
 # Total Guests Chart — Implementation Spec
 
 **Audience:** Engineering — connecting the prototype to real data
-**Last updated:** 2026-04-29
+**Last updated:** 2026-04-30
 **Reference implementation:** `[beta/index.html](../../beta/index.html)` (dashboard card, search `initTotalGuestsChart`) and `[beta/dashboard-total-guests.html](../../beta/dashboard-total-guests.html)` (detail page)
 
 > Visual treatment, copy, and exact pixel values are not normative — read them off the HTML/CSS. This doc covers **what data is needed, how the metric is calculated, what filters do, and what the detail page must include**.
@@ -10,9 +10,11 @@
 
 ## 1. Overview
 
-A daily time-series line chart showing the **running count of identified guests** over the selected date range. Each X point = one calendar day. Two lines: "This period" (solid) and "Prev period" (dashed), plotted on the same date-aligned X-axis in the same indigo color. Anonymous traffic is excluded from the count.
+A daily time-series line chart showing the **running count of identified guests** over the selected date range. Each X point = one calendar day. In the default "Total" mode, two lines are drawn: "This period" (solid) and "Prev period" (dashed), plotted on the same date-aligned X-axis in the same indigo color. Anonymous traffic is excluded from the count.
 
-The chart answers: *how has our identified guest base grown (or contracted) compared to the same window in the previous period?*
+A **breakdown filter** on the detail page lets users segment the chart into multiple lines by identity source or acquisition channel (see § 6). When a breakdown is active the prev-period comparison is dropped and replaced with per-segment lines.
+
+The chart answers: *how has our identified guest base grown (or contracted) compared to the same window in the previous period? Which identity sources and acquisition channels are driving that growth?*
 
 ---
 
@@ -52,6 +54,29 @@ type TotalGuestsSnapshot = {
   prev: number;    // corresponding prev-period value, day-aligned to the same offset
 };
 ```
+
+When a breakdown is active the API returns per-segment columns instead of `current`/`prev`:
+
+```ts
+// breakdown=identity-source
+type TotalGuestsBySource = {
+  date: string;
+  idr:     number; // IDR-identified guests (payment, device, email, phone)
+  loyalty: number; // loyalty-only guests (enrolled but not otherwise IDR-resolved)
+};
+
+// breakdown=acq-channel
+type TotalGuestsByChannel = {
+  date: string;
+  pos:     number; // first identified at point of sale
+  online:  number; // first identified via online ordering
+  app:     number; // first identified via mobile app
+  email:   number; // first identified via email signup
+  loyalty: number; // first identified via loyalty enrollment
+};
+```
+
+The `prev` comparison field is omitted from breakdown responses — the chart shows per-segment current-period lines only.
 
 ### Aggregation contract
 
@@ -107,7 +132,7 @@ Inherited from the global dashboard filter bar — see `[dashboard_beta_ux.md §
 | **Stores and Store groups** | Single or multi-store / store group                       | Yes                | Applied server-side. The count per day reflects guests who have transacted at the selected store(s). See "Filter scope semantics" note below.                                                                                 |
 | **Loyalty / non-loyalty** | Loyalty program members / non-members                       | Yes                | Filters which guests are counted. Does **not** affect what "identified" means — only the subset who are enrolled (or not) in the loyalty program.                                                                             |
 | **Segments**              | Any saved guest segment                                     | Yes                | Restricts the count to guests matching the selected segment(s). Useful for asking "how has segment X grown over time?"                                                                                                        |
-| **Breakdown**             | By channel, By daypart                                      | Yes — see note     | Splits or filters the count by the selected dimension. Exact rendering behavior (one line per dimension value vs. a filtered single line) is TBD — see § 10 Open Questions. "By location" is omitted — location is already a global filter.                                                  |
+| **Breakdown**             | Total (default), By identity source, By acquisition channel | Detail page only   | Switches the chart between modes. "Total" shows the two-series current/prev comparison. "By identity source" splits into IDR vs. loyalty-only lines. "By acquisition channel" splits into five channel lines (POS, Online, App, Email, Loyalty enrollment). Each mode changes the series, legend, y-axis range, and tooltip — see § 8. Not available on the dashboard overview card. |
 
 
 ### Filter scope semantics (Stores and Store groups)
@@ -124,10 +149,9 @@ A guest who exists in the platform but has never transacted at Store A would not
 
 Compact card in the 2-column dashboard grid:
 
-- Header: title `Total guests` + subtitle `Identified guests over time`. Header area is clickable → navigates to detail page.
-- Breakdown dropdown in the header controls area: "By channel", "By daypart". "By location" is omitted — location is already covered by the global store filter.
+- Header: title `Total guests` + subtitle `Identified guests over time`. Header area is clickable → navigates to detail page. **No breakdown dropdown** — segmentation is a detail-page-only feature.
 - Hero metric block: latest-day M value + standard-color delta pill + prev-period sub-text.
-- Toggleable legend: 2 buttons — "This period" (solid indigo marker) and "Prev period" (striped indigo marker). At least one must remain visible; the toggle handler guards against hiding the last series.
+- Legend: two static items — "This period" (solid indigo marker) and "Previous period" (striped indigo marker).
 - Line chart filling the remaining card space (`flex-fill`).
 
 The card's `data-metric-id` is `total-guests`.
@@ -136,11 +160,23 @@ The card's `data-metric-id` is `total-guests`.
 
 ## 8. Detail Page (`beta/dashboard-total-guests.html`)
 
-Same content, more space, plus a data table:
+Same content, more space, plus a breakdown filter, dynamic legend, and data table:
 
 - Breadcrumb → title bar (h1 `Total guests` + Help button) → global filter bar → chart card → data table → pagination.
 - Chart card uses the same data and colors as the dashboard, with a taller plot area (`.chart-card__placeholder--detail`, currently 389px).
-- "Get insight" (Ava) button and breakdown dropdown ("By channel", "By daypart") appear in the chart card header controls, alongside the 3-dot overflow menu.
+- **Breakdown dropdown** (`Total` | `By identity source` | `By acquisition channel`) and "Get insight" (Ava) button appear in the chart card header controls, alongside the 3-dot overflow menu.
+
+### Breakdown modes
+
+| Mode | Series | Colors | Y-axis range |
+|---|---|---|---|
+| **Total** (default) | This period (solid), Previous period (dashed) | Both indigo-900 | Computed from data; prototype: 1.097–1.253 |
+| **By identity source** | IDR-identified, Loyalty-only | Indigo-900, Vermilion-900 | Computed from data; prototype: 0.24–1.02 |
+| **By acquisition channel** | POS, Online ordering, Mobile app, Email signup, Loyalty enrollment | Palette positions 1–5 | Computed from data; prototype: 0.08–0.56 |
+
+Switching mode: updates the dropdown label, re-renders the legend (static colored swatches, not toggleable buttons), replaces the chart series and y-axis range, and rebuilds the hover tooltip. The `selectBreakdown(btn, mode)` function in the prototype is the reference implementation.
+
+**Legend in breakdown mode:** Static display-only items (not toggleable). One swatch + label per series in palette order. In "Total" mode the prev-period swatch uses the striped diagonal pattern.
 - Data table columns follow the standard time-series layout from `[dashboard_beta_ux.md § Detail Page](../dashboard_beta_ux.md#detail-page)`:
 
 
@@ -169,17 +205,16 @@ Source data is M-scale (e.g. `1.156`). Multiply to integers and add a determinis
 
 The dashed vertical crosshair line is drawn by **AG Charts native crosshair** (`crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] }` on the X-axis). No manual DOM line element is needed — this differentiates Total Guests from Guest Lifecycle.
 
-The tooltip is a **manual implementation** (AG Charts per-series tooltip is disabled). On `mousemove` over the chart container:
+The tooltip is a **manual implementation** (AG Charts per-series tooltip is disabled). The tooltip is rebuilt whenever the breakdown mode changes via `buildBreakdownTooltip(cfg, mode)`. On `mousemove` over the chart container:
 
 1. Map cursor X to the nearest data point on the time axis.
 2. Show a floated `position:fixed` tooltip to the right of the cursor (flip left if near the right viewport edge, clamp vertically to stay in bounds).
-3. Tooltip content:
-   - Bold header: `Total guests`
-   - Row 1: solid indigo 12×12 swatch + snapped date + current-period M value (bold)
-   - Row 2: delta % pill (green/red background) + `vs prev period` label
-   - Row 3 (shown only if prev series is visible): striped indigo swatch + `Prev period` label + prev-period M value (subdued)
-4. If the current series has been hidden via the legend, suppress the tooltip entirely.
-5. Hide tooltip on `mouseleave`.
+3. Tooltip content (generic, works for all modes):
+   - Bold header: snapped date (e.g. `Mar 29`)
+   - One row per series in the current breakdown config: colored 12×12 swatch (solid or striped) + series name + M value (bold)
+4. Hide tooltip on `mouseleave`.
+
+The "Total" mode previously showed a delta % pill in the tooltip — this was simplified to the generic row format for consistency across breakdown modes. If the delta pill is needed in "Total" mode it can be reintroduced as a conditional.
 
 ### Click → Context menu (detail page only)
 
@@ -199,7 +234,7 @@ Key anchoring requirement: the menu DOM lives **inside** `.content-area--chart-d
 
 These are not blockers for the chart wiring but should be settled before the metric ships:
 
-1. **Breakdown rendering.** When "By channel" or "By daypart" is selected, does the chart render one line per dimension value (multi-series) or remain a single aggregated line with the filter applied? If multi-series: what is the maximum number of lines, and which palette colors are used beyond indigo-900?
+1. ~~**Breakdown rendering.**~~ **Resolved.** The chart renders one line per dimension value (multi-series). The breakdown filter replaces the current/prev comparison — no prev-period overlay in breakdown mode. Colors follow the standard palette in order (indigo, vermilion, periwinkle, amber, crimson). Maximum: 5 lines for "By acquisition channel", 2 for "By identity source".
 2. **"Compare to: Previous year" semantics.** Does the prev-period series align by calendar date (same MM-DD) or by day offset from the period start? These produce different curves and both need different axis labeling.
 3. **"No comparison" state.** Confirm that selecting "No comparison" hides the dashed prev series, removes the striped legend button, and suppresses the prev-period sub-text and tooltip row.
 4. **Guest count definition.** Confirm the daily value is the running cumulative count of identified guests as of end of that day — not the count of unique guests who visited that day.

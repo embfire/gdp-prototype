@@ -235,20 +235,21 @@
             <div class="chart-card__header chart-card__header--detail">
               <div class="chart-card__header-text">
                 <p class="chart-card__title">Total guests</p>
-                <p class="chart-card__subtitle">Chart explanation</p>
+                <p class="chart-card__subtitle">Identified guests over time</p>
               </div>
               <div class="chart-card__header-controls">
                 <div class="dropdown" id="dd-breakdown">
                   <div class="dropdown__wrapper">
                     <button class="dropdown__button" onclick="toggleDropdown('dd-breakdown')">
-                      <span>By channel</span>
+                      <span id="dd-breakdown-label">Total</span>
                       <i class="material-symbols-rounded">expand_more</i>
                     </button>
                   </div>
                   <div class="dropdown__options dropdown__options--right">
                     <ul>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By channel</span></button></li>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By daypart</span></button></li>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectBreakdown(this, 'total')"><span>Total</span></button></li>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectBreakdown(this, 'identity-source')"><span>By identity source</span></button></li>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectBreakdown(this, 'acq-channel')"><span>By acquisition channel</span></button></li>
                     </ul>
                   </div>
                 </div>
@@ -278,16 +279,7 @@
                 </div>
                 <p class="chart-card__metric-period">1.13M prev period</p>
               </div>
-              <div class="chart-card__legend">
-                <button type="button" class="chart-card__legend-item" data-series-key="current" onclick="toggleAGSeries(this, 'current')" aria-pressed="true">
-                  <span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>
-                  <span>This period</span>
-                </button>
-                <button type="button" class="chart-card__legend-item" data-series-key="prev" onclick="toggleAGSeries(this, 'prev')" aria-pressed="true">
-                  <span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>
-                  <span>Previous period</span>
-                </button>
-              </div>
+              <div class="chart-card__legend" id="chart-legend"></div>
               <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-total-guests"></div>
             </div>
           </div>
@@ -602,26 +594,6 @@
     }
     function fmtM(v) { return (+v).toFixed(2).replace(/\.?0+$/, '') + 'M'; }
 
-    function toggleAGSeries(btn, seriesKey) {
-      if (!totalGuestsChart || !totalGuestsChartOptions) return;
-      var nextValue = !totalGuestsVisibility[seriesKey];
-      var someoneElseVisible = Object.keys(totalGuestsVisibility).some(function(k) {
-        return k !== seriesKey && totalGuestsVisibility[k];
-      });
-      if (!nextValue && !someoneElseVisible) return;
-
-      totalGuestsVisibility[seriesKey] = nextValue;
-      btn.setAttribute('aria-pressed', String(nextValue));
-
-      var newSeries = totalGuestsChartOptions.series.map(function(s, i) {
-        var vis = (i === 0) ? totalGuestsVisibility.prev : totalGuestsVisibility.current;
-        return Object.assign({}, s, { visible: vis });
-      });
-      var updateOpts = Object.assign({}, totalGuestsChartOptions, { series: newSeries });
-      totalGuestsChartOptions = updateOpts;
-      totalGuestsChart.update(updateOpts);
-    }
-
     function initTotalGuestsChart() {
       var container = document.getElementById('chart-area-total-guests');
       if (!container) return;
@@ -707,91 +679,16 @@
 
       totalGuestsChart = agCharts.AgCharts.create(totalGuestsChartOptions);
 
-      /* ── Manual tooltip (mirror dashboard) ── */
-      if (totalGuestsTooltipEl && totalGuestsTooltipEl.parentNode) {
-        totalGuestsTooltipEl.parentNode.removeChild(totalGuestsTooltipEl);
-      }
-      if (totalGuestsMouseMove) {
-        container.removeEventListener('mousemove',  totalGuestsMouseMove);
-        container.removeEventListener('mouseleave', totalGuestsMouseLeave);
-      }
-      totalGuestsTooltipEl = document.createElement('div');
-      totalGuestsTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(totalGuestsTooltipEl);
-
-      var PLOT_LEFT = 46;
-      var PLOT_RIGHT_PAD = 0;
-      var AXIS_MIN_TIME = new Date(2026, 2, 19).getTime();
-      var AXIS_MAX_TIME = new Date(2026, 3, 26).getTime();
-
-      totalGuestsMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - PLOT_RIGHT_PAD;
-        if (mx < PLOT_LEFT || mx > plotRight) { totalGuestsTooltipEl.style.display = 'none'; return; }
-        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
-        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
-        var d = TOTAL_GUESTS_DATA.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-        if (!totalGuestsVisibility.current) { totalGuestsTooltipEl.style.display = 'none'; return; }
-
-        var pctRaw = (d.current - d.prev) / d.prev * 100;
-        var pct = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
-        var pctColor = pctRaw >= 0 ? '#257469' : '#b1294a';
-        var pctBg    = pctRaw >= 0 ? '#effaf9' : '#fdecef';
-        var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
-
-        totalGuestsTooltipEl.innerHTML = (
-          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
-          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Total guests</p>' +
-          '<div style="display:flex;flex-direction:column;gap:8px;">' +
-            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
-              '<div style="display:flex;align-items:center;gap:4px;">' +
-                '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
-                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(d.date) + '</span>' +
-              '</div>' +
-              '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtM(d.current) + '</span>' +
-            '</div>' +
-            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
-              '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pct + '</span>' +
-              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
-            '</div>' +
-          '</div>' +
-          (totalGuestsVisibility.prev
-            ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
-                '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
-                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
-                '</div>' +
-                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtM(d.prev) + '</span>' +
-              '</div>'
-            : '') +
-          '</div>'
-        );
-        totalGuestsTooltipEl.style.display = 'block';
-        var tw = totalGuestsTooltipEl.offsetWidth, th = totalGuestsTooltipEl.offsetHeight;
-        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
-        if (ty < 8) ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        totalGuestsTooltipEl.style.left = tx + 'px';
-        totalGuestsTooltipEl.style.top  = ty + 'px';
-      };
-      totalGuestsMouseLeave = function() { totalGuestsTooltipEl.style.display = 'none'; };
-      container.addEventListener('mousemove',  totalGuestsMouseMove);
-      container.addEventListener('mouseleave', totalGuestsMouseLeave);
-
       attachChartPointMenu(container, {
-        plotLeft: PLOT_LEFT,
-        plotRightPad: PLOT_RIGHT_PAD,
-        axisMinTime: AXIS_MIN_TIME,
-        axisMaxTime: AXIS_MAX_TIME,
+        plotLeft: 46,
+        plotRightPad: 0,
+        axisMinTime: new Date(2026, 2, 19).getTime(),
+        axisMaxTime: new Date(2026, 3, 26).getTime(),
         axisMinValue: 1.097,
         axisMaxValue: 1.253,
-        plotTop: 8,         // matches chart padding.top
-        xAxisHeight: 30,    // approx label area at the bottom
+        plotTop: 8,
+        xAxisHeight: 30,
         data: TOTAL_GUESTS_DATA,
-        // Map series-key → which value field on the data row.
         seriesValueKeys: { current: 'current', prev: 'prev' },
       });
     }
@@ -998,6 +895,202 @@
       }
     });
 
+    /* ═══════════════════════════════════════════════════
+       Breakdown segmentation
+    ═══════════════════════════════════════════════════ */
+
+    var PALETTE = ['#5A55E3', '#FF6600', '#8C9FFF', '#F8931C', '#E83162'];
+
+    var currentBreakdown = 'total';
+
+    /* Derive segmented data from the base total series */
+    var IDENTITY_SOURCE_DATA = TOTAL_GUESTS_DATA.map(function(d) {
+      return { date: d.date, idr: d.current * 0.778, loyalty: d.current * 0.222 };
+    });
+
+    var ACQ_CHANNEL_DATA = TOTAL_GUESTS_DATA.map(function(d) {
+      return {
+        date: d.date,
+        pos:     d.current * 0.420,
+        online:  d.current * 0.250,
+        app:     d.current * 0.160,
+        email:   d.current * 0.083,
+        loyalty: d.current * 0.087,
+      };
+    });
+
+    var BREAKDOWN_CONFIG = {
+      total: {
+        series: [
+          { yKey: 'prev',    yName: 'Previous period', stroke: PALETTE[0], lineDash: [2, 2] },
+          { yKey: 'current', yName: 'This period',     stroke: PALETTE[0], lineDash: undefined },
+        ],
+        data: TOTAL_GUESTS_DATA,
+        yMin: 1.097, yMax: 1.253,
+        yTicks: [1.10, 1.12, 1.14, 1.16, 1.18, 1.20, 1.22, 1.24],
+      },
+      'identity-source': {
+        series: [
+          { yKey: 'idr',    yName: 'IDR-identified', stroke: PALETTE[0], lineDash: undefined },
+          { yKey: 'loyalty', yName: 'Loyalty-only',  stroke: PALETTE[1], lineDash: undefined },
+        ],
+        data: IDENTITY_SOURCE_DATA,
+        yMin: 0.24, yMax: 1.02,
+        yTicks: [0.25, 0.40, 0.55, 0.70, 0.85, 1.00],
+      },
+      'acq-channel': {
+        series: [
+          { yKey: 'pos',     yName: 'Point of sale',      stroke: PALETTE[0], lineDash: undefined },
+          { yKey: 'online',  yName: 'Online ordering',    stroke: PALETTE[1], lineDash: undefined },
+          { yKey: 'app',     yName: 'Mobile app',         stroke: PALETTE[2], lineDash: undefined },
+          { yKey: 'email',   yName: 'Email signup',       stroke: PALETTE[3], lineDash: undefined },
+          { yKey: 'loyalty', yName: 'Loyalty enrollment', stroke: PALETTE[4], lineDash: undefined },
+        ],
+        data: ACQ_CHANNEL_DATA,
+        yMin: 0.08, yMax: 0.56,
+        yTicks: [0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50],
+      },
+    };
+
+    function renderLegend(breakdown) {
+      var cfg = BREAKDOWN_CONFIG[breakdown];
+      var legend = document.getElementById('chart-legend');
+      if (!legend) return;
+      legend.innerHTML = cfg.series.map(function(s) {
+        var markerStyle = s.lineDash
+          ? 'background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + s.stroke + ' 0,' + s.stroke + ' 1.5px,transparent 1.5px,transparent 3px);'
+          : 'background:' + s.stroke + ';';
+        return (
+          '<span class="chart-card__legend-item" aria-pressed="true">' +
+            '<span class="chart-card__legend-marker chart-card__legend-marker--solid" style="' + markerStyle + '"></span>' +
+            '<span>' + s.yName + '</span>' +
+          '</span>'
+        );
+      }).join('');
+    }
+
+    function buildBreakdownSeries(cfg) {
+      return cfg.series.map(function(s) {
+        var seriesDef = {
+          type: 'line',
+          xKey: 'date',
+          yKey: s.yKey,
+          yName: s.yName,
+          stroke: s.stroke,
+          strokeWidth: 2,
+          marker: {
+            enabled: true, size: 0,
+            itemStyler: function(params) {
+              if (params.highlightState === 'highlighted-item') {
+                return { size: 10, fill: s.stroke, stroke: '#ffffff', strokeWidth: 2 };
+              }
+              return { size: 0 };
+            },
+          },
+          tooltip: { enabled: false },
+        };
+        if (s.lineDash) seriesDef.lineDash = s.lineDash;
+        return seriesDef;
+      });
+    }
+
+    function selectBreakdown(btn, mode) {
+      var dd = document.getElementById('dd-breakdown');
+      document.getElementById('dd-breakdown-label').textContent = btn.querySelector('span').textContent;
+      dd.querySelector('.dropdown__options').classList.remove('dropdown__options_open');
+      if (mode === currentBreakdown) return;
+      currentBreakdown = mode;
+      renderLegend(mode);
+      rebuildChart(mode);
+    }
+
+    function rebuildChart(mode) {
+      var cfg = BREAKDOWN_CONFIG[mode];
+      if (!totalGuestsChart) return;
+
+      var newOpts = Object.assign({}, totalGuestsChartOptions, {
+        data: cfg.data,
+        series: buildBreakdownSeries(cfg),
+        axes: Object.assign({}, totalGuestsChartOptions.axes, {
+          y: Object.assign({}, totalGuestsChartOptions.axes.y, {
+            min: cfg.yMin,
+            max: cfg.yMax,
+            interval: { values: cfg.yTicks },
+          }),
+        }),
+      });
+      totalGuestsChartOptions = newOpts;
+      totalGuestsChart.update(newOpts);
+
+      /* Rebuild tooltip to match new series */
+      if (totalGuestsMouseMove) {
+        var container = document.getElementById('chart-area-total-guests');
+        container.removeEventListener('mousemove',  totalGuestsMouseMove);
+        container.removeEventListener('mouseleave', totalGuestsMouseLeave);
+      }
+      buildBreakdownTooltip(cfg, mode);
+    }
+
+    function buildBreakdownTooltip(cfg, mode) {
+      var container = document.getElementById('chart-area-total-guests');
+      var PLOT_LEFT = 46, PLOT_RIGHT_PAD = 0;
+      var AXIS_MIN_TIME = new Date(2026, 2, 19).getTime();
+      var AXIS_MAX_TIME = new Date(2026, 3, 26).getTime();
+
+      if (totalGuestsTooltipEl && totalGuestsTooltipEl.parentNode) {
+        totalGuestsTooltipEl.parentNode.removeChild(totalGuestsTooltipEl);
+      }
+      totalGuestsTooltipEl = document.createElement('div');
+      totalGuestsTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(totalGuestsTooltipEl);
+
+      totalGuestsMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+        if (mx < PLOT_LEFT || mx > plotRight) { totalGuestsTooltipEl.style.display = 'none'; return; }
+        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
+        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
+        var d = cfg.data.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+
+        var rows = cfg.series.map(function(s) {
+          var v = d[s.yKey];
+          var markerStyle = s.lineDash
+            ? 'background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + s.stroke + ' 0,' + s.stroke + ' 1.5px,transparent 1.5px,transparent 3px);'
+            : 'background:' + s.stroke + ';';
+          return (
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:4px;">' +
+                '<div style="width:12px;height:12px;border-radius:2px;flex-shrink:0;' + markerStyle + '"></div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + s.yName + '</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtM(v) + '</span>' +
+            '</div>'
+          );
+        }).join('');
+
+        totalGuestsTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 12px;line-height:1.5;white-space:nowrap;">' + fmtChartDate(d.date) + '</p>' +
+            '<div style="display:flex;flex-direction:column;gap:8px;">' + rows + '</div>' +
+          '</div>'
+        );
+        totalGuestsTooltipEl.style.display = 'block';
+        var tw = totalGuestsTooltipEl.offsetWidth, th = totalGuestsTooltipEl.offsetHeight;
+        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8) ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        totalGuestsTooltipEl.style.left = tx + 'px';
+        totalGuestsTooltipEl.style.top  = ty + 'px';
+      };
+      totalGuestsMouseLeave = function() { totalGuestsTooltipEl.style.display = 'none'; };
+      container.addEventListener('mousemove',  totalGuestsMouseMove);
+      container.addEventListener('mouseleave', totalGuestsMouseLeave);
+    }
+
     /* ── Boot ── */
     document.addEventListener('DOMContentLoaded', function() {
       renderTable();
@@ -1005,7 +1098,13 @@
         document.fonts.load('400 12px Manrope'),
         document.fonts.load('700 12px Manrope'),
         document.fonts.load('800 12px Manrope'),
-      ]).then(function() { requestAnimationFrame(initTotalGuestsChart); });
+      ]).then(function() {
+        requestAnimationFrame(function() {
+          initTotalGuestsChart();
+          renderLegend('total');
+          buildBreakdownTooltip(BREAKDOWN_CONFIG.total, 'total');
+        });
+      });
     });
   </script>
 

@@ -653,7 +653,26 @@ body { margin: 0; font-family: 'Manrope', sans-serif; }
   width: fit-content;
 }
 
-/* Prevent option text from wrapping — panel sizes to longest option naturally */
+/* Override Bento's max-height clip with a proper opacity/visibility fade.
+   visibility: hidden fully removes the panel (border, padding, events) when closed;
+   the delayed visibility transition lets opacity finish before snapping hidden. */
+.dropdown__options {
+  min-width: max-content;
+  max-height: none !important;
+  overflow: visible !important;
+  top: calc(100% + 8px) !important;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0s linear 0.15s;
+  pointer-events: none;
+}
+.dropdown__options_open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.15s ease, visibility 0s linear 0s;
+  pointer-events: auto;
+  z-index: 100;
+}
 .dropdown__options li button span {
   white-space: nowrap;
 }
@@ -1935,4 +1954,33 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   height: 24px;
   flex-shrink: 0;
   color: #000000;
+}
+
+/* ── Breakdown section (chart detail pages) ── */
+.chart-detail-breakdown-heading {
+  margin-bottom: 16px;
+}
+
+.chart-detail-breakdown-heading__title {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.4;
+  color: #000000;
+}
+
+.chart-detail-breakdown-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.chart-detail-breakdown-grid .chart-card {
+  margin-bottom: 0;
+}
+
+.chart-card__placeholder--breakdown {
+  height: 260px;
 }
