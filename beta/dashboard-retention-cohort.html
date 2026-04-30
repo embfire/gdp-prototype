@@ -638,10 +638,12 @@
           return;
         }
 
-        var colIndex = Math.floor((mx - PLOT_LEFT) / (plotRight  - PLOT_LEFT)  * NUM_COLS);
-        var rowIndex = Math.floor((my - PLOT_TOP)  / (plotBottom - PLOT_TOP) * NUM_ROWS);
-        colIndex = Math.max(0, Math.min(NUM_COLS - 1, colIndex));
-        rowIndex = Math.max(0, Math.min(NUM_ROWS - 1, rowIndex));
+        var colIndex    = Math.floor((mx - PLOT_LEFT) / (plotRight  - PLOT_LEFT)  * NUM_COLS);
+        var rowIndexRaw = Math.floor((my - PLOT_TOP)  / (plotBottom - PLOT_TOP) * NUM_ROWS);
+        colIndex    = Math.max(0, Math.min(NUM_COLS - 1, colIndex));
+        rowIndexRaw = Math.max(0, Math.min(NUM_ROWS - 1, rowIndexRaw));
+        // y-axis has reverse:true → top of chart = last cohort (Mar 26, index 11).
+        var rowIndex = NUM_ROWS - 1 - rowIndexRaw;
 
         // Triangular grid — newer cohorts have fewer columns.
         if (colIndex >= COHORT_MATRIX[rowIndex].length) {
@@ -696,10 +698,11 @@
 
         if (mx < PLOT_LEFT || mx > plotRight || my < PLOT_TOP || my > plotBottom) return;
 
-        var colIndex = Math.floor((mx - PLOT_LEFT) / (plotRight  - PLOT_LEFT)  * NUM_COLS);
-        var rowIndex = Math.floor((my - PLOT_TOP)  / (plotBottom - PLOT_TOP) * NUM_ROWS);
-        colIndex = Math.max(0, Math.min(NUM_COLS - 1, colIndex));
-        rowIndex = Math.max(0, Math.min(NUM_ROWS - 1, rowIndex));
+        var colIndex    = Math.floor((mx - PLOT_LEFT) / (plotRight  - PLOT_LEFT)  * NUM_COLS);
+        var rowIndexRaw = Math.floor((my - PLOT_TOP)  / (plotBottom - PLOT_TOP) * NUM_ROWS);
+        colIndex    = Math.max(0, Math.min(NUM_COLS - 1, colIndex));
+        rowIndexRaw = Math.max(0, Math.min(NUM_ROWS - 1, rowIndexRaw));
+        var rowIndex = NUM_ROWS - 1 - rowIndexRaw;
 
         if (colIndex >= COHORT_MATRIX[rowIndex].length) return;
 
