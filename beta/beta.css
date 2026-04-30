@@ -909,6 +909,73 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   color: #000000;
 }
 
+.chart-card__metric-period-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.chart-card__metric-info-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: default;
+}
+
+.chart-card__metric-info-icon {
+  font-size: 16px !important;
+  color: #60696c;
+  line-height: 1;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+.chart-card__metric-info-text {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.36;
+  color: #000000;
+}
+
+.chart-card__metric-info-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  background: #1f2223;
+  color: #ffffff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 136%;
+  white-space: normal;
+  max-width: 175px;
+  word-break: break-word;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  z-index: 10;
+}
+.chart-card__metric-info-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 0.25rem solid transparent;
+  border-right: 0.25rem solid transparent;
+  border-top: 0.25rem solid #1f2223;
+}
+
+.chart-card__metric-info-wrap:hover .chart-card__metric-info-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
 .chart-card__legend {
   display: flex;
   gap: 16px;
@@ -1011,10 +1078,22 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   min-height: 0;
 }
 
+/* Reachability: same flex-fill treatment */
+.chart-card[data-metric-id="reachability"] .chart-card__body {
+  flex: 1;
+  min-height: 0;
+}
+.chart-card[data-metric-id="reachability"] .chart-card__placeholder {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
 /* Strip the placeholder background once a real chart has rendered */
 #chart-area-total-guests-echarts,
 #chart-area-guest-lifecycle-breakdown,
-#chart-area-retention-cohort {
+#chart-area-retention-cohort,
+#chart-area-reachability {
   background: transparent;
 }
 
@@ -1046,7 +1125,8 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   flex-wrap: wrap;
 }
 .chart-card__metric-area > .chart-card__metric {
-  flex-shrink: 0;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 /* Filter-compatibility info banner — Bento .info-banner_informational palette,
@@ -1638,20 +1718,30 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   visibility: hidden;
   opacity: 0;
   position: absolute;
-  bottom: calc(100% + 4px);
+  bottom: calc(100% + 6px);
   right: 0;
-  background: #141414;
+  background: #1f2223;
   color: #ffffff;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
   font-family: 'Manrope', sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 136%;
   white-space: nowrap;
   pointer-events: none;
   transition: opacity 0.15s;
   z-index: 10;
+}
+.chart-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 0.25rem solid transparent;
+  border-right: 0.25rem solid transparent;
+  border-top: 0.25rem solid #1f2223;
 }
 
 .chart-remove-wrap:hover .chart-tooltip {
@@ -1670,11 +1760,13 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   top: calc(100% + 4px);
   right: 0;
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border: 2px solid #DFE1E2;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.12);
   z-index: 200;
   min-width: 196px;
-  padding: 6px 0;
+  padding: 16px;
+  overflow: hidden;
 }
 
 .chart-context-menu--open {
@@ -1682,6 +1774,9 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 }
 
 .chart-context-menu ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -1690,9 +1785,9 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 .chart-context-menu__item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  padding: 10px 16px;
+  padding: 8px;
   background: none;
   border: none;
   cursor: pointer;
@@ -1704,7 +1799,7 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   text-align: left;
   white-space: nowrap;
   transition: background 0.15s;
-  border-radius: 0;
+  border-radius: 8px;
 }
 
 .chart-context-menu__item:hover {

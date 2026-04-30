@@ -377,6 +377,13 @@
           document.fonts.load('800 12px Manrope'),
         ]).then(function() { requestAnimationFrame(initRetentionCohortChart); });
       }
+      if (id === 'reachability') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() { requestAnimationFrame(initReachabilityChart); });
+      }
       // Sync the new card's filter notice with the current date range.
       applyFilterCompatibility(currentDateRange);
     }
@@ -536,6 +543,15 @@
         lifecycleChart = null;
         lifecycleChartOptions = null;
       }
+      if (id === 'reachability' && reachabilityChart) {
+        reachabilityChart.destroy();
+        reachabilityChart = null;
+        reachabilityChartOptions = null;
+        if (reachabilityTooltipEl && reachabilityTooltipEl.parentNode) {
+          reachabilityTooltipEl.parentNode.removeChild(reachabilityTooltipEl);
+          reachabilityTooltipEl = null;
+        }
+      }
       var el = document.querySelector('.grid-stack-item[gs-id="' + id + '"]');
       if (el) dashGrid.removeWidget(el);
       updateSidebar();
@@ -655,7 +671,23 @@
             '<p class="chart-card__metric-value">34.2%</p>' +
             '<span class="chart-card__metric-pill chart-card__metric-pill--up">+10.3%</span>' +
           '</div>' +
-          '<p class="chart-card__metric-period">31.0% prev period</p>'
+          '<div class="chart-card__metric-period-row">' +
+            '<span class="chart-card__metric-period">31.0% prev period</span>' +
+            '<div class="chart-card__metric-info-wrap">' +
+              '<span class="material-symbols-rounded chart-card__metric-info-icon">info</span>' +
+              '<span class="chart-card__metric-info-text">Showing 90D minimum</span>' +
+              '<div class="chart-card__metric-info-tooltip">Showing 90 days minimum — needs more than 3 months of cohort data</div>' +
+            '</div>' +
+          '</div>'
+        );
+      }
+      if (id === 'reachability') {
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">37%</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+2.1%</span>' +
+          '</div>' +
+          '<p class="chart-card__metric-period">312K reachable · 535K not reachable</p>'
         );
       }
       return (
@@ -713,6 +745,22 @@
           '</div>'
         );
       }
+      if (id === 'reachability') {
+        return '<div class="chart-card__legend">' +
+          REACHABILITY_CHANNELS.map(function(ch) {
+            return (
+              '<button type="button" class="chart-card__legend-item" data-series-key="' + ch.key + '" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleReachabilitySeries(this, \'' + ch.key + '\')" aria-pressed="true">' +
+                '<span class="chart-card__legend-marker" style="background:' + ch.color + ';"></span>' +
+                '<span>' + ch.label + '</span>' +
+              '</button>'
+            );
+          }).join('') +
+          '<button type="button" class="chart-card__legend-item" data-series-key="notReachable" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleReachabilitySeries(this, \'notReachable\')" aria-pressed="true">' +
+            '<span class="chart-card__legend-marker" style="background:#DFE1E2;border:1px solid #c0c2c8;"></span>' +
+            '<span>Not reachable</span>' +
+          '</button>' +
+        '</div>';
+      }
       return '';
     }
 
@@ -721,6 +769,7 @@
       if (id === 'total-guests') return 'Identified guests over time';
       if (id === 'guest-lifecycle-breakdown') return 'Distribution of identified guests across lifecycle stages';
       if (id === 'retention-cohort') return 'M+1 retention rate by acquisition cohort';
+      if (id === 'reachability') return 'Reachable guests by channel vs. total identified';
       return 'Chart explanation';
     }
 
@@ -746,13 +795,7 @@
     }
 
     function buildFilterNoticeHTML(id) {
-      if (!CHART_CONSTRAINTS[id]) return '';
-      return (
-        '<div class="chart-card__filter-banner" data-filter-notice="' + id + '">' +
-          '<span class="material-symbols-rounded chart-card__filter-banner__icon">info</span>' +
-          '<span class="chart-card__filter-banner__text"></span>' +
-        '</div>'
-      );
+      return '';
     }
 
     var currentDateRange = '7D';
@@ -812,7 +855,7 @@
                   '<ul>' +
                     '<li><button class="chart-context-menu__item" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>' +
                     '<li><button class="chart-context-menu__item" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>' +
-                    '<li><button class="chart-context-menu__item chart-context-menu__item--ava" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava about this...</span></button></li>' +
+                    '<li><button class="chart-context-menu__item chart-context-menu__item--ava" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava...</span></button></li>' +
                   '</ul>' +
                 '</div>' +
               '</div>' +
@@ -846,7 +889,8 @@
       var perChartPages = {
         'total-guests': 'dashboard-total-guests.html',
         'guest-lifecycle-breakdown': 'dashboard-guest-lifecycle.html',
-        'retention-cohort': 'dashboard-retention-cohort.html'
+        'retention-cohort': 'dashboard-retention-cohort.html',
+        'reachability':      'dashboard-reachability.html'
       };
       window.location.href = perChartPages[metricId] || 'dashboard-chart-detail.html';
     }
@@ -1843,6 +1887,253 @@
 
       container.addEventListener('mousemove',  retentionCohortMouseMove);
       container.addEventListener('mouseleave', retentionCohortMouseLeave);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       AG Charts — Reachability (horizontal stacked bar)
+       Two rows: Identified baseline + Reachable channels.
+       All values in K. Both rows sum to REACHABILITY_TOTAL so
+       the X-axis aligns and the gap in the Reachable row is visible.
+    ═══════════════════════════════════════════════════ */
+    var reachabilityChart         = null;
+    var reachabilityChartOptions  = null;
+    var reachabilityTooltipEl     = null;
+    var reachabilityMouseMove     = null;
+    var reachabilityMouseLeave    = null;
+    var reachabilityVisibility    = {
+      email: true, sms: true, push: true, instore: true, multi: true, notReachable: true,
+    };
+
+    var REACHABILITY_TOTAL = 847;  // identified guests, K
+    var REACHABILITY_REACH = 312;  // total reachable, K
+
+    // Exclusive channel segments — each guest counted once, sum = REACHABILITY_REACH.
+    var REACHABILITY_CHANNELS = [
+      { key: 'email',   label: 'Email',         color: '#5A55E3', val: 156 },
+      { key: 'sms',     label: 'SMS',           color: '#FF6600', val: 62  },
+      { key: 'push',    label: 'Push',          color: '#8C9FFF', val: 34  },
+      { key: 'instore', label: 'In-store',      color: '#F8931C', val: 18  },
+      { key: 'multi',   label: 'Multi-channel', color: '#E83162', val: 42  },
+    ];
+
+    // Two-row dataset. Identified bar = full baseline. Reachable bar = channels + gap.
+    var REACHABILITY_DATA = [
+      { cat: 'Identified', base: 847, email: null, sms: null, push: null, instore: null, multi: null, notReachable: null },
+      { cat: 'Reachable',  base: null, email: 156, sms: 62, push: 34, instore: 18, multi: 42, notReachable: 535 },
+    ];
+
+    function toggleReachabilitySeries(btn, seriesKey) {
+      if (!reachabilityChart || !reachabilityChartOptions) return;
+      var nextValue = !reachabilityVisibility[seriesKey];
+      var someoneElseVisible = Object.keys(reachabilityVisibility).some(function(k) {
+        return k !== seriesKey && reachabilityVisibility[k];
+      });
+      if (!nextValue && !someoneElseVisible) return;
+      reachabilityVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+      var newSeries = reachabilityChartOptions.series.map(function(s) {
+        if (s.yKey === 'base') return s;
+        return Object.assign({}, s, { visible: reachabilityVisibility[s.yKey] !== false });
+      });
+      reachabilityChartOptions = Object.assign({}, reachabilityChartOptions, { series: newSeries });
+      reachabilityChart.update(reachabilityChartOptions);
+    }
+
+    function initReachabilityChart() {
+      var container = document.getElementById('chart-area-reachability');
+      if (!container) return;
+      if (reachabilityChart) { reachabilityChart.destroy(); reachabilityChart = null; }
+
+      reachabilityVisibility = {
+        email: true, sms: true, push: true, instore: true, multi: true, notReachable: true,
+      };
+
+      var channelSeries = REACHABILITY_CHANNELS.map(function(ch) {
+        return {
+          type: 'bar',
+          direction: 'horizontal',
+          xKey: 'cat',
+          yKey: ch.key,
+          yName: ch.label,
+          stacked: true,
+          stackGroup: 'reachability',
+          fill: ch.color,
+          stroke: '#ffffff',
+          strokeWidth: 2,
+          tooltip: { enabled: false },
+        };
+      });
+
+      reachabilityChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 24, bottom: 8, left: 0 },
+        data: REACHABILITY_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'bar',
+            direction: 'horizontal',
+            xKey: 'cat',
+            yKey: 'base',
+            yName: 'Identified',
+            stacked: true,
+            stackGroup: 'reachability',
+            fill: '#DFE1E2',
+            stroke: '#DFE1E2',
+            strokeWidth: 0,
+            tooltip: { enabled: false },
+          },
+        ].concat(channelSeries).concat([
+          {
+            type: 'bar',
+            direction: 'horizontal',
+            xKey: 'cat',
+            yKey: 'notReachable',
+            yName: 'Not reachable',
+            stacked: true,
+            stackGroup: 'reachability',
+            fill: '#F0F1F5',
+            stroke: '#F0F1F5',
+            strokeWidth: 0,
+            tooltip: { enabled: false },
+          },
+        ]),
+        axes: {
+          x: {
+            type: 'number',
+            position: 'bottom',
+            min: 0,
+            max: REACHABILITY_TOTAL,
+            gridLine: { enabled: false },
+            line:     { enabled: false },
+            tick:     { enabled: false },
+            label:    { enabled: false },
+          },
+          y: {
+            type: 'category',
+            position: 'left',
+            paddingInner: 0.38,
+            paddingOuter: 0.22,
+            gridLine: { enabled: false },
+            line:     { enabled: false },
+            tick:     { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#60696C',
+              fontWeight: '500',
+              padding: 8,
+            },
+          },
+        },
+      };
+
+      reachabilityChart = agCharts.AgCharts.create(reachabilityChartOptions);
+
+      // ── Manual tooltip ────────────────────────────────────────────────────
+      if (reachabilityTooltipEl && reachabilityTooltipEl.parentNode) {
+        reachabilityTooltipEl.parentNode.removeChild(reachabilityTooltipEl);
+      }
+      if (reachabilityMouseMove) {
+        container.removeEventListener('mousemove',  reachabilityMouseMove);
+        container.removeEventListener('mouseleave', reachabilityMouseLeave);
+      }
+
+      reachabilityTooltipEl = document.createElement('div');
+      reachabilityTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(reachabilityTooltipEl);
+
+      // Y-axis labels "Identified"/"Reachable": ~9-10 chars at 12px weight-500 Manrope
+      // ≈ 70px + 8px label padding = ~80px total axis area.
+      var R_PLOT_LEFT       = 82;
+      var R_PLOT_RIGHT_PAD  = 24;
+      var R_PLOT_TOP        = 8;
+      var R_PLOT_BOTTOM_PAD = 8;
+
+      var fmtRK = function(v) {
+        if (v >= 1000) return (v / 1000).toFixed(1).replace(/\.0$/, '') + 'M';
+        return Math.round(v) + 'K';
+      };
+      var fmtRPct = function(v) { return (v / REACHABILITY_TOTAL * 100).toFixed(1) + '%'; };
+
+      reachabilityMouseMove = function(e) {
+        var rect        = container.getBoundingClientRect();
+        var mx          = e.clientX - rect.left;
+        var my          = e.clientY - rect.top;
+        var plotRight   = rect.width  - R_PLOT_RIGHT_PAD;
+        var plotBottom  = rect.height - R_PLOT_BOTTOM_PAD;
+        var plotHeight  = plotBottom  - R_PLOT_TOP;
+        var midY        = R_PLOT_TOP  + plotHeight / 2;
+
+        if (mx < R_PLOT_LEFT || mx > plotRight || my < R_PLOT_TOP || my > plotBottom) {
+          reachabilityTooltipEl.style.display = 'none';
+          return;
+        }
+
+        var html;
+        if (my < midY) {
+          // Identified row
+          html = (
+            '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+              '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 8px;line-height:1.5;white-space:nowrap;">Identified guests</p>' +
+              '<div style="display:flex;align-items:center;gap:8px;white-space:nowrap;">' +
+                '<div style="width:12px;height:12px;background:#DFE1E2;border:1px solid #c0c2c8;border-radius:2px;flex-shrink:0;"></div>' +
+                '<span style="font-size:12px;font-weight:700;color:#000;">847K</span>' +
+                '<span style="font-size:12px;color:#60696C;">total identified</span>' +
+              '</div>' +
+            '</div>'
+          );
+        } else {
+          // Reachable row — detect segment from X position
+          var relX      = (mx - R_PLOT_LEFT) / (plotRight - R_PLOT_LEFT);
+          var cursorVal = relX * REACHABILITY_TOTAL;
+          var cumulative = 0;
+          var seg = null;
+          for (var i = 0; i < REACHABILITY_CHANNELS.length; i++) {
+            var ch = REACHABILITY_CHANNELS[i];
+            if (reachabilityVisibility[ch.key] === false) continue;
+            cumulative += ch.val;
+            if (cursorVal <= cumulative) { seg = ch; break; }
+          }
+          if (!seg) {
+            seg = { label: 'Not reachable', color: '#DFE1E2', val: REACHABILITY_TOTAL - REACHABILITY_REACH };
+          }
+          var dotStyle = seg.color === '#DFE1E2'
+            ? 'background:#DFE1E2;border:1px solid #c0c2c8;'
+            : 'background:' + seg.color + ';';
+          html = (
+            '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+              '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 8px;line-height:1.5;white-space:nowrap;">' + seg.label + '</p>' +
+              '<div style="display:flex;align-items:center;gap:8px;white-space:nowrap;">' +
+                '<div style="width:12px;height:12px;' + dotStyle + 'border-radius:2px;flex-shrink:0;"></div>' +
+                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtRK(seg.val) + '</span>' +
+                '<span style="font-size:12px;color:#60696C;">' + fmtRPct(seg.val) + ' of identified</span>' +
+              '</div>' +
+            '</div>'
+          );
+        }
+
+        reachabilityTooltipEl.innerHTML = html;
+        reachabilityTooltipEl.style.display = 'block';
+
+        var tw = reachabilityTooltipEl.offsetWidth;
+        var th = reachabilityTooltipEl.offsetHeight;
+        var tx = e.clientX + 16;
+        var ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8)                           ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        reachabilityTooltipEl.style.left = tx + 'px';
+        reachabilityTooltipEl.style.top  = ty + 'px';
+      };
+
+      reachabilityMouseLeave = function() {
+        reachabilityTooltipEl.style.display = 'none';
+      };
+
+      container.addEventListener('mousemove',  reachabilityMouseMove);
+      container.addEventListener('mouseleave', reachabilityMouseLeave);
     }
 
     /* ═══════════════════════════════════════════════════

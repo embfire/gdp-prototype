@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retention cohort — PAR Guest360 Beta</title>
+  <title>Reachability — PAR Guest360 Beta</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="../assets/bento.css">
   <link rel="stylesheet" href="beta.css">
   <style>
-    .chart-card[data-metric-id="retention-cohort"] .chart-card__placeholder--detail {
-      height: 400px;
+    .chart-card[data-metric-id="reachability"] .chart-card__placeholder--detail {
+      height: 280px;
       flex: none;
     }
   </style>
@@ -53,14 +53,12 @@
       <!-- Sidebar -->
       <aside class="sidebar">
         <nav class="sidebar-nav" aria-label="Main navigation">
-
           <div class="nav-group" data-nav-group-id="top">
             <a href="index.html" class="nav-item active">
               <i class="ph-duotone ph-chart-bar" aria-hidden="true"></i>
               <span class="nav-item__label">Dashboard</span>
             </a>
           </div>
-
           <div class="nav-group" data-nav-group-id="guests">
             <div class="nav-group-title">Guests</div>
             <a href="guest-profiles.html" class="nav-item">
@@ -72,7 +70,6 @@
               <span class="nav-item__label">Segments</span>
             </a>
           </div>
-
           <div class="nav-group" data-nav-group-id="bottom">
             <a href="settings.html" class="nav-item">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
@@ -89,7 +86,6 @@
               <a href="cockpit-admins.html" class="nav-sub-item">Admins</a>
             </div>
           </div>
-
         </nav>
       </aside>
 
@@ -103,13 +99,13 @@
             <span class="chart-breadcrumbs__separator" aria-hidden="true">
               <span class="material-symbols-rounded">chevron_right</span>
             </span>
-            <span class="chart-breadcrumbs__current">Retention cohort</span>
+            <span class="chart-breadcrumbs__current">Reachability</span>
           </nav>
 
           <!-- Title bar -->
           <div class="chart-detail-title-bar">
             <div class="chart-detail-title-bar__top">
-              <h1 class="chart-detail-title-bar__title">Retention cohort</h1>
+              <h1 class="chart-detail-title-bar__title">Reachability</h1>
               <div class="chart-detail-title-bar__actions">
                 <button class="button transparent dashboard-btn">
                   <span class="material-symbols-rounded dashboard-btn__icon">help</span>
@@ -124,19 +120,16 @@
             <div class="date-range-wrapper">
               <div class="btn-group" role="group" aria-label="Date range">
                 <button class="btn-group__item" onclick="setDateRange(this, '7D')">7D</button>
-                <button class="btn-group__item" onclick="setDateRange(this, '30D')">30D</button>
+                <button class="btn-group__item btn-group__item--active" onclick="setDateRange(this, '30D')">30D</button>
                 <button class="btn-group__item" onclick="setDateRange(this, '90D')">90D</button>
-                <button class="btn-group__item btn-group__item--active" onclick="setDateRange(this, '12M')">12M</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '12M')">12M</button>
                 <button class="btn-group__item" onclick="setDateRange(this, 'YTD')">YTD</button>
                 <button class="btn-group__item btn-group__item--icon" id="btn-custom-range" onclick="setDateRange(this, 'custom')">
                   <span class="material-symbols-rounded">calendar_month</span>
                   Custom
                 </button>
               </div>
-
-              <!-- Date range picker panel -->
               <div class="date-picker-panel" id="date-picker-panel">
-
                 <div class="dp-input-row">
                   <div class="dp-input-group">
                     <label class="dp-input-label">Start date</label>
@@ -153,7 +146,6 @@
                     </div>
                   </div>
                 </div>
-
                 <div class="dp-calendars-row" id="dp-calendars-row">
                   <div class="dp-calendar" id="dp-cal-left">
                     <div class="dp-cal-header">
@@ -164,17 +156,13 @@
                       <div class="dp-cal-nav-spacer"></div>
                     </div>
                     <div class="dp-day-headers">
-                      <div class="dp-day-header">MON</div>
-                      <div class="dp-day-header">TUE</div>
-                      <div class="dp-day-header">WED</div>
-                      <div class="dp-day-header">THU</div>
-                      <div class="dp-day-header">FRI</div>
-                      <div class="dp-day-header">SAT</div>
+                      <div class="dp-day-header">MON</div><div class="dp-day-header">TUE</div>
+                      <div class="dp-day-header">WED</div><div class="dp-day-header">THU</div>
+                      <div class="dp-day-header">FRI</div><div class="dp-day-header">SAT</div>
                       <div class="dp-day-header">SUN</div>
                     </div>
                     <div class="dp-cal-grid" id="dp-grid-left"></div>
                   </div>
-
                   <div class="dp-calendar" id="dp-cal-right">
                     <div class="dp-cal-header">
                       <div class="dp-cal-nav-spacer"></div>
@@ -184,29 +172,19 @@
                       </button>
                     </div>
                     <div class="dp-day-headers">
-                      <div class="dp-day-header">MON</div>
-                      <div class="dp-day-header">TUE</div>
-                      <div class="dp-day-header">WED</div>
-                      <div class="dp-day-header">THU</div>
-                      <div class="dp-day-header">FRI</div>
-                      <div class="dp-day-header">SAT</div>
+                      <div class="dp-day-header">MON</div><div class="dp-day-header">TUE</div>
+                      <div class="dp-day-header">WED</div><div class="dp-day-header">THU</div>
+                      <div class="dp-day-header">FRI</div><div class="dp-day-header">SAT</div>
                       <div class="dp-day-header">SUN</div>
                     </div>
                     <div class="dp-cal-grid" id="dp-grid-right"></div>
                   </div>
                 </div>
-
                 <div class="dp-footer">
-                  <button class="button transparent" onclick="cancelDatePicker()">
-                    <span>Cancel</span>
-                  </button>
-                  <button class="button primary" onclick="applyDateRange()">
-                    <span style="color:#fff;">Apply</span>
-                  </button>
+                  <button class="button transparent" onclick="cancelDatePicker()"><span>Cancel</span></button>
+                  <button class="button primary" onclick="applyDateRange()"><span style="color:#fff;">Apply</span></button>
                 </div>
-
               </div>
-              <!-- /date-picker-panel -->
             </div>
 
             <span class="dashboard-filter-label">compared to</span>
@@ -237,11 +215,11 @@
           <!-- /filter bar -->
 
           <!-- Chart card -->
-          <div class="chart-card" data-metric-id="retention-cohort">
+          <div class="chart-card" data-metric-id="reachability">
             <div class="chart-card__header chart-card__header--detail">
               <div class="chart-card__header-text">
-                <p class="chart-card__title">Retention cohort</p>
-                <p class="chart-card__subtitle">M+1 retention rate by acquisition cohort. Each row tracks how a single month's new guests return over time.</p>
+                <p class="chart-card__title">Reachability</p>
+                <p class="chart-card__subtitle">How many identified guests can actually be reached for marketing — broken down by channel. The gap between identified and reachable is the audience a brand can analyze but not yet contact.</p>
               </div>
               <div class="chart-card__header-controls">
                 <button class="button outlined dashboard-btn">
@@ -256,50 +234,55 @@
                     <ul>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
-                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava...</span></button></li>
+                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava about this...</span></button></li>
                     </ul>
                   </div>
                 </div>
               </div>
             </div>
+
             <div class="chart-card__body">
               <div class="chart-card__metric">
                 <div class="chart-card__metric-row">
-                  <p class="chart-card__metric-value">34.2%</p>
-                  <span class="chart-card__metric-pill chart-card__metric-pill--up">+10.3%</span>
+                  <p class="chart-card__metric-value">37%</p>
+                  <span class="chart-card__metric-pill chart-card__metric-pill--up">+2.1%</span>
                 </div>
-                <div class="chart-card__metric-period-row">
-                  <span class="chart-card__metric-period">Latest M+1 cohort · 31.0% prev period</span>
-                  <div class="chart-card__metric-info-wrap">
-                    <span class="material-symbols-rounded chart-card__metric-info-icon">info</span>
-                    <span class="chart-card__metric-info-text">Showing 90D minimum</span>
-                    <div class="chart-card__metric-info-tooltip">Showing 90 days minimum — needs more than 3 months of cohort data</div>
-                  </div>
-                </div>
+                <p class="chart-card__metric-period">312K reachable · 535K not reachable</p>
               </div>
-              <!-- Color-scale legend for the heatmap -->
-              <div class="retention-heatmap-legend">
-                <span class="retention-heatmap-legend__label">Lower retention</span>
-                <span class="retention-heatmap-legend__bar" aria-hidden="true"></span>
-                <span class="retention-heatmap-legend__label">Higher retention</span>
-              </div>
-              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-retention-cohort"></div>
+              <!-- Legend -->
+              <div class="chart-card__legend" id="detail-legend"></div>
+              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-reachability"></div>
             </div>
           </div>
           <!-- /chart card -->
 
-          <!-- Data table — wide cohort grid (rows = cohort, cols = M+N) -->
+          <!-- Data table -->
           <div class="chart-detail-table-wrap">
             <div class="table-container">
-              <table class="table" id="retention-cohort-table">
-                <thead id="retention-cohort-thead"></thead>
-                <tbody id="retention-cohort-tbody"></tbody>
+              <table class="table" style="border: none; border-radius: 0;" id="reachability-table">
+                <thead>
+                  <tr style="background-color: #dfe1e2;">
+                    <th style="text-transform:none;font-size:1rem;font-weight:800;color:#000;height:3.5rem;padding:1rem;">
+                      <div class="chart-th-inner chart-th-inner--start">Channel</div>
+                    </th>
+                    <th style="text-transform:none;font-size:1rem;font-weight:800;color:#000;height:3.5rem;padding:1rem;">
+                      <div class="chart-th-inner">Reachable guests</div>
+                    </th>
+                    <th style="text-transform:none;font-size:1rem;font-weight:800;color:#000;height:3.5rem;padding:1rem;">
+                      <div class="chart-th-inner">% of identified</div>
+                    </th>
+                    <th style="text-transform:none;font-size:1rem;font-weight:800;color:#000;height:3.5rem;padding:1rem;">
+                      <div class="chart-th-inner">vs prev period</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="reachability-tbody"></tbody>
               </table>
             </div>
           </div>
           <!-- /data table -->
 
-          <!-- Chart-point context menu (click on heatmap cell) -->
+          <!-- Chart-point context menu (click on a channel bar) -->
           <div class="chart-point-menu" id="chart-point-menu" role="menu" aria-hidden="true">
             <div class="chart-point-menu__header">
               <div class="chart-point-menu__header-left">
@@ -325,7 +308,7 @@
               <li>
                 <button type="button" class="chart-point-menu__item" onclick="onPointMenuAction('ask-ava')">
                   <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
-                  <span>Ask Ava...</span>
+                  <span>Ask Ava about this...</span>
                 </button>
               </li>
             </ul>
@@ -338,11 +321,11 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/ag-charts-enterprise@13.2.1/dist/umd/ag-charts-enterprise.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ag-charts-community@13.2.1/dist/umd/ag-charts-community.min.js"></script>
   <script>
-    /* ── Sidebar / dropdowns / date range picker / filter bar ── */
+    /* ── Sidebar / dropdowns ── */
     function toggleCockpit(btn) {
-      const isOpen = btn.classList.toggle('open');
+      var isOpen = btn.classList.toggle('open');
       btn.setAttribute('aria-expanded', isOpen);
       document.getElementById('cockpit-sub').classList.toggle('open', isOpen);
     }
@@ -426,8 +409,8 @@
       var customBtn = document.getElementById('btn-custom-range');
       if (!dpStartDate || !dpEndDate) {
         customBtn.classList.remove('btn-group__item--active');
-        var firstBtn = customBtn.closest('.btn-group').querySelector('.btn-group__item');
-        firstBtn.classList.add('btn-group__item--active');
+        var firstActive = customBtn.closest('.btn-group').querySelector('.btn-group__item');
+        firstActive.classList.add('btn-group__item--active');
       }
     }
     function applyDateRange() { closeDatePicker(); }
@@ -485,245 +468,222 @@
     function onDpCellHover(date) { if (dpStartDate && !dpEndDate) { dpHoverDate = date; renderDatePicker(); } }
     function updateDpInputs() {
       var sv = document.getElementById('dp-start-value'), ev = document.getElementById('dp-end-value');
-      sv.textContent = dpStartDate ? fmtDate(dpStartDate) : 'MM/DD/YYYY';
-      ev.textContent = dpEndDate   ? fmtDate(dpEndDate)   : 'MM/DD/YYYY';
+      sv.textContent = dpStartDate ? fmtDpDate(dpStartDate) : 'MM/DD/YYYY';
+      ev.textContent = dpEndDate   ? fmtDpDate(dpEndDate)   : 'MM/DD/YYYY';
       sv.classList.toggle('dp-input-value--set', !!dpStartDate);
       ev.classList.toggle('dp-input-value--set', !!dpEndDate);
     }
-    function fmtDate(d) {
+    function fmtDpDate(d) {
       return String(d.getMonth()+1).padStart(2,'0') + '/' + String(d.getDate()).padStart(2,'0') + '/' + d.getFullYear();
     }
 
     /* ═══════════════════════════════════════════════════
-       Retention cohort — heatmap data
-       Triangular grid: rows = acquisition month (oldest → newest),
-       cols = M+1..M+12 (months since acquisition, M+12 caps at 12-mo history).
-       Newer cohorts have fewer cells (less elapsed time).
-       Numbers are synthetic but anchor to the card hero (Mar 26 → 34.2% M+1).
+       Reachability detail data
+       Per-channel inclusive counts (guests reachable via each channel,
+       can overlap — a guest with email + SMS is counted in both).
+       Full precision for data table; K values for chart.
     ═══════════════════════════════════════════════════ */
-    var COHORT_LABELS = [
-      'Apr 25','May 25','Jun 25','Jul 25','Aug 25','Sep 25',
-      'Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26'
-    ];
-    var COHORT_SIZES = [
-      9420, 9685, 9510, 9890, 10120, 10080,
-      10380, 10520, 10410, 10760, 11040, 11280
-    ];
-    var PERIOD_LABELS = [
-      'M+1','M+2','M+3','M+4','M+5','M+6','M+7','M+8','M+9','M+10','M+11','M+12'
-    ];
-    // Lower-triangular matrix. Row i has (12 - i) cells (M+1..M+(12-i)).
-    var COHORT_MATRIX = [
-      [27.6, 16.6, 12.9, 11.0, 9.7, 8.7, 8.0, 7.4, 6.8, 6.3, 5.9, 5.5],
-      [28.2, 16.9, 13.2, 11.3, 9.9, 8.9, 8.2, 7.5, 7.0, 6.5, 6.1],
-      [27.9, 16.7, 13.0, 11.2, 9.8, 8.8, 8.1, 7.4, 6.9, 6.4],
-      [28.8, 17.3, 13.4, 11.5, 10.1, 9.1, 8.4, 7.7, 7.2],
-      [29.4, 17.6, 13.7, 11.8, 10.3, 9.3, 8.5, 7.9],
-      [29.7, 17.8, 13.8, 11.9, 10.4, 9.4, 8.6],
-      [30.6, 18.4, 14.3, 12.2, 10.7, 9.7],
-      [31.2, 18.7, 14.6, 12.5, 10.9],
-      [31.5, 18.9, 14.7, 12.6],
-      [32.4, 19.4, 15.1],
-      [33.3, 20.0],
-      [34.2],
+    var IDENTIFIED_TOTAL  = 847000;
+    var TOTAL_REACHABLE   = 312000;
+    var PREV_REACHABLE    = 306000;
+
+    var DETAIL_CHANNELS = [
+      { channel: 'Email',    count: 218000, prev: 215000, color: '#5A55E3' },
+      { channel: 'SMS',      count: 141000, prev: 138000, color: '#FF6600' },
+      { channel: 'Push',     count:  89000, prev:  87000, color: '#8C9FFF' },
+      { channel: 'In-store', count:  67000, prev:  65000, color: '#F8931C' },
     ];
 
-    // Flatten to AG Charts heatmap row format.
-    var RETENTION_HEATMAP_DATA = (function() {
-      var rows = [];
-      for (var i = 0; i < COHORT_MATRIX.length; i++) {
-        var cohort = COHORT_LABELS[i];
-        var size = COHORT_SIZES[i];
-        for (var j = 0; j < COHORT_MATRIX[i].length; j++) {
-          rows.push({
-            cohort: cohort,
-            cohortSize: size,
-            period: PERIOD_LABELS[j],
-            retention: COHORT_MATRIX[i][j],
-          });
-        }
-      }
-      return rows;
-    }());
+    // Chart operates in K to keep axis labels concise.
+    var DETAIL_CHART_DATA = DETAIL_CHANNELS.map(function(d) {
+      return { channel: d.channel, count: d.count / 1000, color: d.color };
+    });
 
     /* ═══════════════════════════════════════════════════
-       Chart — AG Charts heatmap (enterprise)
+       AG Charts — per-channel horizontal bar (detail)
     ═══════════════════════════════════════════════════ */
-    var retentionCohortChart = null;
-    var heatmapTooltipEl = null, heatmapMouseMove = null, heatmapMouseLeave = null;
+    var reachabilityDetailChart  = null;
+    var detailTooltipEl          = null;
+    var detailMouseMove          = null;
+    var detailMouseLeave         = null;
 
-    function initRetentionCohortChart() {
-      var container = document.getElementById('chart-area-retention-cohort');
+    // Map channel name → row index for click/hover detection.
+    var CHANNEL_COLORS = {
+      'Email':    '#5A55E3',
+      'SMS':      '#FF6600',
+      'Push':     '#8C9FFF',
+      'In-store': '#F8931C',
+    };
+
+    function initReachabilityDetailChart() {
+      var container = document.getElementById('chart-area-reachability');
       if (!container) return;
-      if (retentionCohortChart) { retentionCohortChart.destroy(); retentionCohortChart = null; }
+      if (reachabilityDetailChart) { reachabilityDetailChart.destroy(); reachabilityDetailChart = null; }
 
-      retentionCohortChart = agCharts.AgCharts.create({
+      reachabilityDetailChart = agCharts.AgCharts.create({
         container: container,
         theme: { params: { fontFamily: 'Manrope, sans-serif' } },
         background: { fill: '#ffffff' },
-        padding: { top: 8, right: 16, bottom: 8, left: 8 },
-        data: RETENTION_HEATMAP_DATA,
+        padding: { top: 8, right: 32, bottom: 8, left: 0 },
+        data: DETAIL_CHART_DATA,
         legend: { enabled: false },
-        series: [
-          {
-            type: 'heatmap',
-            xKey: 'period',
-            xName: 'Months since acquisition',
-            yKey: 'cohort',
-            yName: 'Acquisition cohort',
-            colorKey: 'retention',
-            colorName: 'Retention',
-            colorRange: ['#eef0fc', '#5A55E3'],
-            colorDomain: [4, 36],
-            stroke: '#ffffff',
-            strokeWidth: 2,
-            label: { enabled: false },
-            tooltip: { enabled: false },
+        series: [{
+          type: 'bar',
+          direction: 'horizontal',
+          xKey: 'channel',
+          yKey: 'count',
+          yName: 'Reachable guests',
+          stacked: false,
+          itemStyler: function(params) {
+            var color = CHANNEL_COLORS[params.xValue] || '#5A55E3';
+            return { fill: color, stroke: 'none', strokeWidth: 0 };
           },
-        ],
+          tooltip: { enabled: false },
+        }],
         axes: {
           x: {
-            type: 'category',
-            position: 'top',
-            line: { enabled: false },
-            tick: { enabled: false },
-            label: { fontSize: 12, color: '#000000', padding: 8, fontWeight: 500 },
-            // Order columns left-to-right M+1 → M+12.
-            keys: PERIOD_LABELS,
+            type: 'number',
+            position: 'bottom',
+            min: 0,
+            max: 235,
+            gridLine: {
+              enabled: true,
+              style: [{ stroke: '#DFE1E2', lineDash: [] }],
+            },
+            line:  { enabled: false },
+            tick:  { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              formatter: function(params) { return params.value + 'K'; },
+            },
           },
           y: {
             type: 'category',
             position: 'left',
-            line: { enabled: false },
-            tick: { enabled: false },
-            label: { fontSize: 12, color: '#000000', padding: 8, fontWeight: 500 },
-            // Reverse: oldest at top, newest at bottom (lower-triangular look).
-            reverse: true,
+            paddingInner: 0.35,
+            paddingOuter: 0.2,
+            gridLine: { enabled: false },
+            line:     { enabled: false },
+            tick:     { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#60696C',
+              fontWeight: '500',
+              padding: 12,
+            },
           },
         },
       });
 
-      /* ── Manual tooltip ── */
-      if (heatmapTooltipEl && heatmapTooltipEl.parentNode) {
-        heatmapTooltipEl.parentNode.removeChild(heatmapTooltipEl);
+      // ── Manual tooltip ────────────────────────────────────────────────
+      if (detailTooltipEl && detailTooltipEl.parentNode) {
+        detailTooltipEl.parentNode.removeChild(detailTooltipEl);
       }
-      if (heatmapMouseMove) {
-        container.removeEventListener('mousemove',  heatmapMouseMove);
-        container.removeEventListener('mouseleave', heatmapMouseLeave);
+      if (detailMouseMove) {
+        container.removeEventListener('mousemove',  detailMouseMove);
+        container.removeEventListener('mouseleave', detailMouseLeave);
       }
 
-      heatmapTooltipEl = document.createElement('div');
-      heatmapTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(heatmapTooltipEl);
+      detailTooltipEl = document.createElement('div');
+      detailTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(detailTooltipEl);
 
-      // Plot area offsets: chart padding (left:8, top:8) + axis label areas.
-      // Y-axis labels ("Apr 25") at 12px weight-500 Manrope ≈ 42px + 8px pad = 50px → left total ~58px.
-      // X-axis labels ("M+1") at top ≈ 16px line-height + 8px pad = 24px → top total ~32px.
-      var PLOT_LEFT   = 58;
-      var PLOT_TOP    = 32;
-      var PLOT_RIGHT_PAD  = 16;
-      var PLOT_BOTTOM_PAD = 8;
-      var NUM_COLS = PERIOD_LABELS.length;  // 12
-      var NUM_ROWS = COHORT_LABELS.length;  // 12
+      // Y-axis labels: "In-store" is the longest (~7 chars at 12px weight-500) ≈ 56px + 12px pad = ~68px total.
+      var D_PLOT_LEFT       = 72;
+      var D_PLOT_RIGHT_PAD  = 32;
+      var D_PLOT_TOP        = 8;
+      var D_PLOT_BOTTOM_PAD = 30;  // x-axis label area
 
-      heatmapMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var my = e.clientY - rect.top;
-        var plotRight  = rect.width  - PLOT_RIGHT_PAD;
-        var plotBottom = rect.height - PLOT_BOTTOM_PAD;
+      var NUM_ROWS = DETAIL_CHART_DATA.length;  // 4
 
-        if (mx < PLOT_LEFT || mx > plotRight || my < PLOT_TOP || my > plotBottom) {
-          heatmapTooltipEl.style.display = 'none';
+      detailMouseMove = function(e) {
+        var rect       = container.getBoundingClientRect();
+        var mx         = e.clientX - rect.left;
+        var my         = e.clientY - rect.top;
+        var plotRight  = rect.width  - D_PLOT_RIGHT_PAD;
+        var plotBottom = rect.height - D_PLOT_BOTTOM_PAD;
+        var plotHeight = plotBottom  - D_PLOT_TOP;
+
+        if (mx < D_PLOT_LEFT || mx > plotRight || my < D_PLOT_TOP || my > plotBottom) {
+          detailTooltipEl.style.display = 'none';
           return;
         }
 
-        var colIndex = Math.floor((mx - PLOT_LEFT) / (plotRight  - PLOT_LEFT)  * NUM_COLS);
-        var rowIndex = Math.floor((my - PLOT_TOP)  / (plotBottom - PLOT_TOP) * NUM_ROWS);
-        colIndex = Math.max(0, Math.min(NUM_COLS - 1, colIndex));
+        var rowIndex = Math.floor((my - D_PLOT_TOP) / plotHeight * NUM_ROWS);
         rowIndex = Math.max(0, Math.min(NUM_ROWS - 1, rowIndex));
+        var row   = DETAIL_CHANNELS[rowIndex];
+        var color = row.color;
+        var pct   = (row.count / IDENTIFIED_TOTAL * 100).toFixed(1) + '%';
 
-        // Triangular grid — newer cohorts have fewer columns.
-        if (colIndex >= COHORT_MATRIX[rowIndex].length) {
-          heatmapTooltipEl.style.display = 'none';
-          return;
-        }
-
-        var cohort    = COHORT_LABELS[rowIndex];
-        var period    = PERIOD_LABELS[colIndex];
-        var retention = COHORT_MATRIX[rowIndex][colIndex];
-        var cohortSize = COHORT_SIZES[rowIndex];
-
-        heatmapTooltipEl.innerHTML = (
+        detailTooltipEl.innerHTML = (
           '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
-            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 4px;line-height:1.5;white-space:nowrap;">' + cohort + ' cohort</p>' +
-            '<p style="font-size:12px;font-weight:400;color:#60696C;margin:0 0 12px;line-height:1.5;white-space:nowrap;">' + period + '</p>' +
-            '<div style="display:flex;flex-direction:column;gap:8px;">' +
-              '<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;white-space:nowrap;">' +
-                '<span style="font-size:12px;font-weight:400;color:#60696C;">Retention</span>' +
-                '<span style="font-size:12px;font-weight:700;color:#000;">' + retention.toFixed(1) + '%</span>' +
+            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 8px;line-height:1.5;white-space:nowrap;">' + row.channel + '</p>' +
+            '<div style="display:flex;flex-direction:column;gap:6px;">' +
+              '<div style="display:flex;align-items:center;gap:8px;white-space:nowrap;">' +
+                '<div style="width:12px;height:12px;background:' + color + ';border-radius:2px;flex-shrink:0;"></div>' +
+                '<span style="font-size:12px;font-weight:700;color:#000;">' + (row.count / 1000) + 'K</span>' +
+                '<span style="font-size:12px;color:#60696C;">reachable</span>' +
               '</div>' +
-              '<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;white-space:nowrap;">' +
-                '<span style="font-size:12px;font-weight:400;color:#60696C;">Cohort size</span>' +
-                '<span style="font-size:12px;font-weight:700;color:#000;">' + cohortSize.toLocaleString() + '</span>' +
-              '</div>' +
+              '<div style="font-size:12px;color:#60696C;padding-left:20px;">' + pct + ' of 847K identified</div>' +
             '</div>' +
           '</div>'
         );
-        heatmapTooltipEl.style.display = 'block';
 
-        var tw = heatmapTooltipEl.offsetWidth, th = heatmapTooltipEl.offsetHeight;
-        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
+        detailTooltipEl.style.display = 'block';
+        var tw = detailTooltipEl.offsetWidth;
+        var th = detailTooltipEl.offsetHeight;
+        var tx = e.clientX + 16;
+        var ty = e.clientY - Math.round(th / 2);
         if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
-        if (ty < 8) ty = 8;
+        if (ty < 8)                           ty = 8;
         if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        heatmapTooltipEl.style.left = tx + 'px';
-        heatmapTooltipEl.style.top  = ty + 'px';
+        detailTooltipEl.style.left = tx + 'px';
+        detailTooltipEl.style.top  = ty + 'px';
       };
 
-      heatmapMouseLeave = function() { heatmapTooltipEl.style.display = 'none'; };
-      container.addEventListener('mousemove',  heatmapMouseMove);
-      container.addEventListener('mouseleave', heatmapMouseLeave);
+      detailMouseLeave = function() { detailTooltipEl.style.display = 'none'; };
+      container.addEventListener('mousemove',  detailMouseMove);
+      container.addEventListener('mouseleave', detailMouseLeave);
 
-      // Click → point menu
+      // ── Click → context menu ─────────────────────────────────────────
       container.style.cursor = 'pointer';
       container.addEventListener('click', function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var my = e.clientY - rect.top;
-        var plotRight  = rect.width  - PLOT_RIGHT_PAD;
-        var plotBottom = rect.height - PLOT_BOTTOM_PAD;
+        var rect       = container.getBoundingClientRect();
+        var mx         = e.clientX - rect.left;
+        var my         = e.clientY - rect.top;
+        var plotRight  = rect.width  - D_PLOT_RIGHT_PAD;
+        var plotBottom = rect.height - D_PLOT_BOTTOM_PAD;
+        var plotHeight = plotBottom  - D_PLOT_TOP;
 
-        if (mx < PLOT_LEFT || mx > plotRight || my < PLOT_TOP || my > plotBottom) return;
+        if (mx < D_PLOT_LEFT || mx > plotRight || my < D_PLOT_TOP || my > plotBottom) return;
 
-        var colIndex = Math.floor((mx - PLOT_LEFT) / (plotRight  - PLOT_LEFT)  * NUM_COLS);
-        var rowIndex = Math.floor((my - PLOT_TOP)  / (plotBottom - PLOT_TOP) * NUM_ROWS);
-        colIndex = Math.max(0, Math.min(NUM_COLS - 1, colIndex));
+        var rowIndex = Math.floor((my - D_PLOT_TOP) / plotHeight * NUM_ROWS);
         rowIndex = Math.max(0, Math.min(NUM_ROWS - 1, rowIndex));
-
-        if (colIndex >= COHORT_MATRIX[rowIndex].length) return;
-
-        var cohort    = COHORT_LABELS[rowIndex];
-        var period    = PERIOD_LABELS[colIndex];
-        var retention = COHORT_MATRIX[rowIndex][colIndex];
+        var row = DETAIL_CHANNELS[rowIndex];
 
         e.stopPropagation();
-        heatmapTooltipEl.style.display = 'none';
-        openHeatmapPointMenu(e.clientX, e.clientY, cohort, period, retention);
+        if (detailTooltipEl) detailTooltipEl.style.display = 'none';
+        openReachabilityPointMenu(e.clientX, e.clientY, row);
       });
     }
 
-    function openHeatmapPointMenu(clientX, clientY, cohort, period, retention) {
+    /* ── Context menu ─────────────────────────────────────────────────── */
+    var pointMenuAnchor = null;
+
+    function openReachabilityPointMenu(clientX, clientY, row) {
       var menu    = document.getElementById('chart-point-menu');
+      var dotEl   = document.getElementById('chart-point-menu-dot');
       var dateEl  = document.getElementById('chart-point-menu-date');
       var valueEl = document.getElementById('chart-point-menu-value');
-      var dotEl   = document.getElementById('chart-point-menu-dot');
 
       document.removeEventListener('click', closePointMenuOnOutside);
 
-      if (dateEl)  dateEl.textContent  = cohort + ' · ' + period;
-      if (valueEl) valueEl.textContent = retention.toFixed(1) + '%';
-      if (dotEl)   dotEl.style.background = retentionCellBg(retention);
+      dotEl.style.background = row.color;
+      dotEl.classList.remove('chart-point-menu__color-dot--striped');
+      dateEl.textContent  = row.channel;
+      valueEl.textContent = (row.count / 1000) + 'K reachable';
 
       menu.classList.add('chart-point-menu--open');
       menu.setAttribute('aria-hidden', 'false');
@@ -733,11 +693,13 @@
       if (x + mw > window.innerWidth  - 8) x = clientX - mw - 12;
       if (y + mh > window.innerHeight - 8) y = clientY - mh - 12;
       if (y < 8) y = 8;
+
       var ref = menu.offsetParent || document.body;
       var refRect = ref.getBoundingClientRect();
       menu.style.left = (x - refRect.left + ref.scrollLeft) + 'px';
       menu.style.top  = (y - refRect.top  + ref.scrollTop)  + 'px';
 
+      pointMenuAnchor = row;
       setTimeout(function() {
         document.addEventListener('click', closePointMenuOnOutside);
       }, 0);
@@ -755,78 +717,119 @@
     }
 
     function onPointMenuAction(action) {
-      console.log('chart-point-menu action:', action);
+      console.log('reachability point-menu action:', action, pointMenuAnchor);
       closePointMenu();
     }
 
     /* ═══════════════════════════════════════════════════
-       Data table — wide cohort grid
+       Data table
     ═══════════════════════════════════════════════════ */
-    function fmtPct(v) { return (+v).toFixed(1) + '%'; }
-    function fmtCohortSize(n) { return n.toLocaleString('en-US'); }
-
-    // Color a cell background by retention value, mirroring the heatmap.
-    function retentionCellBg(value) {
-      // Linear blend #eef0fc → #5A55E3 over [4, 36]
-      var t = Math.max(0, Math.min(1, (value - 4) / (36 - 4)));
-      var r = Math.round(0xee + (0x5A - 0xee) * t);
-      var g = Math.round(0xf0 + (0x55 - 0xf0) * t);
-      var b = Math.round(0xfc + (0xe3 - 0xfc) * t);
-      return 'rgb(' + r + ',' + g + ',' + b + ')';
-    }
-    function retentionCellFg(value) {
-      // Switch to white text once the cell goes dark enough for contrast.
-      return value > 22 ? '#ffffff' : '#000000';
+    function fmtCount(n) { return n.toLocaleString('en-US'); }
+    function fmtPct(n, total) { return (n / total * 100).toFixed(1) + '%'; }
+    function fmtChange(curr, prev) {
+      var pct = (curr - prev) / prev * 100;
+      return { val: (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%', positive: pct >= 0 };
     }
 
     function renderTable() {
-      var thead = document.getElementById('retention-cohort-thead');
-      var tbody = document.getElementById('retention-cohort-tbody');
-      var thStyle = 'text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;';
+      var tbody = document.getElementById('reachability-tbody');
+      if (!tbody) return;
+      var rows = '';
 
-      var headerCells =
-        '<th style="' + thStyle + '"><span class="chart-th-inner chart-th-inner--start">Cohort</span></th>' +
-        '<th style="' + thStyle + '"><span class="chart-th-inner">Cohort size</span></th>' +
-        PERIOD_LABELS.map(function(p) {
-          return '<th style="' + thStyle + ' text-align:center;"><span class="chart-th-inner" style="justify-content:center;">' + p + '</span></th>';
-        }).join('');
-      thead.innerHTML = '<tr style="background-color: #dfe1e2; border-bottom: none;">' + headerCells + '</tr>';
-
-      tbody.innerHTML = COHORT_LABELS.map(function(label, i) {
-        var values = COHORT_MATRIX[i];
-        var cells = '';
-        for (var j = 0; j < PERIOD_LABELS.length; j++) {
-          if (j < values.length) {
-            var v = values[j];
-            cells +=
-              '<td style="text-align:center; background:' + retentionCellBg(v) + '; color:' + retentionCellFg(v) + '; font-variant-numeric: tabular-nums; font-weight: 500;">' +
-                fmtPct(v) +
-              '</td>';
-          } else {
-            cells += '<td style="text-align:center; color:#9ca3af;">—</td>';
-          }
-        }
-        return (
+      DETAIL_CHANNELS.forEach(function(d) {
+        var ch = fmtChange(d.count, d.prev);
+        var pillBg  = ch.positive ? '#effaf9' : '#fdecef';
+        var pillFg  = ch.positive ? '#257469' : '#b1294a';
+        rows += (
           '<tr>' +
-            '<td style="font-weight:600;">' + label + '</td>' +
-            '<td class="chart-data-col">' + fmtCohortSize(COHORT_SIZES[i]) + '</td>' +
-            cells +
+            '<td style="padding:1rem;">' +
+              '<div style="display:flex;align-items:center;gap:8px;">' +
+                '<div style="width:12px;height:12px;background:' + d.color + ';border-radius:2px;flex-shrink:0;"></div>' +
+                '<span>' + d.channel + '</span>' +
+              '</div>' +
+            '</td>' +
+            '<td style="padding:1rem;text-align:right;">' + fmtCount(d.count) + '</td>' +
+            '<td style="padding:1rem;text-align:right;">' + fmtPct(d.count, IDENTIFIED_TOTAL) + '</td>' +
+            '<td style="padding:1rem;text-align:right;">' +
+              '<span style="background:' + pillBg + ';color:' + pillFg + ';padding:2px 8px;border-radius:4px;font-size:0.875rem;font-weight:500;">' + ch.val + '</span>' +
+            '</td>' +
           '</tr>'
+        );
+      });
+
+      // Total reachable summary row
+      var totalCh = fmtChange(TOTAL_REACHABLE, PREV_REACHABLE);
+      var totalPillBg = totalCh.positive ? '#effaf9' : '#fdecef';
+      var totalPillFg = totalCh.positive ? '#257469' : '#b1294a';
+      rows += (
+        '<tr style="border-top:2px solid #dfe1e2;">' +
+          '<td style="padding:1rem;font-weight:800;">Total reachable</td>' +
+          '<td style="padding:1rem;text-align:right;font-weight:800;">' + fmtCount(TOTAL_REACHABLE) + '</td>' +
+          '<td style="padding:1rem;text-align:right;font-weight:800;">' + fmtPct(TOTAL_REACHABLE, IDENTIFIED_TOTAL) + '</td>' +
+          '<td style="padding:1rem;text-align:right;">' +
+            '<span style="background:' + totalPillBg + ';color:' + totalPillFg + ';padding:2px 8px;border-radius:4px;font-size:0.875rem;font-weight:500;">' + totalCh.val + '</span>' +
+          '</td>' +
+        '</tr>'
+      );
+
+      // Not reachable row
+      var notReach     = IDENTIFIED_TOTAL - TOTAL_REACHABLE;
+      var prevNotReach = IDENTIFIED_TOTAL - PREV_REACHABLE;
+      var nrCh = fmtChange(notReach, prevNotReach);
+      var nrPillBg = nrCh.positive ? '#fdecef' : '#effaf9';  // inverse: more not-reachable = bad
+      var nrPillFg = nrCh.positive ? '#b1294a' : '#257469';
+      rows += (
+        '<tr>' +
+          '<td style="padding:1rem;">' +
+            '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<div style="width:12px;height:12px;background:#DFE1E2;border:1px solid #c0c2c8;border-radius:2px;flex-shrink:0;"></div>' +
+              '<span style="color:#60696C;">Not reachable</span>' +
+            '</div>' +
+          '</td>' +
+          '<td style="padding:1rem;text-align:right;color:#60696C;">' + fmtCount(notReach) + '</td>' +
+          '<td style="padding:1rem;text-align:right;color:#60696C;">' + fmtPct(notReach, IDENTIFIED_TOTAL) + '</td>' +
+          '<td style="padding:1rem;text-align:right;">' +
+            '<span style="background:' + nrPillBg + ';color:' + nrPillFg + ';padding:2px 8px;border-radius:4px;font-size:0.875rem;font-weight:500;">' + nrCh.val + '</span>' +
+          '</td>' +
+        '</tr>'
+      );
+
+      tbody.innerHTML = rows;
+    }
+
+    /* ── Legend (matches card legend items) ─────────────────────────── */
+    function renderLegend() {
+      var legendEl = document.getElementById('detail-legend');
+      if (!legendEl) return;
+      var channelDefs = [
+        { key: 'email',   label: 'Email',         color: '#5A55E3' },
+        { key: 'sms',     label: 'SMS',           color: '#FF6600' },
+        { key: 'push',    label: 'Push',          color: '#8C9FFF' },
+        { key: 'instore', label: 'In-store',      color: '#F8931C' },
+      ];
+      legendEl.className = 'chart-card__legend';
+      legendEl.innerHTML = channelDefs.map(function(ch) {
+        return (
+          '<div class="chart-card__legend-item" style="cursor:default;">' +
+            '<span class="chart-card__legend-marker" style="background:' + ch.color + ';"></span>' +
+            '<span>' + ch.label + '</span>' +
+          '</div>'
         );
       }).join('');
     }
 
-    /* ── Boot ── */
+    /* ── Boot ──────────────────────────────────────────────────────── */
     document.addEventListener('DOMContentLoaded', function() {
-      renderTable();
       Promise.all([
         document.fonts.load('400 12px Manrope'),
-        document.fonts.load('500 12px Manrope'),
         document.fonts.load('700 12px Manrope'),
         document.fonts.load('800 12px Manrope'),
-      ]).then(function() { requestAnimationFrame(initRetentionCohortChart); });
+      ]).then(function() {
+        requestAnimationFrame(initReachabilityDetailChart);
+      });
+      renderLegend();
+      renderTable();
     });
   </script>
-
 </body>
 </html>
