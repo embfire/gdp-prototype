@@ -1,7 +1,7 @@
 # Guest Lifecycle Chart — Implementation Spec
 
 **Audience:** Engineering — connecting the prototype to real data
-**Last updated:** 2026-04-29
+**Last updated:** 2026-05-05
 **Reference implementation:** `[beta/index.html](../../beta/index.html)` (dashboard card) and `[beta/dashboard-guest-lifecycle.html](../../beta/dashboard-guest-lifecycle.html)` (detail page)
 
 > Visual treatment, copy, and exact pixel values are not normative — read them off the HTML/CSS. This doc covers **what data is needed, how stages are calculated, what filters do, and what the detail page must include**.
@@ -100,7 +100,7 @@ type LifecycleSnapshot = {
 | X-axis                      | Time, one tick per day                                                                                           |
 | Y-axis                      | Count of guests, starts at 0                                                                                     |
 | Series order (bottom → top) | First-time, Returning, Win-back, Loyal, At-Risk, Churned                                                         |
-| Series colors               | Bento chart palette in order — see `[dashboard_beta_ux.md` § Chart Colors](../dashboard_beta_ux.md#chart-colors) |
+| Series colors               | Health-coded from Bento palette: First-time=sky-900 `#30ACEE`, Returning=indigo-900 `#5A55E3`, Win-back=periwinkle-900 `#8C9FFF`, Loyal=emerald-900 `#0CC281`, At-Risk=amber-900 `#F8931C`, Churned=crimson-900 `#E83162` |
 | Native AG Charts tooltip    | Disabled (`tooltip: { enabled: false }` on every series) — replaced with a manual tooltip                        |
 | Native AG Charts crosshair  | Disabled — replaced with a manual dashed vertical line                                                           |
 
