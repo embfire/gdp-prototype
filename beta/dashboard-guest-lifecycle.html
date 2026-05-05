@@ -238,22 +238,7 @@
                 <p class="chart-card__subtitle">Distribution of identified guests across lifecycle stages</p>
               </div>
               <div class="chart-card__header-controls">
-                <div class="dropdown" id="dd-breakdown">
-                  <div class="dropdown__wrapper">
-                    <button class="dropdown__button" onclick="toggleDropdown('dd-breakdown')">
-                      <span>By location</span>
-                      <i class="material-symbols-rounded">expand_more</i>
-                    </button>
-                  </div>
-                  <div class="dropdown__options dropdown__options--right">
-                    <ul>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By location</span></button></li>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By channel</span></button></li>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>By daypart</span></button></li>
-                    </ul>
-                  </div>
-                </div>
-                <button class="button outlined dashboard-btn">
+<button class="button outlined dashboard-btn">
                   <img src="../assets/ava-assistant.svg" alt="" width="20" height="20">
                   <span class="dashboard-btn__label">Get insight</span>
                 </button>
@@ -567,14 +552,14 @@
     /* ═══════════════════════════════════════════════════
        AG Charts — Guest Lifecycle Breakdown (stacked area, mirrors beta/index.html)
     ═══════════════════════════════════════════════════ */
-    // Bento palette, first 6 in defined order (indigo, vermilion, periwinkle, amber, crimson, sky).
+    // Bento palette assigned by health: emerald=loyal, indigo=returning, sky=first-time, periwinkle=win-back, amber=at-risk, crimson=churned.
     var LIFECYCLE_STAGES = [
-      { key: 'firstTime',    label: 'First-time',   color: '#5A55E3' },
-      { key: 'returning',    label: 'Returning',    color: '#FF6600' },
-      { key: 'winBack', label: 'Win-back', color: '#8C9FFF' },
-      { key: 'loyal',        label: 'Loyal',        color: '#F8931C' },
-      { key: 'atRisk',       label: 'At-Risk',      color: '#E83162' },
-      { key: 'churned',      label: 'Churned',      color: '#30ACEE' },
+      { key: 'firstTime',    label: 'First-time',   color: '#30ACEE' },
+      { key: 'returning',    label: 'Returning',    color: '#5A55E3' },
+      { key: 'winBack',      label: 'Win-back',     color: '#8C9FFF' },
+      { key: 'loyal',        label: 'Loyal',        color: '#0CC281' },
+      { key: 'atRisk',       label: 'At-Risk',      color: '#F8931C' },
+      { key: 'churned',      label: 'Churned',      color: '#E83162' },
     ];
 
     var lifecycleChart = null;

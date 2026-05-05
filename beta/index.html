@@ -703,14 +703,14 @@
       );
     }
 
-    // Lifecycle stages — order, label, color (Bento palette, first 6 in defined order).
+    // Lifecycle stages — health-coded: emerald=loyal, indigo=returning, sky=first-time, periwinkle=win-back, amber=at-risk, crimson=churned.
     var LIFECYCLE_STAGES = [
-      { key: 'firstTime',    label: 'First-time',   color: '#5A55E3' },  // indigo-900
-      { key: 'returning',    label: 'Returning',    color: '#FF6600' },  // vermilion-900
-      { key: 'winBack', label: 'Win-back', color: '#8C9FFF' },  // periwinkle-900
-      { key: 'loyal',        label: 'Loyal',        color: '#F8931C' },  // amber-900
-      { key: 'atRisk',       label: 'At-Risk',      color: '#E83162' },  // crimson-900
-      { key: 'churned',      label: 'Churned',      color: '#30ACEE' },  // sky-900
+      { key: 'firstTime',    label: 'First-time',   color: '#30ACEE' },  // sky-900
+      { key: 'returning',    label: 'Returning',    color: '#5A55E3' },  // indigo-900
+      { key: 'winBack',      label: 'Win-back',     color: '#8C9FFF' },  // periwinkle-900
+      { key: 'loyal',        label: 'Loyal',        color: '#0CC281' },  // emerald-900
+      { key: 'atRisk',       label: 'At-Risk',      color: '#F8931C' },  // amber-900
+      { key: 'churned',      label: 'Churned',      color: '#E83162' },  // crimson-900
     ];
 
     function buildLegendHTML(id) {
