@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Definitions — Settings — PAR Guest360</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/bento.css">
+  <link rel="stylesheet" href="beta/beta.css">
+  <style>
+    /* ── Definitions page layout ── */
+    .defs-sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #ffffff;
+      flex-shrink: 0;
+    }
+    .defs-title-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 64px 48px 32px;
+    }
+    .defs-title-bar h1 {
+      margin: 0;
+      font-family: 'Manrope', sans-serif;
+      font-size: 28px;
+      font-weight: 400;
+      line-height: 1.44;
+      color: #000000;
+    }
+    .defs-tabs-strip {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 0 48px;
+      border-bottom: 2px solid #dfe1e2;
+      background: #ffffff;
+    }
+    /* Pre-apply the negative margin on all tabs so hover only changes color, not position */
+    .defs-tabs-strip .tab__label {
+      margin-bottom: -2px;
+      border-bottom: 0.125rem solid transparent;
+    }
+    .defs-body {
+      background: #f4f4f4;
+      padding: 0 48px 96px;
+      flex: 1;
+    }
+
+    /* ── Tab panels ── */
+    .defs-panel { display: none; }
+    .defs-panel.active { display: flex; flex-direction: column; }
+
+    /* ── Daypart sections ── */
+    .daypart-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding: 32px 0;
+    }
+    .daypart-section__header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .daypart-section__name {
+      font-family: 'Manrope', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.6;
+      color: #000000;
+      margin: 0;
+    }
+    .daypart-divider {
+      border: none;
+      border-top: 2px solid #dfe1e2;
+      margin: 0;
+    }
+    .daypart-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ── Form label override — regular weight for field labels ── */
+    .defs-body .form-label .form-label__label {
+      font-weight: 400;
+    }
+
+    /* ── Name text input ── */
+    .daypart-name-input {
+      width: 272px;
+    }
+
+    /* ── Time picker ── */
+    .time-picker {
+      position: relative;
+      width: 184px;
+    }
+    .time-picker__box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      box-shadow: 0px 0px 0px 1px #000000 inset;
+      border-radius: 8px;
+      background: #ffffff;
+      height: 40px;
+      box-sizing: border-box;
+      cursor: text;
+    }
+    .time-picker__box:focus-within {
+      box-shadow: 0px 0px 0px 2px #1d5eff inset;
+    }
+    .time-picker__icon {
+      font-size: 24px;
+      color: #3a3f41;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .time-picker__input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      color: #141414;
+      min-width: 0;
+      cursor: text;
+    }
+    .time-picker__chevron {
+      font-size: 24px;
+      color: #3a3f41;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+      user-select: none;
+      cursor: pointer;
+    }
+    .time-picker__chevron.open { transform: rotate(180deg); }
+    .time-picker__dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      z-index: 200;
+      background: #ffffff;
+      border: 1px solid #dfe1e2;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      max-height: 240px;
+      overflow-y: auto;
+      min-width: 100%;
+    }
+    .time-picker__dropdown.open { display: block; }
+    .time-picker__slot {
+      display: block;
+      width: 100%;
+      padding: 8px 16px;
+      text-align: left;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: 'Manrope', sans-serif;
+      font-size: 14px;
+      color: #141414;
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+    .time-picker__slot:hover { background: #f4f4f4; }
+    .time-picker__slot--selected { background: #ebf0ff; font-weight: 600; }
+
+    /* ── Create daypart row ── */
+    .defs-create-row { padding: 32px 0 0; }
+
+    /* ── Save bar ── */
+    .defs-save-bar {
+      position: fixed;
+      bottom: 0;
+      left: 256px;
+      right: 0;
+      height: 80px;
+      background: #eeeefc;
+      box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.12);
+      z-index: 100;
+      padding: 0 48px;
+      display: none;
+      align-items: center;
+      gap: 24px;
+    }
+    .defs-save-bar__cancel {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid #dfe1e2;
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #141414;
+      cursor: pointer;
+      padding: 0 0 2px 0;
+    }
+
+    /* ── Toast ── */
+    .defs-toast {
+      display: none;
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 300;
+      min-width: 320px;
+    }
+
+    /* ── Delete confirmation modal ── */
+    .defs-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 500;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 80px;
+    }
+    .defs-modal-overlay.open { display: flex; }
+    .defs-modal {
+      background: #ffffff;
+      border-radius: 12px;
+      width: 552px;
+      max-width: 90vw;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+    .defs-modal__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 24px 24px 32px;
+      border-bottom: 1px solid #dfe1e2;
+    }
+    .defs-modal__title {
+      font-family: 'Manrope', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.6;
+      margin: 0;
+      color: #000000;
+    }
+    .defs-modal__close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #3a3f41;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .defs-modal__close:hover { background: #f4f4f4; }
+    .defs-modal__body {
+      padding: 32px;
+      text-align: center;
+    }
+    .defs-modal__desc {
+      color: #3a3f41;
+      margin: 0 0 32px;
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .defs-modal__actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding-top: 32px;
+      border-top: 1px solid #dfe1e2;
+    }
+    .defs-modal__actions .button {
+      flex: 1;
+    }
+    .defs-modal__keep {
+      flex: 1;
+      background: transparent;
+      border: none;
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #141414;
+      cursor: pointer;
+      padding: 0;
+      text-align: center;
+    }
+    .defs-modal__keep:hover { text-decoration: underline; }
+
+    /* ── Lifecycle stages ── */
+    .lifecycle-intro {
+      padding: 32px 0 0;
+    }
+    .lifecycle-intro__text {
+      font-family: 'Manrope', sans-serif;
+      font-size: 15px;
+      color: #3a3f41;
+      line-height: 1.6;
+      margin: 0;
+      max-width: 640px;
+    }
+    .lifecycle-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding: 32px 0;
+    }
+    .lifecycle-section__heading-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .lifecycle-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .lifecycle-section__name {
+      font-family: 'Manrope', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.6;
+      color: #000000;
+      margin: 0;
+    }
+    .lifecycle-name-input {
+      width: 272px;
+    }
+    .threshold-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .threshold-input__box {
+      width: 88px;
+      height: 40px;
+      padding: 0 12px;
+      box-shadow: 0px 0px 0px 1px #000000 inset;
+      border-radius: 8px;
+      background: #ffffff;
+      box-sizing: border-box;
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      color: #141414;
+      border: none;
+      outline: none;
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+    .threshold-input__box::-webkit-outer-spin-button,
+    .threshold-input__box::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .threshold-input__box:focus {
+      box-shadow: 0px 0px 0px 2px #1d5eff inset;
+    }
+    .threshold-unit {
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      color: #141414;
+      white-space: nowrap;
+    }
+    .threshold-hint {
+      font-family: 'Manrope', sans-serif;
+      font-size: 13px;
+      color: #5c5c5c;
+      margin: 0;
+      line-height: 1.5;
+      max-width: 480px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+          <img src="assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+        </a>
+        <span class="header-brand-divider" aria-hidden="true"></span>
+        <button class="header-brand-btn" aria-label="Select brand">
+          Cravewave
+          <i class="ph ph-caret-down"></i>
+        </button>
+      </div>
+      <div class="header-right">
+        <button class="header-btn">
+          <img src="assets/ava-assistant.svg" alt="" width="24" height="24">
+          Ava
+        </button>
+        <button class="header-btn">
+          <span class="material-symbols-rounded">school</span>
+          PAR Academy
+        </button>
+        <button class="header-btn header-btn--icon" aria-label="Profile">
+          <span class="material-symbols-rounded">person</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="app-shell__body">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Main navigation">
+
+          <div class="nav-group" data-nav-group-id="top">
+            <a href="index.html" class="nav-item">
+              <i class="ph-duotone ph-chart-bar" aria-hidden="true"></i>
+              <span class="nav-item__label">Dashboard</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="guests">
+            <div class="nav-group-title">Guests</div>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-chart-pie" aria-hidden="true"></i>
+              <span class="nav-item__label">Analytics</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="analytics.html" class="nav-sub-item">Overview</a>
+              <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
+              <a href="analytics-retention.html" class="nav-sub-item">Retention</a>
+              <a href="analytics-atrisk.html" class="nav-sub-item">At risk</a>
+            </div>
+            <a href="guest-profiles.html" class="nav-item">
+              <i class="ph-duotone ph-user-circle" aria-hidden="true"></i>
+              <span class="nav-item__label">Guest profiles</span>
+            </a>
+            <a href="guest-segments.html" class="nav-item">
+              <i class="ph-duotone ph-users-three" aria-hidden="true"></i>
+              <span class="nav-item__label">Segments</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="menu">
+            <div class="nav-group-title">Menu</div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-fork-knife" aria-hidden="true"></i>
+              <span class="nav-item__label">Menu Performance</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-calendar-check" aria-hidden="true"></i>
+              <span class="nav-item__label">LTO Analysis</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="other">
+            <div class="nav-group-title">Other</div>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-coins" aria-hidden="true"></i>
+              <span class="nav-item__label">Revenue</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="#" class="nav-sub-item">Overview</a>
+              <a href="#" class="nav-sub-item">Acquisition</a>
+            </div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-storefront" aria-hidden="true"></i>
+              <span class="nav-item__label">Locations</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-megaphone-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Campaigns</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="platform">
+            <div class="nav-group-title">Platform</div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-database" aria-hidden="true"></i>
+              <span class="nav-item__label">Data Sources</span>
+            </a>
+            <a href="identity-resolution.html" class="nav-item">
+              <i class="ph-duotone ph-fingerprint-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Identity Resolution</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-share-fat" aria-hidden="true"></i>
+              <span class="nav-item__label">Data Export</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="bottom">
+            <button type="button" class="nav-item nav-item-expandable open" onclick="toggleNavExpand(this)" aria-expanded="true">
+              <i class="ph-duotone ph-gear" aria-hidden="true"></i>
+              <span class="nav-item__label">Settings</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group open">
+              <a href="settings-definitions.html" class="nav-sub-item active">Definitions</a>
+            </div>
+          </div>
+
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+
+        <!-- Sticky page header: title bar + tabs -->
+        <div class="defs-sticky-header">
+          <div class="defs-title-bar">
+            <h1>Definitions</h1>
+            <button class="button transparent">
+              <span class="material-symbols-rounded" style="font-size:24px;">help</span>
+              <span>Help</span>
+            </button>
+          </div>
+          <div class="defs-tabs-strip">
+            <div class="tab">
+              <input type="radio" name="defs-tabs" id="tab-lifecycle" class="tab__input" value="lifecycle" checked onchange="switchTab('lifecycle')">
+              <label for="tab-lifecycle" class="tab__label"><span>Lifecycle stages</span></label>
+            </div>
+            <div class="tab">
+              <input type="radio" name="defs-tabs" id="tab-dayparts" class="tab__input" value="dayparts" onchange="switchTab('dayparts')">
+              <label for="tab-dayparts" class="tab__label"><span>Dayparts</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab content area -->
+        <div class="defs-body">
+
+          <!-- ── Dayparts tab ── -->
+          <div class="defs-panel" id="panel-dayparts">
+
+            <!-- Daypart 1: Breakfast (fixed — no delete) -->
+            <div class="daypart-section" data-daypart-id="dp1" data-fixed="true">
+              <h3 class="daypart-section__name" id="dp1-heading">Breakfast</h3>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="dp1-name">
+                    <span>Daypart name<span class="form-label__label_required">*</span></span>
+                  </label>
+                </div>
+                <div class="text-input daypart-name-input">
+                  <div class="text-input__container">
+                    <div class="text-input__container__box">
+                      <input type="text" id="dp1-name" class="text-input__container__box__input-field"
+                             value="Breakfast"
+                             oninput="onFieldChange(); syncHeading('dp1-name', 'dp1-heading')">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label">Start time</label>
+                </div>
+                <div class="time-picker" id="tp-dp1-start">
+                  <div class="time-picker__box">
+                    <span class="material-symbols-rounded time-picker__icon">schedule</span>
+                    <input type="text" class="time-picker__input" value="6:00 AM"
+                           oninput="onFieldChange()" onfocus="openTimePicker(this.closest('.time-picker'))"
+                           onblur="delayCloseTimePicker(this.closest('.time-picker'))">
+                    <span class="material-symbols-rounded time-picker__chevron"
+                          onclick="toggleTimePicker(this.closest('.time-picker'))">expand_more</span>
+                  </div>
+                  <div class="time-picker__dropdown"></div>
+                </div>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label">End time</label>
+                </div>
+                <div class="time-picker" id="tp-dp1-end">
+                  <div class="time-picker__box">
+                    <span class="material-symbols-rounded time-picker__icon">schedule</span>
+                    <input type="text" class="time-picker__input" value="12:00 PM"
+                           oninput="onFieldChange()" onfocus="openTimePicker(this.closest('.time-picker'))"
+                           onblur="delayCloseTimePicker(this.closest('.time-picker'))">
+                    <span class="material-symbols-rounded time-picker__chevron"
+                          onclick="toggleTimePicker(this.closest('.time-picker'))">expand_more</span>
+                  </div>
+                  <div class="time-picker__dropdown"></div>
+                </div>
+              </div>
+            </div>
+            <hr class="daypart-divider">
+
+            <!-- Daypart 2: Lunch (fixed — no delete) -->
+            <div class="daypart-section" data-daypart-id="dp2" data-fixed="true">
+              <h3 class="daypart-section__name" id="dp2-heading">Lunch</h3>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="dp2-name">
+                    <span>Daypart name<span class="form-label__label_required">*</span></span>
+                  </label>
+                </div>
+                <div class="text-input daypart-name-input">
+                  <div class="text-input__container">
+                    <div class="text-input__container__box">
+                      <input type="text" id="dp2-name" class="text-input__container__box__input-field"
+                             value="Lunch"
+                             oninput="onFieldChange(); syncHeading('dp2-name', 'dp2-heading')">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label">Start time</label>
+                </div>
+                <div class="time-picker" id="tp-dp2-start">
+                  <div class="time-picker__box">
+                    <span class="material-symbols-rounded time-picker__icon">schedule</span>
+                    <input type="text" class="time-picker__input" value="12:00 PM"
+                           oninput="onFieldChange()" onfocus="openTimePicker(this.closest('.time-picker'))"
+                           onblur="delayCloseTimePicker(this.closest('.time-picker'))">
+                    <span class="material-symbols-rounded time-picker__chevron"
+                          onclick="toggleTimePicker(this.closest('.time-picker'))">expand_more</span>
+                  </div>
+                  <div class="time-picker__dropdown"></div>
+                </div>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label">End time</label>
+                </div>
+                <div class="time-picker" id="tp-dp2-end">
+                  <div class="time-picker__box">
+                    <span class="material-symbols-rounded time-picker__icon">schedule</span>
+                    <input type="text" class="time-picker__input" value="5:00 PM"
+                           oninput="onFieldChange()" onfocus="openTimePicker(this.closest('.time-picker'))"
+                           onblur="delayCloseTimePicker(this.closest('.time-picker'))">
+                    <span class="material-symbols-rounded time-picker__chevron"
+                          onclick="toggleTimePicker(this.closest('.time-picker'))">expand_more</span>
+                  </div>
+                  <div class="time-picker__dropdown"></div>
+                </div>
+              </div>
+            </div>
+            <hr class="daypart-divider">
+
+            <!-- Daypart 3: Dinner (fixed — no delete) -->
+            <div class="daypart-section" data-daypart-id="dp3" data-fixed="true">
+              <h3 class="daypart-section__name" id="dp3-heading">Dinner</h3>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="dp3-name">
+                    <span>Daypart name<span class="form-label__label_required">*</span></span>
+                  </label>
+                </div>
+                <div class="text-input daypart-name-input">
+                  <div class="text-input__container">
+                    <div class="text-input__container__box">
+                      <input type="text" id="dp3-name" class="text-input__container__box__input-field"
+                             value="Dinner"
+                             oninput="onFieldChange(); syncHeading('dp3-name', 'dp3-heading')">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label">Start time</label>
+                </div>
+                <div class="time-picker" id="tp-dp3-start">
+                  <div class="time-picker__box">
+                    <span class="material-symbols-rounded time-picker__icon">schedule</span>
+                    <input type="text" class="time-picker__input" value="5:00 PM"
+                           oninput="onFieldChange()" onfocus="openTimePicker(this.closest('.time-picker'))"
+                           onblur="delayCloseTimePicker(this.closest('.time-picker'))">
+                    <span class="material-symbols-rounded time-picker__chevron"
+                          onclick="toggleTimePicker(this.closest('.time-picker'))">expand_more</span>
+                  </div>
+                  <div class="time-picker__dropdown"></div>
+                </div>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label">End time</label>
+                </div>
+                <div class="time-picker" id="tp-dp3-end">
+                  <div class="time-picker__box">
+                    <span class="material-symbols-rounded time-picker__icon">schedule</span>
+                    <input type="text" class="time-picker__input" value="11:00 PM"
+                           oninput="onFieldChange()" onfocus="openTimePicker(this.closest('.time-picker'))"
+                           onblur="delayCloseTimePicker(this.closest('.time-picker'))">
+                    <span class="material-symbols-rounded time-picker__chevron"
+                          onclick="toggleTimePicker(this.closest('.time-picker'))">expand_more</span>
+                  </div>
+                  <div class="time-picker__dropdown"></div>
+                </div>
+              </div>
+            </div>
+            <hr class="daypart-divider" id="last-fixed-divider">
+
+            <!-- Custom dayparts will be inserted here by JS -->
+            <div id="custom-dayparts-container"></div>
+
+            <!-- Create daypart button -->
+            <div class="defs-create-row">
+              <button class="button primary" onclick="addDaypart()">
+                <span class="material-symbols-rounded" style="font-size:24px;">add</span>
+                <span>Create daypart</span>
+              </button>
+            </div>
+
+          </div><!-- /panel-dayparts -->
+
+          <!-- ── Lifecycle stages tab ── -->
+          <div class="defs-panel active" id="panel-lifecycle">
+
+            <div class="lifecycle-intro">
+              <p class="lifecycle-intro__text">Lifecycle stages classify identified guests by visit behavior. Each guest belongs to exactly one stage at any given time. Rename stages and adjust the thresholds below to match your brand's definition of guest activity.</p>
+            </div>
+
+            <!-- Stage 1: First-time -->
+            <div class="lifecycle-section" data-lifecycle-id="ls1">
+              <div class="lifecycle-section__heading-row">
+                <span class="lifecycle-dot" style="background:#30ACEE"></span>
+                <h3 class="lifecycle-section__name" id="ls1-heading">First-time</h3>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="ls1-name">
+                    <span>Stage name<span class="form-label__label_required">*</span></span>
+                  </label>
+                </div>
+                <div class="text-input lifecycle-name-input">
+                  <div class="text-input__container">
+                    <div class="text-input__container__box">
+                      <input type="text" id="ls1-name" class="text-input__container__box__input-field"
+                             value="First-time"
+                             oninput="onFieldChange(); syncHeading('ls1-name', 'ls1-heading', 'Untitled stage')">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="info-banner info-banner_informational" style="max-width:480px;">
+                <span class="material-symbols-rounded" style="font-size:20px; color:#1d5eff; flex-shrink:0; font-variation-settings:'FILL' 1;">info</span>
+                <div class="info-banner__text" style="font-family:'Manrope',sans-serif; font-size:14px; line-height:1.72; color:#141414;">Automatically assigned on a guest's first visit ever. No configurable thresholds.</div>
+              </div>
+            </div>
+            <hr class="daypart-divider">
+
+            <!-- Stage 2: Returning -->
+            <div class="lifecycle-section" data-lifecycle-id="ls2">
+              <div class="lifecycle-section__heading-row">
+                <span class="lifecycle-dot" style="background:#5A55E3"></span>
+                <h3 class="lifecycle-section__name" id="ls2-heading">Returning</h3>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="ls2-name">
+                    <span>Stage name<span class="form-label__label_required">*</span></span>
+                  </label>
+                </div>
+                <div class="text-input lifecycle-name-input">
+                  <div class="text-input__container">
+                    <div class="text-input__container__box">
+                      <input type="text" id="ls2-name" class="text-input__container__box__input-field"
+                             value="Returning"
+                             oninput="onFieldChange(); syncHeading('ls2-name', 'ls2-heading', 'Untitled stage')">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="ls2-window">Last visit within</label>
+                </div>
+                <div class="threshold-input-row">
+                  <input type="number" id="ls2-window" class="threshold-input__box" value="180" min="1" oninput="onFieldChange()">
+                  <span class="threshold-unit">days</span>
+                </div>
+                <p class="threshold-hint">Guests with 2 visits whose last visit falls within this window. Beyond it, they move to Churned.</p>
+              </div>
+            </div>
+            <hr class="daypart-divider">
+
+            <!-- Stage 3: Loyal -->
+            <div class="lifecycle-section" data-lifecycle-id="ls3">
+              <div class="lifecycle-section__heading-row">
+                <span class="lifecycle-dot" style="background:#0CC281"></span>
+                <h3 class="lifecycle-section__name" id="ls3-heading">Loyal</h3>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="ls3-name">
+                    <span>Stage name<span class="form-label__label_required">*</span></span>
+                  </label>
+                </div>
+                <div class="text-input lifecycle-name-input">
+                  <div class="text-input__container">
+                    <div class="text-input__container__box">
+                      <input type="text" id="ls3-name" class="text-input__container__box__input-field"
+                             value="Loyal"
+                             oninput="onFieldChange(); syncHeading('ls3-name', 'ls3-heading', 'Untitled stage')">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="ls3-min-visits">Minimum visit count</label>
+                </div>
+                <div class="threshold-input-row">
+                  <input type="number" id="ls3-min-visits" class="threshold-input__box" value="3" min="2" oninput="onFieldChange()">
+                  <span class="threshold-unit">visits</span>
+                </div>
+                <p class="threshold-hint">Guests who reach this visit count and remain active within their personal visit cadence are considered Loyal.</p>
+              </div>
+            </div>
+            <hr class="daypart-divider">
+
+            <!-- Stage 4: At-Risk -->
+            <div class="lifecycle-section" data-lifecycle-id="ls4">
+              <div class="lifecycle-section__heading-row">
+                <span class="lifecycle-dot" style="background:#F8931C"></span>
+                <h3 class="lifecycle-section__name" id="ls4-heading">At-Risk</h3>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="ls4-name">
+                    <span>Stage name<span class="form-label__label_required">*</span></span>
+                  </label>
+                </div>
+                <div class="text-input lifecycle-name-input">
+                  <div class="text-input__container">
+                    <div class="text-input__container__box">
+                      <input type="text" id="ls4-name" class="text-input__container__box__input-field"
+                             value="At-Risk"
+                             oninput="onFieldChange(); syncHeading('ls4-name', 'ls4-heading', 'Untitled stage')">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="ls4-multiplier">Absence threshold</label>
+                </div>
+                <div class="threshold-input-row">
+                  <input type="number" id="ls4-multiplier" class="threshold-input__box" value="1.5" min="1" step="0.1" oninput="onFieldChange()">
+                  <span class="threshold-unit">× average inter-visit gap</span>
+                </div>
+                <p class="threshold-hint">A guest is At-Risk when they've been absent for longer than this multiple of their own average gap between visits.</p>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="ls4-floor">Low-visit floor</label>
+                </div>
+                <div class="threshold-input-row">
+                  <input type="number" id="ls4-floor" class="threshold-input__box" value="90" min="1" oninput="onFieldChange()">
+                  <span class="threshold-unit">days since last visit</span>
+                </div>
+                <p class="threshold-hint">Applied to guests below the Loyal minimum visit count, who don't yet have a personal visit cadence to calculate against.</p>
+              </div>
+            </div>
+            <hr class="daypart-divider">
+
+            <!-- Stage 5: Win-back -->
+            <div class="lifecycle-section" data-lifecycle-id="ls5">
+              <div class="lifecycle-section__heading-row">
+                <span class="lifecycle-dot" style="background:#8C9FFF"></span>
+                <h3 class="lifecycle-section__name" id="ls5-heading">Win-back</h3>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="ls5-name">
+                    <span>Stage name<span class="form-label__label_required">*</span></span>
+                  </label>
+                </div>
+                <div class="text-input lifecycle-name-input">
+                  <div class="text-input__container">
+                    <div class="text-input__container__box">
+                      <input type="text" id="ls5-name" class="text-input__container__box__input-field"
+                             value="Win-back"
+                             oninput="onFieldChange(); syncHeading('ls5-name', 'ls5-heading', 'Untitled stage')">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="info-banner info-banner_informational" style="max-width:480px;">
+                <span class="material-symbols-rounded" style="font-size:20px; color:#1d5eff; flex-shrink:0; font-variation-settings:'FILL' 1;">info</span>
+                <div class="info-banner__text" style="font-family:'Manrope',sans-serif; font-size:14px; line-height:1.72; color:#141414;">Automatically assigned on a guest's first visit after an At-Risk or Churned period. No configurable thresholds.</div>
+              </div>
+            </div>
+            <hr class="daypart-divider">
+
+            <!-- Stage 6: Churned -->
+            <div class="lifecycle-section" data-lifecycle-id="ls6">
+              <div class="lifecycle-section__heading-row">
+                <span class="lifecycle-dot" style="background:#E83162"></span>
+                <h3 class="lifecycle-section__name" id="ls6-heading">Churned</h3>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="ls6-name">
+                    <span>Stage name<span class="form-label__label_required">*</span></span>
+                  </label>
+                </div>
+                <div class="text-input lifecycle-name-input">
+                  <div class="text-input__container">
+                    <div class="text-input__container__box">
+                      <input type="text" id="ls6-name" class="text-input__container__box__input-field"
+                             value="Churned"
+                             oninput="onFieldChange(); syncHeading('ls6-name', 'ls6-heading', 'Untitled stage')">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="daypart-field">
+                <div class="form-label">
+                  <label class="form-label__label" for="ls6-window">Inactivity window</label>
+                </div>
+                <div class="threshold-input-row">
+                  <input type="number" id="ls6-window" class="threshold-input__box" value="180" min="1" oninput="onFieldChange()">
+                  <span class="threshold-unit">days since last visit</span>
+                </div>
+                <p class="threshold-hint">Guests inactive beyond this window are considered Churned. Typically matches the Returning "last visit within" window.</p>
+              </div>
+            </div>
+
+          </div><!-- /panel-lifecycle -->
+
+        </div><!-- /defs-body -->
+
+      </main>
+    </div><!-- /app-shell__body -->
+
+    <!-- Save bar — shown when there are unsaved changes -->
+    <div class="defs-save-bar" id="defs-save-bar">
+      <button class="button primary" onclick="saveChanges()">
+        <span>Save</span>
+      </button>
+      <button class="defs-save-bar__cancel" onclick="cancelChanges()">Cancel</button>
+    </div>
+
+    <!-- Toast — shown after successful save -->
+    <div class="defs-toast" id="defs-toast">
+      <div class="toast__body toast__body_success">
+        <span class="material-symbols-rounded" style="color:#fff; font-size:20px;">check_circle</span>
+        <div class="toast__body_content">
+          <span style="font-weight:600; font-size:14px;">Definitions saved</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete confirmation modal -->
+    <div class="defs-modal-overlay" id="defs-delete-modal" onclick="closeDeleteModal()">
+      <div class="defs-modal" onclick="event.stopPropagation()">
+        <div class="defs-modal__header">
+          <h2 class="defs-modal__title">Delete daypart?</h2>
+          <button class="defs-modal__close" onclick="closeDeleteModal()" aria-label="Close">
+            <span class="material-symbols-rounded" style="font-size:20px;">close</span>
+          </button>
+        </div>
+        <div class="defs-modal__body">
+          <p class="defs-modal__desc">Are you sure you want to delete daypart?<br>This is permanent and can't be undone.</p>
+          <div class="defs-modal__actions">
+            <button class="button primary" onclick="executeDelete()">
+              <span>Yes, delete</span>
+            </button>
+            <button class="defs-modal__keep" onclick="closeDeleteModal()">No, keep it</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /app-shell -->
+
+  <script>
+    // ── Time slot generation ──────────────────────────────────────
+    function generateTimeSlots() {
+      const slots = [];
+      for (let h = 0; h < 24; h++) {
+        for (let m = 0; m < 60; m += 30) {
+          const period = h < 12 ? 'AM' : 'PM';
+          const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+          const mm = m === 0 ? '00' : '30';
+          slots.push(`${h12}:${mm} ${period}`);
+        }
+      }
+      return slots;
+    }
+    const TIME_SLOTS = generateTimeSlots();
+
+    function buildDropdown(dropdownEl) {
+      if (dropdownEl.children.length > 0) return; // already built
+      TIME_SLOTS.forEach(slot => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'time-picker__slot';
+        btn.textContent = slot;
+        btn.dataset.value = slot;
+        btn.onmousedown = (e) => {
+          e.preventDefault(); // prevent blur before click registers
+          selectTimeSlot(dropdownEl.closest('.time-picker'), slot);
+        };
+        dropdownEl.appendChild(btn);
+      });
+    }
+
+    function openTimePicker(pickerEl) {
+      const dropdown = pickerEl.querySelector('.time-picker__dropdown');
+      const chevron = pickerEl.querySelector('.time-picker__chevron');
+      buildDropdown(dropdown);
+      dropdown.classList.add('open');
+      chevron.classList.add('open');
+      highlightCurrentSlot(pickerEl);
+    }
+
+    function closeTimePicker(pickerEl) {
+      const dropdown = pickerEl.querySelector('.time-picker__dropdown');
+      const chevron = pickerEl.querySelector('.time-picker__chevron');
+      dropdown.classList.remove('open');
+      chevron.classList.remove('open');
+    }
+
+    function toggleTimePicker(pickerEl) {
+      const dropdown = pickerEl.querySelector('.time-picker__dropdown');
+      if (dropdown.classList.contains('open')) {
+        closeTimePicker(pickerEl);
+      } else {
+        // Close any other open pickers first
+        document.querySelectorAll('.time-picker__dropdown.open').forEach(d => {
+          closeTimePicker(d.closest('.time-picker'));
+        });
+        openTimePicker(pickerEl);
+        pickerEl.querySelector('.time-picker__input').focus();
+      }
+    }
+
+    function delayCloseTimePicker(pickerEl) {
+      // mousedown on a slot sets e.preventDefault() so blur fires first but click still registers
+      setTimeout(() => closeTimePicker(pickerEl), 150);
+    }
+
+    function selectTimeSlot(pickerEl, value) {
+      pickerEl.querySelector('.time-picker__input').value = value;
+      closeTimePicker(pickerEl);
+      onFieldChange();
+    }
+
+    function highlightCurrentSlot(pickerEl) {
+      const current = pickerEl.querySelector('.time-picker__input').value.trim();
+      pickerEl.querySelectorAll('.time-picker__slot').forEach(slot => {
+        slot.classList.toggle('time-picker__slot--selected', slot.dataset.value === current);
+      });
+    }
+
+    // Close pickers on outside click
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.time-picker')) {
+        document.querySelectorAll('.time-picker__dropdown.open').forEach(d => {
+          closeTimePicker(d.closest('.time-picker'));
+        });
+      }
+    });
+
+    // ── Heading sync ─────────────────────────────────────────────
+    function syncHeading(inputId, headingId, fallback) {
+      const val = document.getElementById(inputId).value.trim();
+      document.getElementById(headingId).textContent = val || (fallback || 'Untitled daypart');
+    }
+
+    // ── Tab switching ─────────────────────────────────────────────
+    function switchTab(tabName) {
+      document.querySelectorAll('.defs-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + tabName).classList.add('active');
+    }
+
+    // ── Save bar / dirty state ────────────────────────────────────
+    let savedState = {};
+
+    function captureState() {
+      const state = {};
+      document.querySelectorAll('#panel-dayparts input[type="text"]').forEach(inp => {
+        if (inp.id) state[inp.id] = inp.value;
+        else state['tp_' + inp.closest('.time-picker').id] = inp.value;
+      });
+      document.querySelectorAll('#panel-lifecycle input').forEach(inp => {
+        if (inp.id) state['lc_' + inp.id] = inp.value;
+      });
+      return state;
+    }
+
+    function hasChanges() {
+      const current = captureState();
+      return Object.keys(savedState).some(k => savedState[k] !== (current[k] ?? ''));
+    }
+
+    function onFieldChange() {
+      document.getElementById('defs-save-bar').style.display = hasChanges() ? 'flex' : 'none';
+    }
+
+    function saveChanges() {
+      savedState = captureState();
+      document.getElementById('defs-save-bar').style.display = 'none';
+      const toast = document.getElementById('defs-toast');
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    function cancelChanges() {
+      // Restore daypart text inputs
+      document.querySelectorAll('#panel-dayparts input[type="text"]').forEach(inp => {
+        const key = inp.id || 'tp_' + inp.closest('.time-picker').id;
+        if (savedState[key] !== undefined) inp.value = savedState[key];
+      });
+      // Restore daypart headings
+      ['dp1', 'dp2', 'dp3'].forEach(id => {
+        const inp = document.getElementById(id + '-name');
+        const hdg = document.getElementById(id + '-heading');
+        if (inp && hdg) hdg.textContent = inp.value || 'Untitled daypart';
+      });
+      // Remove any custom dayparts that weren't saved
+      document.querySelectorAll('#custom-dayparts-container .daypart-section').forEach(sec => {
+        if (!savedState[sec.dataset.nameInputId]) sec.remove();
+      });
+      // Restore lifecycle inputs and headings
+      document.querySelectorAll('#panel-lifecycle input').forEach(inp => {
+        const key = 'lc_' + inp.id;
+        if (savedState[key] !== undefined) {
+          inp.value = savedState[key];
+          const match = inp.id.match(/^(ls\d+)-name$/);
+          if (match) {
+            const hdg = document.getElementById(match[1] + '-heading');
+            if (hdg) hdg.textContent = inp.value || 'Untitled stage';
+          }
+        }
+      });
+      document.getElementById('defs-save-bar').style.display = 'none';
+    }
+
+    // ── Custom daypart creation ───────────────────────────────────
+    let customCount = 0;
+
+    function addDaypart() {
+      customCount++;
+      const id = 'custom-' + customCount;
+      const container = document.getElementById('custom-dayparts-container');
+
+      const section = document.createElement('div');
+      section.className = 'daypart-section';
+      section.dataset.daypartId = id;
+      section.dataset.nameInputId = id + '-name';
+
+      section.innerHTML = `
+        <div class="daypart-section__header-row">
+          <h3 class="daypart-section__name" id="${id}-heading">New daypart</h3>
+          <button type="button" class="button outlined" onclick="confirmDeleteDaypart(this.closest('.daypart-section'))">
+            <span class="material-symbols-rounded" style="font-size:24px;">delete</span>
+            <span>Delete</span>
+          </button>
+        </div>
+        <div class="daypart-field">
+          <div class="form-label">
+            <label class="form-label__label" for="${id}-name">
+              <span>Daypart name<span class="form-label__label_required">*</span></span>
+            </label>
+          </div>
+          <div class="text-input daypart-name-input">
+            <div class="text-input__container">
+              <div class="text-input__container__box">
+                <input type="text" id="${id}-name" class="text-input__container__box__input-field"
+                       value=""
+                       oninput="onFieldChange(); syncHeading('${id}-name', '${id}-heading')"
+                       placeholder="Example: Late night">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="daypart-field">
+          <div class="form-label">
+            <label class="form-label__label">Start time</label>
+          </div>
+          <div class="time-picker" id="tp-${id}-start">
+            <div class="time-picker__box">
+              <span class="material-symbols-rounded time-picker__icon">schedule</span>
+              <input type="text" class="time-picker__input" value=""
+                     placeholder="12:00 AM"
+                     oninput="onFieldChange()" onfocus="openTimePicker(this.closest('.time-picker'))"
+                     onblur="delayCloseTimePicker(this.closest('.time-picker'))">
+              <span class="material-symbols-rounded time-picker__chevron"
+                    onclick="toggleTimePicker(this.closest('.time-picker'))">expand_more</span>
+            </div>
+            <div class="time-picker__dropdown"></div>
+          </div>
+        </div>
+        <div class="daypart-field">
+          <div class="form-label">
+            <label class="form-label__label">End time</label>
+          </div>
+          <div class="time-picker" id="tp-${id}-end">
+            <div class="time-picker__box">
+              <span class="material-symbols-rounded time-picker__icon">schedule</span>
+              <input type="text" class="time-picker__input" value=""
+                     placeholder="12:00 AM"
+                     oninput="onFieldChange()" onfocus="openTimePicker(this.closest('.time-picker'))"
+                     onblur="delayCloseTimePicker(this.closest('.time-picker'))">
+              <span class="material-symbols-rounded time-picker__chevron"
+                    onclick="toggleTimePicker(this.closest('.time-picker'))">expand_more</span>
+            </div>
+            <div class="time-picker__dropdown"></div>
+          </div>
+        </div>
+      `;
+
+      // Insert section, then divider after it (before Create daypart button)
+      container.appendChild(section);
+      const divider = document.createElement('hr');
+      divider.className = 'daypart-divider';
+      container.appendChild(divider);
+
+      // Scroll to the new section
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Mark as changed (new daypart always triggers save bar)
+      document.getElementById('defs-save-bar').style.display = 'flex';
+    }
+
+    // ── Delete daypart ───────────────────────────────────────────
+    let pendingDeleteSection = null;
+
+    function confirmDeleteDaypart(sectionEl) {
+      pendingDeleteSection = sectionEl;
+      document.getElementById('defs-delete-modal').classList.add('open');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('defs-delete-modal').classList.remove('open');
+      pendingDeleteSection = null;
+    }
+
+    function executeDelete() {
+      if (!pendingDeleteSection) return;
+      // Remove the section and its trailing divider
+      const next = pendingDeleteSection.nextElementSibling;
+      if (next && next.classList.contains('daypart-divider')) next.remove();
+      pendingDeleteSection.remove();
+      pendingDeleteSection = null;
+      closeDeleteModal();
+      onFieldChange();
+    }
+
+    // ── Sidebar nav expand/collapse ──────────────────────────────
+    function toggleNavExpand(btn) {
+      const isOpen = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      const sub = btn.nextElementSibling;
+      if (sub && sub.classList.contains('nav-sub-group')) {
+        sub.classList.toggle('open', isOpen);
+      }
+    }
+
+    // ── Init ─────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      // Sync the active panel with whichever radio is checked on load
+      const checkedTab = document.querySelector('input[name="defs-tabs"]:checked');
+      if (checkedTab) switchTab(checkedTab.value);
+      savedState = captureState();
+    });
+  </script>
+</body>
+</html>

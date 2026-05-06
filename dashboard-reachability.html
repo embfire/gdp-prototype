@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <link rel="stylesheet" href="../assets/bento.css">
-  <link rel="stylesheet" href="beta.css">
+  <link rel="stylesheet" href="assets/bento.css">
+  <link rel="stylesheet" href="beta/beta.css">
   <style>
     .chart-card[data-metric-id="reachability"] .chart-card__placeholder--detail {
       height: 320px;
@@ -25,7 +25,7 @@
     <header class="header">
       <div class="header-left">
         <a href="index.html" class="header-brand" aria-label="Guest360 Home">
-          <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+          <img src="assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
         </a>
         <span class="header-brand-divider" aria-hidden="true"></span>
         <button class="header-brand-btn" aria-label="Select brand">
@@ -35,7 +35,7 @@
       </div>
       <div class="header-right">
         <button class="header-btn">
-          <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
+          <img src="assets/ava-assistant.svg" alt="" width="24" height="24">
           Ava
         </button>
         <button class="header-btn">
@@ -53,14 +53,27 @@
       <!-- Sidebar -->
       <aside class="sidebar">
         <nav class="sidebar-nav" aria-label="Main navigation">
+
           <div class="nav-group" data-nav-group-id="top">
             <a href="index.html" class="nav-item active">
               <i class="ph-duotone ph-chart-bar" aria-hidden="true"></i>
               <span class="nav-item__label">Dashboard</span>
             </a>
           </div>
+
           <div class="nav-group" data-nav-group-id="guests">
             <div class="nav-group-title">Guests</div>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-chart-pie" aria-hidden="true"></i>
+              <span class="nav-item__label">Analytics</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="analytics.html" class="nav-sub-item">Overview</a>
+              <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
+              <a href="analytics-retention.html" class="nav-sub-item">Retention</a>
+              <a href="analytics-atrisk.html" class="nav-sub-item">At risk</a>
+            </div>
             <a href="guest-profiles.html" class="nav-item">
               <i class="ph-duotone ph-user-circle" aria-hidden="true"></i>
               <span class="nav-item__label">Guest profiles</span>
@@ -70,22 +83,67 @@
               <span class="nav-item__label">Segments</span>
             </a>
           </div>
+
+          <div class="nav-group" data-nav-group-id="menu">
+            <div class="nav-group-title">Menu</div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-fork-knife" aria-hidden="true"></i>
+              <span class="nav-item__label">Menu Performance</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-calendar-check" aria-hidden="true"></i>
+              <span class="nav-item__label">LTO Analysis</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="other">
+            <div class="nav-group-title">Other</div>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-coins" aria-hidden="true"></i>
+              <span class="nav-item__label">Revenue</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="#" class="nav-sub-item">Overview</a>
+              <a href="#" class="nav-sub-item">Acquisition</a>
+            </div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-storefront" aria-hidden="true"></i>
+              <span class="nav-item__label">Locations</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-megaphone-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Campaigns</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="platform">
+            <div class="nav-group-title">Platform</div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-database" aria-hidden="true"></i>
+              <span class="nav-item__label">Data Sources</span>
+            </a>
+            <a href="identity-resolution.html" class="nav-item">
+              <i class="ph-duotone ph-fingerprint-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Identity Resolution</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-share-fat" aria-hidden="true"></i>
+              <span class="nav-item__label">Data Export</span>
+            </a>
+          </div>
+
           <div class="nav-group" data-nav-group-id="bottom">
-            <a href="settings.html" class="nav-item">
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
               <span class="nav-item__label">Settings</span>
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
-            </a>
-            <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
-              <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
-              <span class="nav-item__label">Cockpit</span>
-              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
             </button>
-            <div class="nav-sub-group" id="cockpit-sub">
-              <a href="cockpit-features.html" class="nav-sub-item">Features</a>
-              <a href="cockpit-admins.html" class="nav-sub-item">Admins</a>
+            <div class="nav-sub-group">
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
             </div>
           </div>
+
         </nav>
       </aside>
 
@@ -223,7 +281,7 @@
               </div>
               <div class="chart-card__header-controls">
                 <button class="button outlined dashboard-btn">
-                  <img src="../assets/ava-assistant.svg" alt="" width="20" height="20">
+                  <img src="assets/ava-assistant.svg" alt="" width="20" height="20">
                   <span class="dashboard-btn__label">Get insight</span>
                 </button>
                 <div class="chart-context-wrap">
@@ -234,7 +292,7 @@
                     <ul>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
-                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava about this</span></button></li>
+                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava about this</span></button></li>
                     </ul>
                   </div>
                 </div>
@@ -309,7 +367,7 @@
               </li>
               <li>
                 <button type="button" class="chart-point-menu__item" onclick="onPointMenuAction('ask-ava')">
-                  <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
+                  <img src="assets/ava-assistant.svg" alt="" width="24" height="24">
                   <span>Ask Ava about this</span>
                 </button>
               </li>
@@ -326,10 +384,13 @@
   <script src="https://cdn.jsdelivr.net/npm/ag-charts-community@13.2.1/dist/umd/ag-charts-community.min.js"></script>
   <script>
     /* ── Sidebar / dropdowns ── */
-    function toggleCockpit(btn) {
+    function toggleNavExpand(btn) {
       var isOpen = btn.classList.toggle('open');
       btn.setAttribute('aria-expanded', isOpen);
-      document.getElementById('cockpit-sub').classList.toggle('open', isOpen);
+      var sub = btn.nextElementSibling;
+      if (sub && sub.classList.contains('nav-sub-group')) {
+        sub.classList.toggle('open', isOpen);
+      }
     }
 
     function setDateRange(btn, range) {
