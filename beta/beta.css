@@ -1984,3 +1984,736 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 .chart-card__placeholder--breakdown {
   height: 260px;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Guest Profiles Page
+   ═══════════════════════════════════════════════════════════════ */
+
+.content-area--guest-profiles {
+  gap: 32px;
+  overflow-x: clip;
+}
+
+.guests-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.guests-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.guests-body {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 32px;
+  width: calc(100% + 96px);
+  min-width: 0;
+  margin-right: -48px;
+  margin-left: -48px;
+  padding: 32px 48px 64px;
+  border-top: 2px solid #DFE1E2;
+  background-color: #F4F4F4;
+}
+
+.guests-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.guests-controls__search {
+  width: 303px;
+}
+
+.guests-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.guests-table-header__count {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.36;
+  color: #000000;
+}
+
+.guests-table-header__sort {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.guests-table-header__sort-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: #000000;
+  white-space: nowrap;
+}
+
+.guests-table-wrap {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.guests-table-wrap .table-container .table tbody tr td {
+  height: 3.5rem;
+  padding: 8px 16px;
+  vertical-align: middle;
+}
+
+.guests-table-wrap .table-container .table thead tr,
+.guests-table-wrap .table-container .table tbody tr {
+  border-left-width: 1px;
+  border-right-width: 1px;
+}
+
+.guests-table-wrap .table-container .table tbody tr:last-child {
+  border-bottom-width: 1px;
+}
+
+/* Material Symbols checkbox icon — same pattern as dashboard-chart-detail */
+.guests-check-icon {
+  font-size: 24px !important;
+  font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24 !important;
+  color: #000;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+  line-height: 1;
+}
+.guests-check-icon--checked { color: #5a55e3; }
+.guests-check-cell { cursor: pointer; user-select: none; width: 56px; }
+
+/* Source column — fixed 162px, truncate with ellipsis */
+.guests-table-wrap .table-container .table th.guests-source-col,
+.guests-table-wrap .table-container .table td.guests-source-col {
+  width: 162px;
+  max-width: 162px;
+}
+.guests-source-cell {
+  display: block;
+  max-width: 162px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Email column — fixed 180px, truncate with ellipsis */
+.guests-table-wrap .table-container .table th.guests-email-col,
+.guests-table-wrap .table-container .table td.guests-email-col {
+  width: 180px;
+  max-width: 180px;
+}
+.guests-email-cell {
+  display: block;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Kebab button */
+.guest-kebab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #000000;
+  transition: background 0.15s;
+  position: relative;
+}
+
+.guest-kebab-btn:hover { background: #e8e8e8; }
+
+.guest-kebab-btn .material-symbols-rounded {
+  font-size: 24px;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Row action menu */
+.guest-row-menu {
+  display: none;
+  position: fixed;
+  background: #ffffff;
+  border: 2px solid #DFE1E2;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 300;
+  min-width: 180px;
+  padding: 8px;
+  flex-direction: column;
+}
+
+.guest-row-menu--open { display: flex; }
+
+.guest-row-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #000000;
+  text-align: left;
+  border-radius: 8px;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.guest-row-menu__item:hover { background: #f4f4f4; }
+
+.guest-row-menu__item .material-symbols-rounded {
+  font-size: 24px;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  flex-shrink: 0;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  color: #000000;
+}
+
+/* Material Symbols settings for guest profiles area */
+.content-area--guest-profiles .material-symbols-rounded {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  font-size: 24px;
+  line-height: 1;
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'liga';
+}
+
+/* Pagination in guests-body uses same gap-based spacing */
+.guests-body > .pagination { margin-top: 0; }
+
+/* Page-number dropdown in pagination opens UPWARD (not downward off the
+   page). Overrides .dropdown__options { top: ... !important } from the
+   shared dashboard rule. */
+.pagination .pagination-dropdown #page-options.dropdown__options {
+  top: auto !important;
+  bottom: calc(100% + 8px) !important;
+}
+/* Bento sets max-height: 17.25rem on the inner ul, and beta.css sets
+   overflow: visible !important on the panel — together that causes items
+   beyond ~7 to render outside the white box. Cap the ul, scroll inside. */
+.pagination .pagination-dropdown #page-options.dropdown__options ul {
+  max-height: 17.25rem;
+  overflow-y: auto;
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Guest Profile (detail) Page
+   ═══════════════════════════════════════════════════════════════ */
+
+.content-area--guest-profile {
+  padding: 32px 48px;
+  gap: 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-area--guest-profile .material-symbols-rounded {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  font-size: 24px;
+  line-height: 1;
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'liga';
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-header .chart-breadcrumbs {
+  margin-bottom: 0;
+}
+
+.profile-header__title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+}
+
+.profile-header__title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.44;
+  color: #000000;
+}
+
+.profile-header__actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.profile-header__tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-header__tag-divider {
+  display: inline-block;
+  width: 1px;
+  height: 24px;
+  background-color: #DFE1E2;
+  flex-shrink: 0;
+  margin: 0 4px;
+}
+
+/* Override tag colors in profile header: lifecycle stage uses amber from
+   the dashboard guest-lifecycle palette; segments use grey-20. */
+.profile-header__tags .tag.tag--lifecycle {
+  background-color: #F8931C;
+}
+.profile-header__tags .tag.tag--lifecycle span {
+  color: #000000;
+}
+.profile-header__tags .tag.tag--segment {
+  background-color: #DFE1E2;
+}
+.profile-header__tags .tag.tag--segment span {
+  color: #000000;
+}
+
+/* ── Personal info row ── */
+.profile-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+}
+
+.profile-info__cell {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-info__label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #60696c;
+}
+
+.profile-info__values {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+}
+
+.profile-info__value {
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.5;
+  color: #000000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Hidden by default; revealed when the cell is expanded. */
+.profile-info__cell[data-expanded="false"] .profile-info__value--extra {
+  display: none;
+}
+
+.profile-info__toggle {
+  width: fit-content;
+}
+
+.profile-info__cell[data-expanded="false"] .profile-info__toggle-expanded,
+.profile-info__cell[data-expanded="true"]  .profile-info__toggle-collapsed {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Link button (project-wide)
+   ═══════════════════════════════════════════════════════════════ */
+
+.link-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #000000;
+  text-decoration: underline;
+  text-decoration-color: #DFE1E2;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.link-button:hover {
+  color: #000000;
+  text-decoration-color: #000000;
+}
+
+/* ── KPI cards row ── */
+.profile-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.profile-card {
+  max-width: 320px;
+  box-sizing: border-box;
+  background-color: #FFFFFF;
+  border: 1px solid #DFE1E2;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.profile-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.profile-card__label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #60696c;
+}
+
+.profile-card__hero {
+  font-family: 'Manrope', sans-serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.44;
+  color: #000000;
+  white-space: nowrap;
+}
+
+.profile-card__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.profile-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.72;
+  white-space: nowrap;
+}
+
+.profile-card__row-label {
+  color: #60696c;
+}
+
+.profile-card__row-value {
+  color: #000000;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-card__row-consent {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.content-area--guest-profile .profile-card__consent-icon {
+  font-size: 24px !important;
+  line-height: 1;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
+}
+
+.profile-card__consent-icon--in {
+  color: #257469;
+}
+
+.profile-card__consent-icon--out {
+  color: #BC103E;
+}
+
+.profile-card__consent-icon--neutral {
+  color: #60696c;
+}
+
+/* Card footer link (e.g. "Identity details" on the identity card) sits
+   below the rows, following the row gap of the card. */
+.profile-card__footer-link {
+  align-self: flex-start;
+}
+
+/* Tag text size — caption (12px / 1.36) across header and KPI cards. */
+.profile-header__tags .tag span,
+.profile-card .tag.tag--lifecycle span {
+  font-size: 12px;
+  line-height: 1.36;
+}
+
+.profile-card .tag.tag--lifecycle {
+  background-color: #F8931C;
+}
+.profile-card .tag.tag--lifecycle span {
+  color: #000000;
+}
+
+/* Loyal lifecycle variant — applies in both the page header and KPI cards. */
+.profile-header__tags .tag.tag--lifecycle.tag--loyal,
+.profile-card .tag.tag--lifecycle.tag--loyal {
+  background-color: #0CC281;
+}
+.profile-header__tags .tag.tag--lifecycle.tag--loyal span,
+.profile-card .tag.tag--lifecycle.tag--loyal span {
+  color: #000000;
+}
+
+/* ── Events timeline ── */
+.timeline-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.timeline-section__heading {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.4;
+  color: #000000;
+}
+
+/* Single grid spanning all events + footer so columns (especially the
+   date column width) match across rows — that's what keeps the
+   load-more line centered under the icons above. Wrappers use
+   `display: contents` so their children participate in this grid
+   directly. */
+.timeline {
+  display: grid;
+  grid-template-columns: max-content 40px minmax(0, 1fr);
+  column-gap: 24px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.timeline__event,
+.timeline__footer {
+  display: contents;
+}
+
+/* Date column and the first line of content sit vertically centered with
+   the icon (icon center = 20px from row top; text line ~24px tall →
+   padding-top: 8px aligns text middle with icon middle). */
+.timeline__date {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.72;
+  color: #60696c;
+  white-space: nowrap;
+  padding-top: 8px;
+}
+
+.timeline__content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  max-width: 600px;
+  padding-top: 8px;
+}
+
+.timeline__rail {
+  width: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rail__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 64px;
+  background-color: #F4F4F4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rail__icon .material-symbols-rounded {
+  font-size: 24px;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  color: #000000;
+}
+
+/* Below-icon stack: 4px spacer · variable line · Nd label · 22px line ·
+   4px spacer. flex:1 makes the block fill the rest of the row, so the
+   variable line stretches to absorb tall right-side content. */
+.rail__below {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.rail__spacer {
+  height: 4px;
+  flex-shrink: 0;
+}
+
+.rail__line {
+  width: 1px;
+  background-color: #DFE1E2;
+}
+
+.rail__line--fixed {
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* Variable line absorbs row height; min-height keeps it visible when the
+   row is short (matches the design's minimum 22px). */
+.rail__line--flex {
+  flex: 1 1 0;
+  min-height: 22px;
+}
+
+.rail__label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.72;
+  color: #60696c;
+  flex-shrink: 0;
+}
+
+/* Last event has no below-icon block. */
+.timeline__event--last .rail__below {
+  display: none;
+}
+
+/* Right-side content typography */
+.timeline__title {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #000000;
+}
+
+.timeline__title strong {
+  font-weight: 700;
+}
+
+.timeline__subtitle {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #60696c;
+}
+
+.timeline__order {
+  margin-top: 12px;
+  margin-bottom: 16px;
+  background-color: #F4F4F4;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.72;
+  color: #000000;
+  max-width: 600px;
+  box-sizing: border-box;
+}
+
+.timeline__order p {
+  margin: 0;
+}
+
+.timeline__order-total {
+  font-weight: 800;
+}
+
+/* Footer rail: 4px · 22px line · 4px · Load more, centered on the rail
+   column. Button is wider than 40px and is allowed to overflow. */
+.timeline__rail--footer {
+  align-items: center;
+  overflow: visible;
+}
+
+.timeline__rail--footer .link-button {
+  width: max-content;
+  white-space: nowrap;
+}
+
+/* Clickable guest row (only rows with a built-out profile). */
+.guests-row--clickable {
+  cursor: pointer;
+}
+.guests-row--clickable:hover {
+  background-color: #F4F4F4;
+}

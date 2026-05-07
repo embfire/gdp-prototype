@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marcus Thompson — PAR Guest360 Beta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="../assets/bento.css">
+  <link rel="stylesheet" href="beta.css">
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+          <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+        </a>
+        <span class="header-brand-divider" aria-hidden="true"></span>
+        <button class="header-brand-btn" aria-label="Select brand">
+          Cravewave
+          <i class="ph ph-caret-down"></i>
+        </button>
+      </div>
+      <div class="header-right">
+        <button class="header-btn">
+          <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
+          Ava
+        </button>
+        <button class="header-btn">
+          <span class="material-symbols-rounded">school</span>
+          PAR Academy
+        </button>
+        <button class="header-btn header-btn--icon" aria-label="Profile">
+          <span class="material-symbols-rounded">person</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="app-shell__body">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Main navigation">
+
+          <div class="nav-group" data-nav-group-id="top">
+            <a href="index.html" class="nav-item">
+              <i class="ph-duotone ph-chart-bar" aria-hidden="true"></i>
+              <span class="nav-item__label">Dashboard</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="guests">
+            <div class="nav-group-title">Guests</div>
+            <a href="guest-profiles.html" class="nav-item active">
+              <i class="ph-duotone ph-user-circle" aria-hidden="true"></i>
+              <span class="nav-item__label">Guest profiles</span>
+            </a>
+            <a href="guest-segments.html" class="nav-item">
+              <i class="ph-duotone ph-users-three" aria-hidden="true"></i>
+              <span class="nav-item__label">Segments</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="bottom">
+            <a href="settings.html" class="nav-item">
+              <i class="ph-duotone ph-gear" aria-hidden="true"></i>
+              <span class="nav-item__label">Settings</span>
+            </a>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
+              <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
+              <span class="nav-item__label">Cockpit</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group" id="cockpit-sub">
+              <a href="cockpit-features.html" class="nav-sub-item">Features</a>
+              <a href="cockpit-admins.html" class="nav-sub-item">Admins</a>
+            </div>
+          </div>
+
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+        <div class="content-area content-area--guest-profile">
+
+          <!-- Profile header -->
+          <section class="profile-header">
+
+            <!-- Breadcrumbs -->
+            <nav class="chart-breadcrumbs" aria-label="Breadcrumb">
+              <a href="guest-profiles.html" class="chart-breadcrumbs__link">Guest profiles</a>
+              <span class="chart-breadcrumbs__separator" aria-hidden="true">
+                <span class="material-symbols-rounded">chevron_right</span>
+              </span>
+              <span class="chart-breadcrumbs__current">Marcus Thompson</span>
+            </nav>
+
+            <!-- Title row -->
+            <div class="profile-header__title-row">
+              <h1 class="profile-header__title">Marcus Thompson</h1>
+              <div class="profile-header__actions">
+                <button class="button transparent">
+                  <span class="material-symbols-rounded">help</span>
+                  <span>Help</span>
+                </button>
+                <button class="button primary">
+                  <span class="material-symbols-rounded">add</span>
+                  <span>Create segment from profile</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tags row -->
+            <div class="profile-header__tags">
+              <span class="tag tag--lifecycle"><span>At-risk</span></span>
+              <span class="profile-header__tag-divider" aria-hidden="true"></span>
+              <span class="tag tag--segment"><span>Dormant High Spender</span></span>
+              <span class="tag tag--segment"><span>Weekend Regular</span></span>
+              <span class="tag tag--segment"><span>+3 more</span></span>
+            </div>
+
+          </section>
+
+          <!-- Personal info -->
+          <section class="profile-info">
+            <div class="profile-info__cell" data-expanded="false">
+              <div class="profile-info__label">Credit card</div>
+              <div class="profile-info__values">
+                <div class="profile-info__value">VISA &bull; 4567</div>
+                <div class="profile-info__value profile-info__value--extra">AMEX &bull; 3904</div>
+                <div class="profile-info__value profile-info__value--extra">MasterCard &bull; 5901</div>
+              </div>
+              <button type="button" class="link-button profile-info__toggle" onclick="toggleInfoCell(this)">
+                <span class="profile-info__toggle-collapsed">+2 more</span>
+                <span class="profile-info__toggle-expanded">Show less</span>
+              </button>
+            </div>
+
+            <div class="profile-info__cell" data-expanded="false">
+              <div class="profile-info__label">Email</div>
+              <div class="profile-info__values">
+                <div class="profile-info__value">marcus@gmail.com</div>
+                <div class="profile-info__value profile-info__value--extra">marcus.thompson@work.com</div>
+              </div>
+              <button type="button" class="link-button profile-info__toggle" onclick="toggleInfoCell(this)">
+                <span class="profile-info__toggle-collapsed">+1 more</span>
+                <span class="profile-info__toggle-expanded">Show less</span>
+              </button>
+            </div>
+
+            <div class="profile-info__cell">
+              <div class="profile-info__label">Phone</div>
+              <div class="profile-info__values">
+                <div class="profile-info__value">(555) 234-5678</div>
+              </div>
+            </div>
+
+            <div class="profile-info__cell" data-expanded="false">
+              <div class="profile-info__label">Address</div>
+              <div class="profile-info__values">
+                <div class="profile-info__value" title="456 Oak Ave, Suite 12, 08015 Barcelona">456 Oak Ave, Suite 12, 08015 Ba&hellip;</div>
+                <div class="profile-info__value profile-info__value--extra">221B Baker St, London NW1 6XE</div>
+              </div>
+              <button type="button" class="link-button profile-info__toggle" onclick="toggleInfoCell(this)">
+                <span class="profile-info__toggle-collapsed">+1 more</span>
+                <span class="profile-info__toggle-expanded">Show less</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- KPI cards -->
+          <section class="profile-cards">
+
+            <!-- Status -->
+            <div class="profile-card">
+              <div class="profile-card__header">
+                <div class="profile-card__label">Status</div>
+                <div class="profile-card__hero">Weekly</div>
+              </div>
+              <div class="profile-card__rows">
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Guest for</span>
+                  <span class="profile-card__row-value">3.2 years</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Lifecycle stage</span>
+                  <span class="tag tag--lifecycle"><span>At-risk</span></span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Order frequency</span>
+                  <span class="profile-card__row-value">Weekly</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total orders -->
+            <div class="profile-card">
+              <div class="profile-card__header">
+                <div class="profile-card__label">Total orders</div>
+                <div class="profile-card__hero">68</div>
+              </div>
+              <div class="profile-card__rows">
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Last ordered</span>
+                  <span class="profile-card__row-value">89 days ago</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Sources</span>
+                  <span class="profile-card__row-value">Punchh, POS, +2</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Stores</span>
+                  <span class="profile-card__row-value">194 Middle St (Low&hellip; +2</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lifetime value -->
+            <div class="profile-card">
+              <div class="profile-card__header">
+                <div class="profile-card__label">Lifetime value</div>
+                <div class="profile-card__hero">$3,428.50</div>
+              </div>
+              <div class="profile-card__rows">
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Avg check size</span>
+                  <span class="profile-card__row-value">$51.25</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Avg order size</span>
+                  <span class="profile-card__row-value">3.6 items</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Favorite daypart</span>
+                  <span class="profile-card__row-value">Lunch</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Loyalty member -->
+            <div class="profile-card">
+              <div class="profile-card__header">
+                <div class="profile-card__label">Loyalty member</div>
+                <div class="profile-card__hero">Yes</div>
+              </div>
+              <div class="profile-card__rows">
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Tier status</span>
+                  <span class="profile-card__row-value">Gold</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Points balance</span>
+                  <span class="profile-card__row-value">3,428</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Offers redeemed</span>
+                  <span class="profile-card__row-value">12</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Identity resolution -->
+            <div class="profile-card">
+              <div class="profile-card__header">
+                <div class="profile-card__label">Identity resolution</div>
+                <div class="profile-card__hero">Resolved</div>
+              </div>
+              <div class="profile-card__rows">
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Confidence</span>
+                  <span class="profile-card__row-value">97.2%</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Profiles merged</span>
+                  <span class="profile-card__row-value">4 (POS, Web, +2)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Consent status -->
+            <div class="profile-card">
+              <div class="profile-card__header">
+                <div class="profile-card__label">Consent status</div>
+                <div class="profile-card__hero">Partial</div>
+              </div>
+              <div class="profile-card__rows">
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Email</span>
+                  <span class="profile-card__row-consent">
+                    <span class="profile-card__row-value">Opted in</span>
+                    <span class="material-symbols-rounded profile-card__consent-icon profile-card__consent-icon--in">check_circle</span>
+                  </span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">SMS</span>
+                  <span class="profile-card__row-consent">
+                    <span class="profile-card__row-value">Opted out</span>
+                    <span class="material-symbols-rounded profile-card__consent-icon profile-card__consent-icon--out">cancel</span>
+                  </span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Push</span>
+                  <span class="profile-card__row-consent">
+                    <span class="profile-card__row-value">Opted in</span>
+                    <span class="material-symbols-rounded profile-card__consent-icon profile-card__consent-icon--in">check_circle</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- Events timeline -->
+          <section class="timeline-section">
+            <h2 class="timeline-section__heading">Guest activity</h2>
+
+            <div class="timeline">
+
+              <!-- Event 1 -->
+              <div class="timeline__event">
+                <span class="timeline__date">Apr 14, 2026, 10:02 AM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">mail</span>
+                  </div>
+                  <div class="rail__below">
+                    <div class="rail__spacer"></div>
+                    <div class="rail__line rail__line--flex"></div>
+                    <div class="rail__label">10d</div>
+                    <div class="rail__line rail__line--fixed"></div>
+                    <div class="rail__spacer"></div>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">Email delivered: &ldquo;New Year Rewards: Check your Gold member balance&rdquo;</p>
+                </div>
+              </div>
+
+              <!-- Event 2 -->
+              <div class="timeline__event">
+                <span class="timeline__date">Apr 4, 2026, 8:47 PM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">do_not_disturb_on</span>
+                  </div>
+                  <div class="rail__below">
+                    <div class="rail__spacer"></div>
+                    <div class="rail__line rail__line--flex"></div>
+                    <div class="rail__label">23d</div>
+                    <div class="rail__line rail__line--fixed"></div>
+                    <div class="rail__spacer"></div>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">SMS opt-out: Guest replied STOP to marketing messages</p>
+                </div>
+              </div>
+
+              <!-- Event 3 -->
+              <div class="timeline__event">
+                <span class="timeline__date">Mar 12, 2026, 12:00 AM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">warning</span>
+                  </div>
+                  <div class="rail__below">
+                    <div class="rail__spacer"></div>
+                    <div class="rail__line rail__line--flex"></div>
+                    <div class="rail__label">33d</div>
+                    <div class="rail__line rail__line--fixed"></div>
+                    <div class="rail__spacer"></div>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">Guest status changed to At-risk</p>
+                  <p class="timeline__subtitle">33 days since last order</p>
+                </div>
+              </div>
+
+              <!-- Event 4 -->
+              <div class="timeline__event">
+                <span class="timeline__date">Feb 7, 2026, 7:23 PM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">attach_money</span>
+                  </div>
+                  <div class="rail__below">
+                    <div class="rail__spacer"></div>
+                    <div class="rail__line rail__line--flex"></div>
+                    <div class="rail__label">8d</div>
+                    <div class="rail__line rail__line--fixed"></div>
+                    <div class="rail__spacer"></div>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">Placed <strong>delivery</strong> order #67 via <strong>PAR Ordering Web App</strong> - 194 Middle St (Lowell) store</p>
+                  <div class="timeline__order">
+                    <p>2 x Holiday Prime Rib Platter $110.00</p>
+                    <p>1 x Large Seasonal Side Medley $35.00</p>
+                    <p>4 x Premium Craft Beer $36.00</p>
+                    <p>2 x Winter Spice Dessert Sampler $24.00</p>
+                    <p>Tax, Tip &amp; Fees $40.50</p>
+                    <p class="timeline__order-total">Total $245.50</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Event 5 -->
+              <div class="timeline__event">
+                <span class="timeline__date">Jan 30, 2026, 1:15 PM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">attach_money</span>
+                  </div>
+                  <div class="rail__below">
+                    <div class="rail__spacer"></div>
+                    <div class="rail__line rail__line--flex"></div>
+                    <div class="rail__label">4d</div>
+                    <div class="rail__line rail__line--fixed"></div>
+                    <div class="rail__spacer"></div>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">Placed <strong>takeout</strong> order #66 <strong>In store</strong> - 194 Middle St (Lowell) store</p>
+                  <div class="timeline__order">
+                    <p>2 x Holiday Prime Rib Platter $110.00</p>
+                    <p>1 x Large Seasonal Side Medley $35.00</p>
+                    <p>4 x Premium Craft Beer $36.00</p>
+                    <p>2 x Winter Spice Dessert Sampler $24.00</p>
+                    <p>Tax, Tip &amp; Fees $40.50</p>
+                    <p class="timeline__order-total">Total $245.50</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Event 6 -->
+              <div class="timeline__event">
+                <span class="timeline__date">Jan 26, 2026, 9:18 AM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">star</span>
+                  </div>
+                  <div class="rail__below">
+                    <div class="rail__spacer"></div>
+                    <div class="rail__line rail__line--flex"></div>
+                    <div class="rail__label">2d</div>
+                    <div class="rail__line rail__line--fixed"></div>
+                    <div class="rail__spacer"></div>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">Earned 245 points</p>
+                </div>
+              </div>
+
+              <!-- Event 7 (last — no Nd label, only line + Load more in footer) -->
+              <div class="timeline__event timeline__event--last">
+                <span class="timeline__date">Jan 24, 2026, 12:42 PM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">featured_seasonal_and_gifts</span>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">Redeemed offer: &ldquo;Free Side with Entree Purchase&rdquo;</p>
+                </div>
+              </div>
+
+              <!-- Load-more footer (4px + 22px line + 4px + button, centered on rail column) -->
+              <div class="timeline__footer">
+                <span class="timeline__date" aria-hidden="true"></span>
+                <div class="timeline__rail timeline__rail--footer">
+                  <div class="rail__spacer"></div>
+                  <div class="rail__line rail__line--fixed"></div>
+                  <div class="rail__spacer"></div>
+                  <button type="button" class="link-button">Load more</button>
+                </div>
+                <span aria-hidden="true"></span>
+              </div>
+
+            </div>
+          </section>
+
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <script>
+    function toggleCockpit(btn) {
+      const isOpen = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      document.getElementById('cockpit-sub').classList.toggle('open', isOpen);
+    }
+
+    function toggleInfoCell(btn) {
+      const cell = btn.closest('.profile-info__cell');
+      const expanded = cell.getAttribute('data-expanded') === 'true';
+      cell.setAttribute('data-expanded', String(!expanded));
+    }
+  </script>
+</body>
+</html>
