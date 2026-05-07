@@ -1,616 +1,645 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Segments - Guest Data Platform</title>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0" />
-    <link rel="stylesheet" href="assets/bento.css">
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        
-        .builder-container {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-lg);
-        }
-        
-        .rule-group {
-            box-shadow: var(--card-shadow);
-            border-radius: var(--border-radius);
-            padding: var(--spacing-md);
-            background: #f9f9f9;
-            position: relative;
-        }
-        
-        .rule-row {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
-            background: white;
-            padding: var(--spacing-sm);
-            border-radius: 4px;
-            box-shadow: var(--card-shadow);
-        }
-        
-        .rule-operator {
-            background: var(--bg-sidebar);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 700;
-            margin: var(--spacing-sm) 0 var(--spacing-sm) 40px;
-            width: fit-content;
-        }
-        
-        .source-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-        
-        .select-input {
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-family: inherit;
-            font-size: 14px;
-        }
-        
-        .segment-stats {
-            background: var(--bg-sidebar);
-            color: white;
-            padding: var(--spacing-lg);
-            border-radius: var(--border-radius);
-            margin-top: var(--spacing-xl);
-        }
-
-        /* Direct view handling to prevent flicker */
-        .direct-builder #segment-list { display: none !important; }
-        .direct-builder #segment-builder { display: block !important; }
-    </style>
-    <script>
-        // Check for ?new=true immediately to prevent UI flicker
-        (function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('new') === 'true') {
-                document.documentElement.classList.add('direct-builder');
-            }
-        })();
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Segments — PAR Guest360</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/bento.css">
+  <link rel="stylesheet" href="beta/beta.css">
+  <style>
+    .segments-name-cell__title {
+      font-size: 16px;
+      color: #141414;
+      line-height: 1.5;
+    }
+    .segments-name-cell__subtitle {
+      font-size: 12px;
+      color: #60696c;
+      line-height: 1.36;
+    }
+    .segments-tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      background: #dfe1e2;
+      border-radius: 12px;
+      font-size: 12px;
+      color: #141414;
+      line-height: 1.36;
+    }
+    .segments-tag-chip .material-symbols-rounded {
+      font-size: 14px;
+    }
+    .segments-row--clickable { cursor: pointer; }
+    .segments-row--clickable:hover { background: #f9f9fb; }
+    .segments-dash { color: #60696c; }
+  </style>
 </head>
-<body data-v-app>
-    <div class="app-container">
-        <!-- Top Header -->
-        <header class="header">
-            <div class="header-left">
-                <a href="index.html" class="header-brand" aria-label="Guest360 Home">
-                    <img src="assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
-                </a>
-                <span class="header-brand-divider" aria-hidden="true"></span>
-                <button class="header-brand-btn" aria-label="Select brand">
-                    Cravewave
-                    <i class="ph ph-caret-down"></i>
-                </button>
-            </div>
-            <div class="header-right">
-                <button class="header-btn" onclick="toggleAva()">
-                    <img src="assets/ava-assistant.svg" alt="" width="24" height="24">
-                    Ava
-                </button>
-                <button class="header-btn">
-                    <span class="material-symbols-rounded">school</span>
-                    PAR Academy
-                </button>
-                <button class="header-btn header-btn--icon" aria-label="Profile">
-                    <span class="material-symbols-rounded">person</span>
-                </button>
-            </div>
-        </header>
+<body>
+  <div class="app-shell">
 
-        <div class="app-body">
-            <!-- Sidebar -->
-            <aside class="sidebar">
-                <nav class="sidebar-nav">
-                    <div class="nav-group">
-                        <a href="index.html" class="nav-item">
-                            <i class="ph-duotone ph-chart-bar"></i>
-                            Dashboard
-                        </a>
-                    </div>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+          <img src="assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+        </a>
+        <span class="header-brand-divider" aria-hidden="true"></span>
+        <button class="header-brand-btn" aria-label="Select brand">
+          Cravewave
+          <i class="ph ph-caret-down"></i>
+        </button>
+      </div>
+      <div class="header-right">
+        <button class="header-btn">
+          <img src="assets/ava-assistant.svg" alt="" width="24" height="24">
+          Ava
+        </button>
+        <button class="header-btn">
+          <span class="material-symbols-rounded">school</span>
+          PAR Academy
+        </button>
+        <button class="header-btn header-btn--icon" aria-label="Profile">
+          <span class="material-symbols-rounded">person</span>
+        </button>
+      </div>
+    </header>
 
-                    <div class="nav-group">
-                        <div class="nav-group-title">Guests</div>
-                        <button class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)">
-                            <i class="ph-duotone ph-chart-pie"></i>
-                            <span>Analytics</span>
-                            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.96967 5.46967C2.26256 5.17678 2.73744 5.17678 3.03033 5.46967L8 10.4393L12.9697 5.46967C13.2626 5.17678 13.7374 5.17678 14.0303 5.46967C14.3232 5.76256 14.3232 6.23744 14.0303 6.53033L8.53033 12.0303C8.23744 12.3232 7.76256 12.3232 7.46967 12.0303L1.96967 6.53033C1.67678 6.23744 1.67678 5.76256 1.96967 5.46967Z" fill="#484E7F"/></svg>
-                        </button>
-                        <div class="nav-sub-group">
-                            <a href="analytics.html" class="nav-sub-item">Overview</a>
-                            <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
-                            <a href="analytics-retention.html" class="nav-sub-item">Retention</a>
-                            <a href="analytics-atrisk.html" class="nav-sub-item">At risk</a>
-                        </div>
-                        <a href="profiles.html" class="nav-item">
-                            <i class="ph-duotone ph-user-circle"></i>
-                            Guest Profiles
-                        </a>
-                        <a href="segments.html" class="nav-item active">
-                            <i class="ph-duotone ph-users-three"></i>
-                            Segments
-                        </a>
-                    </div>
+    <div class="app-shell__body">
 
-                    <div class="nav-group">
-                        <div class="nav-group-title">Menu</div>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-fork-knife"></i>
-                            Menu Performance
-                        </a>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-calendar-check"></i>
-                            LTO Analysis
-                        </a>
-                    </div>
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Main navigation">
 
-                    <div class="nav-group">
-                        <div class="nav-group-title">Other</div>
-                        <button class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)">
-                            <i class="ph-duotone ph-coins"></i>
-                            <span>Revenue</span>
-                            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.96967 5.46967C2.26256 5.17678 2.73744 5.17678 3.03033 5.46967L8 10.4393L12.9697 5.46967C13.2626 5.17678 13.7374 5.17678 14.0303 5.46967C14.3232 5.76256 14.3232 6.23744 14.0303 6.53033L8.53033 12.0303C8.23744 12.3232 7.76256 12.3232 7.46967 12.0303L1.96967 6.53033C1.67678 6.23744 1.67678 5.76256 1.96967 5.46967Z" fill="#484E7F"/></svg>
-                        </button>
-                        <div class="nav-sub-group">
-                            <a href="#" class="nav-sub-item">Overview</a>
-                            <a href="#" class="nav-sub-item">Acquisition</a>
-                        </div>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-storefront"></i>
-                            Locations
-                        </a>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-megaphone-simple"></i>
-                            Campaigns
-                        </a>
-                    </div>
+          <div class="nav-group" data-nav-group-id="top">
+            <a href="index.html" class="nav-item">
+              <i class="ph-duotone ph-chart-bar" aria-hidden="true"></i>
+              <span class="nav-item__label">Dashboard</span>
+            </a>
+          </div>
 
-                    <div class="nav-group">
-                        <div class="nav-group-title">Platform</div>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-database"></i>
-                            Data Sources
-                        </a>
-                        <a href="identity-resolution.html" class="nav-item">
-                            <i class="ph-duotone ph-fingerprint-simple"></i>
-                            Identity Resolution
-                        </a>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-share-fat"></i>
-                            Data Export
-                        </a>
-                    </div>
-
-                    <div class="nav-group" style="margin-top: auto;">
-                        <button class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)">
-                            <i class="ph-duotone ph-gear"></i>
-                            <span>Settings</span>
-                            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.96967 5.46967C2.26256 5.17678 2.73744 5.17678 3.03033 5.46967L8 10.4393L12.9697 5.46967C13.2626 5.17678 13.7374 5.17678 14.0303 5.46967C14.3232 5.76256 14.3232 6.23744 14.0303 6.53033L8.53033 12.0303C8.23744 12.3232 7.76256 12.3232 7.46967 12.0303L1.96967 6.53033C1.67678 6.23744 1.67678 5.76256 1.96967 5.46967Z" fill="#484E7F"></path></svg>
-                        </button>
-                        <div class="nav-sub-group">
-                            <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
-                        </div>
-                    </div>
-                </nav>
-            </aside>
-
-            <!-- Main Content -->
-            <main class="main-content">
-                <div class="content-area">
-                    <!-- Segment List View -->
-                    <div id="segment-list">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xl);">
-                            <h1>Segments</h1>
-                            <div style="display: flex; gap: var(--spacing-sm);">
-                                <a href="create-segment.html" style="text-decoration: none;">
-                                    <button class="btn btn-primary">
-                                        <i class="ph ph-plus"></i> Create Segment
-                                    </button>
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="card card-table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Segment Name</th>
-                                        <th>Description</th>
-                                        <th>Guest Count</th>
-                                        <th>Source Affinity</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td style="font-weight: 700;">Dormant High Spenders</td>
-                                        <td style="color: var(--text-subdued);">LTV > $500, Last order > 60 days ago</td>
-                                        <td>4,208</td>
-                                        <td>
-                                            <span class="badge badge-pos">POS</span>
-                                            <span class="badge badge-ordering">Ordering</span>
-                                        </td>
-                                        <td><span class="badge badge-success">Active</span></td>
-                                        <td>
-                                            <button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-pencil-simple"></i></button>
-                                            <button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-copy"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: 700;">Breakfast Regulars</td>
-                                        <td style="color: var(--text-subdued);">Orders before 10 AM, min 2 visits/month</td>
-                                        <td>12,942</td>
-                                        <td>
-                                            <span class="badge badge-pos">POS</span>
-                                        </td>
-                                        <td><span class="badge badge-success">Active</span></td>
-                                        <td>
-                                            <button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-pencil-simple"></i></button>
-                                            <button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-copy"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: 700;">Vegetarian Segment</td>
-                                        <td style="color: var(--text-subdued);">Orders with "Veggie" menu tags</td>
-                                        <td>8,115</td>
-                                        <td>
-                                            <span class="badge badge-ordering">Ordering</span>
-                                        </td>
-                                        <td><span class="badge badge-success">Active</span></td>
-                                        <td>
-                                            <button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-pencil-simple"></i></button>
-                                            <button class="btn btn-secondary" style="padding: 4px 8px;"><i class="ph ph-copy"></i></button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Segment Builder View (Hidden by default) -->
-                    <div id="segment-builder" style="display: none;">
-                        <div class="builder-content">
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--spacing-xl);">
-                                <h1>Create segment</h1>
-                                <div style="display: flex; gap: var(--spacing-md); align-items: center;">
-                                    <button class="btn-link" style="font-size: 16px; font-weight: 400;">
-                                        <i class="ph ph-question" style="font-size: 24px;"></i> Help
-                                    </button>
-                                    <button class="btn btn-primary">
-                                        <i class="ph ph-sparkle"></i> Create with AI...
-                                    </button>
-                                    <button class="btn btn-secondary" style="padding: 8px;">
-                                        <i class="ph ph-dots-three-vertical"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div style="display: flex; flex-direction: column; gap: var(--spacing-xl); position: relative;">
-                                <!-- Template Link -->
-                                <button class="btn-link">
-                                    <i class="ph ph-clipboard-text"></i>
-                                    <span>Work from a template...</span>
-                                </button>
-
-                                <!-- Name Field -->
-                                <div style="width: 400px;">
-                                    <label style="display: block; font-weight: 800; font-size: 16px; margin-bottom: var(--spacing-xs);">Name</label>
-                                    <input type="text" placeholder="Segment name" style="width: 100%; padding: 8px 16px; border: 1px solid var(--border-color); border-radius: var(--border-radius); font-size: 16px; height: 40px;">
-                                </div>
-
-                                <!-- Meta Actions -->
-                                <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
-                                    <button class="btn-link">
-                                        <i class="ph ph-plus"></i>
-                                        <span>Add description</span>
-                                    </button>
-                                    <button class="btn-link">
-                                        <i class="ph ph-plus"></i>
-                                        <span>Add tag</span>
-                                    </button>
-                                </div>
-
-                                <hr style="border: none; border-top: 1px solid var(--border-color); margin: var(--spacing-sm) 0;">
-
-                                <div style="display: grid; grid-template-columns: 1fr 200px; gap: var(--spacing-xxl); align-items: start;">
-                                    <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
-                                        <!-- Rule 1 -->
-                                        <div class="rule-block">
-                                            <div class="rule-header">
-                                                <div>
-                                                    <div class="rule-title">Rule 1</div>
-                                                    <div class="rule-meta">21,523 guests • 35.2% of all guests</div>
-                                                </div>
-                                                <button class="btn btn-secondary" style="padding: 4px; border: none; background: transparent;"><i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i></button>
-                                            </div>
-
-                                            <div class="rule-row-new">
-                                                <button class="btn-link" style="text-decoration: none; border-bottom: 2px solid var(--border-color); padding-bottom: 2px;">Guest type</button>
-                                                
-                                                <div class="select-pill">
-                                                    is <i class="ph ph-caret-down"></i>
-                                                </div>
-
-                                                <div class="btn-group">
-                                                    <button class="btn-group-item active">Loyalty</button>
-                                                    <button class="btn-group-item">Non-Loyalty</button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Operator Toggles -->
-                                        <div class="btn-group" style="width: fit-content;">
-                                            <button class="btn-group-item active">And</button>
-                                            <button class="btn-group-item">Or</button>
-                                            <button class="btn-group-item">Exclude</button>
-                                        </div>
-
-                                        <!-- Rule 2 -->
-                                        <div class="rule-block">
-                                            <div class="rule-header">
-                                                <div>
-                                                    <div class="rule-title">Rule 2</div>
-                                                    <div class="rule-meta">3,022 guests • 4.26% of all guests</div>
-                                                </div>
-                                                <button class="btn btn-secondary" style="padding: 4px; border: none; background: transparent;"><i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i></button>
-                                            </div>
-
-                                            <div class="rule-row-new">
-                                                <button class="btn-link" style="text-decoration: none; border-bottom: 2px solid var(--border-color); padding-bottom: 2px;">Menu Item</button>
-                                                
-                                                <div class="select-pill">
-                                                    Double Delight Burger <i class="ph ph-x" style="font-size: 14px; margin-left: 8px;"></i> <i class="ph ph-caret-down"></i>
-                                                </div>
-
-                                                <div class="select-pill">
-                                                    with modifiers <i class="ph ph-caret-down"></i>
-                                                </div>
-
-                                                <div class="select-pill">
-                                                    <div class="chip">Pickles</div>
-                                                    <div class="chip">Lettuce</div>
-                                                    <i class="ph ph-caret-down" style="margin-left: 8px;"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <button class="btn-link">
-                                            <i class="ph ph-plus"></i>
-                                            <span>Add another rule</span>
-                                        </button>
-                                    </div>
-
-                                    <!-- Sticky Side Stats -->
-                                    <div class="callout-box" style="position: sticky; top: var(--spacing-md);">
-                                        <div style="font-size: 14px; color: var(--text-subdued); margin-bottom: 4px;">Total segment count</div>
-                                        <div style="font-size: 28px; font-weight: 800; margin-bottom: 4px;">1,021</div>
-                                        <div style="font-size: 12px; margin-bottom: var(--spacing-lg);">1.9% of all guests</div>
-                                        
-                                        <button class="btn-link" style="text-decoration: underline; font-weight: 400;">Calculate</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Bottom Save Bar -->
-                            <div class="action-bar">
-                                <div style="display: flex; gap: var(--spacing-lg); align-items: center; width: 1128px; margin: 0 auto;">
-                                    <button class="btn btn-accent" style="padding: 8px 32px; font-size: 16px;">Save</button>
-                                    <button class="btn-link" style="text-decoration: none; font-weight: 400; text-decoration: underline;" onclick="document.getElementById('segment-list').style.display='block'; document.getElementById('segment-builder').style.display='none';">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-    <!-- Ask AVA Modal -->
-    <div class="ava-modal-overlay" id="avaOverlay" onclick="toggleAva()"></div>
-    <div class="ava-modal" id="avaModal" role="dialog" aria-modal="true" aria-labelledby="avaTitle">
-        <div class="ava-modal-header">
-            <div class="ava-modal-title" id="avaTitle">Ask Ava</div>
-            <button class="ava-close" onclick="toggleAva()" aria-label="Close Ask Ava">
-                <img src="assets/icon-close.svg" alt="">
+          <div class="nav-group" data-nav-group-id="guests">
+            <div class="nav-group-title">Guests</div>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-chart-pie" aria-hidden="true"></i>
+              <span class="nav-item__label">Analytics</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
             </button>
-        </div>
-        <div class="ava-modal-body">
-            <aside class="ava-recent">
-                <div class="ava-recent-title">Recent</div>
-                <div class="ava-recent-empty">
-                    <img class="ava-recent-icon" src="assets/icon-recent.svg" alt="">
-                    <p>Once we've had a conversation, you'll see it here</p>
+            <div class="nav-sub-group">
+              <a href="analytics.html" class="nav-sub-item">Overview</a>
+              <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
+              <a href="analytics-retention.html" class="nav-sub-item">Retention</a>
+              <a href="analytics-atrisk.html" class="nav-sub-item">At risk</a>
+            </div>
+            <a href="profiles.html" class="nav-item">
+              <i class="ph-duotone ph-user-circle" aria-hidden="true"></i>
+              <span class="nav-item__label">Guest profiles</span>
+            </a>
+            <a href="segments.html" class="nav-item active">
+              <i class="ph-duotone ph-users-three" aria-hidden="true"></i>
+              <span class="nav-item__label">Segments</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="menu">
+            <div class="nav-group-title">Menu</div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-fork-knife" aria-hidden="true"></i>
+              <span class="nav-item__label">Menu Performance</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-calendar-check" aria-hidden="true"></i>
+              <span class="nav-item__label">LTO Analysis</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="other">
+            <div class="nav-group-title">Other</div>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-coins" aria-hidden="true"></i>
+              <span class="nav-item__label">Revenue</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="#" class="nav-sub-item">Overview</a>
+              <a href="#" class="nav-sub-item">Acquisition</a>
+            </div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-storefront" aria-hidden="true"></i>
+              <span class="nav-item__label">Locations</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-megaphone-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Campaigns</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="platform">
+            <div class="nav-group-title">Platform</div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-database" aria-hidden="true"></i>
+              <span class="nav-item__label">Data Sources</span>
+            </a>
+            <a href="identity-resolution.html" class="nav-item">
+              <i class="ph-duotone ph-fingerprint-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Identity Resolution</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-share-fat" aria-hidden="true"></i>
+              <span class="nav-item__label">Data Export</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="bottom">
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-gear" aria-hidden="true"></i>
+              <span class="nav-item__label">Settings</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+            </div>
+          </div>
+
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+        <div class="content-area content-area--guest-profiles">
+
+          <div class="guests-main">
+
+            <!-- Title bar -->
+            <div class="guests-intro">
+              <div class="title-bar">
+                <div class="title-bar__page-title">
+                  <h1 class="heading1" style="flex:1; font-weight:400;">All segments</h1>
+                  <div class="title-bar__actions">
+                    <button class="button transparent">
+                      <span class="material-symbols-rounded">help</span>
+                      <span>Help</span>
+                    </button>
+                    <button class="button outlined" onclick="alert('Switch to classic — not built yet')">
+                      <span class="material-symbols-rounded">swap_horiz</span>
+                      <span>Switch to classic</span>
+                    </button>
+                    <button class="button outlined" onclick="alert('Smart segments — not built yet')">
+                      <span class="material-symbols-rounded">auto_awesome</span>
+                      <span>Smart segments</span>
+                    </button>
+                    <a href="create-segment.html" class="button primary" style="text-decoration:none;">
+                      <span class="material-symbols-rounded">add</span>
+                      <span>Create segment</span>
+                    </a>
+                  </div>
                 </div>
-            </aside>
-            <section class="ava-main">
-                <div class="ava-chat-viewport">
-                    <div class="ava-body">
-                        <div class="ava-hero">
-                            Hello! I'm AVA, your Guest Analytics assistant. How can I help you today?
-                        </div>
-                        <div class="ava-input-container" id="initialInputContainer">
-                            <input type="text" class="ava-input" placeholder="Ask Ava" id="avaInput" onkeypress="if(event.key === 'Enter') sendToAva()">
-                        </div>
-                        <div class="ava-chat-area">
-                            <div class="ava-suggestion-cards">
-                                <button class="ava-suggestion-card" onclick="askAva('Why did repeat visits drop last month?')">Why did repeat visits drop last month?</button>
-                                <button class="ava-suggestion-card" onclick="askAva('Compare loyal vs non-loyal guest spend')">Compare loyal vs non-loyal guest spend</button>
-                                <button class="ava-suggestion-card" onclick="askAva('Which menu items drive frequency for this segment?')">Which menu items drive frequency for this segment?</button>
-                            </div>
-                        </div>
+              </div>
+            </div>
+
+            <!-- Body: filters + table + pagination -->
+            <div class="guests-body">
+
+              <!-- Filter row -->
+              <div class="guests-controls">
+                <div class="guests-controls__search">
+                  <div class="text-input__container">
+                    <div class="text-input__container__box" style="width:100%;">
+                      <span class="material-symbols-rounded text-input__container__box_icon-left" style="font-size:24px; color:#60696c;">search</span>
+                      <input
+                        type="text"
+                        class="text-input__container__box__input-field text-input__container__box_icon-left-padding"
+                        placeholder="Filter by name, tag, type and creator..."
+                        id="search-input"
+                        oninput="filterSegments(this.value)"
+                      >
                     </div>
+                  </div>
                 </div>
-                <div class="ava-input-footer" id="footerInputContainer">
-                    <div class="ava-input-wrapper">
-                        <div class="ava-input-container">
-                            <input type="text" class="ava-input" placeholder="Ask follow-up" id="avaInputFooter" onkeypress="if(event.key === 'Enter') sendToAva(true)">
-                        </div>
+                <button class="button outlined" onclick="alert('More filters — not built yet')">
+                  <span class="material-symbols-rounded">filter_alt</span>
+                  <span>More filters...</span>
+                </button>
+              </div>
+
+              <!-- Count + sort row -->
+              <div class="guests-table-header">
+                <span class="guests-table-header__count" id="count-label">100 items</span>
+                <div class="guests-table-header__sort">
+                  <span class="guests-table-header__sort-label">Sort by:</span>
+                  <div class="sort-dropdown" style="position:relative;">
+                    <div class="dropdown__wrapper">
+                      <button class="dropdown__button" style="min-width:200px;" onclick="toggleSort(this)">
+                        <span id="sort-label">Updated most recently</span>
+                        <i class="ph ph-caret-down" style="font-size:16px; flex-shrink:0;"></i>
+                      </button>
                     </div>
+                    <div class="dropdown__options" id="sort-options">
+                      <ul>
+                        <li><button onclick="selectSort('updated-desc', 'Updated most recently')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">Updated most recently</button></li>
+                        <li><button onclick="selectSort('updated-asc', 'Updated least recently')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">Updated least recently</button></li>
+                        <li><button onclick="selectSort('name-asc', 'Name: A to Z')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">Name: A to Z</button></li>
+                        <li><button onclick="selectSort('name-desc', 'Name: Z to A')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">Name: Z to A</button></li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-            </section>
-        </div>
+              </div>
+
+              <!-- Table -->
+              <div class="guests-table-wrap">
+                <div class="table-container">
+                  <table class="table" id="segments-table">
+                    <thead>
+                      <tr>
+                        <th class="guests-check-cell" onclick="toggleSelectAll()">
+                          <span id="select-all-icon" class="material-symbols-rounded guests-check-icon">check_box_outline_blank</span>
+                        </th>
+                        <th>Segment</th>
+                        <th>Tags</th>
+                        <th>Segment type</th>
+                        <th>Campaign links</th>
+                        <th class="table__actions-column"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="segments-tbody">
+                      <!-- Rows rendered by JS -->
+                    </tbody>
+                  </table>
+                  <!-- Empty state -->
+                  <div class="table__empty-state" id="empty-state" style="display:none;">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin:7.5rem auto;text-align:center;">
+                      <span class="material-symbols-rounded" style="font-size:48px;color:#DFE1E2;">search</span>
+                      <div style="font-weight:600;font-size:16px;color:#141414;">No matching segments</div>
+                      <div style="font-size:14px;color:#60696c;">Try another name, tag, type, or creator.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pagination -->
+              <div class="pagination" id="pagination-bar">
+
+                <!-- Left: items per page -->
+                <div class="pagination__items-per-page">
+                  <label>Items per page</label>
+                  <div class="pagination-dropdown">
+                    <div class="dropdown__wrapper" style="min-width:80px;">
+                      <button class="dropdown__button">
+                        <span>10</span>
+                        <i class="ph ph-caret-down" style="font-size:14px; flex-shrink:0;"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right: page selector + arrows -->
+                <div class="pagination__navigation">
+                  <div class="pagination-dropdown">
+                    <div class="dropdown__wrapper" style="min-width:80px;">
+                      <button class="dropdown__button" id="page-dropdown-btn" onclick="togglePageDropdown()">
+                        <span id="page-dropdown-label">1</span>
+                        <i class="ph ph-caret-down" style="font-size:14px; flex-shrink:0;"></i>
+                      </button>
+                    </div>
+                    <div class="dropdown__options" id="page-options" style="bottom:calc(100% + 8px); top:auto;">
+                      <ul id="page-options-list"></ul>
+                    </div>
+                  </div>
+                  <label id="total-pages-text">of 10 pages</label>
+                  <div class="pagination__navigation__arrows">
+                    <button class="pagination__nav-arrow" id="prev-btn" onclick="prevPage()" disabled>
+                      <i class="ph ph-caret-left"></i>
+                    </button>
+                    <button class="pagination__nav-arrow" id="next-btn" onclick="nextPage()">
+                      <i class="ph ph-caret-right"></i>
+                    </button>
+                  </div>
+                </div>
+
+              </div><!-- /pagination -->
+
+            </div><!-- /guests-body -->
+          </div><!-- /guests-main -->
+        </div><!-- /content-area -->
+      </main>
+
     </div>
+  </div>
 
-    <script>
-        Chart.defaults.animation = false;
-        Chart.defaults.plugins.tooltip.animation = false;
+  <!-- Row action menu -->
+  <div class="guest-row-menu" id="row-menu">
+    <button class="guest-row-menu__item" onclick="rowMenuAction('view')">
+      <span class="material-symbols-rounded">visibility</span>
+      View segment
+    </button>
+    <button class="guest-row-menu__item" onclick="rowMenuAction('duplicate')">
+      <span class="material-symbols-rounded">content_copy</span>
+      Duplicate
+    </button>
+    <button class="guest-row-menu__item" onclick="rowMenuAction('export')">
+      <span class="material-symbols-rounded">file_download</span>
+      Export
+    </button>
+    <button class="guest-row-menu__item" onclick="rowMenuAction('delete')">
+      <span class="material-symbols-rounded">delete</span>
+      Delete
+    </button>
+  </div>
 
-        function toggleNavExpand(btn) {
-            const subGroup = btn.nextElementSibling;
-            btn.classList.toggle('open');
-            subGroup.classList.toggle('open');
-        }
+  <script>
+    /* ── Mock data ── */
+    const SEGMENT_NAMES = [
+      'High-LTV loyalty members', 'Lapsed VIP guests', 'New sign-ups — last 30 days', 'Birthday this month',
+      'NYC dinner regulars', 'Coffee-only guests', 'App users without recent orders', 'Catering enquiries 2026',
+      'Promo redeemers — Q1', 'Family meal repeat buyers', 'Loyalty tier upgrades', 'High-frequency lunch crowd',
+      'Drive-thru only', 'Online order — abandoned cart', 'Email opt-ins — new', 'SMS subscribers — active',
+      'Anniversary guests', 'Gift card buyers', 'Inactive 90+ days', 'Holiday season VIPs',
+      'Punchh active members', 'Brand ambassadors', 'Survey respondents', 'High-value catering',
+      'First-time orderers', 'Repeat weekly diners', 'Mobile app power users', 'Credit card repeat',
+      'Cravewave loyalty top 10%', 'Newsletter subscribers', 'Lapsed members — 60 days', 'Reactivation candidates',
+      'Family-of-four orders', 'Late-night orderers', 'Breakfast regulars', 'High-margin item buyers',
+      'LTO Q2 enthusiasts', 'Discount-sensitive guests', 'Walk-in regulars', 'Geo: Boston metro',
+      'Geo: Austin metro', 'Geo: Bay Area', 'Multi-location visitors', 'Single-location loyalists',
+      'Email click-throughs', 'Push notification opt-outs', 'High-margin catering', 'Loyalty churn risk',
+      'Premium tier members', 'New menu samplers',
+    ];
 
-        function toggleAva() {
-            const modal = document.getElementById('avaModal');
-            const overlay = document.getElementById('avaOverlay');
-            modal.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
+    const TAGS_POOL = ['New', 'Loyalty', 'Marketing', 'Q1-26', 'VIP', 'Test', 'Active', 'Email'];
+    const TYPES = ['Custom list', 'Custom rule', 'Smart segment'];
+    const CAMPAIGN_STATES = ['Active', 'Non-active', 'none', 'none'];
+    const CREATORS = ['Marcus T.', 'Isabella C.', 'Priya S.', 'David L.', 'Aisha O.', 'Tom W.'];
 
-        function askAva(question) {
-            const input = document.getElementById('avaInput');
-            input.value = question;
-            sendToAva();
-        }
+    const ALL_SEGMENTS = SEGMENT_NAMES.map((name, i) => {
+      const tagCount = (i % 5 === 0) ? 0 : 1 + ((i * 3) % 2);
+      const tags = [];
+      for (let t = 0; t < tagCount; t++) {
+        tags.push(TAGS_POOL[(i * 7 + t * 3) % TAGS_POOL.length]);
+      }
+      const type = TYPES[(i * 5 + 1) % TYPES.length];
+      const camp = CAMPAIGN_STATES[(i * 11) % CAMPAIGN_STATES.length];
+      const creator = CREATORS[i % CREATORS.length];
+      const dayOffset = (i * 17) % 240;
+      const created = new Date(2026, 1, 15);
+      created.setDate(created.getDate() - dayOffset);
+      const updated = new Date(created.getTime() + ((i * 13) % 30) * 86400000);
+      return {
+        id: i + 1,
+        name,
+        tags,
+        type,
+        campaign: camp,
+        creator,
+        createdOn: created,
+        updatedOn: updated,
+      };
+    });
 
-        function sendToAva(isFollowUp = false) {
-            const inputId = isFollowUp ? 'avaInputFooter' : 'avaInput';
-            const input = document.getElementById(inputId);
-            const question = input.value.trim();
-            if (!question) return;
+    const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const MONTH = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function fmtDate(d) {
+      return `${DOW[d.getDay()]}, ${MONTH[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    }
 
-            const chatArea = document.querySelector('.ava-chat-area');
-            const chatViewport = document.querySelector('.ava-chat-viewport');
+    let currentSort  = 'updated-desc';
+    let currentQuery = '';
+    const PER_PAGE   = 10;
+    let currentPage  = 1;
 
-            if (!isFollowUp) {
-                // Hide suggestion cards when starting conversation
-                const suggestionCards = document.querySelector('.ava-suggestion-cards');
-                if (suggestionCards) {
-                    suggestionCards.style.display = 'none';
-                }
-                
-                // Hide hero message when starting conversation
-                const hero = document.querySelector('.ava-hero');
-                if (hero) {
-                    hero.style.display = 'none';
-                }
+    function filterAndSort() {
+      const q = currentQuery.toLowerCase().trim();
+      let result = [...ALL_SEGMENTS];
+      if (q) {
+        result = result.filter(s =>
+          s.name.toLowerCase().includes(q) ||
+          s.type.toLowerCase().includes(q) ||
+          s.creator.toLowerCase().includes(q) ||
+          s.tags.some(t => t.toLowerCase().includes(q))
+        );
+      }
+      if (currentSort === 'updated-desc') result.sort((a, b) => b.updatedOn - a.updatedOn);
+      if (currentSort === 'updated-asc')  result.sort((a, b) => a.updatedOn - b.updatedOn);
+      if (currentSort === 'name-asc')     result.sort((a, b) => a.name.localeCompare(b.name));
+      if (currentSort === 'name-desc')    result.sort((a, b) => b.name.localeCompare(a.name));
+      return result;
+    }
 
-                // Hide initial input and show footer input
-                document.getElementById('initialInputContainer').style.display = 'none';
-                document.getElementById('footerInputContainer').style.display = 'flex';
-                chatViewport.classList.add('chat-active');
-            }
+    function tagsHtml(tags) {
+      if (!tags || tags.length === 0) return '<span class="segments-dash">-</span>';
+      return tags.map(t => `<span class="segments-tag-chip"><span class="material-symbols-rounded">sell</span>${t}</span>`).join(' ');
+    }
 
-            // Add user message (in bubble, right-aligned)
-            const userMsg = document.createElement('div');
-            userMsg.className = 'ava-message user';
-            userMsg.innerHTML = `<div class="message-bubble">${question}</div>`;
-            chatArea.appendChild(userMsg);
+    function campaignHtml(state) {
+      if (state === 'Active')     return '<span class="tag tag__favorable"><span>Active</span></span>';
+      if (state === 'Non-active') return '<span class="tag tag__finished"><span>Non-active</span></span>';
+      return '<span class="segments-dash">-</span>';
+    }
 
-            input.value = '';
-            
-            // Scroll viewport to bottom
-            setTimeout(() => {
-                chatViewport.scrollTop = chatViewport.scrollHeight;
-            }, 0);
+    function renderTable() {
+      const segments   = filterAndSort();
+      const tbody      = document.getElementById('segments-tbody');
+      const empty      = document.getElementById('empty-state');
+      const countLabel = document.getElementById('count-label');
+      const total      = segments.length;
+      const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const start = (currentPage - 1) * PER_PAGE;
+      const page  = segments.slice(start, start + PER_PAGE);
 
-            // Add bot response (NOT in bubble, left-aligned)
-            setTimeout(() => {
-                const botText = document.createElement('div');
-                botText.className = 'ava-message bot';
-                botText.innerHTML = `<div class="ava-message-text">Based on the current filters, I've identified a key insight:</div>`;
-                chatArea.appendChild(botText);
-                
-                setTimeout(() => {
-                    chatViewport.scrollTop = chatViewport.scrollHeight;
-                }, 0);
+      countLabel.textContent = `${total} item${total !== 1 ? 's' : ''}`;
 
-                // Add insight card (in card)
-                setTimeout(() => {
-                    const insightCard = document.createElement('div');
-                    insightCard.className = 'ava-insight-card';
-                    insightCard.innerHTML = `
-                        <div class="ava-insight-title">Example insight</div>
-                        <div class="ava-insight-text">Repeat guest frequency has increased by 12% among High-Value Loyalists following the recent menu update.</div>
-                        <div class="ava-placeholder-chart"><canvas class="ava-insight-chart-canvas"></canvas></div>
-                    `;
-                    chatArea.appendChild(insightCard);
-                    const canvas = insightCard.querySelector('.ava-insight-chart-canvas');
-                    if (canvas && typeof Chart !== 'undefined') {
-                        const accentBlue = getComputedStyle(document.documentElement).getPropertyValue('--accent-blue').trim() || '#5A55E3';
-                        const subdued = getComputedStyle(document.documentElement).getPropertyValue('--text-subdued').trim() || '#6b7280';
-                        new Chart(canvas, {
-                            type: 'line',
-                            data: {
-                                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                                datasets: [{
-                                    label: 'Frequency',
-                                    data: [2.1, 2.2, 2.35, 2.4],
-                                    borderColor: accentBlue,
-                                    backgroundColor: 'rgba(90, 85, 227, 0.08)',
-                                    fill: true,
-                                    tension: 0.3,
-                                    pointRadius: 3
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: { legend: { display: false } },
-                                scales: {
-                                    x: { grid: { display: false }, ticks: { font: { size: 10 }, color: subdued } },
-                                    y: { min: 1.8, max: 2.6, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, color: subdued } }
-                                }
-                            }
-                        });
-                    }
-                    
-                    // Add action buttons
-                    const actionButtons = document.createElement('div');
-                    actionButtons.className = 'ava-action-buttons';
-                    actionButtons.innerHTML = `
-                        <button class="ava-action-btn">
-                            <i class="ph ph-copy"></i>
-                            <span>Copy</span>
-                        </button>
-                        <button class="ava-action-btn">
-                            <i class="ph ph-share-network"></i>
-                            <span>Share</span>
-                        </button>
-                        <button class="ava-action-btn">
-                            <i class="ph ph-link"></i>
-                            <span>Sources (3)</span>
-                        </button>
-                        <button class="ava-action-btn-icon-only">
-                            <i class="ph ph-thumbs-up"></i>
-                        </button>
-                        <button class="ava-action-btn-icon-only">
-                            <i class="ph ph-thumbs-down"></i>
-                        </button>
-                    `;
-                    chatArea.appendChild(actionButtons);
-                    
-                    setTimeout(() => {
-                        chatViewport.scrollTop = chatViewport.scrollHeight;
-                    }, 0);
-                }, 1000);
-            }, 800);
-        }
-    </script>
+      document.getElementById('page-dropdown-label').textContent = currentPage;
+      document.getElementById('total-pages-text').textContent = `of ${totalPages} page${totalPages !== 1 ? 's' : ''}`;
+      document.getElementById('prev-btn').disabled = currentPage <= 1;
+      document.getElementById('next-btn').disabled = currentPage >= totalPages;
+      document.getElementById('pagination-bar').style.display = total === 0 ? 'none' : 'flex';
+      document.getElementById('page-options-list').innerHTML = Array.from({ length: totalPages }, (_, i) => i + 1)
+        .map(p => `<li><button onclick="goToPage(${p})" style="background:none;border:none;width:100%;text-align:left;padding:8px 12px;cursor:pointer;font-family:'Manrope',sans-serif;font-size:16px;font-weight:${p === currentPage ? 700 : 400};">${p}</button></li>`)
+        .join('');
+
+      if (page.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      tbody.innerHTML = page.map(s => {
+        const isChecked = selectedIds.has(s.id);
+        const iconName  = isChecked ? 'check_box' : 'check_box_outline_blank';
+        const iconCls   = isChecked ? 'guests-check-icon guests-check-icon--checked' : 'guests-check-icon';
+        return `<tr class="segments-row segments-row--clickable" onclick="openSegment(${s.id})">
+          <td class="guests-check-cell" onclick="event.stopPropagation(); toggleRow(${s.id})">
+            <span class="material-symbols-rounded ${iconCls}" data-row-id="${s.id}">${iconName}</span>
+          </td>
+          <td>
+            <div class="segments-name-cell__title">${s.name}</div>
+            <div class="segments-name-cell__subtitle">Created on ${fmtDate(s.createdOn)}</div>
+          </td>
+          <td>${tagsHtml(s.tags)}</td>
+          <td>${s.type}</td>
+          <td>${campaignHtml(s.campaign)}</td>
+          <td class="table__actions-column">
+            <button class="guest-kebab-btn" onclick="event.stopPropagation(); openRowMenu(event, ${s.id})" aria-label="Actions for ${s.name}">
+              <span class="material-symbols-rounded">more_vert</span>
+            </button>
+          </td>
+        </tr>`;
+      }).join('');
+
+      currentPageIds = page.map(s => s.id);
+      updateSelectAllIcon();
+    }
+
+    function openSegment(id) {
+      alert('Segment detail — not built yet');
+    }
+
+    /* ── Row selection state ── */
+    const selectedIds = new Set();
+    let currentPageIds = [];
+
+    function toggleRow(id) {
+      if (selectedIds.has(id)) selectedIds.delete(id);
+      else selectedIds.add(id);
+      const icon = document.querySelector(`.guests-check-icon[data-row-id="${id}"]`);
+      if (icon) {
+        const checked = selectedIds.has(id);
+        icon.textContent = checked ? 'check_box' : 'check_box_outline_blank';
+        icon.classList.toggle('guests-check-icon--checked', checked);
+      }
+      updateSelectAllIcon();
+    }
+
+    function toggleSelectAll() {
+      const allSelected = currentPageIds.length > 0 && currentPageIds.every(id => selectedIds.has(id));
+      if (allSelected) currentPageIds.forEach(id => selectedIds.delete(id));
+      else             currentPageIds.forEach(id => selectedIds.add(id));
+      renderTable();
+    }
+
+    function updateSelectAllIcon() {
+      const icon = document.getElementById('select-all-icon');
+      if (!icon) return;
+      const total = currentPageIds.length;
+      const sel   = currentPageIds.filter(id => selectedIds.has(id)).length;
+      if (total > 0 && sel === total) {
+        icon.textContent = 'check_box';
+        icon.classList.add('guests-check-icon--checked');
+      } else if (sel > 0) {
+        icon.textContent = 'indeterminate_check_box';
+        icon.classList.add('guests-check-icon--checked');
+      } else {
+        icon.textContent = 'check_box_outline_blank';
+        icon.classList.remove('guests-check-icon--checked');
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 1) { currentPage--; renderTable(); }
+    }
+
+    function nextPage() {
+      const totalPages = Math.ceil(filterAndSort().length / PER_PAGE);
+      if (currentPage < totalPages) { currentPage++; renderTable(); }
+    }
+
+    function goToPage(p) {
+      currentPage = p;
+      document.getElementById('page-options').classList.remove('dropdown__options_open');
+      renderTable();
+    }
+
+    function togglePageDropdown() {
+      document.getElementById('page-options').classList.toggle('dropdown__options_open');
+    }
+
+    function filterSegments(query) {
+      currentQuery = query;
+      currentPage  = 1;
+      renderTable();
+    }
+
+    function toggleSort(btn) {
+      document.getElementById('sort-options').classList.toggle('dropdown__options_open');
+    }
+
+    function selectSort(value, label) {
+      currentSort = value;
+      currentPage = 1;
+      document.getElementById('sort-label').textContent = label;
+      document.getElementById('sort-options').classList.remove('dropdown__options_open');
+      renderTable();
+    }
+
+    /* ── Row kebab menu ── */
+    let activeMenuId = null;
+
+    function openRowMenu(event, id) {
+      event.stopPropagation();
+      const menu = document.getElementById('row-menu');
+      const btn  = event.currentTarget;
+      const rect = btn.getBoundingClientRect();
+
+      if (activeMenuId === id && menu.classList.contains('guest-row-menu--open')) {
+        closeRowMenu();
+        return;
+      }
+
+      activeMenuId = id;
+      menu.classList.add('guest-row-menu--open');
+
+      const menuWidth = 180;
+      let left = rect.right - menuWidth;
+      let top  = rect.bottom + 4;
+      if (left < 8) left = 8;
+      menu.style.left = left + 'px';
+      menu.style.top  = top  + 'px';
+    }
+
+    function closeRowMenu() {
+      document.getElementById('row-menu').classList.remove('guest-row-menu--open');
+      activeMenuId = null;
+    }
+
+    function rowMenuAction(action) {
+      closeRowMenu();
+      if (action === 'view')      alert('View segment — not built yet');
+      if (action === 'duplicate') alert('Duplicate segment — not built yet');
+      if (action === 'export')    alert('Export segment — not built yet');
+      if (action === 'delete')    alert('Delete segment — not built yet');
+    }
+
+    function toggleNavExpand(btn) {
+      const isOpen = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      const sub = btn.nextElementSibling;
+      if (sub && sub.classList.contains('nav-sub-group')) {
+        sub.classList.toggle('open', isOpen);
+      }
+    }
+
+    /* Close all dropdowns on outside click */
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.sort-dropdown')) {
+        document.getElementById('sort-options').classList.remove('dropdown__options_open');
+      }
+      if (!e.target.closest('#page-dropdown-btn') && !e.target.closest('#page-options')) {
+        document.getElementById('page-options').classList.remove('dropdown__options_open');
+      }
+      if (!e.target.closest('.guest-kebab-btn') && !e.target.closest('#row-menu')) {
+        closeRowMenu();
+      }
+    });
+
+    /* Initial render */
+    renderTable();
+  </script>
 </body>
 </html>

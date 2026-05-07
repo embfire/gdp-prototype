@@ -1,868 +1,570 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guest Profile - Guest Data Platform</title>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0" />
-    <link rel="stylesheet" href="assets/bento.css">
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .profile-nav-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .btn-back {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--text-normal);
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .content-area {
-            gap: 0;
-        }
-
-        .profile-header-main {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .profile-avatar-img {
-            width: 80px;
-            height: 80px;
-            border-radius: 16px;
-            object-fit: cover;
-            background: #fce4ec;
-        }
-
-        .profile-name-area {
-            flex: 1;
-        }
-
-        .profile-name-area h1 {
-            font-size: 32px;
-            font-weight: 400;
-            margin-bottom: 4px;
-        }
-
-        .identity-tags {
-            display: flex;
-            gap: 8px;
-        }
-
-        .identity-tag {
-            background: #f4f4f4;
-            padding: 4px 12px;
-            border-radius: 100px;
-            font-size: 12px;
-            color: var(--text-subdued);
-        }
-
-        .contact-info-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: var(--spacing-xl);
-            padding-bottom: var(--spacing-lg);
-        }
-
-        .contact-col-label {
-            font-size: 12px;
-            color: var(--text-subdued);
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .contact-col-value {
-            font-size: 15px;
-            margin-bottom: 4px;
-        }
-
-        .contact-col-more {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-normal);
-        }
-
-        .metrics-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .metric-card-bikky {
-            background: white;
-            border: 1px solid #dfe1e2;
-            border-radius: 0.5rem;
-            padding: var(--spacing-lg);
-        }
-
-        .metric-card-label {
-            font-size: 13px;
-            color: var(--text-subdued);
-            margin-bottom: 12px;
-        }
-
-        .metric-card-value {
-            font-size: 28px;
-            font-weight: 400;
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .metric-detail-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            margin-bottom: 12px;
-        }
-
-        .metric-detail-label {
-            color: var(--text-subdued);
-        }
-
-        .metric-detail-value {
-            font-weight: 500;
-            text-align: right;
-        }
-
-        .id-detail-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid var(--border-color);
-            font-family: var(--font-family);
-            font-size: 13px;
-            font-weight: 400;
-            color: var(--text-normal);
-            cursor: pointer;
-            text-decoration: none;
-            padding: 0;
-        }
-
-        .id-detail-link:hover {
-            border-bottom-color: var(--text-normal);
-        }
-
-        .consent-strip {
-            display: flex;
-            gap: var(--spacing-xl);
-            padding: var(--spacing-md) var(--spacing-lg);
-            background: white;
-            border: 1px solid #dfe1e2;
-            border-radius: 0.5rem;
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .consent-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-        }
-
-        .consent-item .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .consent-channel {
-            font-weight: 500;
-            color: var(--text-normal);
-        }
-
-        .consent-status {
-            color: var(--text-normal);
-        }
-
-        .consent-since {
-            color: var(--text-subdued);
-        }
-
-        .revenue-badge {
-            display: inline-block;
-            background: #e8f5e9;
-            color: #257469;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: 100px;
-            margin-left: 6px;
-        }
-
-        .tabs-container {
-            display: flex;
-            gap: var(--spacing-lg);
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .tab-btn {
-            padding: 12px 0;
-            background: none;
-            border: none;
-            border-bottom: 2px solid transparent;
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-subdued);
-            cursor: pointer;
-        }
-
-        .tab-btn.active {
-            color: var(--text-normal);
-            border-bottom-color: var(--text-normal);
-        }
-
-        .timeline-layout {
-            display: grid;
-            grid-template-columns: 1fr 240px;
-            gap: var(--spacing-xxl);
-        }
-
-        .guest-status-box {
-            position: sticky;
-            top: 24px;
-        }
-
-        .status-header {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-subdued);
-            margin-bottom: 12px;
-        }
-
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
-            background: #f0fdf4;
-            color: #166534;
-            border-radius: 100px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            background: #22c55e;
-            border-radius: 50%;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marcus Thompson — PAR Guest360</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/bento.css">
+  <link rel="stylesheet" href="beta/beta.css">
 </head>
-<body data-v-app>
-    <div class="app-container">
-        <!-- Top Header -->
-        <header class="header">
-            <div class="header-left">
-                <a href="index.html" class="header-brand" aria-label="Guest360 Home">
-                    <img src="assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
-                </a>
-                <span class="header-brand-divider" aria-hidden="true"></span>
-                <button class="header-brand-btn" aria-label="Select brand">
-                    Cravewave
-                    <i class="ph ph-caret-down"></i>
-                </button>
-            </div>
-            <div class="header-right">
-                <button class="header-btn" onclick="toggleAva()">
-                    <img src="assets/ava-assistant.svg" alt="" width="24" height="24">
-                    Ava
-                </button>
-                <button class="header-btn">
-                    <span class="material-symbols-rounded">school</span>
-                    PAR Academy
-                </button>
-                <button class="header-btn header-btn--icon" aria-label="Profile">
-                    <span class="material-symbols-rounded">person</span>
-                </button>
-            </div>
-        </header>
+<body>
+  <div class="app-shell">
 
-        <div class="app-body">
-            <!-- Sidebar -->
-            <aside class="sidebar">
-                <nav class="sidebar-nav">
-                    <div class="nav-group">
-                        <a href="index.html" class="nav-item">
-                            <i class="ph-duotone ph-chart-bar"></i>
-                            Dashboard
-                        </a>
-                    </div>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+          <img src="assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+        </a>
+        <span class="header-brand-divider" aria-hidden="true"></span>
+        <button class="header-brand-btn" aria-label="Select brand">
+          Cravewave
+          <i class="ph ph-caret-down"></i>
+        </button>
+      </div>
+      <div class="header-right">
+        <button class="header-btn">
+          <img src="assets/ava-assistant.svg" alt="" width="24" height="24">
+          Ava
+        </button>
+        <button class="header-btn">
+          <span class="material-symbols-rounded">school</span>
+          PAR Academy
+        </button>
+        <button class="header-btn header-btn--icon" aria-label="Profile">
+          <span class="material-symbols-rounded">person</span>
+        </button>
+      </div>
+    </header>
 
-                    <div class="nav-group">
-                        <div class="nav-group-title">Guests</div>
-                        <button class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)">
-                            <i class="ph-duotone ph-chart-pie"></i>
-                            <span>Analytics</span>
-                            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.96967 5.46967C2.26256 5.17678 2.73744 5.17678 3.03033 5.46967L8 10.4393L12.9697 5.46967C13.2626 5.17678 13.7374 5.17678 14.0303 5.46967C14.3232 5.76256 14.3232 6.23744 14.0303 6.53033L8.53033 12.0303C8.23744 12.3232 7.76256 12.3232 7.46967 12.0303L1.96967 6.53033C1.67678 6.23744 1.67678 5.76256 1.96967 5.46967Z" fill="#484E7F"/></svg>
-                        </button>
-                        <div class="nav-sub-group">
-                            <a href="analytics.html" class="nav-sub-item">Overview</a>
-                            <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
-                            <a href="analytics-retention.html" class="nav-sub-item">Retention</a>
-                            <a href="analytics-atrisk.html" class="nav-sub-item">At risk</a>
-                        </div>
-                        <a href="profiles.html" class="nav-item active">
-                            <i class="ph-duotone ph-user-circle"></i>
-                            Guest Profiles
-                        </a>
-                        <a href="segments.html" class="nav-item">
-                            <i class="ph-duotone ph-users-three"></i>
-                            Segments
-                        </a>
-                    </div>
+    <div class="app-shell__body">
 
-                    <div class="nav-group">
-                        <div class="nav-group-title">Menu</div>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-fork-knife"></i>
-                            Menu Performance
-                        </a>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-calendar-check"></i>
-                            LTO Analysis
-                        </a>
-                    </div>
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Main navigation">
 
-                    <div class="nav-group">
-                        <div class="nav-group-title">Other</div>
-                        <button class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)">
-                            <i class="ph-duotone ph-coins"></i>
-                            <span>Revenue</span>
-                            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.96967 5.46967C2.26256 5.17678 2.73744 5.17678 3.03033 5.46967L8 10.4393L12.9697 5.46967C13.2626 5.17678 13.7374 5.17678 14.0303 5.46967C14.3232 5.76256 14.3232 6.23744 14.0303 6.53033L8.53033 12.0303C8.23744 12.3232 7.76256 12.3232 7.46967 12.0303L1.96967 6.53033C1.67678 6.23744 1.67678 5.76256 1.96967 5.46967Z" fill="#484E7F"/></svg>
-                        </button>
-                        <div class="nav-sub-group">
-                            <a href="#" class="nav-sub-item">Overview</a>
-                            <a href="#" class="nav-sub-item">Acquisition</a>
-                        </div>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-storefront"></i>
-                            Locations
-                        </a>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-megaphone-simple"></i>
-                            Campaigns
-                        </a>
-                    </div>
+          <div class="nav-group" data-nav-group-id="top">
+            <a href="index.html" class="nav-item">
+              <i class="ph-duotone ph-chart-bar" aria-hidden="true"></i>
+              <span class="nav-item__label">Dashboard</span>
+            </a>
+          </div>
 
-                    <div class="nav-group">
-                        <div class="nav-group-title">Platform</div>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-database"></i>
-                            Data Sources
-                        </a>
-                        <a href="identity-resolution.html" class="nav-item">
-                            <i class="ph-duotone ph-fingerprint-simple"></i>
-                            Identity Resolution
-                        </a>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-share-fat"></i>
-                            Data Export
-                        </a>
-                    </div>
-
-                    <div class="nav-group" style="margin-top: auto;">
-                        <button class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)">
-                            <i class="ph-duotone ph-gear"></i>
-                            <span>Settings</span>
-                            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.96967 5.46967C2.26256 5.17678 2.73744 5.17678 3.03033 5.46967L8 10.4393L12.9697 5.46967C13.2626 5.17678 13.7374 5.17678 14.0303 5.46967C14.3232 5.76256 14.3232 6.23744 14.0303 6.53033L8.53033 12.0303C8.23744 12.3232 7.76256 12.3232 7.46967 12.0303L1.96967 6.53033C1.67678 6.23744 1.67678 5.76256 1.96967 5.46967Z" fill="#484E7F"></path></svg>
-                        </button>
-                        <div class="nav-sub-group">
-                            <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
-                        </div>
-                    </div>
-                </nav>
-            </aside>
-
-            <!-- Main Content -->
-            <main class="main-content">
-                <div class="content-area">
-                    <!-- Top Navigation -->
-                    <div class="profile-nav-top">
-                        <a href="profiles.html" class="btn-back">
-                            <i class="ph ph-arrow-left"></i>
-                            All guests
-                        </a>
-                        <div style="display: flex; gap: var(--spacing-md); color: var(--text-subdued);">
-                            <i class="ph ph-download-simple" style="font-size: 20px; cursor: pointer;"></i>
-                            <i class="ph ph-question" style="font-size: 20px; cursor: pointer;"></i>
-                            <i class="ph ph-dots-three" style="font-size: 20px; cursor: pointer;"></i>
-                        </div>
-                    </div>
-
-                    <!-- Profile Header -->
-                    <div class="profile-header-main">
-                        <div class="profile-name-area">
-                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
-                                <h1>Marcus Thompson</h1>
-                                <div style="display: flex; gap: 6px;">
-                                    <span class="badge badge-segment">Dormant High Spender</span>
-                                    <span class="badge badge-segment">Vegetarian</span>
-                                    <span class="badge badge-segment">Weekend Regular</span>
-                                </div>
-                            </div>
-                            <div class="status-pill" style="background:#fde8ee; color:#bc103e;">
-                                <div class="status-dot" style="background:#bc103e;"></div>
-                                At Risk
-                            </div>
-                        </div>
-                        <a href="segments.html?new=true" style="text-decoration: none;">
-                            <button class="button primary">
-                                <span>Create segment from profile</span>
-                            </button>
-                        </a>
-                    </div>
-
-                    <!-- Contact Info Grid -->
-                    <div class="contact-info-grid">
-                        <div>
-                            <div class="contact-col-label">Credit card</div>
-                            <div class="contact-col-value">Amex-8901</div>
-                            <div class="contact-col-more">+3 more</div>
-                        </div>
-                        <div>
-                            <div class="contact-col-label">Email</div>
-                            <div class="contact-col-value">marcus.t@example.com</div>
-                            <div class="contact-col-more">+2 more</div>
-                        </div>
-                        <div>
-                            <div class="contact-col-label">Phone</div>
-                            <div class="contact-col-value">(555) 234-5678</div>
-                            <div class="contact-col-more">+1 more</div>
-                        </div>
-                        <div>
-                            <div class="contact-col-label">Address</div>
-                            <div class="contact-col-value">456 Oak Ave, Suite 12...</div>
-                            <div class="contact-col-more">+2 more</div>
-                        </div>
-                    </div>
-
-                    <!-- Metrics Row -->
-                    <div class="metrics-row">
-                        <div class="metric-card-bikky">
-                            <div class="metric-card-label">Status</div>
-                            <div class="metric-card-value">Weekly</div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Member for</span>
-                                <span class="metric-detail-value">3 years</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Lifecycle stage</span>
-                                <span class="metric-detail-value" style="color: #bc103e; font-weight: 600;">At risk</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Order frequency</span>
-                                <span class="metric-detail-value">Weekly (Historic)</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card-bikky">
-                            <div class="metric-card-label">Total orders</div>
-                            <div class="metric-card-value">67</div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Last ordered</span>
-                                <span class="metric-detail-value">82 days ago</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Sources</span>
-                                <span class="metric-detail-value">Punchh, Web, POS</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Locations</span>
-                                <span class="metric-detail-value">Atlanta, GA, +2</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card-bikky">
-                            <div class="metric-card-label">Lifetime value</div>
-                            <div class="metric-card-value">$3,428.50</div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Avg check size</span>
-                                <span class="metric-detail-value">$51.17</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Avg order size</span>
-                                <span class="metric-detail-value">3.2 items</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Favorite daypart</span>
-                                <span class="metric-detail-value">Lunch</span>
-                            </div>
-                        </div>
-
-                        <div class="metric-card-bikky">
-                            <div class="metric-card-label">Loyalty member</div>
-                            <div class="metric-card-value">Yes</div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Tier status</span>
-                                <span class="metric-detail-value">Gold</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Points balance</span>
-                                <span class="metric-detail-value">3,428</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Offers redeemed</span>
-                                <span class="metric-detail-value">18</span>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Row 2: Identity Resolution + Consent Status -->
-                    <div class="metrics-row">
-                        <div class="metric-card-bikky">
-                            <div class="metric-card-label">Identity Resolution</div>
-                            <div class="metric-card-value">Resolved</div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Confidence</span>
-                                <span class="metric-detail-value">97.2%</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Profiles merged</span>
-                                <span class="metric-detail-value">4 (POS, Web, Punchh, Email)</span>
-                            </div>
-                            <a href="identity-detail.html" class="id-detail-link">View identity details</a>
-                        </div>
-
-                        <div class="metric-card-bikky">
-                            <div class="metric-card-label">Consent Status</div>
-                            <div class="metric-card-value">Partial</div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Email</span>
-                                <span class="metric-detail-value" style="color: #257469; font-weight: 600;">Opted in</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">SMS</span>
-                                <span class="metric-detail-value" style="color: #bc103e; font-weight: 600;">Opted out</span>
-                            </div>
-                            <div class="metric-detail-row">
-                                <span class="metric-detail-label">Push</span>
-                                <span class="metric-detail-value" style="color: #257469; font-weight: 600;">Opted in</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tabs -->
-                    <div class="tabs-container">
-                        <button class="tab-btn active">All events</button>
-                        <button class="tab-btn">Orders</button>
-                        <button class="tab-btn">Offers</button>
-                        <button class="tab-btn">Loyalty</button>
-                        <button class="tab-btn">Reservations</button>
-                        <button class="tab-btn">Emails</button>
-                        <button class="tab-btn">Texts</button>
-                    </div>
-
-                    <!-- Timeline Layout -->
-                    <div class="timeline-layout">
-                        <div class="timeline-events-list">
-                            <div class="timeline-event">
-                                <div class="event-date">Jan 12, 2026</div>
-                                <div class="event-icon"><i class="ph ph-paper-plane-tilt" style="color: #5a55e3;"></i></div>
-                                <div class="event-time">10:00 AM</div>
-                                <div class="event-desc">Email delivered: "New Year Rewards: Check your Gold member balance"</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Jan 05, 2026</div>
-                                <div class="event-icon"><i class="ph ph-prohibit" style="color: #bc103e;"></i></div>
-                                <div class="event-time">2:18 PM</div>
-                                <div class="event-desc">SMS opt-out: Guest replied STOP to marketing messages</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Dec 20, 2025</div>
-                                <div class="event-icon"><i class="ph ph-device-mobile" style="color: #5a55e3;"></i></div>
-                                <div class="event-time">6:15 PM</div>
-                                <div class="event-desc">Placed delivery order #67 via <strong>Web App</strong> - $245.50</div>
-                            </div>
-
-                            <!-- Order Details Card -->
-                            <div class="order-details-card" style="margin-bottom: var(--spacing-lg);">
-                                <div class="order-details-header">
-                                    <span>Web Order for Delivery - $245.50</span>
-                                </div>
-                                <div class="order-details-items">
-                                    2 x Holiday Prime Rib Platter $110.00<br>
-                                    1 x Large Seasonal Side Medley $35.00<br>
-                                    4 x Premium Craft Beer $36.00<br>
-                                    2 x Winter Spice Dessert Sampler $24.00<br>
-                                    Tax, Tip & Delivery $40.50
-                                </div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Dec 20, 2025</div>
-                                <div class="event-icon"><i class="ph ph-star" style="color: #f8931c;"></i></div>
-                                <div class="event-time">6:15 PM</div>
-                                <div class="event-desc">Earned 245 points</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Nov 15, 2025</div>
-                                <div class="event-icon"><i class="ph ph-award" style="color: #f8931c;"></i></div>
-                                <div class="event-time">9:00 AM</div>
-                                <div class="event-desc">Tier status upgraded to "Gold"</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Nov 06, 2025</div>
-                                <div class="event-icon"><i class="ph ph-device-mobile" style="color: #5a55e3;"></i></div>
-                                <div class="event-time">12:30 PM</div>
-                                <div class="event-desc">Placed order #66 via <strong>Punchh App</strong> - $42.80</div>
-                            </div>
-
-                            <!-- Order Details Card -->
-                            <div class="order-details-card" style="margin-bottom: var(--spacing-lg);">
-                                <div class="order-details-header">
-                                    <span>Mobile Order for Delivery - $42.80</span>
-                                </div>
-                                <div class="order-details-items">
-                                    2 x Fire Chicken Sandwich $28.00<br>
-                                    1 x Sweet Potato Fries $7.50<br>
-                                    1 x Large Lemonade $4.50<br>
-                                    Delivery fee $2.80
-                                </div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Nov 03, 2025</div>
-                                <div class="event-icon"><i class="ph ph-gift" style="color: #f8931c;"></i></div>
-                                <div class="event-time">1:10 PM</div>
-                                <div class="event-desc">Redeemed offer: "Free Side with Entree Purchase"</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Nov 02, 2025</div>
-                                <div class="event-icon"><i class="ph ph-paper-plane-tilt"></i></div>
-                                <div class="event-time">9:00 AM</div>
-                                <div class="event-desc">Email delivered: "Weekend specials are here"</div>
-                            </div>
-
-                            <div class="timeline-event">
-                                <div class="event-date">Oct 29, 2025</div>
-                                <div class="event-icon"><i class="ph ph-chat-circle-text" style="color: #f8931c;"></i></div>
-                                <div class="event-time">11:45 AM</div>
-                                <div class="event-desc">SMS sent: "You're only 150 points away from Gold status!"</div>
-                            </div>
-                        </div>
-
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-    <!-- Ask AVA Modal -->
-    <div class="ava-modal-overlay" id="avaOverlay" onclick="toggleAva()"></div>
-    <div class="ava-modal" id="avaModal" role="dialog" aria-modal="true" aria-labelledby="avaTitle">
-        <div class="ava-modal-header">
-            <div class="ava-modal-title" id="avaTitle">Ask Ava</div>
-            <button class="ava-close" onclick="toggleAva()" aria-label="Close Ask Ava">
-                <img src="assets/icon-close.svg" alt="">
+          <div class="nav-group" data-nav-group-id="guests">
+            <div class="nav-group-title">Guests</div>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-chart-pie" aria-hidden="true"></i>
+              <span class="nav-item__label">Analytics</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
             </button>
+            <div class="nav-sub-group">
+              <a href="analytics.html" class="nav-sub-item">Overview</a>
+              <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
+              <a href="analytics-retention.html" class="nav-sub-item">Retention</a>
+              <a href="analytics-atrisk.html" class="nav-sub-item">At risk</a>
+            </div>
+            <a href="profiles.html" class="nav-item active">
+              <i class="ph-duotone ph-user-circle" aria-hidden="true"></i>
+              <span class="nav-item__label">Guest profiles</span>
+            </a>
+            <a href="segments.html" class="nav-item">
+              <i class="ph-duotone ph-users-three" aria-hidden="true"></i>
+              <span class="nav-item__label">Segments</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="menu">
+            <div class="nav-group-title">Menu</div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-fork-knife" aria-hidden="true"></i>
+              <span class="nav-item__label">Menu Performance</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-calendar-check" aria-hidden="true"></i>
+              <span class="nav-item__label">LTO Analysis</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="other">
+            <div class="nav-group-title">Other</div>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-coins" aria-hidden="true"></i>
+              <span class="nav-item__label">Revenue</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="#" class="nav-sub-item">Overview</a>
+              <a href="#" class="nav-sub-item">Acquisition</a>
+            </div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-storefront" aria-hidden="true"></i>
+              <span class="nav-item__label">Locations</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-megaphone-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Campaigns</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="platform">
+            <div class="nav-group-title">Platform</div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-database" aria-hidden="true"></i>
+              <span class="nav-item__label">Data Sources</span>
+            </a>
+            <a href="identity-resolution.html" class="nav-item">
+              <i class="ph-duotone ph-fingerprint-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Identity Resolution</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-share-fat" aria-hidden="true"></i>
+              <span class="nav-item__label">Data Export</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="bottom">
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-gear" aria-hidden="true"></i>
+              <span class="nav-item__label">Settings</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+            </div>
+          </div>
+
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+        <div class="content-area content-area--guest-profile">
+
+          <!-- Profile header -->
+          <section class="profile-header">
+
+            <!-- Breadcrumbs -->
+            <nav class="chart-breadcrumbs" aria-label="Breadcrumb">
+              <a href="guest-profiles.html" class="chart-breadcrumbs__link">Guest profiles</a>
+              <span class="chart-breadcrumbs__separator" aria-hidden="true">
+                <span class="material-symbols-rounded">chevron_right</span>
+              </span>
+              <span class="chart-breadcrumbs__current">Marcus Thompson</span>
+            </nav>
+
+            <!-- Title row -->
+            <div class="profile-header__title-row">
+              <h1 class="profile-header__title">Marcus Thompson</h1>
+              <div class="profile-header__actions">
+                <button class="button transparent">
+                  <span class="material-symbols-rounded">help</span>
+                  <span>Help</span>
+                </button>
+                <button class="button primary">
+                  <span class="material-symbols-rounded">add</span>
+                  <span>Create segment from profile</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tags row -->
+            <div class="profile-header__tags">
+              <span class="tag tag--lifecycle"><span>At-risk</span></span>
+              <span class="profile-header__tag-divider" aria-hidden="true"></span>
+              <span class="tag tag--segment"><span>Dormant High Spender</span></span>
+              <span class="tag tag--segment"><span>Weekend Regular</span></span>
+              <span class="tag tag--segment"><span>+3 more</span></span>
+            </div>
+
+          </section>
+
+          <!-- Personal info -->
+          <section class="profile-info">
+            <div class="profile-info__cell" data-expanded="false">
+              <div class="profile-info__label">Credit card</div>
+              <div class="profile-info__values">
+                <div class="profile-info__value">VISA &bull; 4567</div>
+                <div class="profile-info__value profile-info__value--extra">AMEX &bull; 3904</div>
+                <div class="profile-info__value profile-info__value--extra">MasterCard &bull; 5901</div>
+              </div>
+              <button type="button" class="link-button profile-info__toggle" onclick="toggleInfoCell(this)">
+                <span class="profile-info__toggle-collapsed">+2 more</span>
+                <span class="profile-info__toggle-expanded">Show less</span>
+              </button>
+            </div>
+
+            <div class="profile-info__cell" data-expanded="false">
+              <div class="profile-info__label">Email</div>
+              <div class="profile-info__values">
+                <div class="profile-info__value">marcus@gmail.com</div>
+                <div class="profile-info__value profile-info__value--extra">marcus.thompson@work.com</div>
+              </div>
+              <button type="button" class="link-button profile-info__toggle" onclick="toggleInfoCell(this)">
+                <span class="profile-info__toggle-collapsed">+1 more</span>
+                <span class="profile-info__toggle-expanded">Show less</span>
+              </button>
+            </div>
+
+            <div class="profile-info__cell">
+              <div class="profile-info__label">Phone</div>
+              <div class="profile-info__values">
+                <div class="profile-info__value">(555) 234-5678</div>
+              </div>
+            </div>
+
+            <div class="profile-info__cell" data-expanded="false">
+              <div class="profile-info__label">Address</div>
+              <div class="profile-info__values">
+                <div class="profile-info__value" title="456 Oak Ave, Suite 12, 08015 Barcelona">456 Oak Ave, Suite 12, 08015 Ba&hellip;</div>
+                <div class="profile-info__value profile-info__value--extra">221B Baker St, London NW1 6XE</div>
+              </div>
+              <button type="button" class="link-button profile-info__toggle" onclick="toggleInfoCell(this)">
+                <span class="profile-info__toggle-collapsed">+1 more</span>
+                <span class="profile-info__toggle-expanded">Show less</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- KPI cards -->
+          <section class="profile-cards">
+
+            <!-- Status -->
+            <div class="profile-card">
+              <div class="profile-card__header">
+                <div class="profile-card__label">Status</div>
+                <div class="profile-card__hero">Weekly</div>
+              </div>
+              <div class="profile-card__rows">
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Guest for</span>
+                  <span class="profile-card__row-value">3.2 years</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Lifecycle stage</span>
+                  <span class="tag tag--lifecycle"><span>At-risk</span></span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Order frequency</span>
+                  <span class="profile-card__row-value">Weekly</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total orders -->
+            <div class="profile-card">
+              <div class="profile-card__header">
+                <div class="profile-card__label">Total orders</div>
+                <div class="profile-card__hero">68</div>
+              </div>
+              <div class="profile-card__rows">
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Last ordered</span>
+                  <span class="profile-card__row-value">89 days ago</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Sources</span>
+                  <span class="profile-card__row-value">Punchh, POS, +2</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Stores</span>
+                  <span class="profile-card__row-value">194 Middle St (Low&hellip; +2</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lifetime value -->
+            <div class="profile-card">
+              <div class="profile-card__header">
+                <div class="profile-card__label">Lifetime value</div>
+                <div class="profile-card__hero">$3,428.50</div>
+              </div>
+              <div class="profile-card__rows">
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Avg check size</span>
+                  <span class="profile-card__row-value">$51.25</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Avg order size</span>
+                  <span class="profile-card__row-value">3.6 items</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Favorite daypart</span>
+                  <span class="profile-card__row-value">Lunch</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Loyalty member -->
+            <div class="profile-card">
+              <div class="profile-card__header">
+                <div class="profile-card__label">Loyalty member</div>
+                <div class="profile-card__hero">Yes</div>
+              </div>
+              <div class="profile-card__rows">
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Tier status</span>
+                  <span class="profile-card__row-value">Gold</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Points balance</span>
+                  <span class="profile-card__row-value">3,428</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Offers redeemed</span>
+                  <span class="profile-card__row-value">12</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Identity resolution -->
+            <div class="profile-card">
+              <div class="profile-card__header">
+                <div class="profile-card__label">Identity resolution</div>
+                <div class="profile-card__hero">Resolved</div>
+              </div>
+              <div class="profile-card__rows">
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Confidence</span>
+                  <span class="profile-card__row-value">97.2%</span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Profiles merged</span>
+                  <span class="profile-card__row-value">4 (POS, Web, +2)</span>
+                </div>
+              </div>
+              <a href="identity-detail.html" class="link-button">View identity details</a>
+            </div>
+
+            <!-- Consent status -->
+            <div class="profile-card">
+              <div class="profile-card__header">
+                <div class="profile-card__label">Consent status</div>
+                <div class="profile-card__hero">Partial</div>
+              </div>
+              <div class="profile-card__rows">
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Email</span>
+                  <span class="profile-card__row-consent">
+                    <span class="profile-card__row-value">Opted in</span>
+                    <span class="material-symbols-rounded profile-card__consent-icon profile-card__consent-icon--in">check_circle</span>
+                  </span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">SMS</span>
+                  <span class="profile-card__row-consent">
+                    <span class="profile-card__row-value">Opted out</span>
+                    <span class="material-symbols-rounded profile-card__consent-icon profile-card__consent-icon--out">cancel</span>
+                  </span>
+                </div>
+                <div class="profile-card__row">
+                  <span class="profile-card__row-label">Push</span>
+                  <span class="profile-card__row-consent">
+                    <span class="profile-card__row-value">Opted in</span>
+                    <span class="material-symbols-rounded profile-card__consent-icon profile-card__consent-icon--in">check_circle</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- Events timeline -->
+          <section class="timeline-section">
+            <h2 class="timeline-section__heading">Guest activity</h2>
+
+            <div class="timeline">
+
+              <!-- Event 1 -->
+              <div class="timeline__event">
+                <span class="timeline__date">Apr 14, 2026, 10:02 AM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">mail</span>
+                  </div>
+                  <div class="rail__below">
+                    <div class="rail__spacer"></div>
+                    <div class="rail__line rail__line--flex"></div>
+                    <div class="rail__label">10d</div>
+                    <div class="rail__line rail__line--fixed"></div>
+                    <div class="rail__spacer"></div>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">Email delivered: &ldquo;New Year Rewards: Check your Gold member balance&rdquo;</p>
+                </div>
+              </div>
+
+              <!-- Event 2 -->
+              <div class="timeline__event">
+                <span class="timeline__date">Apr 4, 2026, 8:47 PM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">do_not_disturb_on</span>
+                  </div>
+                  <div class="rail__below">
+                    <div class="rail__spacer"></div>
+                    <div class="rail__line rail__line--flex"></div>
+                    <div class="rail__label">23d</div>
+                    <div class="rail__line rail__line--fixed"></div>
+                    <div class="rail__spacer"></div>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">SMS opt-out: Guest replied STOP to marketing messages</p>
+                </div>
+              </div>
+
+              <!-- Event 3 -->
+              <div class="timeline__event">
+                <span class="timeline__date">Mar 12, 2026, 12:00 AM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">warning</span>
+                  </div>
+                  <div class="rail__below">
+                    <div class="rail__spacer"></div>
+                    <div class="rail__line rail__line--flex"></div>
+                    <div class="rail__label">33d</div>
+                    <div class="rail__line rail__line--fixed"></div>
+                    <div class="rail__spacer"></div>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">Guest status changed to At-risk</p>
+                  <p class="timeline__subtitle">33 days since last order</p>
+                </div>
+              </div>
+
+              <!-- Event 4 -->
+              <div class="timeline__event">
+                <span class="timeline__date">Feb 7, 2026, 7:23 PM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">attach_money</span>
+                  </div>
+                  <div class="rail__below">
+                    <div class="rail__spacer"></div>
+                    <div class="rail__line rail__line--flex"></div>
+                    <div class="rail__label">8d</div>
+                    <div class="rail__line rail__line--fixed"></div>
+                    <div class="rail__spacer"></div>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">Placed <strong>delivery</strong> order #67 via <strong>PAR Ordering Web App</strong> - 194 Middle St (Lowell) store</p>
+                  <div class="timeline__order">
+                    <p>2 x Holiday Prime Rib Platter $110.00</p>
+                    <p>1 x Large Seasonal Side Medley $35.00</p>
+                    <p>4 x Premium Craft Beer $36.00</p>
+                    <p>2 x Winter Spice Dessert Sampler $24.00</p>
+                    <p>Tax, Tip &amp; Fees $40.50</p>
+                    <p class="timeline__order-total">Total $245.50</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Event 5 -->
+              <div class="timeline__event">
+                <span class="timeline__date">Jan 30, 2026, 1:15 PM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">attach_money</span>
+                  </div>
+                  <div class="rail__below">
+                    <div class="rail__spacer"></div>
+                    <div class="rail__line rail__line--flex"></div>
+                    <div class="rail__label">4d</div>
+                    <div class="rail__line rail__line--fixed"></div>
+                    <div class="rail__spacer"></div>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">Placed <strong>takeout</strong> order #66 <strong>In store</strong> - 194 Middle St (Lowell) store</p>
+                  <div class="timeline__order">
+                    <p>2 x Holiday Prime Rib Platter $110.00</p>
+                    <p>1 x Large Seasonal Side Medley $35.00</p>
+                    <p>4 x Premium Craft Beer $36.00</p>
+                    <p>2 x Winter Spice Dessert Sampler $24.00</p>
+                    <p>Tax, Tip &amp; Fees $40.50</p>
+                    <p class="timeline__order-total">Total $245.50</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Event 6 -->
+              <div class="timeline__event">
+                <span class="timeline__date">Jan 26, 2026, 9:18 AM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">star</span>
+                  </div>
+                  <div class="rail__below">
+                    <div class="rail__spacer"></div>
+                    <div class="rail__line rail__line--flex"></div>
+                    <div class="rail__label">2d</div>
+                    <div class="rail__line rail__line--fixed"></div>
+                    <div class="rail__spacer"></div>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">Earned 245 points</p>
+                </div>
+              </div>
+
+              <!-- Event 7 (last — no Nd label, only line + Load more in footer) -->
+              <div class="timeline__event timeline__event--last">
+                <span class="timeline__date">Jan 24, 2026, 12:42 PM</span>
+                <div class="timeline__rail">
+                  <div class="rail__icon">
+                    <span class="material-symbols-rounded">featured_seasonal_and_gifts</span>
+                  </div>
+                </div>
+                <div class="timeline__content">
+                  <p class="timeline__title">Redeemed offer: &ldquo;Free Side with Entree Purchase&rdquo;</p>
+                </div>
+              </div>
+
+              <!-- Load-more footer (4px + 22px line + 4px + button, centered on rail column) -->
+              <div class="timeline__footer">
+                <span class="timeline__date" aria-hidden="true"></span>
+                <div class="timeline__rail timeline__rail--footer">
+                  <div class="rail__spacer"></div>
+                  <div class="rail__line rail__line--fixed"></div>
+                  <div class="rail__spacer"></div>
+                  <button type="button" class="link-button">Load more</button>
+                </div>
+                <span aria-hidden="true"></span>
+              </div>
+
+            </div>
+          </section>
+
         </div>
-        <div class="ava-modal-body">
-            <aside class="ava-recent">
-                <div class="ava-recent-title">Recent</div>
-                <div class="ava-recent-empty">
-                    <img class="ava-recent-icon" src="assets/icon-recent.svg" alt="">
-                    <p>Once we've had a conversation, you'll see it here</p>
-                </div>
-            </aside>
-            <section class="ava-main">
-                <div class="ava-chat-viewport">
-                    <div class="ava-body">
-                        <div class="ava-hero">
-                            Hello! I'm AVA, your Guest Analytics assistant. How can I help you today?
-                        </div>
-                        <div class="ava-input-container" id="initialInputContainer">
-                            <input type="text" class="ava-input" placeholder="Ask Ava" id="avaInput" onkeypress="if(event.key === 'Enter') sendToAva()">
-                        </div>
-                        <div class="ava-chat-area">
-                            <div class="ava-suggestion-cards">
-                                <button class="ava-suggestion-card" onclick="askAva('Why did repeat visits drop last month?')">Why did repeat visits drop last month?</button>
-                                <button class="ava-suggestion-card" onclick="askAva('Compare loyal vs non-loyal guest spend')">Compare loyal vs non-loyal guest spend</button>
-                                <button class="ava-suggestion-card" onclick="askAva('Which menu items drive frequency for this segment?')">Which menu items drive frequency for this segment?</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="ava-input-footer" id="footerInputContainer">
-                    <div class="ava-input-wrapper">
-                        <div class="ava-input-container">
-                            <input type="text" class="ava-input" placeholder="Ask follow-up" id="avaInputFooter" onkeypress="if(event.key === 'Enter') sendToAva(true)">
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+      </main>
+
     </div>
+  </div>
 
-    <script>
-        Chart.defaults.animation = false;
-        Chart.defaults.plugins.tooltip.animation = false;
+  <script>
+    function toggleNavExpand(btn) {
+      const isOpen = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      const sub = btn.nextElementSibling;
+      if (sub && sub.classList.contains('nav-sub-group')) {
+        sub.classList.toggle('open', isOpen);
+      }
+    }
 
-        function toggleNavExpand(btn) {
-            const subGroup = btn.nextElementSibling;
-            btn.classList.toggle('open');
-            subGroup.classList.toggle('open');
-        }
-
-        function toggleAva() {
-            const modal = document.getElementById('avaModal');
-            const overlay = document.getElementById('avaOverlay');
-            modal.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-
-        function askAva(question) {
-            const input = document.getElementById('avaInput');
-            input.value = question;
-            sendToAva();
-        }
-
-        function sendToAva(isFollowUp = false) {
-            const inputId = isFollowUp ? 'avaInputFooter' : 'avaInput';
-            const input = document.getElementById(inputId);
-            const question = input.value.trim();
-            if (!question) return;
-
-            const chatArea = document.querySelector('.ava-chat-area');
-            const chatViewport = document.querySelector('.ava-chat-viewport');
-
-            if (!isFollowUp) {
-                // Hide suggestion cards when starting conversation
-                const suggestionCards = document.querySelector('.ava-suggestion-cards');
-                if (suggestionCards) {
-                    suggestionCards.style.display = 'none';
-                }
-                
-                // Hide hero message when starting conversation
-                const hero = document.querySelector('.ava-hero');
-                if (hero) {
-                    hero.style.display = 'none';
-                }
-
-                // Hide initial input and show footer input
-                document.getElementById('initialInputContainer').style.display = 'none';
-                document.getElementById('footerInputContainer').style.display = 'flex';
-                chatViewport.classList.add('chat-active');
-            }
-
-            // Add user message (in bubble, right-aligned)
-            const userMsg = document.createElement('div');
-            userMsg.className = 'ava-message user';
-            userMsg.innerHTML = `<div class="message-bubble">${question}</div>`;
-            chatArea.appendChild(userMsg);
-
-            input.value = '';
-            
-            // Scroll viewport to bottom
-            setTimeout(() => {
-                chatViewport.scrollTop = chatViewport.scrollHeight;
-            }, 0);
-
-            // Add bot response (NOT in bubble, left-aligned)
-            setTimeout(() => {
-                const botText = document.createElement('div');
-                botText.className = 'ava-message bot';
-                botText.innerHTML = `<div class="ava-message-text">Based on the current filters, I've identified a key insight:</div>`;
-                chatArea.appendChild(botText);
-                
-                setTimeout(() => {
-                    chatViewport.scrollTop = chatViewport.scrollHeight;
-                }, 0);
-
-                // Add insight card (in card)
-                setTimeout(() => {
-                    const insightCard = document.createElement('div');
-                    insightCard.className = 'ava-insight-card';
-                    insightCard.innerHTML = `
-                        <div class="ava-insight-title">Example insight</div>
-                        <div class="ava-insight-text">Repeat guest frequency has increased by 12% among High-Value Loyalists following the recent menu update.</div>
-                        <div class="ava-placeholder-chart"><canvas class="ava-insight-chart-canvas"></canvas></div>
-                    `;
-                    chatArea.appendChild(insightCard);
-                    const canvas = insightCard.querySelector('.ava-insight-chart-canvas');
-                    if (canvas && typeof Chart !== 'undefined') {
-                        const accentBlue = getComputedStyle(document.documentElement).getPropertyValue('--accent-blue').trim() || '#5A55E3';
-                        const subdued = getComputedStyle(document.documentElement).getPropertyValue('--text-subdued').trim() || '#6b7280';
-                        new Chart(canvas, {
-                            type: 'line',
-                            data: {
-                                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                                datasets: [{
-                                    label: 'Frequency',
-                                    data: [2.1, 2.2, 2.35, 2.4],
-                                    borderColor: accentBlue,
-                                    backgroundColor: 'rgba(90, 85, 227, 0.08)',
-                                    fill: true,
-                                    tension: 0.3,
-                                    pointRadius: 3
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: { legend: { display: false } },
-                                scales: {
-                                    x: { grid: { display: false }, ticks: { font: { size: 10 }, color: subdued } },
-                                    y: { min: 1.8, max: 2.6, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, color: subdued } }
-                                }
-                            }
-                        });
-                    }
-                    
-                    // Add action buttons
-                    const actionButtons = document.createElement('div');
-                    actionButtons.className = 'ava-action-buttons';
-                    actionButtons.innerHTML = `
-                        <button class="ava-action-btn">
-                            <i class="ph ph-copy"></i>
-                            <span>Copy</span>
-                        </button>
-                        <button class="ava-action-btn">
-                            <i class="ph ph-share-network"></i>
-                            <span>Share</span>
-                        </button>
-                        <button class="ava-action-btn">
-                            <i class="ph ph-link"></i>
-                            <span>Sources (3)</span>
-                        </button>
-                        <button class="ava-action-btn-icon-only">
-                            <i class="ph ph-thumbs-up"></i>
-                        </button>
-                        <button class="ava-action-btn-icon-only">
-                            <i class="ph ph-thumbs-down"></i>
-                        </button>
-                    `;
-                    chatArea.appendChild(actionButtons);
-                    
-                    setTimeout(() => {
-                        chatViewport.scrollTop = chatViewport.scrollHeight;
-                    }, 0);
-                }, 1000);
-            }, 800);
-        }
-    </script>
+    function toggleInfoCell(btn) {
+      const cell = btn.closest('.profile-info__cell');
+      const expanded = cell.getAttribute('data-expanded') === 'true';
+      cell.setAttribute('data-expanded', String(!expanded));
+    }
+  </script>
 </body>
 </html>

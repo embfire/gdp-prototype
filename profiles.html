@@ -1,870 +1,629 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guest Profiles - Guest Data Platform</title>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0" />
-    <link rel="stylesheet" href="assets/bento.css">
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        /* Bento table overrides */
-        .card-table table thead tr {
-            background-color: #dfe1e2;
-        }
-        .card-table table thead tr th {
-            text-transform: none;
-            font-size: 1rem;
-            font-weight: 800;
-            color: #000;
-            height: 3.5rem;
-            padding: 1rem;
-            border-bottom: none;
-        }
-        .card-table table tbody tr td {
-            padding: 1rem;
-        }
-
-        .profiles-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .filters-bar {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-        }
-
-        .guest-cell {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-        }
-
-        .guest-name {
-            font-weight: 600;
-        }
-
-        .table-link {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        tbody tr {
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .filters-bar .dropdown {
-            min-width: 210px;
-        }
-
-        tbody tr:hover {
-            background-color: rgba(90, 85, 227, 0.05);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guest Profiles — PAR Guest360</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="assets/bento.css">
+  <link rel="stylesheet" href="beta/beta.css">
 </head>
-<body data-v-app>
-    <div class="app-container">
-        <!-- Top Header -->
-        <header class="header">
-            <div class="header-left">
-                <a href="index.html" class="header-brand" aria-label="Guest360 Home">
-                    <img src="assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
-                </a>
-                <span class="header-brand-divider" aria-hidden="true"></span>
-                <button class="header-brand-btn" aria-label="Select brand">
-                    Cravewave
-                    <i class="ph ph-caret-down"></i>
-                </button>
-            </div>
-            <div class="header-right">
-                <button class="header-btn" onclick="toggleAva()">
-                    <img src="assets/ava-assistant.svg" alt="" width="24" height="24">
-                    Ava
-                </button>
-                <button class="header-btn">
-                    <span class="material-symbols-rounded">school</span>
-                    PAR Academy
-                </button>
-                <button class="header-btn header-btn--icon" aria-label="Profile">
-                    <span class="material-symbols-rounded">person</span>
-                </button>
-            </div>
-        </header>
+<body>
+  <div class="app-shell">
 
-        <div class="app-body">
-            <!-- Sidebar -->
-            <aside class="sidebar">
-                <nav class="sidebar-nav">
-                    <div class="nav-group">
-                        <a href="index.html" class="nav-item">
-                            <i class="ph-duotone ph-chart-bar"></i>
-                            Dashboard
-                        </a>
-                    </div>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+          <img src="assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+        </a>
+        <span class="header-brand-divider" aria-hidden="true"></span>
+        <button class="header-brand-btn" aria-label="Select brand">
+          Cravewave
+          <i class="ph ph-caret-down"></i>
+        </button>
+      </div>
+      <div class="header-right">
+        <button class="header-btn">
+          <img src="assets/ava-assistant.svg" alt="" width="24" height="24">
+          Ava
+        </button>
+        <button class="header-btn">
+          <span class="material-symbols-rounded">school</span>
+          PAR Academy
+        </button>
+        <button class="header-btn header-btn--icon" aria-label="Profile">
+          <span class="material-symbols-rounded">person</span>
+        </button>
+      </div>
+    </header>
 
-                    <div class="nav-group">
-                        <div class="nav-group-title">Guests</div>
-                        <button class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)">
-                            <i class="ph-duotone ph-chart-pie"></i>
-                            <span>Analytics</span>
-                            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.96967 5.46967C2.26256 5.17678 2.73744 5.17678 3.03033 5.46967L8 10.4393L12.9697 5.46967C13.2626 5.17678 13.7374 5.17678 14.0303 5.46967C14.3232 5.76256 14.3232 6.23744 14.0303 6.53033L8.53033 12.0303C8.23744 12.3232 7.76256 12.3232 7.46967 12.0303L1.96967 6.53033C1.67678 6.23744 1.67678 5.76256 1.96967 5.46967Z" fill="#484E7F"/></svg>
-                        </button>
-                        <div class="nav-sub-group">
-                            <a href="analytics.html" class="nav-sub-item">Overview</a>
-                            <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
-                            <a href="analytics-retention.html" class="nav-sub-item">Retention</a>
-                            <a href="analytics-atrisk.html" class="nav-sub-item">At risk</a>
-                        </div>
-                        <a href="profiles.html" class="nav-item active">
-                            <i class="ph-duotone ph-user-circle"></i>
-                            Guest Profiles
-                        </a>
-                        <a href="segments.html" class="nav-item">
-                            <i class="ph-duotone ph-users-three"></i>
-                            Segments
-                        </a>
-                    </div>
+    <div class="app-shell__body">
 
-                    <div class="nav-group">
-                        <div class="nav-group-title">Menu</div>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-fork-knife"></i>
-                            Menu Performance
-                        </a>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-calendar-check"></i>
-                            LTO Analysis
-                        </a>
-                    </div>
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Main navigation">
 
-                    <div class="nav-group">
-                        <div class="nav-group-title">Other</div>
-                        <button class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)">
-                            <i class="ph-duotone ph-coins"></i>
-                            <span>Revenue</span>
-                            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.96967 5.46967C2.26256 5.17678 2.73744 5.17678 3.03033 5.46967L8 10.4393L12.9697 5.46967C13.2626 5.17678 13.7374 5.17678 14.0303 5.46967C14.3232 5.76256 14.3232 6.23744 14.0303 6.53033L8.53033 12.0303C8.23744 12.3232 7.76256 12.3232 7.46967 12.0303L1.96967 6.53033C1.67678 6.23744 1.67678 5.76256 1.96967 5.46967Z" fill="#484E7F"/></svg>
-                        </button>
-                        <div class="nav-sub-group">
-                            <a href="#" class="nav-sub-item">Overview</a>
-                            <a href="#" class="nav-sub-item">Acquisition</a>
-                        </div>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-storefront"></i>
-                            Locations
-                        </a>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-megaphone-simple"></i>
-                            Campaigns
-                        </a>
-                    </div>
+          <div class="nav-group" data-nav-group-id="top">
+            <a href="index.html" class="nav-item">
+              <i class="ph-duotone ph-chart-bar" aria-hidden="true"></i>
+              <span class="nav-item__label">Dashboard</span>
+            </a>
+          </div>
 
-                    <div class="nav-group">
-                        <div class="nav-group-title">Platform</div>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-database"></i>
-                            Data Sources
-                        </a>
-                        <a href="identity-resolution.html" class="nav-item">
-                            <i class="ph-duotone ph-fingerprint-simple"></i>
-                            Identity Resolution
-                        </a>
-                        <a href="#" class="nav-item">
-                            <i class="ph-duotone ph-share-fat"></i>
-                            Data Export
-                        </a>
-                    </div>
-
-                    <div class="nav-group" style="margin-top: auto;">
-                        <button class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)">
-                            <i class="ph-duotone ph-gear"></i>
-                            <span>Settings</span>
-                            <svg class="nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.96967 5.46967C2.26256 5.17678 2.73744 5.17678 3.03033 5.46967L8 10.4393L12.9697 5.46967C13.2626 5.17678 13.7374 5.17678 14.0303 5.46967C14.3232 5.76256 14.3232 6.23744 14.0303 6.53033L8.53033 12.0303C8.23744 12.3232 7.76256 12.3232 7.46967 12.0303L1.96967 6.53033C1.67678 6.23744 1.67678 5.76256 1.96967 5.46967Z" fill="#484E7F"></path></svg>
-                        </button>
-                        <div class="nav-sub-group">
-                            <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
-                        </div>
-                    </div>
-                </nav>
-            </aside>
-
-            <!-- Main Content -->
-            <main class="main-content">
-                <div class="content-area">
-                    <!-- Header -->
-                    <div class="profiles-header">
-                        <h1>Guest Profiles</h1>
-                        <button class="button outlined body1">
-                            <i class="material-symbols-rounded">download</i>
-                            <span>Export</span>
-                        </button>
-                    </div>
-
-                    <!-- Filters -->
-                    <div class="filters-bar">
-                        <div class="search-bar" style="display:flex; align-items:center; border:none; border-radius:0.5rem; box-shadow:0px 0px 0px 1px #000 inset; padding:0.5rem 1rem; gap:0.5rem; flex:0 1 300px;">
-                            <i class="material-symbols-rounded" style="color:var(--text-subdued); font-size:20px;">search</i>
-                            <input type="text" placeholder="Find by name, email or phone" style="border:none; outline:none; font-family:inherit; font-size:1rem; flex:1; background:transparent;">
-                        </div>
-                        <div class="dropdown" id="filter-loyalty">
-                            <div class="dropdown__wrapper">
-                                <button class="dropdown__button body1" onclick="toggleDropdown('filter-loyalty')">
-                                    <span>All loyalty status</span>
-                                    <i class="material-symbols-rounded">expand_more</i>
-                                </button>
-                            </div>
-                            <div class="dropdown__options">
-                                <ul>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>All loyalty status</span></button></li>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Platinum Member</span></button></li>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Gold Member</span></button></li>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Silver Member</span></button></li>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Non-Member</span></button></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="dropdown" id="filter-lifecycle">
-                            <div class="dropdown__wrapper">
-                                <button class="dropdown__button body1" onclick="toggleDropdown('filter-lifecycle')">
-                                    <span>All lifecycle stages</span>
-                                    <i class="material-symbols-rounded">expand_more</i>
-                                </button>
-                            </div>
-                            <div class="dropdown__options">
-                                <ul>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>All lifecycle stages</span></button></li>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>First-time</span></button></li>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Returning</span></button></li>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Loyal</span></button></li>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>At risk</span></button></li>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Churned</span></button></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="dropdown" id="filter-segments">
-                            <div class="dropdown__wrapper">
-                                <button class="dropdown__button body1" onclick="toggleDropdown('filter-segments')">
-                                    <span>All segments</span>
-                                    <i class="material-symbols-rounded">expand_more</i>
-                                </button>
-                            </div>
-                            <div class="dropdown__options">
-                                <ul>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>All segments</span></button></li>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Dormant High Spenders</span></button></li>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Breakfast Regulars</span></button></li>
-                                    <li><button class="button transparent body1" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Vegetarian Segment</span></button></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Profiles Table -->
-                    <div class="card card-table">
-                        <table class="table" style="border: none; border-radius: 0;">
-                            <thead>
-                                <tr>
-                                    <th>Guest</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Loyalty Status</th>
-                                    <th>LTV</th>
-                                    <th>Orders</th>
-                                    <th>Source</th>
-                                    <th>Last Activity</th>
-                                </tr>
-                            </thead>
-                            <tbody id="profiles-tbody">
-                                <!-- Loyalty Member -->
-                                <tr onclick="window.location.href='profile.html'" style="cursor: pointer;">
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Marcus Thompson</span>
-                                        </div>
-                                    </td>
-                                    <td>marcus.t@example.com</td>
-                                    <td>(555) 234-5678</td>
-                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
-                                    <td>$3,428.50</td>
-                                    <td>67</td>
-                                    <td>Punchh, POS</td>
-                                    <td>2 hours ago</td>
-                                </tr>
-                                <!-- Non-Loyalty Guest -->
-                                <tr onclick="window.location.href='guest-profile.html'" style="cursor: pointer;">
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Isabella Chen</span>
-                                        </div>
-                                    </td>
-                                    <td>isabella.c@example.com</td>
-                                    <td>(555) 012-3456</td>
-                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
-                                    <td>$1,240.50</td>
-                                    <td>48</td>
-                                    <td>Web App, POS</td>
-                                    <td>12 days ago</td>
-                                </tr>
-                                <!-- Additional Sample Data -->
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Sarah Martinez</span>
-                                        </div>
-                                    </td>
-                                    <td>sarah.m@example.com</td>
-                                    <td>(555) 789-0123</td>
-                                    <td><span class="tag tag__finished"><span>Platinum Member</span></span></td>
-                                    <td>$5,892.00</td>
-                                    <td>124</td>
-                                    <td>Punchh, POS, Web App</td>
-                                    <td>1 day ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">David Kim</span>
-                                        </div>
-                                    </td>
-                                    <td>d.kim@example.com</td>
-                                    <td>(555) 456-7890</td>
-                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
-                                    <td>$287.50</td>
-                                    <td>12</td>
-                                    <td>POS</td>
-                                    <td>5 days ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">James Wilson</span>
-                                        </div>
-                                    </td>
-                                    <td>j.wilson@example.com</td>
-                                    <td>(555) 321-6547</td>
-                                    <td><span class="tag tag__neutral"><span>Silver Member</span></span></td>
-                                    <td>$1,782.20</td>
-                                    <td>42</td>
-                                    <td>Punchh, POS</td>
-                                    <td>3 days ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Emily Rodriguez</span>
-                                        </div>
-                                    </td>
-                                    <td>emily.r@example.com</td>
-                                    <td>(555) 654-3210</td>
-                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
-                                    <td>$542.80</td>
-                                    <td>23</td>
-                                    <td>Web App</td>
-                                    <td>8 days ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Jessica Park</span>
-                                        </div>
-                                    </td>
-                                    <td>jessica.park@example.com</td>
-                                    <td>(555) 987-1234</td>
-                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
-                                    <td>$2,945.60</td>
-                                    <td>58</td>
-                                    <td>Punchh, Web App</td>
-                                    <td>4 hours ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Robert Taylor</span>
-                                        </div>
-                                    </td>
-                                    <td>r.taylor@example.com</td>
-                                    <td>(555) 159-7531</td>
-                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
-                                    <td>$95.00</td>
-                                    <td>4</td>
-                                    <td>POS</td>
-                                    <td>21 days ago</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Pagination Info -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-md); color: var(--text-subdued); font-size: 14px;">
-                        <span id="pagination-info">Showing 1-8 of 1,248,392 guests</span>
-                        <div style="display: flex; gap: var(--spacing-sm);">
-                            <button class="button outlined"><span>Previous</span></button>
-                            <button class="button outlined"><span>Next</span></button>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-    <!-- Ask AVA Modal -->
-    <div class="ava-modal-overlay" id="avaOverlay" onclick="toggleAva()"></div>
-    <div class="ava-modal" id="avaModal" role="dialog" aria-modal="true" aria-labelledby="avaTitle">
-        <div class="ava-modal-header">
-            <div class="ava-modal-title" id="avaTitle">Ask Ava</div>
-            <button class="ava-close" onclick="toggleAva()" aria-label="Close Ask Ava">
-                <img src="assets/icon-close.svg" alt="">
+          <div class="nav-group" data-nav-group-id="guests">
+            <div class="nav-group-title">Guests</div>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-chart-pie" aria-hidden="true"></i>
+              <span class="nav-item__label">Analytics</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
             </button>
-        </div>
-        <div class="ava-modal-body">
-            <aside class="ava-recent">
-                <div class="ava-recent-title">Recent</div>
-                <div class="ava-recent-empty">
-                    <img class="ava-recent-icon" src="assets/icon-recent.svg" alt="">
-                    <p>Once we've had a conversation, you'll see it here</p>
+            <div class="nav-sub-group">
+              <a href="analytics.html" class="nav-sub-item">Overview</a>
+              <a href="analytics-acquisition.html" class="nav-sub-item">Acquisition</a>
+              <a href="analytics-retention.html" class="nav-sub-item">Retention</a>
+              <a href="analytics-atrisk.html" class="nav-sub-item">At risk</a>
+            </div>
+            <a href="profiles.html" class="nav-item active">
+              <i class="ph-duotone ph-user-circle" aria-hidden="true"></i>
+              <span class="nav-item__label">Guest profiles</span>
+            </a>
+            <a href="segments.html" class="nav-item">
+              <i class="ph-duotone ph-users-three" aria-hidden="true"></i>
+              <span class="nav-item__label">Segments</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="menu">
+            <div class="nav-group-title">Menu</div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-fork-knife" aria-hidden="true"></i>
+              <span class="nav-item__label">Menu Performance</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-calendar-check" aria-hidden="true"></i>
+              <span class="nav-item__label">LTO Analysis</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="other">
+            <div class="nav-group-title">Other</div>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-coins" aria-hidden="true"></i>
+              <span class="nav-item__label">Revenue</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="#" class="nav-sub-item">Overview</a>
+              <a href="#" class="nav-sub-item">Acquisition</a>
+            </div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-storefront" aria-hidden="true"></i>
+              <span class="nav-item__label">Locations</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-megaphone-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Campaigns</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="platform">
+            <div class="nav-group-title">Platform</div>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-database" aria-hidden="true"></i>
+              <span class="nav-item__label">Data Sources</span>
+            </a>
+            <a href="identity-resolution.html" class="nav-item">
+              <i class="ph-duotone ph-fingerprint-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Identity Resolution</span>
+            </a>
+            <a href="#" class="nav-item">
+              <i class="ph-duotone ph-share-fat" aria-hidden="true"></i>
+              <span class="nav-item__label">Data Export</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="bottom">
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-gear" aria-hidden="true"></i>
+              <span class="nav-item__label">Settings</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+            </div>
+          </div>
+
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+        <div class="content-area content-area--guest-profiles">
+
+          <div class="guests-main">
+
+            <!-- Title bar -->
+            <div class="guests-intro">
+              <div class="title-bar">
+                <div class="title-bar__page-title">
+                  <h1 class="heading1" style="flex:1; font-weight:400;">Guest profiles</h1>
+                  <div class="title-bar__actions">
+                    <button class="button transparent">
+                      <span class="material-symbols-rounded">help</span>
+                      <span>Help</span>
+                    </button>
+                    <button class="button primary">
+                      <span class="material-symbols-rounded">file_download</span>
+                      <span>Export guests</span>
+                    </button>
+                  </div>
                 </div>
-            </aside>
-            <section class="ava-main">
-                <div class="ava-chat-viewport">
-                    <div class="ava-body">
-                        <div class="ava-hero">
-                            Hello! I'm AVA, your Guest Analytics assistant. How can I help you today?
-                        </div>
-                        <div class="ava-input-container" id="initialInputContainer">
-                            <input type="text" class="ava-input" placeholder="Ask Ava" id="avaInput" onkeypress="if(event.key === 'Enter') sendToAva()">
-                        </div>
-                        <div class="ava-chat-area">
-                            <div class="ava-suggestion-cards">
-                                <button class="ava-suggestion-card" onclick="askAva('Why did repeat visits drop last month?')">Why did repeat visits drop last month?</button>
-                                <button class="ava-suggestion-card" onclick="askAva('Compare loyal vs non-loyal guest spend')">Compare loyal vs non-loyal guest spend</button>
-                                <button class="ava-suggestion-card" onclick="askAva('Which menu items drive frequency for this segment?')">Which menu items drive frequency for this segment?</button>
-                            </div>
-                        </div>
+              </div>
+            </div>
+
+            <!-- Body: filters + table + pagination -->
+            <div class="guests-body">
+
+              <!-- Filter row -->
+              <div class="guests-controls">
+                <div class="guests-controls__search">
+                  <div class="text-input__container">
+                    <div class="text-input__container__box" style="width:100%;">
+                      <span class="material-symbols-rounded text-input__container__box_icon-left" style="font-size:24px; color:#60696c;">search</span>
+                      <input
+                        type="text"
+                        class="text-input__container__box__input-field text-input__container__box_icon-left-padding"
+                        placeholder="Filter by name, email, phone or ID"
+                        id="search-input"
+                        oninput="filterGuests(this.value)"
+                      >
                     </div>
+                  </div>
                 </div>
-                <div class="ava-input-footer" id="footerInputContainer">
-                    <div class="ava-input-wrapper">
-                        <div class="ava-input-container">
-                            <input type="text" class="ava-input" placeholder="Ask follow-up" id="avaInputFooter" onkeypress="if(event.key === 'Enter') sendToAva(true)">
-                        </div>
+                <button class="button outlined" onclick="alert('More filters — not built yet')">
+                  <span class="material-symbols-rounded">filter_alt</span>
+                  <span>More filters...</span>
+                </button>
+              </div>
+
+              <!-- Count + sort row -->
+              <div class="guests-table-header">
+                <span class="guests-table-header__count" id="count-label">100 items</span>
+                <div class="guests-table-header__sort">
+                  <span class="guests-table-header__sort-label">Sort by:</span>
+                  <div class="sort-dropdown" style="position:relative;">
+                    <div class="dropdown__wrapper">
+                      <button class="dropdown__button" style="min-width:200px;" onclick="toggleSort(this)">
+                        <span id="sort-label">LTV: high to low</span>
+                        <i class="ph ph-caret-down" style="font-size:16px; flex-shrink:0;"></i>
+                      </button>
                     </div>
+                    <div class="dropdown__options" id="sort-options">
+                      <ul>
+                        <li><button onclick="selectSort('ltv-desc', 'LTV: high to low')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">LTV: high to low</button></li>
+                        <li><button onclick="selectSort('ltv-asc', 'LTV: low to high')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">LTV: low to high</button></li>
+                        <li><button onclick="selectSort('orders-desc', 'Orders: high to low')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">Orders: high to low</button></li>
+                        <li><button onclick="selectSort('name-asc', 'Name: A to Z')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">Name: A to Z</button></li>
+                        <li><button onclick="selectSort('name-desc', 'Name: Z to A')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">Name: Z to A</button></li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-            </section>
-        </div>
+              </div>
+
+              <!-- Table -->
+              <div class="guests-table-wrap">
+                <div class="table-container">
+                  <table class="table" id="guests-table">
+                    <thead>
+                      <tr>
+                        <th class="guests-check-cell" onclick="toggleSelectAll()">
+                          <span id="select-all-icon" class="material-symbols-rounded guests-check-icon">check_box_outline_blank</span>
+                        </th>
+                        <th>Guest name</th>
+                        <th class="guests-email-col">Email</th>
+                        <th>Phone</th>
+                        <th>Loyalty status</th>
+                        <th style="text-align:right;">LTV</th>
+                        <th style="text-align:right;">Orders</th>
+                        <th class="guests-source-col">Source</th>
+                        <th class="table__actions-column"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="guests-tbody">
+                      <!-- Rows rendered by JS -->
+                    </tbody>
+                  </table>
+                  <!-- Empty state -->
+                  <div class="table__empty-state" id="empty-state" style="display:none;">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin:7.5rem auto;text-align:center;">
+                      <span class="material-symbols-rounded" style="font-size:48px;color:#DFE1E2;">search</span>
+                      <div style="font-weight:600;font-size:16px;color:#141414;">No matching guests</div>
+                      <div style="font-size:14px;color:#60696c;">Try another name, email, phone, or ID.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pagination -->
+              <div class="pagination" id="pagination-bar">
+
+                <!-- Left: items per page -->
+                <div class="pagination__items-per-page">
+                  <label>Items per page</label>
+                  <div class="pagination-dropdown">
+                    <div class="dropdown__wrapper" style="min-width:80px;">
+                      <button class="dropdown__button">
+                        <span>10</span>
+                        <i class="ph ph-caret-down" style="font-size:14px; flex-shrink:0;"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right: page selector + arrows -->
+                <div class="pagination__navigation">
+                  <div class="pagination-dropdown">
+                    <div class="dropdown__wrapper" style="min-width:80px;">
+                      <button class="dropdown__button" id="page-dropdown-btn" onclick="togglePageDropdown()">
+                        <span id="page-dropdown-label">1</span>
+                        <i class="ph ph-caret-down" style="font-size:14px; flex-shrink:0;"></i>
+                      </button>
+                    </div>
+                    <div class="dropdown__options" id="page-options" style="bottom:calc(100% + 8px); top:auto;">
+                      <ul id="page-options-list"></ul>
+                    </div>
+                  </div>
+                  <label id="total-pages-text">of 10 pages</label>
+                  <div class="pagination__navigation__arrows">
+                    <button class="pagination__nav-arrow" id="prev-btn" onclick="prevPage()" disabled>
+                      <i class="ph ph-caret-left"></i>
+                    </button>
+                    <button class="pagination__nav-arrow" id="next-btn" onclick="nextPage()">
+                      <i class="ph ph-caret-right"></i>
+                    </button>
+                  </div>
+                </div>
+
+              </div><!-- /pagination -->
+
+            </div><!-- /guests-body -->
+          </div><!-- /guests-main -->
+        </div><!-- /content-area -->
+      </main>
+
     </div>
+  </div>
 
-    <script>
-        function toggleDropdown(id) {
-            var dd = document.getElementById(id);
-            var opts = dd.querySelector('.dropdown__options');
-            opts.classList.toggle('dropdown__options_open');
+  <!-- Row action menu (shared, repositioned by JS) -->
+  <div class="guest-row-menu" id="row-menu">
+    <button class="guest-row-menu__item" onclick="rowMenuAction('view')">
+      <span class="material-symbols-rounded">person</span>
+      View profile
+    </button>
+    <button class="guest-row-menu__item" onclick="rowMenuAction('export')">
+      <span class="material-symbols-rounded">file_download</span>
+      Export guest data
+    </button>
+  </div>
+
+  <script>
+    /* ── Mock data ── */
+    const BASE_GUESTS = [
+      { name: 'Emily Johnson',   email: 'emily.johnson@mail.com',    phone: '(367) 456-5674', loyalty: 'Member',     ltv: 120.45,  orders: 4,  sources: ['Punchh', 'POS', 'Web'] },
+      { name: 'Ava Rodriguez',   email: 'ava.r@mail.com',            phone: '(718) 990-6677', loyalty: 'Member',     ltv: 2341.00, orders: 89, sources: ['Punchh', 'POS'] },
+      { name: 'Emma Davis',      email: 'emma.davis@mail.com',       phone: '(617) 228-4561', loyalty: 'Member',     ltv: 892.10,  orders: 31, sources: ['Punchh', 'POS', 'Web'] },
+      { name: 'Michael Chen',    email: 'm.chen@email.com',          phone: '(512) 889-3421', loyalty: 'Non-member', ltv: 485.20,  orders: 18, sources: ['POS', 'Web'] },
+      { name: 'James Thompson',  email: 'j.thompson@email.com',      phone: '(214) 556-8902', loyalty: 'Member',     ltv: 156.75,  orders: 6,  sources: ['POS', 'Email'] },
+      { name: 'Olivia Brown',    email: 'olivia.b@mail.com',         phone: '(404) 332-1188', loyalty: 'Non-member', ltv: 134.20,  orders: 5,  sources: ['Web', 'Email'] },
+      { name: 'Noah Anderson',   email: 'noah.a@email.com',          phone: '(303) 445-1199', loyalty: 'Non-member', ltv: 89.15,   orders: 3,  sources: ['POS', 'Web'] },
+      { name: 'Sarah Williams',  email: 'sarah.w@mail.com',          phone: '(203) 771-0982', loyalty: 'Member',     ltv: 67.30,   orders: 2,  sources: ['Web'] },
+      { name: 'William Garcia',  email: 'w.garcia@email.com',        phone: '(480) 114-2233', loyalty: 'Member',     ltv: 44.90,   orders: 3,  sources: ['Punchh'] },
+      { name: 'David Martinez',  email: 'david.m@email.com',         phone: '(415) 334-7654', loyalty: 'Non-member', ltv: 23.50,   orders: 1,  sources: ['POS'] },
+    ];
+
+    /* Expand to 100 guests */
+    const ALL_GUESTS = [];
+
+    /* Guests with built-out profile pages — pinned to the top of every
+       sort/filter so they're always discoverable in the prototype. */
+    ALL_GUESTS.push({
+      id: 1,
+      name: 'Marcus Thompson',
+      email: 'marcus@gmail.com',
+      phone: '(555) 234-5678',
+      loyalty: 'Member',
+      ltv: 3428.50,
+      orders: 68,
+      sources: ['Punchh', 'POS', 'Web', 'Email'],
+      sourceStr: 'Punchh, POS, Web, Email',
+      profileUrl: 'profile.html',
+    });
+    ALL_GUESTS.push({
+      id: 2,
+      name: 'Isabella Chen',
+      email: 'isabela@gmail.com',
+      phone: '(555) 234-5678',
+      loyalty: 'Non-member',
+      ltv: 1240.50,
+      orders: 32,
+      sources: ['POS', 'Web App'],
+      sourceStr: 'POS, Web App',
+      profileUrl: 'guest-profile.html',
+    });
+
+    const FIRST_NAMES = ['Liam','Sophia','Noah','Isabella','Oliver','Mia','Elijah','Charlotte','James','Amelia','Benjamin','Harper','Lucas','Evelyn','Henry','Luna','Alexander','Scarlett','Mason','Grace'];
+    const LAST_NAMES  = ['Smith','Brown','Taylor','Johnson','Williams','Jones','Davis','Garcia','Martinez','Anderson','Wilson','Thomas','Jackson','White','Harris','Martin','Thompson','Lee','Clark','Lewis'];
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        const b = BASE_GUESTS[j];
+        if (i === 0) {
+          ALL_GUESTS.push({ id: ALL_GUESTS.length + 1, ...b, sourceStr: b.sources.join(', ') });
+        } else {
+          const fn = FIRST_NAMES[(i * 10 + j) % FIRST_NAMES.length];
+          const ln = LAST_NAMES[(i * 3 + j * 7) % LAST_NAMES.length];
+          /* Distribute Non-members across all LTV bands so the sorted
+             first page has a mix instead of clustering by status. */
+          const loyaltyRoll = (i * 7 + j * 3) % 10;
+          const loyalty = loyaltyRoll < 4 ? 'Non-member' : 'Member';
+          /* Deterministic variants — keeps the table stable across navigations
+             and keeps every Ava-based variant below Marcus's $3,428.50 LTV. */
+          const ltvMult       = 0.6 + ((i * 13 + j * 7) % 80) / 100;       /* 0.60 – 1.39 */
+          const ltvVariant    = parseFloat((b.ltv * ltvMult).toFixed(2));
+          const ordersVariant = Math.max(0, b.orders + ((i * 11 + j * 5) % 7) - 3);
+          ALL_GUESTS.push({
+            id: ALL_GUESTS.length + 1,
+            name: fn + ' ' + ln,
+            email: fn.toLowerCase() + '.' + ln.toLowerCase() + '@mail.com',
+            phone: b.phone,
+            loyalty,
+            ltv: ltvVariant,
+            orders: ordersVariant,
+            sources: b.sources,
+            sourceStr: b.sources.join(', '),
+          });
         }
-        function selectDropdownOption(btn) {
-            var dd = btn.closest('.dropdown');
-            var label = dd.querySelector('.dropdown__button span:first-child');
-            label.textContent = btn.querySelector('span').textContent;
-            dd.querySelector('.dropdown__options').classList.remove('dropdown__options_open');
-        }
-        document.addEventListener('click', function(e) {
-            document.querySelectorAll('.dropdown').forEach(function(dd) {
-                if (!dd.contains(e.target)) {
-                    var opts = dd.querySelector('.dropdown__options');
-                    if (opts) opts.classList.remove('dropdown__options_open');
-                }
-            });
-        });
+      }
+    }
 
-        Chart.defaults.animation = false;
-        Chart.defaults.plugins.tooltip.animation = false;
+    const LOYALTY_TAG = {
+      'Member':     '<span class="tag tag__neutral"><span>Member</span></span>',
+      'Non-member': '<span class="tag tag__finished"><span>Non-member</span></span>',
+    };
 
-        const profileData = {
-            'All segments': {
-                tbody: `
-                                <!-- Loyalty Member -->
-                                <tr onclick="window.location.href='profile.html'" style="cursor: pointer;">
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Marcus Thompson</span>
-                                        </div>
-                                    </td>
-                                    <td>marcus.t@example.com</td>
-                                    <td>(555) 234-5678</td>
-                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
-                                    <td>$3,428.50</td>
-                                    <td>67</td>
-                                    <td>Punchh, POS</td>
-                                    <td>2 hours ago</td>
-                                </tr>
-                                <!-- Non-Loyalty Guest -->
-                                <tr onclick="window.location.href='guest-profile.html'" style="cursor: pointer;">
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Isabella Chen</span>
-                                        </div>
-                                    </td>
-                                    <td>isabella.c@example.com</td>
-                                    <td>(555) 012-3456</td>
-                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
-                                    <td>$1,240.50</td>
-                                    <td>48</td>
-                                    <td>Web App, POS</td>
-                                    <td>12 days ago</td>
-                                </tr>
-                                <!-- Additional Sample Data -->
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Sarah Martinez</span>
-                                        </div>
-                                    </td>
-                                    <td>sarah.m@example.com</td>
-                                    <td>(555) 789-0123</td>
-                                    <td><span class="tag tag__finished"><span>Platinum Member</span></span></td>
-                                    <td>$5,892.00</td>
-                                    <td>124</td>
-                                    <td>Punchh, POS, Web App</td>
-                                    <td>1 day ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">David Kim</span>
-                                        </div>
-                                    </td>
-                                    <td>d.kim@example.com</td>
-                                    <td>(555) 456-7890</td>
-                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
-                                    <td>$287.50</td>
-                                    <td>12</td>
-                                    <td>POS</td>
-                                    <td>5 days ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">James Wilson</span>
-                                        </div>
-                                    </td>
-                                    <td>j.wilson@example.com</td>
-                                    <td>(555) 321-6547</td>
-                                    <td><span class="tag tag__neutral"><span>Silver Member</span></span></td>
-                                    <td>$1,782.20</td>
-                                    <td>42</td>
-                                    <td>Punchh, POS</td>
-                                    <td>3 days ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Emily Rodriguez</span>
-                                        </div>
-                                    </td>
-                                    <td>emily.r@example.com</td>
-                                    <td>(555) 654-3210</td>
-                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
-                                    <td>$542.80</td>
-                                    <td>23</td>
-                                    <td>Web App</td>
-                                    <td>8 days ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Jessica Park</span>
-                                        </div>
-                                    </td>
-                                    <td>jessica.park@example.com</td>
-                                    <td>(555) 987-1234</td>
-                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
-                                    <td>$2,945.60</td>
-                                    <td>58</td>
-                                    <td>Punchh, Web App</td>
-                                    <td>4 hours ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Robert Taylor</span>
-                                        </div>
-                                    </td>
-                                    <td>r.taylor@example.com</td>
-                                    <td>(555) 159-7531</td>
-                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
-                                    <td>$95.00</td>
-                                    <td>4</td>
-                                    <td>POS</td>
-                                    <td>21 days ago</td>
-                                </tr>`,
-                pagination: 'Showing 1-8 of 1,248,392 guests'
-            },
-            'Dormant High Spenders': {
-                tbody: `
-                                <!-- Marcus Thompson (Kept on top) -->
-                                <tr onclick="window.location.href='profile.html'" style="cursor: pointer;">
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Marcus Thompson</span>
-                                        </div>
-                                    </td>
-                                    <td>marcus.t@example.com</td>
-                                    <td>(555) 234-5678</td>
-                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
-                                    <td>$3,428.50</td>
-                                    <td>67</td>
-                                    <td>Punchh, POS</td>
-                                    <td>2 months ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150&h=150" alt="Elena Rodriguez" class="guest-avatar">
-                                            <span class="guest-name">Elena Rodriguez</span>
-                                        </div>
-                                    </td>
-                                    <td>elena.rod@example.com</td>
-                                    <td>(555) 876-5432</td>
-                                    <td><span class="tag tag__finished"><span>Platinum Member</span></span></td>
-                                    <td>$4,892.00</td>
-                                    <td>92</td>
-                                    <td>Punchh, POS</td>
-                                    <td>3 months ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Thomas Wright</span>
-                                        </div>
-                                    </td>
-                                    <td>t.wright@example.com</td>
-                                    <td>(555) 231-9876</td>
-                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
-                                    <td>$2,150.40</td>
-                                    <td>54</td>
-                                    <td>Web App, POS</td>
-                                    <td>78 days ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=150&h=150" alt="Arthur Morgan" class="guest-avatar">
-                                            <span class="guest-name">Arthur Morgan</span>
-                                        </div>
-                                    </td>
-                                    <td>a.morgan@example.com</td>
-                                    <td>(555) 444-5555</td>
-                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
-                                    <td>$1,875.00</td>
-                                    <td>32</td>
-                                    <td>POS</td>
-                                    <td>92 days ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">James Wilson</span>
-                                        </div>
-                                    </td>
-                                    <td>j.wilson@example.com</td>
-                                    <td>(555) 321-6547</td>
-                                    <td><span class="tag tag__neutral"><span>Silver Member</span></span></td>
-                                    <td>$1,782.20</td>
-                                    <td>42</td>
-                                    <td>Punchh, POS</td>
-                                    <td>3 months ago</td>
-                                </tr>`,
-                pagination: 'Showing 1-5 of 4,208 guests'
-            },
-            'Vegetarian Segment': {
-                tbody: `
-                                <!-- Isabella Chen -->
-                                <tr onclick="window.location.href='guest-profile.html'" style="cursor: pointer;">
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Isabella Chen</span>
-                                        </div>
-                                    </td>
-                                    <td>isabella.c@example.com</td>
-                                    <td>(555) 012-3456</td>
-                                    <td><span class="tag tag__favorable"><span>Non-Member</span></span></td>
-                                    <td>$1,240.50</td>
-                                    <td>48</td>
-                                    <td>Web App, POS</td>
-                                    <td>12 days ago</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="guest-cell">
-                                            <span class="guest-name">Jessica Park</span>
-                                        </div>
-                                    </td>
-                                    <td>jessica.park@example.com</td>
-                                    <td>(555) 987-1234</td>
-                                    <td><span class="tag tag__waiting"><span>Gold Member</span></span></td>
-                                    <td>$2,945.60</td>
-                                    <td>58</td>
-                                    <td>Punchh, Web App</td>
-                                    <td>4 hours ago</td>
-                                </tr>`,
-                pagination: 'Showing 1-2 of 842 guests'
-            }
-        };
+    let currentSort  = 'ltv-desc';
+    let currentQuery = '';
+    const PER_PAGE   = 10;
+    let currentPage  = 1;
 
-        function refreshProfiles(segmentName) {
-            const data = profileData[segmentName] || profileData['All segments'];
-            document.getElementById('profiles-tbody').innerHTML = data.tbody;
-            document.getElementById('pagination-info').innerText = data.pagination;
-        }
+    function filterAndSort() {
+      const q = currentQuery.toLowerCase().trim();
+      let result = [...ALL_GUESTS];
+      if (q) {
+        result = result.filter(g =>
+          g.name.toLowerCase().includes(q) ||
+          g.email.toLowerCase().includes(q) ||
+          g.phone.includes(q) ||
+          String(g.id).includes(q)
+        );
+      }
+      if (currentSort === 'ltv-desc')    result.sort((a, b) => b.ltv - a.ltv);
+      if (currentSort === 'ltv-asc')     result.sort((a, b) => a.ltv - b.ltv);
+      if (currentSort === 'orders-desc') result.sort((a, b) => b.orders - a.orders);
+      if (currentSort === 'name-asc')    result.sort((a, b) => a.name.localeCompare(b.name));
+      if (currentSort === 'name-desc')   result.sort((a, b) => b.name.localeCompare(a.name));
+      /* Keep guests with a built-out profile page pinned to the top so
+         they're always discoverable in the prototype. */
+      const pinned = result.filter(g => g.profileUrl);
+      const others = result.filter(g => !g.profileUrl);
+      return [...pinned, ...others];
+    }
 
-        document.getElementById('segment-dropdown').addEventListener('change', function(e) {
-            refreshProfiles(e.target.value);
-        });
+    function renderTable() {
+      const guests     = filterAndSort();
+      const tbody      = document.getElementById('guests-tbody');
+      const empty      = document.getElementById('empty-state');
+      const countLabel = document.getElementById('count-label');
+      const total      = guests.length;
+      const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const start = (currentPage - 1) * PER_PAGE;
+      const page  = guests.slice(start, start + PER_PAGE);
 
-        function toggleNavExpand(btn) {
-            const subGroup = btn.nextElementSibling;
-            btn.classList.toggle('open');
-            subGroup.classList.toggle('open');
-        }
+      countLabel.textContent = `${total} item${total !== 1 ? 's' : ''}`;
 
-        function toggleAva() {
-            const modal = document.getElementById('avaModal');
-            const overlay = document.getElementById('avaOverlay');
-            modal.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
+      document.getElementById('page-dropdown-label').textContent = currentPage;
+      document.getElementById('total-pages-text').textContent = `of ${totalPages} page${totalPages !== 1 ? 's' : ''}`;
+      document.getElementById('prev-btn').disabled = currentPage <= 1;
+      document.getElementById('next-btn').disabled = currentPage >= totalPages;
+      document.getElementById('pagination-bar').style.display = total === 0 ? 'none' : 'flex';
+      document.getElementById('page-options-list').innerHTML = Array.from({ length: totalPages }, (_, i) => i + 1)
+        .map(p => `<li><button onclick="goToPage(${p})" style="background:none;border:none;width:100%;text-align:left;padding:8px 12px;cursor:pointer;font-family:'Manrope',sans-serif;font-size:16px;font-weight:${p === currentPage ? 700 : 400};">${p}</button></li>`)
+        .join('');
 
-        function askAva(question) {
-            const input = document.getElementById('avaInput');
-            input.value = question;
-            sendToAva();
-        }
+      if (page.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
 
-        function sendToAva(isFollowUp = false) {
-            const inputId = isFollowUp ? 'avaInputFooter' : 'avaInput';
-            const input = document.getElementById(inputId);
-            const question = input.value.trim();
-            if (!question) return;
+      tbody.innerHTML = page.map(g => {
+        const ltvStr    = g.ltv === 0 ? '—' : '$' + g.ltv.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const tagHtml   = g.loyalty ? LOYALTY_TAG[g.loyalty] || '' : '';
+        const src       = g.sourceStr;
+        const isChecked = selectedIds.has(g.id);
+        const iconName  = isChecked ? 'check_box' : 'check_box_outline_blank';
+        const iconCls   = isChecked ? 'guests-check-icon guests-check-icon--checked' : 'guests-check-icon';
+        const rowAttrs  = g.profileUrl
+          ? ` class="guests-row guests-row--clickable" onclick="window.location.href='${g.profileUrl}'"`
+          : '';
+        return `<tr${rowAttrs}>
+          <td class="guests-check-cell" onclick="event.stopPropagation(); toggleRow(${g.id})">
+            <span class="material-symbols-rounded ${iconCls}" data-row-id="${g.id}">${iconName}</span>
+          </td>
+          <td>${g.name}</td>
+          <td class="guests-email-col"><span class="guests-email-cell" title="${g.email}">${g.email}</span></td>
+          <td>${g.phone}</td>
+          <td>${tagHtml}</td>
+          <td style="text-align:right;">${ltvStr}</td>
+          <td style="text-align:right;">${g.orders}</td>
+          <td class="guests-source-col"><span class="guests-source-cell" title="${src}">${src}</span></td>
+          <td class="table__actions-column">
+            <button class="guest-kebab-btn" onclick="openRowMenu(event, ${g.id})" aria-label="Actions for ${g.name}">
+              <span class="material-symbols-rounded">more_vert</span>
+            </button>
+          </td>
+        </tr>`;
+      }).join('');
 
-            const chatArea = document.querySelector('.ava-chat-area');
-            const chatViewport = document.querySelector('.ava-chat-viewport');
+      currentPageIds = page.map(g => g.id);
+      updateSelectAllIcon();
+    }
 
-            if (!isFollowUp) {
-                // Hide suggestion cards when starting conversation
-                const suggestionCards = document.querySelector('.ava-suggestion-cards');
-                if (suggestionCards) {
-                    suggestionCards.style.display = 'none';
-                }
-                
-                // Hide hero message when starting conversation
-                const hero = document.querySelector('.ava-hero');
-                if (hero) {
-                    hero.style.display = 'none';
-                }
+    /* ── Row selection state ── */
+    const selectedIds = new Set();
+    let currentPageIds = [];
 
-                // Hide initial input and show footer input
-                document.getElementById('initialInputContainer').style.display = 'none';
-                document.getElementById('footerInputContainer').style.display = 'flex';
-                chatViewport.classList.add('chat-active');
-            }
+    function toggleRow(id) {
+      if (selectedIds.has(id)) selectedIds.delete(id);
+      else selectedIds.add(id);
+      const icon = document.querySelector(`.guests-check-icon[data-row-id="${id}"]`);
+      if (icon) {
+        const checked = selectedIds.has(id);
+        icon.textContent = checked ? 'check_box' : 'check_box_outline_blank';
+        icon.classList.toggle('guests-check-icon--checked', checked);
+      }
+      updateSelectAllIcon();
+    }
 
-            // Add user message (in bubble, right-aligned)
-            const userMsg = document.createElement('div');
-            userMsg.className = 'ava-message user';
-            userMsg.innerHTML = `<div class="message-bubble">${question}</div>`;
-            chatArea.appendChild(userMsg);
+    function toggleSelectAll() {
+      const allSelected = currentPageIds.length > 0 && currentPageIds.every(id => selectedIds.has(id));
+      if (allSelected) currentPageIds.forEach(id => selectedIds.delete(id));
+      else             currentPageIds.forEach(id => selectedIds.add(id));
+      renderTable();
+    }
 
-            input.value = '';
-            
-            // Scroll viewport to bottom
-            setTimeout(() => {
-                chatViewport.scrollTop = chatViewport.scrollHeight;
-            }, 0);
+    function updateSelectAllIcon() {
+      const icon = document.getElementById('select-all-icon');
+      if (!icon) return;
+      const total = currentPageIds.length;
+      const sel   = currentPageIds.filter(id => selectedIds.has(id)).length;
+      if (total > 0 && sel === total) {
+        icon.textContent = 'check_box';
+        icon.classList.add('guests-check-icon--checked');
+      } else if (sel > 0) {
+        icon.textContent = 'indeterminate_check_box';
+        icon.classList.add('guests-check-icon--checked');
+      } else {
+        icon.textContent = 'check_box_outline_blank';
+        icon.classList.remove('guests-check-icon--checked');
+      }
+    }
 
-            // Add bot response (NOT in bubble, left-aligned)
-            setTimeout(() => {
-                const botText = document.createElement('div');
-                botText.className = 'ava-message bot';
-                botText.innerHTML = `<div class="ava-message-text">Based on the current filters, I've identified a key insight:</div>`;
-                chatArea.appendChild(botText);
-                
-                setTimeout(() => {
-                    chatViewport.scrollTop = chatViewport.scrollHeight;
-                }, 0);
+    function prevPage() {
+      if (currentPage > 1) { currentPage--; renderTable(); }
+    }
 
-                // Add insight card (in card)
-                setTimeout(() => {
-                    const insightCard = document.createElement('div');
-                    insightCard.className = 'ava-insight-card';
-                    insightCard.innerHTML = `
-                        <div class="ava-insight-title">Example insight</div>
-                        <div class="ava-insight-text">Repeat guest frequency has increased by 12% among High-Value Loyalists following the recent menu update.</div>
-                        <div class="ava-placeholder-chart"><canvas class="ava-insight-chart-canvas"></canvas></div>
-                    `;
-                    chatArea.appendChild(insightCard);
-                    const canvas = insightCard.querySelector('.ava-insight-chart-canvas');
-                    if (canvas && typeof Chart !== 'undefined') {
-                        const accentBlue = getComputedStyle(document.documentElement).getPropertyValue('--accent-blue').trim() || '#5A55E3';
-                        const subdued = getComputedStyle(document.documentElement).getPropertyValue('--text-subdued').trim() || '#6b7280';
-                        new Chart(canvas, {
-                            type: 'line',
-                            data: {
-                                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                                datasets: [{
-                                    label: 'Frequency',
-                                    data: [2.1, 2.2, 2.35, 2.4],
-                                    borderColor: accentBlue,
-                                    backgroundColor: 'rgba(90, 85, 227, 0.08)',
-                                    fill: true,
-                                    tension: 0.3,
-                                    pointRadius: 3
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: { legend: { display: false } },
-                                scales: {
-                                    x: { grid: { display: false }, ticks: { font: { size: 10 }, color: subdued } },
-                                    y: { min: 1.8, max: 2.6, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, color: subdued } }
-                                }
-                            }
-                        });
-                    }
-                    
-                    // Add action buttons
-                    const actionButtons = document.createElement('div');
-                    actionButtons.className = 'ava-action-buttons';
-                    actionButtons.innerHTML = `
-                        <button class="ava-action-btn">
-                            <i class="ph ph-copy"></i>
-                            <span>Copy</span>
-                        </button>
-                        <button class="ava-action-btn">
-                            <i class="ph ph-share-network"></i>
-                            <span>Share</span>
-                        </button>
-                        <button class="ava-action-btn">
-                            <i class="ph ph-link"></i>
-                            <span>Sources (3)</span>
-                        </button>
-                        <button class="ava-action-btn-icon-only">
-                            <i class="ph ph-thumbs-up"></i>
-                        </button>
-                        <button class="ava-action-btn-icon-only">
-                            <i class="ph ph-thumbs-down"></i>
-                        </button>
-                    `;
-                    chatArea.appendChild(actionButtons);
-                    
-                    setTimeout(() => {
-                        chatViewport.scrollTop = chatViewport.scrollHeight;
-                    }, 0);
-                }, 1000);
-            }, 800);
-        }
-    </script>
+    function nextPage() {
+      const totalPages = Math.ceil(filterAndSort().length / PER_PAGE);
+      if (currentPage < totalPages) { currentPage++; renderTable(); }
+    }
+
+    function goToPage(p) {
+      currentPage = p;
+      document.getElementById('page-options').classList.remove('dropdown__options_open');
+      renderTable();
+    }
+
+    function togglePageDropdown() {
+      document.getElementById('page-options').classList.toggle('dropdown__options_open');
+    }
+
+    function filterGuests(query) {
+      currentQuery = query;
+      currentPage  = 1;
+      renderTable();
+    }
+
+    function toggleSort(btn) {
+      document.getElementById('sort-options').classList.toggle('dropdown__options_open');
+    }
+
+    function selectSort(value, label) {
+      currentSort = value;
+      currentPage = 1;
+      document.getElementById('sort-label').textContent = label;
+      document.getElementById('sort-options').classList.remove('dropdown__options_open');
+      renderTable();
+    }
+
+    /* ── Row kebab menu ── */
+    let activeMenuGuestId = null;
+
+    function openRowMenu(event, guestId) {
+      event.stopPropagation();
+      const menu = document.getElementById('row-menu');
+      const btn  = event.currentTarget;
+      const rect = btn.getBoundingClientRect();
+
+      if (activeMenuGuestId === guestId && menu.classList.contains('guest-row-menu--open')) {
+        closeRowMenu();
+        return;
+      }
+
+      activeMenuGuestId = guestId;
+      menu.classList.add('guest-row-menu--open');
+
+      /* Position below the button, aligned to the right */
+      const menuWidth = 180;
+      let left = rect.right - menuWidth;
+      let top  = rect.bottom + 4;
+      if (left < 8) left = 8;
+      menu.style.left = left + 'px';
+      menu.style.top  = top  + 'px';
+    }
+
+    function closeRowMenu() {
+      document.getElementById('row-menu').classList.remove('guest-row-menu--open');
+      activeMenuGuestId = null;
+    }
+
+    function rowMenuAction(action) {
+      closeRowMenu();
+      if (action === 'view') alert('View profile — not built yet');
+      if (action === 'export') alert('Export guest data — not built yet');
+    }
+
+    function toggleNavExpand(btn) {
+      const isOpen = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      const sub = btn.nextElementSibling;
+      if (sub && sub.classList.contains('nav-sub-group')) {
+        sub.classList.toggle('open', isOpen);
+      }
+    }
+
+    /* Close all dropdowns on outside click */
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.sort-dropdown')) {
+        document.getElementById('sort-options').classList.remove('dropdown__options_open');
+      }
+      if (!e.target.closest('#page-dropdown-btn') && !e.target.closest('#page-options')) {
+        document.getElementById('page-options').classList.remove('dropdown__options_open');
+      }
+      if (!e.target.closest('.guest-kebab-btn') && !e.target.closest('#row-menu')) {
+        closeRowMenu();
+      }
+    });
+
+    /* Initial render */
+    renderTable();
+  </script>
 </body>
 </html>

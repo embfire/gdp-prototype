@@ -12,21 +12,44 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        .profile-nav-top {
+        .chart-breadcrumbs {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: var(--spacing-lg);
+            margin-bottom: 16px;
         }
 
-        .btn-back {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--text-normal);
+        .chart-breadcrumbs__link {
+            font-family: 'Manrope', sans-serif;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 400;
+            line-height: 1.72;
+            color: #60696c;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .chart-breadcrumbs__link:hover {
+            text-decoration: underline;
+        }
+
+        .chart-breadcrumbs__separator {
+            display: inline-flex;
+            align-items: center;
+            color: #60696c;
+        }
+
+        .chart-breadcrumbs .material-symbols-rounded {
+            font-size: 20px;
+            color: #60696c;
+        }
+
+        .chart-breadcrumbs__current {
+            font-family: 'Manrope', sans-serif;
+            font-size: 14px;
+            font-weight: 800;
+            line-height: 1.72;
+            color: #000000;
+            white-space: nowrap;
         }
 
         .content-area {
@@ -330,13 +353,18 @@
             <!-- Main Content -->
             <main class="main-content">
                 <div class="content-area">
-                    <!-- Top Navigation -->
-                    <div class="profile-nav-top">
-                        <a href="guest-profile.html" class="btn-back">
-                            <i class="ph ph-arrow-left"></i>
-                            Isabella Chen
-                        </a>
-                    </div>
+                    <!-- Breadcrumbs -->
+                    <nav class="chart-breadcrumbs" aria-label="Breadcrumb">
+                        <a href="profiles.html" class="chart-breadcrumbs__link">Guest profiles</a>
+                        <span class="chart-breadcrumbs__separator" aria-hidden="true">
+                            <span class="material-symbols-rounded">chevron_right</span>
+                        </span>
+                        <a href="guest-profile.html" class="chart-breadcrumbs__link">Isabella Chen</a>
+                        <span class="chart-breadcrumbs__separator" aria-hidden="true">
+                            <span class="material-symbols-rounded">chevron_right</span>
+                        </span>
+                        <span class="chart-breadcrumbs__current">Identity Resolution Details</span>
+                    </nav>
 
                     <!-- Page Title -->
                     <h1 style="margin-bottom: 32px;">Identity Resolution Details</h1>

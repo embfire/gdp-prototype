@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Guest Profiles — PAR Guest360 Beta</title>
+  <title>Guest Profiles — PAR Guest360</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
@@ -68,11 +68,11 @@
               <a href="analytics-retention.html" class="nav-sub-item">Retention</a>
               <a href="analytics-atrisk.html" class="nav-sub-item">At risk</a>
             </div>
-            <a href="guest-profiles.html" class="nav-item active">
+            <a href="profiles.html" class="nav-item active">
               <i class="ph-duotone ph-user-circle" aria-hidden="true"></i>
               <span class="nav-item__label">Guest profiles</span>
             </a>
-            <a href="guest-segments.html" class="nav-item">
+            <a href="segments.html" class="nav-item">
               <i class="ph-duotone ph-users-three" aria-hidden="true"></i>
               <span class="nav-item__label">Segments</span>
             </a>
@@ -143,25 +143,487 @@
 
       <!-- Main content -->
       <main class="main-content">
-        <div class="placeholder-page">
-          <span class="material-symbols-rounded placeholder-page__icon">account_circle</span>
-          <p class="placeholder-page__title">Guest Profiles</p>
-          <p class="placeholder-page__desc">This area is not built yet — mock navigation only.</p>
-        </div>
+        <div class="content-area content-area--guest-profiles">
+
+          <div class="guests-main">
+
+            <!-- Title bar -->
+            <div class="guests-intro">
+              <div class="title-bar">
+                <div class="title-bar__page-title">
+                  <h1 class="heading1" style="flex:1; font-weight:400;">Guest profiles</h1>
+                  <div class="title-bar__actions">
+                    <button class="button transparent">
+                      <span class="material-symbols-rounded">help</span>
+                      <span>Help</span>
+                    </button>
+                    <button class="button primary">
+                      <span class="material-symbols-rounded">file_download</span>
+                      <span>Export guests</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Body: filters + table + pagination -->
+            <div class="guests-body">
+
+              <!-- Filter row -->
+              <div class="guests-controls">
+                <div class="guests-controls__search">
+                  <div class="text-input__container">
+                    <div class="text-input__container__box" style="width:100%;">
+                      <span class="material-symbols-rounded text-input__container__box_icon-left" style="font-size:24px; color:#60696c;">search</span>
+                      <input
+                        type="text"
+                        class="text-input__container__box__input-field text-input__container__box_icon-left-padding"
+                        placeholder="Filter by name, email, phone or ID"
+                        id="search-input"
+                        oninput="filterGuests(this.value)"
+                      >
+                    </div>
+                  </div>
+                </div>
+                <button class="button outlined" onclick="alert('More filters — not built yet')">
+                  <span class="material-symbols-rounded">filter_alt</span>
+                  <span>More filters...</span>
+                </button>
+              </div>
+
+              <!-- Count + sort row -->
+              <div class="guests-table-header">
+                <span class="guests-table-header__count" id="count-label">100 items</span>
+                <div class="guests-table-header__sort">
+                  <span class="guests-table-header__sort-label">Sort by:</span>
+                  <div class="sort-dropdown" style="position:relative;">
+                    <div class="dropdown__wrapper">
+                      <button class="dropdown__button" style="min-width:200px;" onclick="toggleSort(this)">
+                        <span id="sort-label">LTV: high to low</span>
+                        <i class="ph ph-caret-down" style="font-size:16px; flex-shrink:0;"></i>
+                      </button>
+                    </div>
+                    <div class="dropdown__options" id="sort-options">
+                      <ul>
+                        <li><button onclick="selectSort('ltv-desc', 'LTV: high to low')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">LTV: high to low</button></li>
+                        <li><button onclick="selectSort('ltv-asc', 'LTV: low to high')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">LTV: low to high</button></li>
+                        <li><button onclick="selectSort('orders-desc', 'Orders: high to low')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">Orders: high to low</button></li>
+                        <li><button onclick="selectSort('name-asc', 'Name: A to Z')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">Name: A to Z</button></li>
+                        <li><button onclick="selectSort('name-desc', 'Name: Z to A')" style="background:none;border:none;width:100%;text-align:left;padding:8px;cursor:pointer;font-family:inherit;font-size:14px;">Name: Z to A</button></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Table -->
+              <div class="guests-table-wrap">
+                <div class="table-container">
+                  <table class="table" id="guests-table">
+                    <thead>
+                      <tr>
+                        <th class="guests-check-cell" onclick="toggleSelectAll()">
+                          <span id="select-all-icon" class="material-symbols-rounded guests-check-icon">check_box_outline_blank</span>
+                        </th>
+                        <th>Guest name</th>
+                        <th class="guests-email-col">Email</th>
+                        <th>Phone</th>
+                        <th>Loyalty status</th>
+                        <th style="text-align:right;">LTV</th>
+                        <th style="text-align:right;">Orders</th>
+                        <th class="guests-source-col">Source</th>
+                        <th class="table__actions-column"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="guests-tbody">
+                      <!-- Rows rendered by JS -->
+                    </tbody>
+                  </table>
+                  <!-- Empty state -->
+                  <div class="table__empty-state" id="empty-state" style="display:none;">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin:7.5rem auto;text-align:center;">
+                      <span class="material-symbols-rounded" style="font-size:48px;color:#DFE1E2;">search</span>
+                      <div style="font-weight:600;font-size:16px;color:#141414;">No matching guests</div>
+                      <div style="font-size:14px;color:#60696c;">Try another name, email, phone, or ID.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pagination -->
+              <div class="pagination" id="pagination-bar">
+
+                <!-- Left: items per page -->
+                <div class="pagination__items-per-page">
+                  <label>Items per page</label>
+                  <div class="pagination-dropdown">
+                    <div class="dropdown__wrapper" style="min-width:80px;">
+                      <button class="dropdown__button">
+                        <span>10</span>
+                        <i class="ph ph-caret-down" style="font-size:14px; flex-shrink:0;"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right: page selector + arrows -->
+                <div class="pagination__navigation">
+                  <div class="pagination-dropdown">
+                    <div class="dropdown__wrapper" style="min-width:80px;">
+                      <button class="dropdown__button" id="page-dropdown-btn" onclick="togglePageDropdown()">
+                        <span id="page-dropdown-label">1</span>
+                        <i class="ph ph-caret-down" style="font-size:14px; flex-shrink:0;"></i>
+                      </button>
+                    </div>
+                    <div class="dropdown__options" id="page-options" style="bottom:calc(100% + 8px); top:auto;">
+                      <ul id="page-options-list"></ul>
+                    </div>
+                  </div>
+                  <label id="total-pages-text">of 10 pages</label>
+                  <div class="pagination__navigation__arrows">
+                    <button class="pagination__nav-arrow" id="prev-btn" onclick="prevPage()" disabled>
+                      <i class="ph ph-caret-left"></i>
+                    </button>
+                    <button class="pagination__nav-arrow" id="next-btn" onclick="nextPage()">
+                      <i class="ph ph-caret-right"></i>
+                    </button>
+                  </div>
+                </div>
+
+              </div><!-- /pagination -->
+
+            </div><!-- /guests-body -->
+          </div><!-- /guests-main -->
+        </div><!-- /content-area -->
       </main>
 
     </div>
   </div>
 
+  <!-- Row action menu (shared, repositioned by JS) -->
+  <div class="guest-row-menu" id="row-menu">
+    <button class="guest-row-menu__item" onclick="rowMenuAction('view')">
+      <span class="material-symbols-rounded">person</span>
+      View profile
+    </button>
+    <button class="guest-row-menu__item" onclick="rowMenuAction('export')">
+      <span class="material-symbols-rounded">file_download</span>
+      Export guest data
+    </button>
+  </div>
+
   <script>
+    /* ── Mock data ── */
+    const BASE_GUESTS = [
+      { name: 'Emily Johnson',   email: 'emily.johnson@mail.com',    phone: '(367) 456-5674', loyalty: 'Member',     ltv: 120.45,  orders: 4,  sources: ['Punchh', 'POS', 'Web'] },
+      { name: 'Ava Rodriguez',   email: 'ava.r@mail.com',            phone: '(718) 990-6677', loyalty: 'Member',     ltv: 2341.00, orders: 89, sources: ['Punchh', 'POS'] },
+      { name: 'Emma Davis',      email: 'emma.davis@mail.com',       phone: '(617) 228-4561', loyalty: 'Member',     ltv: 892.10,  orders: 31, sources: ['Punchh', 'POS', 'Web'] },
+      { name: 'Michael Chen',    email: 'm.chen@email.com',          phone: '(512) 889-3421', loyalty: 'Non-member', ltv: 485.20,  orders: 18, sources: ['POS', 'Web'] },
+      { name: 'James Thompson',  email: 'j.thompson@email.com',      phone: '(214) 556-8902', loyalty: 'Member',     ltv: 156.75,  orders: 6,  sources: ['POS', 'Email'] },
+      { name: 'Olivia Brown',    email: 'olivia.b@mail.com',         phone: '(404) 332-1188', loyalty: 'Non-member', ltv: 134.20,  orders: 5,  sources: ['Web', 'Email'] },
+      { name: 'Noah Anderson',   email: 'noah.a@email.com',          phone: '(303) 445-1199', loyalty: 'Non-member', ltv: 89.15,   orders: 3,  sources: ['POS', 'Web'] },
+      { name: 'Sarah Williams',  email: 'sarah.w@mail.com',          phone: '(203) 771-0982', loyalty: 'Member',     ltv: 67.30,   orders: 2,  sources: ['Web'] },
+      { name: 'William Garcia',  email: 'w.garcia@email.com',        phone: '(480) 114-2233', loyalty: 'Member',     ltv: 44.90,   orders: 3,  sources: ['Punchh'] },
+      { name: 'David Martinez',  email: 'david.m@email.com',         phone: '(415) 334-7654', loyalty: 'Non-member', ltv: 23.50,   orders: 1,  sources: ['POS'] },
+    ];
+
+    /* Expand to 100 guests */
+    const ALL_GUESTS = [];
+
+    /* Guests with built-out profile pages — pinned to the top of every
+       sort/filter so they're always discoverable in the prototype. */
+    ALL_GUESTS.push({
+      id: 1,
+      name: 'Marcus Thompson',
+      email: 'marcus@gmail.com',
+      phone: '(555) 234-5678',
+      loyalty: 'Member',
+      ltv: 3428.50,
+      orders: 68,
+      sources: ['Punchh', 'POS', 'Web', 'Email'],
+      sourceStr: 'Punchh, POS, Web, Email',
+      profileUrl: 'profile.html',
+    });
+    ALL_GUESTS.push({
+      id: 2,
+      name: 'Isabella Chen',
+      email: 'isabela@gmail.com',
+      phone: '(555) 234-5678',
+      loyalty: 'Non-member',
+      ltv: 1240.50,
+      orders: 32,
+      sources: ['POS', 'Web App'],
+      sourceStr: 'POS, Web App',
+      profileUrl: 'guest-profile.html',
+    });
+
+    const FIRST_NAMES = ['Liam','Sophia','Noah','Isabella','Oliver','Mia','Elijah','Charlotte','James','Amelia','Benjamin','Harper','Lucas','Evelyn','Henry','Luna','Alexander','Scarlett','Mason','Grace'];
+    const LAST_NAMES  = ['Smith','Brown','Taylor','Johnson','Williams','Jones','Davis','Garcia','Martinez','Anderson','Wilson','Thomas','Jackson','White','Harris','Martin','Thompson','Lee','Clark','Lewis'];
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        const b = BASE_GUESTS[j];
+        if (i === 0) {
+          ALL_GUESTS.push({ id: ALL_GUESTS.length + 1, ...b, sourceStr: b.sources.join(', ') });
+        } else {
+          const fn = FIRST_NAMES[(i * 10 + j) % FIRST_NAMES.length];
+          const ln = LAST_NAMES[(i * 3 + j * 7) % LAST_NAMES.length];
+          /* Distribute Non-members across all LTV bands so the sorted
+             first page has a mix instead of clustering by status. */
+          const loyaltyRoll = (i * 7 + j * 3) % 10;
+          const loyalty = loyaltyRoll < 4 ? 'Non-member' : 'Member';
+          /* Deterministic variants — keeps the table stable across navigations
+             and keeps every Ava-based variant below Marcus's $3,428.50 LTV. */
+          const ltvMult       = 0.6 + ((i * 13 + j * 7) % 80) / 100;       /* 0.60 – 1.39 */
+          const ltvVariant    = parseFloat((b.ltv * ltvMult).toFixed(2));
+          const ordersVariant = Math.max(0, b.orders + ((i * 11 + j * 5) % 7) - 3);
+          ALL_GUESTS.push({
+            id: ALL_GUESTS.length + 1,
+            name: fn + ' ' + ln,
+            email: fn.toLowerCase() + '.' + ln.toLowerCase() + '@mail.com',
+            phone: b.phone,
+            loyalty,
+            ltv: ltvVariant,
+            orders: ordersVariant,
+            sources: b.sources,
+            sourceStr: b.sources.join(', '),
+          });
+        }
+      }
+    }
+
+    const LOYALTY_TAG = {
+      'Member':     '<span class="tag tag__neutral"><span>Member</span></span>',
+      'Non-member': '<span class="tag tag__finished"><span>Non-member</span></span>',
+    };
+
+    let currentSort  = 'ltv-desc';
+    let currentQuery = '';
+    const PER_PAGE   = 10;
+    let currentPage  = 1;
+
+    function filterAndSort() {
+      const q = currentQuery.toLowerCase().trim();
+      let result = [...ALL_GUESTS];
+      if (q) {
+        result = result.filter(g =>
+          g.name.toLowerCase().includes(q) ||
+          g.email.toLowerCase().includes(q) ||
+          g.phone.includes(q) ||
+          String(g.id).includes(q)
+        );
+      }
+      if (currentSort === 'ltv-desc')    result.sort((a, b) => b.ltv - a.ltv);
+      if (currentSort === 'ltv-asc')     result.sort((a, b) => a.ltv - b.ltv);
+      if (currentSort === 'orders-desc') result.sort((a, b) => b.orders - a.orders);
+      if (currentSort === 'name-asc')    result.sort((a, b) => a.name.localeCompare(b.name));
+      if (currentSort === 'name-desc')   result.sort((a, b) => b.name.localeCompare(a.name));
+      /* Keep guests with a built-out profile page pinned to the top so
+         they're always discoverable in the prototype. */
+      const pinned = result.filter(g => g.profileUrl);
+      const others = result.filter(g => !g.profileUrl);
+      return [...pinned, ...others];
+    }
+
+    function renderTable() {
+      const guests     = filterAndSort();
+      const tbody      = document.getElementById('guests-tbody');
+      const empty      = document.getElementById('empty-state');
+      const countLabel = document.getElementById('count-label');
+      const total      = guests.length;
+      const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const start = (currentPage - 1) * PER_PAGE;
+      const page  = guests.slice(start, start + PER_PAGE);
+
+      countLabel.textContent = `${total} item${total !== 1 ? 's' : ''}`;
+
+      document.getElementById('page-dropdown-label').textContent = currentPage;
+      document.getElementById('total-pages-text').textContent = `of ${totalPages} page${totalPages !== 1 ? 's' : ''}`;
+      document.getElementById('prev-btn').disabled = currentPage <= 1;
+      document.getElementById('next-btn').disabled = currentPage >= totalPages;
+      document.getElementById('pagination-bar').style.display = total === 0 ? 'none' : 'flex';
+      document.getElementById('page-options-list').innerHTML = Array.from({ length: totalPages }, (_, i) => i + 1)
+        .map(p => `<li><button onclick="goToPage(${p})" style="background:none;border:none;width:100%;text-align:left;padding:8px 12px;cursor:pointer;font-family:'Manrope',sans-serif;font-size:16px;font-weight:${p === currentPage ? 700 : 400};">${p}</button></li>`)
+        .join('');
+
+      if (page.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      tbody.innerHTML = page.map(g => {
+        const ltvStr    = g.ltv === 0 ? '—' : '$' + g.ltv.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const tagHtml   = g.loyalty ? LOYALTY_TAG[g.loyalty] || '' : '';
+        const src       = g.sourceStr;
+        const isChecked = selectedIds.has(g.id);
+        const iconName  = isChecked ? 'check_box' : 'check_box_outline_blank';
+        const iconCls   = isChecked ? 'guests-check-icon guests-check-icon--checked' : 'guests-check-icon';
+        const rowAttrs  = g.profileUrl
+          ? ` class="guests-row guests-row--clickable" onclick="window.location.href='${g.profileUrl}'"`
+          : '';
+        return `<tr${rowAttrs}>
+          <td class="guests-check-cell" onclick="event.stopPropagation(); toggleRow(${g.id})">
+            <span class="material-symbols-rounded ${iconCls}" data-row-id="${g.id}">${iconName}</span>
+          </td>
+          <td>${g.name}</td>
+          <td class="guests-email-col"><span class="guests-email-cell" title="${g.email}">${g.email}</span></td>
+          <td>${g.phone}</td>
+          <td>${tagHtml}</td>
+          <td style="text-align:right;">${ltvStr}</td>
+          <td style="text-align:right;">${g.orders}</td>
+          <td class="guests-source-col"><span class="guests-source-cell" title="${src}">${src}</span></td>
+          <td class="table__actions-column">
+            <button class="guest-kebab-btn" onclick="openRowMenu(event, ${g.id})" aria-label="Actions for ${g.name}">
+              <span class="material-symbols-rounded">more_vert</span>
+            </button>
+          </td>
+        </tr>`;
+      }).join('');
+
+      currentPageIds = page.map(g => g.id);
+      updateSelectAllIcon();
+    }
+
+    /* ── Row selection state ── */
+    const selectedIds = new Set();
+    let currentPageIds = [];
+
+    function toggleRow(id) {
+      if (selectedIds.has(id)) selectedIds.delete(id);
+      else selectedIds.add(id);
+      const icon = document.querySelector(`.guests-check-icon[data-row-id="${id}"]`);
+      if (icon) {
+        const checked = selectedIds.has(id);
+        icon.textContent = checked ? 'check_box' : 'check_box_outline_blank';
+        icon.classList.toggle('guests-check-icon--checked', checked);
+      }
+      updateSelectAllIcon();
+    }
+
+    function toggleSelectAll() {
+      const allSelected = currentPageIds.length > 0 && currentPageIds.every(id => selectedIds.has(id));
+      if (allSelected) currentPageIds.forEach(id => selectedIds.delete(id));
+      else             currentPageIds.forEach(id => selectedIds.add(id));
+      renderTable();
+    }
+
+    function updateSelectAllIcon() {
+      const icon = document.getElementById('select-all-icon');
+      if (!icon) return;
+      const total = currentPageIds.length;
+      const sel   = currentPageIds.filter(id => selectedIds.has(id)).length;
+      if (total > 0 && sel === total) {
+        icon.textContent = 'check_box';
+        icon.classList.add('guests-check-icon--checked');
+      } else if (sel > 0) {
+        icon.textContent = 'indeterminate_check_box';
+        icon.classList.add('guests-check-icon--checked');
+      } else {
+        icon.textContent = 'check_box_outline_blank';
+        icon.classList.remove('guests-check-icon--checked');
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 1) { currentPage--; renderTable(); }
+    }
+
+    function nextPage() {
+      const totalPages = Math.ceil(filterAndSort().length / PER_PAGE);
+      if (currentPage < totalPages) { currentPage++; renderTable(); }
+    }
+
+    function goToPage(p) {
+      currentPage = p;
+      document.getElementById('page-options').classList.remove('dropdown__options_open');
+      renderTable();
+    }
+
+    function togglePageDropdown() {
+      document.getElementById('page-options').classList.toggle('dropdown__options_open');
+    }
+
+    function filterGuests(query) {
+      currentQuery = query;
+      currentPage  = 1;
+      renderTable();
+    }
+
+    function toggleSort(btn) {
+      document.getElementById('sort-options').classList.toggle('dropdown__options_open');
+    }
+
+    function selectSort(value, label) {
+      currentSort = value;
+      currentPage = 1;
+      document.getElementById('sort-label').textContent = label;
+      document.getElementById('sort-options').classList.remove('dropdown__options_open');
+      renderTable();
+    }
+
+    /* ── Row kebab menu ── */
+    let activeMenuGuestId = null;
+
+    function openRowMenu(event, guestId) {
+      event.stopPropagation();
+      const menu = document.getElementById('row-menu');
+      const btn  = event.currentTarget;
+      const rect = btn.getBoundingClientRect();
+
+      if (activeMenuGuestId === guestId && menu.classList.contains('guest-row-menu--open')) {
+        closeRowMenu();
+        return;
+      }
+
+      activeMenuGuestId = guestId;
+      menu.classList.add('guest-row-menu--open');
+
+      /* Position below the button, aligned to the right */
+      const menuWidth = 180;
+      let left = rect.right - menuWidth;
+      let top  = rect.bottom + 4;
+      if (left < 8) left = 8;
+      menu.style.left = left + 'px';
+      menu.style.top  = top  + 'px';
+    }
+
+    function closeRowMenu() {
+      document.getElementById('row-menu').classList.remove('guest-row-menu--open');
+      activeMenuGuestId = null;
+    }
+
+    function rowMenuAction(action) {
+      closeRowMenu();
+      if (action === 'view') alert('View profile — not built yet');
+      if (action === 'export') alert('Export guest data — not built yet');
+    }
+
     function toggleNavExpand(btn) {
-      var isOpen = btn.classList.toggle('open');
+      const isOpen = btn.classList.toggle('open');
       btn.setAttribute('aria-expanded', isOpen);
-      var sub = btn.nextElementSibling;
+      const sub = btn.nextElementSibling;
       if (sub && sub.classList.contains('nav-sub-group')) {
         sub.classList.toggle('open', isOpen);
       }
     }
+
+    /* Close all dropdowns on outside click */
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.sort-dropdown')) {
+        document.getElementById('sort-options').classList.remove('dropdown__options_open');
+      }
+      if (!e.target.closest('#page-dropdown-btn') && !e.target.closest('#page-options')) {
+        document.getElementById('page-options').classList.remove('dropdown__options_open');
+      }
+      if (!e.target.closest('.guest-kebab-btn') && !e.target.closest('#row-menu')) {
+        closeRowMenu();
+      }
+    });
+
+    /* Initial render */
+    renderTable();
   </script>
 </body>
 </html>
