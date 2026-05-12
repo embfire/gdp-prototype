@@ -1075,6 +1075,17 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   min-height: 0;
 }
 
+/* New guest acquisition: same flex-fill treatment */
+.chart-card[data-metric-id="new-guest-acquisition"] .chart-card__body {
+  flex: 1;
+  min-height: 0;
+}
+.chart-card[data-metric-id="new-guest-acquisition"] .chart-card__placeholder {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
 /* Guest lifecycle breakdown: same flex-fill treatment */
 .chart-card[data-metric-id="guest-lifecycle-breakdown"] .chart-card__body {
   flex: 1;
