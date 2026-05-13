@@ -152,3 +152,42 @@ The tooltip is hidden when the menu opens so it doesn't cover it. Outside-click 
 2. Inside the chart's `init` function, call `attachChartPointMenu(container, { plotLeft, plotRightPad, axisMinTime, axisMaxTime, data })`.
 3. Cursor-pointer styling is set on the container by the helper.
 4. The menu must remain a viewport-level overlay (not nested in the chart card) so it can flip past chart edges.
+
+## Histogram / Distribution Charts (Visit Frequency pattern)
+
+First implementation: `beta/dashboard-visit-frequency.html` and the visit-frequency card in `beta/index.html`. Distribution of guests across discrete value buckets (1 / 2 / 3-5 / 6-10 / 11+).
+
+### Bucket convention
+Five right-skewed buckets — `1 visit`, `2 visits`, `3-5 visits`, `6-10 visits`, `11+ visits` — sourced from QBR frequency cohorts and customer interview language. Competitors don't publish their bucketing (Klaviyo uses terciles, Mixpanel uses unique-interval counts), so this is an original convention. Reuse the same labels for any "visits per guest" distribution.
+
+### Grouped column chart, current vs previous
+Each bucket has two adjacent vertical bars: current period (solid `--chart-indigo-900`) and previous period (same fill + diagonal stripe decal). Built with two `type: 'bar'` series sharing the same `xKey: 'bucket'` — AG Charts groups them automatically. Reuses the period-comparison decal pattern from `## ECharts: Bar Chart Period Comparisons` above, but on AG Charts:
+
+```js
+aria: { enabled: true, decal: { show: true } },   // turn on decal rendering globally
+series: [
+  { type: 'bar', yKey: 'prev', fill: '#5A55E3', cornerRadius: 4 },                            // striped via aria
+  { type: 'bar', yKey: 'current', fill: '#5A55E3', cornerRadius: 4, decal: { symbol: 'none' } },  // override
+],
+```
+
+The previous-period series is **declared first** so it sits to the left of current in the rendered group.
+
+### Loyalty vs non-loyalty as a breakdown, not a separate chart
+Customer interviews flagged loyalty-vs-non-loyalty comparison as a board-level question, but layering it on top of period-over-period would be four bars per bucket. Resolved by making it a breakdown dropdown (`Total` / `By loyalty status`). When the user picks `By loyalty status`:
+- Series swap to `Loyalty` (indigo) + `Non-loyalty` (vermilion), both for the current period only
+- Data swaps from `VISIT_FREQ_TOTAL_DATA` to `VISIT_FREQ_LOYALTY_DATA`
+- Table headers swap to `Bucket / Loyalty / Non-loyalty / Total / Loyalty share`
+- Tooltip drops the period-over-period delta block (no prev period in this view)
+
+### Y-axis for K-scale histograms
+Values are in thousands; format axis labels and tooltips through a shared `fmtVK(v)` helper that returns `42K`, `1.24M`, etc. `Plot-left ≈ 38px` for labels up to `350K` (Manrope 12px). Bar `cornerRadius: 4` gives a softer histogram silhouette than the reachability stacked bar (which uses 8).
+
+### Click-bucket → context menu
+Categorical adaptation of `attachChartPointMenu`. Snap-to-X math computes `idx = floor(relX × buckets.length)` instead of nearest-time-by-difference. The menu header shows the bucket label (e.g. `3-5 visits`) on the left and the guest count on the right. Series-color-dot stays solid (no striped marker — bucket clicks don't differentiate series; this is a bucket-level drill-in). `pointMenuAnchor` holds the bucket row, so `onPointMenuAction` wiring receives `{ bucket, current, prev }` (or `{ bucket, loyalty, nonLoyalty }`).
+
+### Table for non-time-series charts
+Headers are not fixed — `renderTableHead()` rewrites the `<thead>` per breakdown so columns stay accurate when the chart swaps data shape. Five buckets fit on one page; pagination controls are disabled but kept in the layout so the page chrome matches the time-series detail pages.
+
+### Card hero metric for distributions
+The hero is the **weighted average** across buckets (e.g. `2.4 visits`), not a sum or count. Period pill is `% change in the average`, not in any single bucket. The subtitle on the period line includes the underlying guest count (e.g. `2.1 visits prev period · 847K identified guests`) so the user sees what the average is computed over without opening the detail page.
