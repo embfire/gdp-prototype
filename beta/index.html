@@ -393,6 +393,13 @@
           document.fonts.load('800 12px Manrope'),
         ]).then(function() { requestAnimationFrame(initNewGuestAcqChart); });
       }
+      if (id === 'visit-frequency') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() { requestAnimationFrame(initVisitFrequencyChart); });
+      }
       // Sync the new card's filter notice with the current date range.
       applyFilterCompatibility(currentDateRange);
     }
@@ -724,6 +731,17 @@
           '</div>'
         );
       }
+      if (id === 'visit-frequency') {
+        // Hero = average visits per identified guest over the period.
+        // Higher = stickier guest base; default (non-inverse) pill.
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">2.4</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+14.3%</span>' +
+          '</div>' +
+          '<p class="chart-card__metric-period">2.1 visits prev period</p>'
+        );
+      }
       return (
         '<p class="chart-card__metric-value">--</p>' +
         '<p class="chart-card__metric-period">-- prev period</p>'
@@ -793,6 +811,20 @@
           '</div>'
         );
       }
+      if (id === 'visit-frequency') {
+        return (
+          '<div class="chart-card__legend">' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="current" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleVisitFrequencySeries(this, \'current\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>' +
+              '<span>This period</span>' +
+            '</button>' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleVisitFrequencySeries(this, \'prev\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
+              '<span>Previous period</span>' +
+            '</button>' +
+          '</div>'
+        );
+      }
       if (id === 'reachability') {
         return '<div class="chart-card__legend">' +
           REACHABILITY_CHANNELS.map(function(ch) {
@@ -819,6 +851,7 @@
       if (id === 'guest-lifecycle-breakdown') return 'Distribution of identified guests across lifecycle stages';
       if (id === 'retention-cohort') return 'M+1 retention rate by acquisition cohort';
       if (id === 'reachability') return 'Reachable guests by channel vs. total identified';
+      if (id === 'visit-frequency') return 'Guest distribution across visit-count buckets';
       return 'Chart explanation';
     }
 
@@ -922,7 +955,8 @@
         'new-guest-acquisition': 'dashboard-new-guest-acquisition.html',
         'guest-lifecycle-breakdown': 'dashboard-guest-lifecycle.html',
         'retention-cohort': 'dashboard-retention-cohort.html',
-        'reachability':      'dashboard-reachability.html'
+        'reachability':      'dashboard-reachability.html',
+        'visit-frequency':   'dashboard-visit-frequency.html'
       };
       window.location.href = perChartPages[metricId] || 'dashboard-chart-detail.html';
     }
@@ -2438,6 +2472,232 @@
 
       container.addEventListener('mousemove',  newGuestAcqMouseMove);
       container.addEventListener('mouseleave', newGuestAcqMouseLeave);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       AG Charts — Visit Frequency (grouped column histogram)
+       Distribution of identified guests across visit-count buckets
+       in the selected window. Two bars per bucket: current period
+       (solid indigo) vs. previous period (striped indigo). Comparing
+       buckets period-over-period surfaces guests shifting up/down the
+       frequency ladder — the core "is loyalty driving stickiness?"
+       question raised in customer interviews.
+    ═══════════════════════════════════════════════════ */
+    var visitFreqChart        = null;
+    var visitFreqChartOptions = null;
+    var visitFreqTooltipEl    = null;
+    var visitFreqMouseMove    = null;
+    var visitFreqMouseLeave   = null;
+    var visitFreqVisibility   = { current: true, prev: true };
+
+    // Bucket convention from QBR frequency cohorts (Punchh) and customer
+    // interviews. Values in thousands of identified guests in the 90D window.
+    // Totals: current 847K, prev 814K. Weighted avg = 2.4 vs 2.1 visits.
+    var VISIT_FREQ_DATA = [
+      { bucket: '1 visit',      current: 320, prev: 335 },
+      { bucket: '2 visits',     current: 210, prev: 205 },
+      { bucket: '3-5 visits',   current: 180, prev: 165 },
+      { bucket: '6-10 visits',  current:  95, prev:  78 },
+      { bucket: '11+ visits',   current:  42, prev:  31 },
+    ];
+
+    function toggleVisitFrequencySeries(btn, seriesKey) {
+      if (!visitFreqChart || !visitFreqChartOptions) return;
+      var nextValue = !visitFreqVisibility[seriesKey];
+      var otherKey = seriesKey === 'current' ? 'prev' : 'current';
+      if (!nextValue && !visitFreqVisibility[otherKey]) return;
+      visitFreqVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+      var newSeries = visitFreqChartOptions.series.map(function(s) {
+        return Object.assign({}, s, { visible: visitFreqVisibility[s.yKey] !== false });
+      });
+      visitFreqChartOptions = Object.assign({}, visitFreqChartOptions, { series: newSeries });
+      visitFreqChart.update(visitFreqChartOptions);
+    }
+
+    function initVisitFrequencyChart() {
+      var container = document.getElementById('chart-area-visit-frequency');
+      if (!container) return;
+      if (visitFreqChart) { visitFreqChart.destroy(); visitFreqChart = null; }
+
+      visitFreqVisibility = { current: true, prev: true };
+
+      var fmtVK = function(v) {
+        var n = +v;
+        if (n >= 1000) return (n / 1000).toFixed(2).replace(/\.?0+$/, '') + 'M';
+        return Math.round(n) + 'K';
+      };
+
+      visitFreqChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 0, bottom: 0, left: 0 },
+        data: VISIT_FREQ_DATA,
+        legend: { enabled: false },
+        // Striped decal on prev bars uses the same convention as the
+        // total-guests/new-guest-acquisition cards (see analytics_page_patterns.md
+        // § Bar Chart Period Comparisons).
+        aria: { enabled: true, decal: { show: true } },
+        series: [
+          {
+            type: 'bar',
+            direction: 'vertical',
+            xKey: 'bucket',
+            yKey: 'prev',
+            yName: 'Previous period',
+            fill: '#5A55E3',
+            stroke: '#5A55E3',
+            strokeWidth: 0,
+            cornerRadius: 4,
+            tooltip: { enabled: false },
+          },
+          {
+            type: 'bar',
+            direction: 'vertical',
+            xKey: 'bucket',
+            yKey: 'current',
+            yName: 'This period',
+            fill: '#5A55E3',
+            stroke: '#5A55E3',
+            strokeWidth: 0,
+            cornerRadius: 4,
+            decal: { symbol: 'none' },  // suppress auto-decals from aria
+            tooltip: { enabled: false },
+          },
+        ],
+        axes: {
+          x: {
+            type: 'category',
+            position: 'bottom',
+            paddingInner: 0.32,
+            paddingOuter: 0.18,
+            gridLine: { enabled: false },
+            line:     { enabled: false },
+            tick:     { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+            },
+          },
+          y: {
+            type: 'number',
+            position: 'left',
+            min: 0,
+            max: 360,
+            interval: { values: [0, 100, 200, 300] },
+            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
+            line: { enabled: false },
+            tick: { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              formatter: function(params) { return fmtVK(+params.value); },
+            },
+          },
+        },
+      };
+
+      visitFreqChart = agCharts.AgCharts.create(visitFreqChartOptions);
+
+      // ── Manual tooltip — fires per bucket on hover ────────────────
+      if (visitFreqTooltipEl && visitFreqTooltipEl.parentNode) {
+        visitFreqTooltipEl.parentNode.removeChild(visitFreqTooltipEl);
+      }
+      if (visitFreqMouseMove) {
+        container.removeEventListener('mousemove',  visitFreqMouseMove);
+        container.removeEventListener('mouseleave', visitFreqMouseLeave);
+      }
+
+      visitFreqTooltipEl = document.createElement('div');
+      visitFreqTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(visitFreqTooltipEl);
+
+      // Y-axis labels "0"–"300K" (~4 chars × 7px) + 8px padding ≈ 36px.
+      var VF_PLOT_LEFT      = 38;
+      var VF_PLOT_RIGHT_PAD = 8;
+      var VF_X_AXIS_HEIGHT  = 28;
+
+      visitFreqMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var my = e.clientY - rect.top;
+        var plotRight = rect.width - VF_PLOT_RIGHT_PAD;
+        var plotBottom = rect.height - VF_X_AXIS_HEIGHT;
+
+        if (mx < VF_PLOT_LEFT || mx > plotRight || my > plotBottom) {
+          visitFreqTooltipEl.style.display = 'none';
+          return;
+        }
+
+        // Snap to nearest bucket on X.
+        var relX = (mx - VF_PLOT_LEFT) / (plotRight - VF_PLOT_LEFT);
+        var idx = Math.min(VISIT_FREQ_DATA.length - 1, Math.max(0, Math.floor(relX * VISIT_FREQ_DATA.length)));
+        var d = VISIT_FREQ_DATA[idx];
+
+        var totalCur = VISIT_FREQ_DATA.reduce(function(s, r) { return s + r.current; }, 0);
+        var totalPrev = VISIT_FREQ_DATA.reduce(function(s, r) { return s + r.prev; }, 0);
+        var pctCur  = (d.current / totalCur  * 100).toFixed(1) + '%';
+        var pctPrev = (d.prev    / totalPrev * 100).toFixed(1) + '%';
+
+        var deltaRaw = (d.current - d.prev) / d.prev * 100;
+        var deltaStr = (deltaRaw >= 0 ? '+' : '') + deltaRaw.toFixed(1) + '%';
+        var deltaColor = deltaRaw >= 0 ? '#257469' : '#b1294a';
+        var deltaBg    = deltaRaw >= 0 ? '#effaf9' : '#fdecef';
+        var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+
+        visitFreqTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">' + d.bucket + '</p>' +
+            '<div style="display:flex;flex-direction:column;gap:8px;">' +
+              (visitFreqVisibility.current
+                ? '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                    '<div style="display:flex;align-items:center;gap:4px;">' +
+                      '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                      '<span style="font-size:12px;font-weight:400;color:#60696C;">This period</span>' +
+                    '</div>' +
+                    '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtVK(d.current) + ' · ' + pctCur + '</span>' +
+                  '</div>'
+                : '') +
+              (visitFreqVisibility.prev
+                ? '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                    '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
+                      '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
+                    '</div>' +
+                    '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtVK(d.prev) + ' · ' + pctPrev + '</span>' +
+                  '</div>'
+                : '') +
+              (visitFreqVisibility.current && visitFreqVisibility.prev
+                ? '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+                    '<span style="background:' + deltaBg + ';color:' + deltaColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + deltaStr + '</span>' +
+                    '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
+                  '</div>'
+                : '') +
+            '</div>' +
+          '</div>'
+        );
+
+        visitFreqTooltipEl.style.display = 'block';
+
+        var tw = visitFreqTooltipEl.offsetWidth;
+        var th = visitFreqTooltipEl.offsetHeight;
+        var tx = e.clientX + 16;
+        var ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8) ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        visitFreqTooltipEl.style.left = tx + 'px';
+        visitFreqTooltipEl.style.top  = ty + 'px';
+      };
+
+      visitFreqMouseLeave = function() {
+        visitFreqTooltipEl.style.display = 'none';
+      };
+
+      container.addEventListener('mousemove',  visitFreqMouseMove);
+      container.addEventListener('mouseleave', visitFreqMouseLeave);
     }
 
     /* ═══════════════════════════════════════════════════
