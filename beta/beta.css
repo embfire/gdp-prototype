@@ -1119,6 +1119,17 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   min-height: 0;
 }
 
+/* Loyalty penetration: same flex-fill treatment as guest repeat rate */
+.chart-card[data-metric-id="loyalty-penetration"] .chart-card__body {
+  flex: 1;
+  min-height: 0;
+}
+.chart-card[data-metric-id="loyalty-penetration"] .chart-card__placeholder {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
 /* Reachability: same flex-fill treatment */
 .chart-card[data-metric-id="reachability"] .chart-card__body {
   flex: 1;
@@ -1147,6 +1158,7 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 #chart-area-guest-lifecycle-breakdown,
 #chart-area-retention-cohort,
 #chart-area-guest-repeat-rate,
+#chart-area-loyalty-penetration,
 #chart-area-reachability,
 #chart-area-visit-frequency {
   background: transparent;
@@ -1232,7 +1244,9 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 #chart-area-spend-lift-trend,
 #chart-area-spend-lift-breakdown,
 #chart-area-guest-repeat-rate-trend,
-#chart-area-guest-repeat-rate-breakdown {
+#chart-area-guest-repeat-rate-breakdown,
+#chart-area-loyalty-penetration-trend,
+#chart-area-loyalty-penetration-breakdown {
   background: transparent;
 }
 
