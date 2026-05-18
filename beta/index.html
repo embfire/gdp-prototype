@@ -269,16 +269,17 @@
 
     var DEFAULT_LAYOUT = [
       { id: 'total-guests',               x: 0, y: 0 },
-      { id: 'guest-lifecycle-breakdown',  x: 6, y: 0 },
+      { id: 'active-guests',              x: 6, y: 0 },
       { id: 'retention-cohort',           x: 0, y: 1 },
       { id: 'reachability',               x: 6, y: 1 },
       { id: 'visit-frequency',            x: 0, y: 2 },
       { id: 'new-guest-acquisition',      x: 6, y: 2 },
-      { id: 'loyalty-spend-lift',         x: 0, y: 3 },
+      { id: 'guest-lifecycle-breakdown',  x: 0, y: 3 },
+      { id: 'loyalty-spend-lift',         x: 6, y: 3 },
     ];
 
-    // v7: added loyalty-spend-lift to default layout
-    var LS_KEY = 'g360-dashboard-layout-v7';
+    // v8: added active-guests (paired with total-guests on row 0)
+    var LS_KEY = 'g360-dashboard-layout-v8';
 
     /* ═══════════════════════════════════════════════════
        GridStack
@@ -365,6 +366,13 @@
           document.fonts.load('700 12px Manrope'),
           document.fonts.load('800 12px Manrope'),
         ]).then(function() { requestAnimationFrame(initTotalGuestsChart); });
+      }
+      if (id === 'active-guests') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() { requestAnimationFrame(initActiveGuestsChart); });
       }
       if (id === 'guest-lifecycle-breakdown') {
         Promise.all([
@@ -595,6 +603,15 @@
           reachabilityTooltipEl = null;
         }
       }
+      if (id === 'active-guests' && activeGuestsChart) {
+        activeGuestsChart.destroy();
+        activeGuestsChart = null;
+        activeGuestsChartOptions = null;
+        if (activeGuestsTooltipEl && activeGuestsTooltipEl.parentNode) {
+          activeGuestsTooltipEl.parentNode.removeChild(activeGuestsTooltipEl);
+          activeGuestsTooltipEl = null;
+        }
+      }
       if (id === 'new-guest-acquisition' && newGuestAcqChart) {
         newGuestAcqChart.destroy();
         newGuestAcqChart = null;
@@ -721,6 +738,15 @@
             '<span class="chart-card__metric-pill chart-card__metric-pill--up">+5.32%</span>' +
           '</div>' +
           '<p class="chart-card__metric-period">1.13M prev period</p>'
+        );
+      }
+      if (id === 'active-guests') {
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">346K</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+2.2%</span>' +
+          '</div>' +
+          '<p class="chart-card__metric-period">338K prev period · 90D window</p>'
         );
       }
       if (id === 'new-guest-acquisition') {
@@ -859,6 +885,20 @@
           '</div>'
         );
       }
+      if (id === 'active-guests') {
+        return (
+          '<div class="chart-card__legend">' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="current" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleActiveGuestsSeries(this, \'current\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>' +
+              '<span>This period</span>' +
+            '</button>' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleActiveGuestsSeries(this, \'prev\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
+              '<span>Previous period</span>' +
+            '</button>' +
+          '</div>'
+        );
+      }
       if (id === 'new-guest-acquisition') {
         return (
           '<div class="chart-card__legend">' +
@@ -975,6 +1015,7 @@
 
     function getChartSubtitle(id) {
       if (id === 'total-guests') return 'Identified guests over time';
+      if (id === 'active-guests') return 'Guests with ≥1 transaction in the trailing activity window';
       if (id === 'new-guest-acquisition') return 'New guest profiles created over time';
       if (id === 'guest-lifecycle-breakdown') return 'Distribution of identified guests across lifecycle stages';
       if (id === 'retention-cohort') return 'M+1 retention rate by acquisition cohort';
@@ -1087,6 +1128,7 @@
       if (document.querySelector('.app-shell').classList.contains('app-shell--customize')) return;
       var perChartPages = {
         'total-guests': 'dashboard-total-guests.html',
+        'active-guests': 'dashboard-active-guests.html',
         'new-guest-acquisition': 'dashboard-new-guest-acquisition.html',
         'guest-lifecycle-breakdown': 'dashboard-guest-lifecycle.html',
         'retention-cohort': 'dashboard-retention-cohort.html',
@@ -2344,8 +2386,190 @@
     }
 
     /* ═══════════════════════════════════════════════════
-       AG Charts — New Guest Acquisition
-       Daily count of net-new guest profiles created in period
+       AG Charts — Active Guests (rolling activity window)
+       Count of identified guests with ≥1 transaction in trailing
+       30/60/90D window. Same line + prev-period overlay as Total Guests.
+    ═══════════════════════════════════════════════════ */
+    var activeGuestsChart        = null;
+    var activeGuestsChartOptions = null;
+    var activeGuestsVisibility   = { current: true, prev: true };
+    var activeGuestsTooltipEl    = null;
+    var activeGuestsMouseMove    = null;
+    var activeGuestsMouseLeave   = null;
+
+    function toggleActiveGuestsSeries(btn, seriesKey) {
+      if (!activeGuestsChart || !activeGuestsChartOptions) return;
+      var nextValue = !activeGuestsVisibility[seriesKey];
+      var otherKey = seriesKey === 'current' ? 'prev' : 'current';
+      if (!nextValue && !activeGuestsVisibility[otherKey]) return;
+      activeGuestsVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+      var newSeries = activeGuestsChartOptions.series.map(function(s, i) {
+        var vis = (i === 0) ? activeGuestsVisibility.prev : activeGuestsVisibility.current;
+        return Object.assign({}, s, { visible: vis });
+      });
+      var updateOpts = Object.assign({}, activeGuestsChartOptions, { series: newSeries });
+      activeGuestsChartOptions = updateOpts;
+      activeGuestsChart.update(updateOpts);
+    }
+
+    var ACTIVE_GUESTS_DATA = (function() {
+      var baseDate = new Date(2026, 2, 19);
+      var curr = [
+        338.2, 338.8, 338.5, 339.2, 339.5, 339.0, 338.6, 339.0, 339.4,
+        339.2, 338.4, 337.8, 339.0, 339.5,
+        340.0, 342.5, 348.2, 343.0, 340.5,
+        339.8, 339.5, 338.5, 337.5, 337.2,
+        338.5, 339.5, 339.0, 338.6, 339.2,
+        339.8, 339.5, 339.0, 338.5, 339.5,
+        341.0, 344.0, 345.5, 345.0, 346.0,
+      ];
+      var prev = [
+        331.0, 331.5, 331.2, 331.8, 332.0, 331.6, 331.2, 331.5, 331.8,
+        331.6, 331.0, 330.5, 331.8, 332.2,
+        332.8, 334.5, 339.0, 335.0, 333.0,
+        332.5, 332.2, 331.5, 330.8, 330.5,
+        331.2, 332.0, 331.6, 331.2, 331.8,
+        332.2, 332.0, 331.6, 331.2, 332.0,
+        333.0, 335.0, 336.2, 335.8, 336.0,
+      ];
+      return curr.map(function(c, i) {
+        var d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() + i);
+        return { date: d, current: c, prev: prev[i] };
+      });
+    }());
+
+    function initActiveGuestsChart() {
+      var container = document.getElementById('chart-area-active-guests');
+      if (!container) return;
+      if (activeGuestsChart) { activeGuestsChart.destroy(); activeGuestsChart = null; }
+
+      activeGuestsVisibility = { current: true, prev: true };
+      var fmtK = function(v) { return (+v).toFixed(1).replace(/\.0$/, '') + 'K'; };
+
+      activeGuestsChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 0, bottom: 0, left: 0 },
+        data: ACTIVE_GUESTS_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'line', xKey: 'date', yKey: 'prev', yName: 'Previous period',
+            stroke: '#5A55E3', strokeWidth: 2, lineDash: [2, 2],
+            marker: { enabled: true, size: 0, itemStyler: function(params) {
+              if (params.highlightState === 'highlighted-item') return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+              return { size: 0 };
+            }},
+            tooltip: { enabled: false },
+          },
+          {
+            type: 'line', xKey: 'date', yKey: 'current', yName: 'This period',
+            stroke: '#5A55E3', strokeWidth: 2,
+            marker: { enabled: true, size: 0, itemStyler: function(params) {
+              if (params.highlightState === 'highlighted-item') return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+              return { size: 0 };
+            }},
+            tooltip: { enabled: false },
+          },
+        ],
+        axes: {
+          x: {
+            type: 'time', position: 'bottom', nice: false,
+            min: new Date(2026, 2, 19), max: new Date(2026, 3, 26),
+            gridLine: { enabled: false }, line: { enabled: false },
+            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
+            label: { fontSize: 12, color: '#000000', format: '%b %-d', padding: 8, avoidCollisions: true },
+            interval: { values: [new Date(2026, 2, 29), new Date(2026, 3, 5), new Date(2026, 3, 12), new Date(2026, 3, 19)] },
+            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+          },
+          y: {
+            type: 'number', position: 'left', min: 330, max: 352,
+            interval: { values: [332, 336, 340, 344, 348] },
+            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
+            line: { enabled: false }, tick: { enabled: false },
+            label: { fontSize: 12, color: '#000000', padding: 8,
+              formatter: function(params) { return (+params.value).toFixed(0) + 'K'; },
+            },
+          },
+        },
+      };
+
+      activeGuestsChart = agCharts.AgCharts.create(activeGuestsChartOptions);
+
+      if (activeGuestsTooltipEl && activeGuestsTooltipEl.parentNode) {
+        activeGuestsTooltipEl.parentNode.removeChild(activeGuestsTooltipEl);
+      }
+      if (activeGuestsMouseMove) {
+        container.removeEventListener('mousemove', activeGuestsMouseMove);
+        container.removeEventListener('mouseleave', activeGuestsMouseLeave);
+      }
+
+      activeGuestsTooltipEl = document.createElement('div');
+      activeGuestsTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(activeGuestsTooltipEl);
+
+      var PLOT_LEFT = 46, PLOT_RIGHT_PAD = 0;
+      var AXIS_MIN_TIME = new Date(2026, 2, 19).getTime();
+      var AXIS_MAX_TIME = new Date(2026, 3, 26).getTime();
+
+      activeGuestsMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+        if (mx < PLOT_LEFT || mx > plotRight) { activeGuestsTooltipEl.style.display = 'none'; return; }
+        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
+        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
+        var d = ACTIVE_GUESTS_DATA.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+        if (!activeGuestsVisibility.current) { activeGuestsTooltipEl.style.display = 'none'; return; }
+        var pctRaw = (d.current - d.prev) / d.prev * 100;
+        var pct = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
+        var pctColor = pctRaw >= 0 ? '#257469' : '#b1294a';
+        var pctBg = pctRaw >= 0 ? '#effaf9' : '#fdecef';
+        var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+        activeGuestsTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Active guests</p>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:4px;">' +
+                '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(d.date) + '</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtK(d.current) + '</span>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+              '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pct + '</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
+            '</div>' +
+          '</div>' +
+          (activeGuestsVisibility.prev
+            ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtK(d.prev) + '</span>' +
+              '</div>'
+            : '') +
+          '</div>'
+        );
+        activeGuestsTooltipEl.style.display = 'block';
+        var tw = activeGuestsTooltipEl.offsetWidth, th = activeGuestsTooltipEl.offsetHeight;
+        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth - 8) tx = e.clientX - tw - 16;
+        if (ty < 8) ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        activeGuestsTooltipEl.style.left = tx + 'px';
+        activeGuestsTooltipEl.style.top = ty + 'px';
+      };
+      activeGuestsMouseLeave = function() { activeGuestsTooltipEl.style.display = 'none'; };
+      container.addEventListener('mousemove', activeGuestsMouseMove);
+      container.addEventListener('mouseleave', activeGuestsMouseLeave);
+    }
+
        (loyalty + non-loyalty via IDR). Same single-series Indigo
        line + dashed prev-period overlay pattern as Total Guests.
     ═══════════════════════════════════════════════════ */
@@ -2611,6 +2835,8 @@
       container.addEventListener('mousemove',  newGuestAcqMouseMove);
       container.addEventListener('mouseleave', newGuestAcqMouseLeave);
     }
+
+    /* ═══════════════════════════════════════════════════
 
     /* ═══════════════════════════════════════════════════
        AG Charts — Visit Frequency (grouped column histogram)

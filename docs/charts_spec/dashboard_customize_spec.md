@@ -48,7 +48,7 @@ Users do not build custom metrics. They pick from a **closed catalog** of dashbo
 | `guest-repeat-rate` | Guest repeat rate | Retention | — | generic detail fallback |
 | `avg-days-between-visits` | Average days between visits | Retention | — | generic detail fallback |
 | `loyalty-penetration` | Loyalty penetration | Guests | — | generic detail fallback |
-| `active-guests` | Active guests | Guests | — | generic detail fallback |
+| `active-guests` | Active guests | Guests | [active_guests_chart_spec.md](./active_guests_chart_spec.md) | `dashboard-active-guests` |
 | `avg-order-value` | Average order value | Revenue | — | generic detail fallback |
 | `return-visit-funnel` | Return visit funnel | Retention | — | generic detail fallback |
 | `avg-visits-per-guest` | Average visits per guest | Retention | — | generic detail fallback |
