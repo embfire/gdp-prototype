@@ -161,17 +161,34 @@ First implementation: `beta/dashboard-visit-frequency.html` and the visit-freque
 Five right-skewed buckets — `1 visit`, `2 visits`, `3-5 visits`, `6-10 visits`, `11+ visits` — sourced from QBR frequency cohorts and customer interview language. Competitors don't publish their bucketing (Klaviyo uses terciles, Mixpanel uses unique-interval counts), so this is an original convention. Reuse the same labels for any "visits per guest" distribution.
 
 ### Grouped column chart, current vs previous
-Each bucket has two adjacent vertical bars: current period (solid `--chart-indigo-900`) and previous period (same fill + diagonal stripe decal). Built with two `type: 'bar'` series sharing the same `xKey: 'bucket'` — AG Charts groups them automatically. Reuses the period-comparison decal pattern from `## ECharts: Bar Chart Period Comparisons` above, but on AG Charts:
+Each bucket has two adjacent vertical bars: current period (solid `--chart-indigo-900`) and previous period (white background + diagonal indigo stripes, matching `.chart-card__legend-marker--striped`). Built with two `type: 'bar'` series sharing the same `xKey: 'bucket'` — AG Charts groups them automatically.
+
+Use AG Charts' **pattern fill** API for the striped series — `aria.decal.show: true` does NOT auto-apply decals to bar series in v13.2.1 community, so an explicit pattern object is required:
 
 ```js
-aria: { enabled: true, decal: { show: true } },   // turn on decal rendering globally
 series: [
-  { type: 'bar', yKey: 'prev', fill: '#5A55E3', cornerRadius: 4 },                            // striped via aria
-  { type: 'bar', yKey: 'current', fill: '#5A55E3', cornerRadius: 4, decal: { symbol: 'none' } },  // override
+  {
+    type: 'bar', yKey: 'prev', cornerRadius: 4,
+    fill: { type: 'pattern', pattern: 'forward-slanted-lines', stroke: '#5A55E3', backgroundFill: '#ffffff' },
+    stroke: '#5A55E3', strokeWidth: 1,   // outline keeps the bar shape readable on a white card
+  },
+  { type: 'bar', yKey: 'current', cornerRadius: 4, fill: '#5A55E3' },
 ],
 ```
 
-The previous-period series is **declared first** so it sits to the left of current in the rendered group.
+The previous-period series is **declared first** so it sits to the left of current in the rendered group. Stock pattern shapes (per the AG Charts docs): `forward-slanted-lines`, `backward-slanted-lines`, `squares`, `circles`, `triangles`, `diamonds`, `stars`, `hearts`, `crosses`. Use `stroke` for the line/shape color and `backgroundFill` for the bar background.
+
+### Card placeholder must flex-fill
+Default `.chart-card__placeholder` is `height: 256px` — too short for a category histogram whose x-axis labels (`6-10 visits`, `11+ visits`) need ~30px of vertical space. Each chart that needs the full card height must add a per-metric flex-fill rule in `beta.css`:
+
+```css
+.chart-card[data-metric-id="visit-frequency"] .chart-card__body { flex: 1; min-height: 0; }
+.chart-card[data-metric-id="visit-frequency"] .chart-card__placeholder { flex: 1; height: auto; min-height: 0; }
+```
+
+Without this rule the chart renders into the 256px box and x-axis labels clip below the card border. Pattern is the same one used for `total-guests`, `guest-lifecycle-breakdown`, `retention-cohort`, `guest-repeat-rate`, and `reachability`.
+
+For monthly time-series cards (`retention-cohort`, `guest-repeat-rate`), also set AG Charts `padding.bottom` to at least `24` so x-axis tick labels (`Apr '25`, etc.) sit inside the plot area when the container flex-fills.
 
 ### Loyalty vs non-loyalty as a breakdown, not a separate chart
 Customer interviews flagged loyalty-vs-non-loyalty comparison as a board-level question, but layering it on top of period-over-period would be four bars per bucket. Resolved by making it a breakdown dropdown (`Total` / `By loyalty status`). When the user picks `By loyalty status`:
@@ -191,3 +208,17 @@ Headers are not fixed — `renderTableHead()` rewrites the `<thead>` per breakdo
 
 ### Card hero metric for distributions
 The hero is the **weighted average** across buckets (e.g. `2.4 visits`), not a sum or count. Period pill is `% change in the average`, not in any single bucket. The subtitle on the period line includes the underlying guest count (e.g. `2.1 visits prev period · 847K identified guests`) so the user sees what the average is computed over without opening the detail page.
+
+## Loyalty Spend Lift — comparison KPI card
+
+### Metric definition (Punchh QBR parity)
+Lift % = `(avg $/visit loyalty − avg $/visit non-loyalty) ÷ avg $/visit non-loyalty × 100`. Hero shows the **lift %**; pill shows **change in lift vs. previous period in percentage points** (`+2.8pp`), not a second percent-of-percent. Subtext shows both cohort averages (e.g. `$24.80 loyalty · $18.40 non-loyalty per visit`).
+
+### Dashboard card chart
+Horizontal paired bars (Loyalty indigo, Non-loyalty vermilion) — not a time series on the grid card. Legend toggles hide one cohort; at least one must stay visible.
+
+### Detail page layout
+Two stacked chart cards in `.chart-detail-charts-stack`: (1) dual-line trend of avg $/visit by cohort over time, (2) grouped bar breakdown with dropdown — By location / By channel / By enrollment cohort. Data table rows are daily with columns Date, Loyalty avg, Non-loyalty avg, Lift %.
+
+### Global loyalty filter
+Do not apply a loyalty-status filter to this metric — the chart is defined by the loyalty vs. non-loyalty split.

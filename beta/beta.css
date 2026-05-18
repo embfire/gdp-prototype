@@ -1108,6 +1108,17 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   min-height: 0;
 }
 
+/* Guest repeat rate: same flex-fill treatment (monthly x-axis labels) */
+.chart-card[data-metric-id="guest-repeat-rate"] .chart-card__body {
+  flex: 1;
+  min-height: 0;
+}
+.chart-card[data-metric-id="guest-repeat-rate"] .chart-card__placeholder {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
 /* Reachability: same flex-fill treatment */
 .chart-card[data-metric-id="reachability"] .chart-card__body {
   flex: 1;
@@ -1119,11 +1130,25 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   min-height: 0;
 }
 
+/* Visit frequency: same flex-fill treatment so the histogram x-axis
+   labels ("6-10 visits", "11+ visits") have room within the card. */
+.chart-card[data-metric-id="visit-frequency"] .chart-card__body {
+  flex: 1;
+  min-height: 0;
+}
+.chart-card[data-metric-id="visit-frequency"] .chart-card__placeholder {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
 /* Strip the placeholder background once a real chart has rendered */
 #chart-area-total-guests-echarts,
 #chart-area-guest-lifecycle-breakdown,
 #chart-area-retention-cohort,
-#chart-area-reachability {
+#chart-area-guest-repeat-rate,
+#chart-area-reachability,
+#chart-area-visit-frequency {
   background: transparent;
 }
 
@@ -1201,6 +1226,21 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 /* Remove placeholder background once a real chart occupies the container */
 #chart-area-total-guests {
   background: transparent;
+}
+
+#chart-area-loyalty-spend-lift,
+#chart-area-spend-lift-trend,
+#chart-area-spend-lift-breakdown,
+#chart-area-guest-repeat-rate-trend,
+#chart-area-guest-repeat-rate-breakdown {
+  background: transparent;
+}
+
+.content-area--chart-detail .chart-detail-charts-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
 }
 
 /* AG Charts tooltip — strip all defaults so the renderer HTML owns every style */

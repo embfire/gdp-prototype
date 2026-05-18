@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visit frequency — PAR Guest360 Beta</title>
+  <title>Guest repeat rate — PAR Guest360 Beta</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
@@ -97,13 +97,13 @@
             <span class="chart-breadcrumbs__separator" aria-hidden="true">
               <span class="material-symbols-rounded">chevron_right</span>
             </span>
-            <span class="chart-breadcrumbs__current">Visit frequency</span>
+            <span class="chart-breadcrumbs__current">Guest repeat rate</span>
           </nav>
 
           <!-- Title bar -->
           <div class="chart-detail-title-bar">
             <div class="chart-detail-title-bar__top">
-              <h1 class="chart-detail-title-bar__title">Visit frequency</h1>
+              <h1 class="chart-detail-title-bar__title">Guest repeat rate</h1>
               <div class="chart-detail-title-bar__actions">
                 <button class="button transparent dashboard-btn">
                   <span class="material-symbols-rounded dashboard-btn__icon">help</span>
@@ -119,8 +119,8 @@
               <div class="btn-group" role="group" aria-label="Date range">
                 <button class="btn-group__item" onclick="setDateRange(this, '7D')">7D</button>
                 <button class="btn-group__item" onclick="setDateRange(this, '30D')">30D</button>
-                <button class="btn-group__item btn-group__item--active" onclick="setDateRange(this, '90D')">90D</button>
-                <button class="btn-group__item" onclick="setDateRange(this, '12M')">12M</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '90D')">90D</button>
+                <button class="btn-group__item btn-group__item--active" onclick="setDateRange(this, '12M')">12M</button>
                 <button class="btn-group__item" onclick="setDateRange(this, 'YTD')">YTD</button>
                 <button class="btn-group__item btn-group__item--icon" id="btn-custom-range" onclick="setDateRange(this, 'custom')">
                   <span class="material-symbols-rounded">calendar_month</span>
@@ -230,33 +230,86 @@
           </div>
           <!-- /filter bar -->
 
-          <!-- Chart card -->
-          <div class="chart-card">
+          <div class="chart-detail-charts-stack">
+          <div class="chart-card" data-metric-id="guest-repeat-rate">
             <div class="chart-card__header chart-card__header--detail">
               <div class="chart-card__header-text">
-                <p class="chart-card__title">Visit frequency</p>
-                <p class="chart-card__subtitle">Guest distribution across visit-count buckets</p>
+                <p class="chart-card__title">Guest repeat rate</p>
+                <p class="chart-card__subtitle">Share of base-period guests who returned in the next period</p>
               </div>
               <div class="chart-card__header-controls">
-                <div class="dropdown" id="dd-breakdown">
+                <div class="dropdown" id="dd-cohort">
                   <div class="dropdown__wrapper">
-                    <button class="dropdown__button" onclick="toggleDropdown('dd-breakdown')">
-                      <span id="dd-breakdown-label">Total</span>
+                    <button class="dropdown__button" onclick="toggleDropdown('dd-cohort')">
+                      <span id="dd-cohort-label">All actives</span>
                       <i class="material-symbols-rounded">expand_more</i>
                     </button>
                   </div>
                   <div class="dropdown__options dropdown__options--right">
                     <ul>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectBreakdown(this, 'total')"><span>Total</span></button></li>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectCohort(this, 'all')"><span>All actives</span></button></li>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectCohort(this, 'new')"><span>New guests only</span></button></li>
+                    </ul>
+                  </div>
+                </div>
+                <button class="button outlined dashboard-btn">
+                  <img src="../assets/ava-assistant.svg" alt="" width="20" height="20">
+                  <span class="dashboard-btn__label">Get insight</span>
+                </button>
+                <div class="chart-context-wrap">
+                  <button class="button transparent no-content chart-card__dots-btn" onclick="toggleChartMenu(event, 'trend')" aria-label="More options" aria-expanded="false">
+                    <i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i>
+                  </button>
+                  <div class="chart-context-menu" id="chart-menu-trend">
+                    <ul>
+                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
+                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
+                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava</span></button></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="chart-card__body">
+              <div class="chart-card__metric">
+                <div class="chart-card__metric-row">
+                  <p class="chart-card__metric-value">42.8%</p>
+                  <span class="chart-card__metric-pill chart-card__metric-pill--up">+2.1pts</span>
+                </div>
+                <p class="chart-card__metric-period">40.7% prev period · Mar '26 base</p>
+              </div>
+              <div class="chart-card__legend" id="chart-legend-trend"></div>
+              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-guest-repeat-rate-trend"></div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-card__header chart-card__header--detail">
+              <div class="chart-card__header-text">
+                <p class="chart-card__title">Repeat rate by dimension</p>
+                <p class="chart-card__subtitle">Latest complete base month (Mar '26)</p>
+              </div>
+              <div class="chart-card__header-controls">
+                <div class="dropdown" id="dd-breakdown">
+                  <div class="dropdown__wrapper">
+                    <button class="dropdown__button" onclick="toggleDropdown('dd-breakdown')">
+                      <span id="dd-breakdown-label">By location</span>
+                      <i class="material-symbols-rounded">expand_more</i>
+                    </button>
+                  </div>
+                  <div class="dropdown__options dropdown__options--right">
+                    <ul>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectBreakdown(this, 'location')"><span>By location</span></button></li>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectBreakdown(this, 'channel')"><span>By channel</span></button></li>
                       <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectBreakdown(this, 'loyalty')"><span>By loyalty status</span></button></li>
                     </ul>
                   </div>
                 </div>
                 <div class="chart-context-wrap">
-                  <button class="button transparent no-content chart-card__dots-btn" onclick="toggleChartMenu(event, 'detail')" aria-label="More options" aria-expanded="false">
+                  <button class="button transparent no-content chart-card__dots-btn" onclick="toggleChartMenu(event, 'breakdown')" aria-label="More options" aria-expanded="false">
                     <i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i>
                   </button>
-                  <div class="chart-context-menu" id="chart-menu-detail">
+                  <div class="chart-context-menu" id="chart-menu-breakdown">
                     <ul>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
@@ -266,25 +319,35 @@
               </div>
             </div>
             <div class="chart-card__body">
-              <div class="chart-card__metric">
-                <div class="chart-card__metric-row">
-                  <p class="chart-card__metric-value">2.4</p>
-                  <span class="chart-card__metric-pill chart-card__metric-pill--up">+14.3%</span>
-                </div>
-                <p class="chart-card__metric-period">2.1 visits prev period · 847K identified guests</p>
-              </div>
-              <div class="chart-card__legend" id="chart-legend"></div>
-              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-visit-frequency"></div>
+              <div class="chart-card__legend" id="chart-legend-breakdown"></div>
+              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-guest-repeat-rate-breakdown"></div>
             </div>
           </div>
-          <!-- /chart card -->
-
+          </div>
           <!-- Data table -->
           <div class="chart-detail-table-wrap">
             <div class="table-container">
               <table class="table">
-                <thead id="visit-freq-table-head"></thead>
-                <tbody id="visit-freq-table-body"></tbody>
+                <thead>
+                  <tr style="background-color: #dfe1e2; border-bottom: none;">
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner chart-th-inner--start">Base month <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner">Repeat rate <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner">Previous period <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner">Δ <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
+                      <span class="chart-th-inner">Δ% <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="guest-repeat-rate-table-body"></tbody>
               </table>
             </div>
 
@@ -313,12 +376,12 @@
                     <ul id="page-options-list"></ul>
                   </div>
                 </div>
-                <label id="total-pages-text">of 1 page</label>
+                <label id="total-pages-text">of 2 pages</label>
                 <div class="pagination__navigation__arrows">
                   <button class="pagination__nav-arrow" id="prev-btn" onclick="prevPage()" disabled>
                     <i class="ph ph-caret-left"></i>
                   </button>
-                  <button class="pagination__nav-arrow" id="next-btn" onclick="nextPage()" disabled>
+                  <button class="pagination__nav-arrow" id="next-btn" onclick="nextPage()">
                     <i class="ph ph-caret-right"></i>
                   </button>
                 </div>
@@ -422,7 +485,7 @@
       dd.querySelector('.dropdown__options').classList.remove('dropdown__options_open');
     }
 
-    /* ── Date range picker (verbatim from dashboard-new-guest-acquisition.html) ── */
+    /* ── Date range picker (verbatim from dashboard-chart-detail.html) ── */
     var dpStartDate = null, dpEndDate = null, dpHoverDate = null;
     var dpLeftMonth = null, dpRightMonth = null, dpOutsideHandler = null;
     var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -460,7 +523,14 @@
         firstBtn.classList.add('btn-group__item--active');
       }
     }
-    function applyDateRange() { closeDatePicker(); }
+    function applyDateRange() {
+      if (dpStartDate && dpEndDate) {
+        var label = fmtDate(dpStartDate) + ' – ' + fmtDate(dpEndDate);
+        var customBtn = document.getElementById('btn-custom-range');
+        customBtn.querySelector('.dp-custom-label') && (customBtn.querySelector('.dp-custom-label').textContent = label);
+      }
+      closeDatePicker();
+    }
     function dpClearHover() {
       if (dpStartDate && !dpEndDate) { dpHoverDate = null; renderDatePicker(); }
     }
@@ -525,368 +595,386 @@
     }
 
     /* ═══════════════════════════════════════════════════
-       Visit Frequency — grouped column histogram
-       Default: current period (solid) vs previous period (striped).
-       Breakdown: Loyalty cohort vs Non-loyalty cohort (current period only).
+       AG Charts — Guest Repeat Rate (detail)
     ═══════════════════════════════════════════════════ */
-    var visitFreqChart        = null;
-    var visitFreqChartOptions = null;
-    var visitFreqTooltipEl    = null;
-    var visitFreqMouseMove    = null;
-    var visitFreqMouseLeave   = null;
+    var repeatRateTrendChart = null;
+    var repeatRateTrendOptions = null;
+    var repeatRateBreakdownChart = null;
+    var repeatRateBreakdownOptions = null;
+    var repeatRateVisibility = { current: true, prev: true };
+    var repeatRateTooltipEl = null, repeatRateMouseMove = null, repeatRateMouseLeave = null;
+    var currentCohort = 'all';
+    var currentBreakdown = 'location';
 
-    // Values in thousands of identified guests in the 90D window.
-    // Total current: 847K, prev: 814K. Weighted avg = 2.4 vs 2.1 visits.
-    // Loyalty cohort shifts mass toward higher buckets — directly answers
-    // the "does loyalty drive frequency?" question raised in interviews.
-    var VISIT_FREQ_TOTAL_DATA = [
-      { bucket: '1 visit',     current: 320, prev: 335 },
-      { bucket: '2 visits',    current: 210, prev: 205 },
-      { bucket: '3-5 visits',  current: 180, prev: 165 },
-      { bucket: '6-10 visits', current:  95, prev:  78 },
-      { bucket: '11+ visits',  current:  42, prev:  31 },
-    ];
+    var AXIS_MIN_TIME = new Date(2025, 3, 1).getTime();
+    var AXIS_MAX_TIME = new Date(2026, 2, 1).getTime();
 
-    // Split of the same 847K by loyalty status. Loyalty members (310K total)
-    // skew higher-frequency; non-loyalty (537K total) cluster in 1-2 visits.
-    var VISIT_FREQ_LOYALTY_DATA = [
-      { bucket: '1 visit',     loyalty:  60, nonLoyalty: 260 },
-      { bucket: '2 visits',    loyalty:  65, nonLoyalty: 145 },
-      { bucket: '3-5 visits',  loyalty:  92, nonLoyalty:  88 },
-      { bucket: '6-10 visits', loyalty:  62, nonLoyalty:  33 },
-      { bucket: '11+ visits',  loyalty:  31, nonLoyalty:  11 },
-    ];
+    var REPEAT_RATE_ALL_DATA = (function() {
+      var curr = [
+        0.382, 0.388, 0.391, 0.396, 0.401, 0.405,
+        0.409, 0.412, 0.416, 0.419, 0.424, 0.428,
+      ];
+      var prev = [
+        0.365, 0.371, 0.374, 0.378, 0.382, 0.386,
+        0.389, 0.393, 0.397, 0.400, 0.404, 0.407,
+      ];
+      return curr.map(function(c, i) {
+        var d = new Date(2025, 3 + i, 1);
+        return { date: d, current: c, prev: prev[i] };
+      });
+    }());
 
-    var PALETTE = { indigo: '#5A55E3', vermilion: '#FF6600' };
+    var REPEAT_RATE_NEW_DATA = REPEAT_RATE_ALL_DATA.map(function(row) {
+      return {
+        date: row.date,
+        current: +(row.current - 0.06).toFixed(3),
+        prev: +(row.prev - 0.055).toFixed(3),
+      };
+    });
 
-    var BREAKDOWN_CONFIG = {
-      total: {
-        data: VISIT_FREQ_TOTAL_DATA,
-        series: [
-          { yKey: 'prev',    yName: 'Previous period', fill: PALETTE.indigo, decal: true  },
-          { yKey: 'current', yName: 'This period',     fill: PALETTE.indigo, decal: false },
-        ],
-      },
-      loyalty: {
-        data: VISIT_FREQ_LOYALTY_DATA,
-        series: [
-          { yKey: 'loyalty',    yName: 'Loyalty',     fill: PALETTE.indigo,    decal: false },
-          { yKey: 'nonLoyalty', yName: 'Non-loyalty', fill: PALETTE.vermilion, decal: false },
-        ],
-      },
+    var BREAKDOWN_BARS = {
+      location: [
+        { label: 'Downtown', rate: 0.48 },
+        { label: 'Midtown', rate: 0.44 },
+        { label: 'Airport', rate: 0.36 },
+        { label: 'Suburbs', rate: 0.41 },
+        { label: 'University', rate: 0.39 },
+      ],
+      channel: [
+        { label: 'In-store', rate: 0.45 },
+        { label: 'Digital', rate: 0.43 },
+        { label: 'Delivery', rate: 0.38 },
+        { label: 'Drive-thru', rate: 0.40 },
+      ],
+      loyalty: [
+        { label: 'Loyalty members', rate: 0.52 },
+        { label: 'Non-loyalty', rate: 0.36 },
+      ],
     };
 
-    var currentBreakdown = 'total';
-    var visitFreqVisibility = { prev: true, current: true, loyalty: true, nonLoyalty: true };
-
-    function fmtVK(v) {
-      var n = +v;
-      if (n >= 1000) return (n / 1000).toFixed(2).replace(/\.?0+$/, '') + 'M';
-      return Math.round(n) + 'K';
-    }
-    function fmtFull(n) {
-      var sign = n < 0 ? '-' : '';
-      var abs = Math.abs(Math.round(n));
-      return sign + abs.toLocaleString('en-US');
-    }
-    function fmtFullSigned(n) {
-      var sign = n >= 0 ? '+' : '-';
-      return sign + Math.abs(Math.round(n)).toLocaleString('en-US');
+    function getTrendData() {
+      return currentCohort === 'new' ? REPEAT_RATE_NEW_DATA : REPEAT_RATE_ALL_DATA;
     }
 
-    function renderLegend(breakdown) {
-      var cfg = BREAKDOWN_CONFIG[breakdown];
-      var legend = document.getElementById('chart-legend');
-      if (!legend) return;
-      legend.innerHTML = cfg.series.map(function(s) {
-        var markerClass = s.decal
-          ? 'chart-card__legend-marker chart-card__legend-marker--striped'
-          : 'chart-card__legend-marker chart-card__legend-marker--solid';
-        var inlineColor = s.decal
-          ? ''
-          : 'style="background:' + s.fill + ';"';
+    function fmtPct(v) { return (v * 100).toFixed(1).replace(/\.0$/, '') + '%'; }
+    function fmtPctFull(v) { return (v * 100).toFixed(2) + '%'; }
+    function fmtBaseMonth(d) {
+      return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }).replace(' ', " '");
+    }
+    function fmtPts(delta) {
+      var pts = delta * 100;
+      return (pts >= 0 ? '+' : '') + pts.toFixed(1) + 'pts';
+    }
+
+    function renderTrendLegend() {
+      var el = document.getElementById('chart-legend-trend');
+      if (!el) return;
+      el.innerHTML = [
+        { key: 'current', label: 'This period', striped: false },
+        { key: 'prev', label: 'Previous period', striped: true },
+      ].map(function(s) {
+        var marker = s.striped
+          ? 'background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);'
+          : 'background:#5A55E3;';
         return (
-          '<button type="button" class="chart-card__legend-item" data-series-key="' + s.yKey + '" aria-pressed="true" onclick="toggleVisitFreqSeries(this, \'' + s.yKey + '\')">' +
-            '<span class="' + markerClass + '" ' + inlineColor + '></span>' +
-            '<span>' + s.yName + '</span>' +
+          '<button type="button" class="chart-card__legend-item" data-series-key="' + s.key + '" aria-pressed="true" onclick="toggleRepeatRateSeries(this, \'' + s.key + '\')">' +
+            '<span class="chart-card__legend-marker chart-card__legend-marker--solid" style="' + marker + '"></span>' +
+            '<span>' + s.label + '</span>' +
           '</button>'
         );
       }).join('');
     }
 
-    function buildSeries(cfg) {
-      return cfg.series.map(function(s) {
-        // Striped series use AG Charts pattern fill — diagonal lines matching
-        // the legend marker (`.chart-card__legend-marker--striped`: white bg
-        // with indigo diagonal stripes).
-        var fill = s.decal
-          ? { type: 'pattern', pattern: 'forward-slanted-lines', stroke: s.fill, backgroundFill: '#ffffff' }
-          : s.fill;
-        return {
-          type: 'bar',
-          direction: 'vertical',
-          xKey: 'bucket',
-          yKey: s.yKey,
-          yName: s.yName,
-          fill: fill,
-          stroke: s.fill,
-          strokeWidth: s.decal ? 1 : 0,
-          cornerRadius: 4,
-          visible: visitFreqVisibility[s.yKey] !== false,
+    function toggleRepeatRateSeries(btn, key) {
+      if (!repeatRateTrendChart || !repeatRateTrendOptions) return;
+      var next = !repeatRateVisibility[key];
+      var other = key === 'current' ? 'prev' : 'current';
+      if (!next && !repeatRateVisibility[other]) return;
+      repeatRateVisibility[key] = next;
+      btn.setAttribute('aria-pressed', String(next));
+      var newSeries = repeatRateTrendOptions.series.map(function(s, i) {
+        var vis = (i === 0) ? repeatRateVisibility.prev : repeatRateVisibility.current;
+        return Object.assign({}, s, { visible: vis });
+      });
+      repeatRateTrendOptions = Object.assign({}, repeatRateTrendOptions, { series: newSeries });
+      repeatRateTrendChart.update(repeatRateTrendOptions);
+    }
+
+    function buildTrendSeries() {
+      return [
+        {
+          type: 'line', xKey: 'date', yKey: 'prev', yName: 'Previous period',
+          stroke: '#5A55E3', strokeWidth: 2, lineDash: [2, 2],
+          marker: {
+            enabled: true, size: 0,
+            itemStyler: function(params) {
+              if (params.highlightState === 'highlighted-item') {
+                return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+              }
+              return { size: 0 };
+            },
+          },
           tooltip: { enabled: false },
-        };
-      });
+        },
+        {
+          type: 'line', xKey: 'date', yKey: 'current', yName: 'This period',
+          stroke: '#5A55E3', strokeWidth: 2,
+          marker: {
+            enabled: true, size: 0,
+            itemStyler: function(params) {
+              if (params.highlightState === 'highlighted-item') {
+                return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+              }
+              return { size: 0 };
+            },
+          },
+          tooltip: { enabled: false },
+        },
+      ];
     }
 
-    function toggleVisitFreqSeries(btn, key) {
-      if (!visitFreqChart || !visitFreqChartOptions) return;
-      var cfg = BREAKDOWN_CONFIG[currentBreakdown];
-      var seriesKeysInBreakdown = cfg.series.map(function(s) { return s.yKey; });
-      var nextValue = !visitFreqVisibility[key];
-      var someoneElseVisible = seriesKeysInBreakdown.some(function(k) {
-        return k !== key && visitFreqVisibility[k] !== false;
-      });
-      if (!nextValue && !someoneElseVisible) return;
-      visitFreqVisibility[key] = nextValue;
-      btn.setAttribute('aria-pressed', String(nextValue));
-      var newSeries = visitFreqChartOptions.series.map(function(s) {
-        if (s.yKey === key) return Object.assign({}, s, { visible: nextValue });
-        return s;
-      });
-      visitFreqChartOptions = Object.assign({}, visitFreqChartOptions, { series: newSeries });
-      visitFreqChart.update(visitFreqChartOptions);
-    }
-
-    function initVisitFreqChart() {
-      var container = document.getElementById('chart-area-visit-frequency');
+    function initRepeatRateTrendChart() {
+      var container = document.getElementById('chart-area-guest-repeat-rate-trend');
       if (!container) return;
-      if (visitFreqChart) { visitFreqChart.destroy(); visitFreqChart = null; }
+      if (repeatRateTrendChart) { repeatRateTrendChart.destroy(); repeatRateTrendChart = null; }
+      repeatRateVisibility = { current: true, prev: true };
+      var data = getTrendData();
 
-      var cfg = BREAKDOWN_CONFIG[currentBreakdown];
-
-      visitFreqChartOptions = {
+      repeatRateTrendOptions = {
         container: container,
         theme: { params: { fontFamily: 'Manrope, sans-serif' } },
         background: { fill: '#ffffff' },
-        padding: { top: 8, right: 0, bottom: 0, left: 0 },
-        data: cfg.data,
+        padding: { top: 8, right: 16, bottom: 32, left: 8 },
+        data: data,
         legend: { enabled: false },
-        series: buildSeries(cfg),
+        series: buildTrendSeries(),
         axes: {
           x: {
-            type: 'category',
-            position: 'bottom',
-            paddingInner: 0.32,
-            paddingOuter: 0.18,
-            gridLine: { enabled: false },
-            line:     { enabled: false },
-            tick:     { enabled: false },
+            type: 'time', position: 'bottom', nice: false,
+            min: new Date(2025, 3, 1), max: new Date(2026, 2, 1),
+            gridLine: { enabled: false }, line: { enabled: false },
+            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
             label: {
-              fontSize: 12,
-              color: '#000000',
-              padding: 8,
+              fontSize: 12, color: '#000000', padding: 8, avoidCollisions: true,
+              formatter: function(params) { return fmtBaseMonth(new Date(params.value)); },
             },
+            interval: {
+              values: [
+                new Date(2025, 3, 1), new Date(2025, 6, 1),
+                new Date(2025, 9, 1), new Date(2026, 0, 1),
+              ],
+            },
+            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
           },
           y: {
-            type: 'number',
-            position: 'left',
-            min: 0,
-            max: 360,
-            interval: { values: [0, 50, 100, 150, 200, 250, 300, 350] },
+            type: 'number', position: 'left',
+            min: 0.32, max: 0.50,
+            interval: { values: [0.32, 0.36, 0.40, 0.44, 0.48] },
             gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
-            line: { enabled: false },
-            tick: { enabled: false },
+            line: { enabled: false }, tick: { enabled: false },
             label: {
-              fontSize: 12,
-              color: '#000000',
-              padding: 8,
-              formatter: function(params) { return fmtVK(+params.value); },
+              fontSize: 12, color: '#000000', padding: 8,
+              formatter: function(params) { return fmtPct(+params.value); },
             },
           },
         },
       };
 
-      visitFreqChart = agCharts.AgCharts.create(visitFreqChartOptions);
+      repeatRateTrendChart = agCharts.AgCharts.create(repeatRateTrendOptions);
+      renderTrendLegend();
+      wireTrendTooltip(container, data);
+      attachChartPointMenu(container, {
+        plotLeft: 46,
+        plotRightPad: 16,
+        axisMinTime: AXIS_MIN_TIME,
+        axisMaxTime: AXIS_MAX_TIME,
+        axisMinValue: 0.32,
+        axisMaxValue: 0.50,
+        plotTop: 8,
+        xAxisHeight: 32,
+        data: data,
+        seriesValueKeys: { current: 'current', prev: 'prev' },
+      });
+    }
 
-      buildTooltip(cfg);
-      attachBucketClick(container, cfg);
+    function wireTrendTooltip(container, data) {
+      if (repeatRateTooltipEl && repeatRateTooltipEl.parentNode) {
+        repeatRateTooltipEl.parentNode.removeChild(repeatRateTooltipEl);
+      }
+      if (repeatRateMouseMove) {
+        container.removeEventListener('mousemove', repeatRateMouseMove);
+        container.removeEventListener('mouseleave', repeatRateMouseLeave);
+      }
+      repeatRateTooltipEl = document.createElement('div');
+      repeatRateTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(repeatRateTooltipEl);
+
+      var PLOT_LEFT = 46, PLOT_RIGHT_PAD = 16;
+      repeatRateMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+        if (mx < PLOT_LEFT || mx > plotRight) { repeatRateTooltipEl.style.display = 'none'; return; }
+        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
+        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
+        var d = data.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+        if (!repeatRateVisibility.current) { repeatRateTooltipEl.style.display = 'none'; return; }
+        var ptsDelta = d.current - d.prev;
+        var ptsColor = ptsDelta >= 0 ? '#257469' : '#b1294a';
+        var ptsBg = ptsDelta >= 0 ? '#effaf9' : '#fdecef';
+        var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+        repeatRateTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;">Guest repeat rate</p>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">' +
+              '<div style="display:flex;align-items:center;gap:4px;"><div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;"></div>' +
+              '<span style="font-size:12px;color:#60696C;">' + fmtBaseMonth(d.date) + ' base</span></div>' +
+              '<span style="font-size:12px;font-weight:700;">' + fmtPct(d.current) + '</span></div>' +
+            '<div style="display:flex;align-items:center;gap:4px;"><span style="background:' + ptsBg + ';color:' + ptsColor + ';padding:2px 4px;border-radius:4px;font-size:12px;">' + fmtPts(ptsDelta) + '</span>' +
+              '<span style="font-size:12px;color:#60696C;">vs. previous period</span></div>' +
+          '</div>' +
+          (repeatRateVisibility.prev ? '<div style="margin-top:16px;display:flex;justify-content:space-between;gap:16px;">' + stripe +
+            '<span style="font-size:12px;color:#60696C;">Previous period</span><span style="font-size:12px;color:#60696C;">' + fmtPct(d.prev) + '</span></div>' : '') +
+          '</div>'
+        );
+        repeatRateTooltipEl.style.display = 'block';
+        var tw = repeatRateTooltipEl.offsetWidth, th = repeatRateTooltipEl.offsetHeight;
+        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth - 8) tx = e.clientX - tw - 16;
+        if (ty < 8) ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        repeatRateTooltipEl.style.left = tx + 'px';
+        repeatRateTooltipEl.style.top = ty + 'px';
+      };
+      repeatRateMouseLeave = function() { repeatRateTooltipEl.style.display = 'none'; };
+      container.addEventListener('mousemove', repeatRateMouseMove);
+      container.addEventListener('mouseleave', repeatRateMouseLeave);
+    }
+
+    function initRepeatRateBreakdownChart() {
+      var container = document.getElementById('chart-area-guest-repeat-rate-breakdown');
+      if (!container) return;
+      if (repeatRateBreakdownChart) { repeatRateBreakdownChart.destroy(); repeatRateBreakdownChart = null; }
+      var data = BREAKDOWN_BARS[currentBreakdown];
+
+      repeatRateBreakdownOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 16, bottom: 32, left: 8 },
+        data: data,
+        legend: { enabled: false },
+        series: [{
+          type: 'bar', direction: 'vertical', xKey: 'label', yKey: 'rate', yName: 'Repeat rate',
+          fill: '#5A55E3', strokeWidth: 0, cornerRadius: 4,
+          tooltip: { enabled: false },
+        }],
+        axes: {
+          x: {
+            type: 'category', position: 'bottom',
+            gridLine: { enabled: false }, line: { enabled: false },
+            label: { fontSize: 12, color: '#000000', padding: 8 },
+          },
+          y: {
+            type: 'number', position: 'left',
+            min: 0, max: 0.55,
+            interval: { values: [0, 0.10, 0.20, 0.30, 0.40, 0.50] },
+            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
+            line: { enabled: false }, tick: { enabled: false },
+            label: {
+              fontSize: 12, color: '#000000', padding: 8,
+              formatter: function(params) { return fmtPct(+params.value); },
+            },
+          },
+        },
+      };
+      repeatRateBreakdownChart = agCharts.AgCharts.create(repeatRateBreakdownOptions);
+    }
+
+    function selectCohort(btn, mode) {
+      document.getElementById('dd-cohort-label').textContent = btn.querySelector('span').textContent;
+      document.getElementById('dd-cohort').querySelector('.dropdown__options').classList.remove('dropdown__options_open');
+      if (mode === currentCohort) return;
+      currentCohort = mode;
+      initRepeatRateTrendChart();
+      renderTable();
     }
 
     function selectBreakdown(btn, mode) {
-      var dd = document.getElementById('dd-breakdown');
       document.getElementById('dd-breakdown-label').textContent = btn.querySelector('span').textContent;
-      dd.querySelector('.dropdown__options').classList.remove('dropdown__options_open');
+      document.getElementById('dd-breakdown').querySelector('.dropdown__options').classList.remove('dropdown__options_open');
       if (mode === currentBreakdown) return;
       currentBreakdown = mode;
-      // Reset visibility for the new set of keys.
-      visitFreqVisibility = { prev: true, current: true, loyalty: true, nonLoyalty: true };
-      renderLegend(mode);
-      renderTable();
-      initVisitFreqChart();
+      initRepeatRateBreakdownChart();
     }
 
-    function buildTooltip(cfg) {
-      var container = document.getElementById('chart-area-visit-frequency');
-      if (visitFreqTooltipEl && visitFreqTooltipEl.parentNode) {
-        visitFreqTooltipEl.parentNode.removeChild(visitFreqTooltipEl);
-      }
-      if (visitFreqMouseMove) {
-        container.removeEventListener('mousemove',  visitFreqMouseMove);
-        container.removeEventListener('mouseleave', visitFreqMouseLeave);
-      }
-      visitFreqTooltipEl = document.createElement('div');
-      visitFreqTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(visitFreqTooltipEl);
-
-      // Y-axis labels "0"–"350K" (~4 chars × 7px) + 8px padding ≈ 36px.
-      var VF_PLOT_LEFT      = 38;
-      var VF_PLOT_RIGHT_PAD = 8;
-      var VF_X_AXIS_HEIGHT  = 28;
-
-      visitFreqMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var my = e.clientY - rect.top;
-        var plotRight = rect.width - VF_PLOT_RIGHT_PAD;
-        var plotBottom = rect.height - VF_X_AXIS_HEIGHT;
-
-        if (mx < VF_PLOT_LEFT || mx > plotRight || my > plotBottom) {
-          visitFreqTooltipEl.style.display = 'none';
-          return;
-        }
-
-        var relX = (mx - VF_PLOT_LEFT) / (plotRight - VF_PLOT_LEFT);
-        var idx = Math.min(cfg.data.length - 1, Math.max(0, Math.floor(relX * cfg.data.length)));
-        var d = cfg.data[idx];
-
-        var total = cfg.data.reduce(function(acc, row) {
-          cfg.series.forEach(function(s) { acc[s.yKey] = (acc[s.yKey] || 0) + row[s.yKey]; });
-          return acc;
-        }, {});
-
-        var rows = cfg.series.map(function(s) {
-          if (visitFreqVisibility[s.yKey] === false) return '';
-          var v = d[s.yKey];
-          var pct = (v / total[s.yKey] * 100).toFixed(1) + '%';
-          var marker = s.decal
-            ? '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + s.fill + ' 0,' + s.fill + ' 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>'
-            : '<div style="width:12px;height:12px;background:' + s.fill + ';border-radius:2px;flex-shrink:0;"></div>';
-          var labelColor = s.decal ? '#60696C' : '#60696C';
-          var valueWeight = s.decal ? '400' : '700';
-          var valueColor = s.decal ? '#60696C' : '#000';
-          return (
-            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
-              '<div style="display:flex;align-items:center;gap:4px;">' + marker +
-                '<span style="font-size:12px;font-weight:400;color:' + labelColor + ';">' + s.yName + '</span>' +
-              '</div>' +
-              '<span style="font-size:12px;font-weight:' + valueWeight + ';color:' + valueColor + ';">' + fmtVK(v) + ' · ' + pct + '</span>' +
-            '</div>'
-          );
-        }).join('');
-
-        // Period-over-period delta block — only when comparing current vs prev.
-        var deltaBlock = '';
-        if (currentBreakdown === 'total' && visitFreqVisibility.current && visitFreqVisibility.prev) {
-          var deltaRaw = (d.current - d.prev) / d.prev * 100;
-          var deltaStr = (deltaRaw >= 0 ? '+' : '') + deltaRaw.toFixed(1) + '%';
-          var deltaColor = deltaRaw >= 0 ? '#257469' : '#b1294a';
-          var deltaBg    = deltaRaw >= 0 ? '#effaf9' : '#fdecef';
-          deltaBlock = (
-            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
-              '<span style="background:' + deltaBg + ';color:' + deltaColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + deltaStr + '</span>' +
-              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
-            '</div>'
-          );
-        }
-
-        visitFreqTooltipEl.innerHTML = (
-          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
-            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 12px;line-height:1.5;white-space:nowrap;">' + d.bucket + '</p>' +
-            '<div style="display:flex;flex-direction:column;gap:8px;">' + rows + deltaBlock + '</div>' +
-          '</div>'
-        );
-
-        visitFreqTooltipEl.style.display = 'block';
-        var tw = visitFreqTooltipEl.offsetWidth;
-        var th = visitFreqTooltipEl.offsetHeight;
-        var tx = e.clientX + 16;
-        var ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
-        if (ty < 8) ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        visitFreqTooltipEl.style.left = tx + 'px';
-        visitFreqTooltipEl.style.top  = ty + 'px';
-      };
-      visitFreqMouseLeave = function() { visitFreqTooltipEl.style.display = 'none'; };
-      container.addEventListener('mousemove',  visitFreqMouseMove);
-      container.addEventListener('mouseleave', visitFreqMouseLeave);
-    }
-
-    /* ── Bucket-click → context menu (View users / Create segment / Ask Ava)
-       Adapts the chart-point-menu pattern from analytics_page_patterns.md
-       § Chart data-point context menu for a categorical histogram: snap to
-       nearest bucket on X, anchor menu to cursor. ── */
+    /* Point menu + table — adapted from total-guests detail */
     var pointMenuAnchor = null;
+    var pointMenuSeries = 'current';
+    var pointMenuOpts = null;
 
-    function attachBucketClick(container, cfg) {
+    function attachChartPointMenu(container, opts) {
+      pointMenuOpts = opts;
       container.style.cursor = 'pointer';
-      // Strip the previous handler (initVisitFreqChart may be called more than once).
-      if (container._vfClickHandler) {
-        container.removeEventListener('click', container._vfClickHandler);
-      }
-      container._vfClickHandler = function(e) {
+      container.addEventListener('click', function(e) {
         var rect = container.getBoundingClientRect();
         var mx = e.clientX - rect.left;
         var my = e.clientY - rect.top;
-        var VF_PLOT_LEFT = 38, VF_PLOT_RIGHT_PAD = 8, VF_X_AXIS_HEIGHT = 28;
-        var plotRight = rect.width - VF_PLOT_RIGHT_PAD;
-        var plotBottom = rect.height - VF_X_AXIS_HEIGHT;
-        if (mx < VF_PLOT_LEFT || mx > plotRight || my > plotBottom) return;
+        var plotRight = rect.width - opts.plotRightPad;
+        if (mx < opts.plotLeft || mx > plotRight) return;
         e.stopPropagation();
-        var relX = (mx - VF_PLOT_LEFT) / (plotRight - VF_PLOT_LEFT);
-        var idx = Math.min(cfg.data.length - 1, Math.max(0, Math.floor(relX * cfg.data.length)));
-        pointMenuAnchor = cfg.data[idx];
+        var relX = (mx - opts.plotLeft) / (plotRight - opts.plotLeft);
+        var targetTime = opts.axisMinTime + relX * (opts.axisMaxTime - opts.axisMinTime);
+        var d = opts.data.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+        var seriesKey = 'current';
+        if (opts.axisMinValue != null && opts.axisMaxValue != null && opts.seriesValueKeys) {
+          var plotH = rect.height - (opts.plotTop || 0) - (opts.xAxisHeight || 0);
+          var range = opts.axisMaxValue - opts.axisMinValue;
+          var bestDist = Infinity;
+          Object.keys(opts.seriesValueKeys).forEach(function(key) {
+            if (repeatRateVisibility[key] === false) return;
+            var v = d[opts.seriesValueKeys[key]];
+            var y = (opts.plotTop || 0) + (1 - (v - opts.axisMinValue) / range) * plotH;
+            var dist = Math.abs(my - y);
+            if (dist < bestDist) { bestDist = dist; seriesKey = key; }
+          });
+        }
+        pointMenuAnchor = d;
+        pointMenuSeries = seriesKey;
         openPointMenu(e.clientX, e.clientY);
-      };
-      container.addEventListener('click', container._vfClickHandler);
+      });
     }
 
     function openPointMenu(clientX, clientY) {
       var menu = document.getElementById('chart-point-menu');
       document.removeEventListener('click', closePointMenuOnOutside);
-
       if (pointMenuAnchor) {
-        var dateEl  = document.getElementById('chart-point-menu-date');
+        var dateEl = document.getElementById('chart-point-menu-date');
         var valueEl = document.getElementById('chart-point-menu-value');
-        var dotEl   = menu.querySelector('.chart-point-menu__color-dot');
-        if (dateEl)  dateEl.textContent  = pointMenuAnchor.bucket;
-        if (valueEl) {
-          // Show the most relevant value for the active breakdown.
-          var v = currentBreakdown === 'total'
-            ? pointMenuAnchor.current
-            : pointMenuAnchor.loyalty + pointMenuAnchor.nonLoyalty;
-          valueEl.textContent = fmtVK(v);
-        }
-        if (dotEl) dotEl.classList.remove('chart-point-menu__color-dot--striped');
+        var dotEl = menu.querySelector('.chart-point-menu__color-dot');
+        var valueKey = (pointMenuOpts && pointMenuOpts.seriesValueKeys && pointMenuOpts.seriesValueKeys[pointMenuSeries]) || pointMenuSeries;
+        if (dateEl) dateEl.textContent = fmtBaseMonth(pointMenuAnchor.date) + ' base';
+        if (valueEl) valueEl.textContent = fmtPct(pointMenuAnchor[valueKey]);
+        if (dotEl) dotEl.classList.toggle('chart-point-menu__color-dot--striped', pointMenuSeries === 'prev');
       }
-
       menu.classList.add('chart-point-menu--open');
       menu.setAttribute('aria-hidden', 'false');
-      if (visitFreqTooltipEl) visitFreqTooltipEl.style.display = 'none';
-
+      if (repeatRateTooltipEl) repeatRateTooltipEl.style.display = 'none';
       var mw = menu.offsetWidth, mh = menu.offsetHeight;
       var x = clientX + 12, y = clientY + 12;
-      if (x + mw > window.innerWidth  - 8) x = clientX - mw - 12;
+      if (x + mw > window.innerWidth - 8) x = clientX - mw - 12;
       if (y + mh > window.innerHeight - 8) y = clientY - mh - 12;
       if (y < 8) y = 8;
       var ref = menu.offsetParent || document.body;
       var refRect = ref.getBoundingClientRect();
       menu.style.left = (x - refRect.left + ref.scrollLeft) + 'px';
-      menu.style.top  = (y - refRect.top  + ref.scrollTop)  + 'px';
-
-      setTimeout(function() {
-        document.addEventListener('click', closePointMenuOnOutside);
-      }, 0);
+      menu.style.top = (y - refRect.top + ref.scrollTop) + 'px';
+      setTimeout(function() { document.addEventListener('click', closePointMenuOnOutside); }, 0);
     }
 
     function closePointMenu() {
@@ -895,111 +983,75 @@
       menu.setAttribute('aria-hidden', 'true');
       document.removeEventListener('click', closePointMenuOnOutside);
     }
-
     function closePointMenuOnOutside(e) {
       if (!e.target.closest('#chart-point-menu')) closePointMenu();
     }
-
     function onPointMenuAction(action) {
       console.log('chart-point-menu action:', action, pointMenuAnchor);
       closePointMenu();
     }
 
-    /* ── Data table ── */
-    var TABLE_HEADER_CELL = 'style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;"';
-    var TABLE_HEADERS = {
-      total:   ['Bucket', 'This period', 'Previous period', 'Δ', 'Δ%'],
-      loyalty: ['Bucket', 'Loyalty', 'Non-loyalty', 'Total', 'Loyalty share'],
-    };
-
-    function renderTableHead() {
-      var labels = TABLE_HEADERS[currentBreakdown];
-      var thead = document.getElementById('visit-freq-table-head');
-      thead.innerHTML =
-        '<tr style="background-color: #dfe1e2; border-bottom: none;">' +
-          labels.map(function(label, i) {
-            var inner = i === 0 ? 'chart-th-inner chart-th-inner--start' : 'chart-th-inner';
-            return '<th ' + TABLE_HEADER_CELL + '><span class="' + inner + '">' + label + ' <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>';
-          }).join('') +
-        '</tr>';
+    function seedFromDate(d) {
+      var s = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+      return ((s * 9301 + 49297) % 233280);
     }
+    function baseGuestsForRow(d) {
+      return 42000 + (seedFromDate(d) % 8000);
+    }
+
+    var PER_PAGE = 10;
+    var currentPage = 1;
+    function tableData() { return getTrendData(); }
+    function totalPages() { return Math.max(1, Math.ceil(tableData().length / PER_PAGE)); }
 
     function renderTable() {
-      renderTableHead();
-      var tbody = document.getElementById('visit-freq-table-body');
-      var rows;
-      if (currentBreakdown === 'total') {
-        rows = VISIT_FREQ_TOTAL_DATA.map(function(d, i) {
-          // K-scale → full-precision with a deterministic per-bucket offset.
-          var seed = (i * 9301 + 49297) % 233280;
-          var cur  = Math.round(d.current * 1000 + (seed % 1000));
-          var prev = Math.round(d.prev    * 1000 + ((seed + 7919) % 1000));
-          var delta = cur - prev;
-          var dPct  = delta / prev * 100;
-          var sign  = dPct >= 0 ? '+' : '';
-          var color = dPct >= 0 ? '#257469' : '#b1294a';
-          var bg    = dPct >= 0 ? '#effaf9' : '#fdecef';
-          return (
-            '<tr>' +
-              '<td>' + d.bucket + '</td>' +
-              '<td class="chart-data-col">' + fmtFull(cur) + '</td>' +
-              '<td class="chart-data-col">' + fmtFull(prev) + '</td>' +
-              '<td class="chart-data-col">' + fmtFullSigned(delta) + '</td>' +
-              '<td class="chart-data-col">' +
-                '<span style="background:' + bg + ';color:' + color + ';padding:2px 6px;border-radius:4px;font-size:0.875rem;font-weight:500;">' +
-                  sign + dPct.toFixed(2) + '%' +
-                '</span>' +
-              '</td>' +
-            '</tr>'
-          );
-        });
-      } else {
-        // Loyalty breakdown: columns become Loyalty / Non-loyalty / Δ Loyalty share.
-        // Reuses the same five table cells so the header doesn't need rewriting.
-        rows = VISIT_FREQ_LOYALTY_DATA.map(function(d, i) {
-          var seed = (i * 9301 + 49297) % 233280;
-          var loy  = Math.round(d.loyalty    * 1000 + (seed % 1000));
-          var non  = Math.round(d.nonLoyalty * 1000 + ((seed + 7919) % 1000));
-          var total = loy + non;
-          var loyShare = total > 0 ? (loy / total * 100) : 0;
-          var color = loyShare >= 50 ? '#257469' : '#b1294a';
-          var bg    = loyShare >= 50 ? '#effaf9' : '#fdecef';
-          return (
-            '<tr>' +
-              '<td>' + d.bucket + '</td>' +
-              '<td class="chart-data-col">' + fmtFull(loy) + '</td>' +
-              '<td class="chart-data-col">' + fmtFull(non) + '</td>' +
-              '<td class="chart-data-col">' + fmtFull(total) + '</td>' +
-              '<td class="chart-data-col">' +
-                '<span style="background:' + bg + ';color:' + color + ';padding:2px 6px;border-radius:4px;font-size:0.875rem;font-weight:500;">' +
-                  loyShare.toFixed(1) + '%' +
-                '</span>' +
-              '</td>' +
-            '</tr>'
-          );
-        });
-      }
-      tbody.innerHTML = rows.join('');
-      // 5 buckets fit on one page — keep nav controls disabled.
-      document.getElementById('page-dropdown-label').textContent = 1;
-      document.getElementById('total-pages-text').textContent = 'of 1 page';
-      document.getElementById('prev-btn').disabled = true;
-      document.getElementById('next-btn').disabled = true;
-      document.getElementById('page-options-list').innerHTML = '<li><button style="background:none;border:none;width:100%;text-align:left;padding:8px 12px;cursor:pointer;font-family:\'Manrope\',sans-serif;font-size:16px;font-weight:700;">1</button></li>';
+      var tbody = document.getElementById('guest-repeat-rate-table-body');
+      var data = tableData();
+      var tp = totalPages();
+      if (currentPage > tp) currentPage = tp;
+      var pageRows = data.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
+      tbody.innerHTML = pageRows.map(function(d) {
+        var ptsDelta = d.current - d.prev;
+        var relPct = ptsDelta / d.prev * 100;
+        var pctSign = relPct >= 0 ? '+' : '';
+        var pctColor = relPct >= 0 ? '#257469' : '#b1294a';
+        var pctBg = relPct >= 0 ? '#effaf9' : '#fdecef';
+        return (
+          '<tr>' +
+            '<td>' + fmtBaseMonth(d.date) + '</td>' +
+            '<td class="chart-data-col">' + fmtPctFull(d.current) + '</td>' +
+            '<td class="chart-data-col">' + fmtPctFull(d.prev) + '</td>' +
+            '<td class="chart-data-col">' + fmtPts(ptsDelta) + '</td>' +
+            '<td class="chart-data-col"><span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 6px;border-radius:4px;font-size:0.875rem;font-weight:500;">' +
+              pctSign + relPct.toFixed(2) + '%</span></td>' +
+          '</tr>'
+        );
+      }).join('');
+      document.getElementById('page-dropdown-label').textContent = currentPage;
+      document.getElementById('total-pages-text').textContent = 'of ' + tp + ' page' + (tp !== 1 ? 's' : '');
+      document.getElementById('prev-btn').disabled = currentPage <= 1;
+      document.getElementById('next-btn').disabled = currentPage >= tp;
+      document.getElementById('page-options-list').innerHTML = Array.from({ length: tp }, function(_, i) { return i + 1; })
+        .map(function(p) {
+          return '<li><button onclick="goToPage(' + p + ')" style="background:none;border:none;width:100%;text-align:left;padding:8px 12px;cursor:pointer;font-family:Manrope,sans-serif;font-size:16px;font-weight:' + (p === currentPage ? 700 : 400) + ';">' + p + '</button></li>';
+        }).join('');
     }
 
-    function prevPage() {}
-    function nextPage() {}
+    function prevPage() { if (currentPage > 1) { currentPage--; renderTable(); } }
+    function nextPage() { if (currentPage < totalPages()) { currentPage++; renderTable(); } }
+    function goToPage(p) {
+      currentPage = p;
+      document.getElementById('page-options').classList.remove('dropdown__options_open');
+      renderTable();
+    }
     function togglePageDropdown() {
       document.getElementById('page-options').classList.toggle('dropdown__options_open');
     }
-
     document.addEventListener('click', function(e) {
       if (!e.target.closest('#page-dropdown-btn') && !e.target.closest('#page-options')) {
         document.getElementById('page-options').classList.remove('dropdown__options_open');
       }
     });
-
     /* ── Boot ── */
     document.addEventListener('DOMContentLoaded', function() {
       renderTable();
@@ -1009,8 +1061,8 @@
         document.fonts.load('800 12px Manrope'),
       ]).then(function() {
         requestAnimationFrame(function() {
-          renderLegend(currentBreakdown);
-          initVisitFreqChart();
+          initRepeatRateTrendChart();
+          initRepeatRateBreakdownChart();
         });
       });
     });
