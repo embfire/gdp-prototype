@@ -302,4 +302,4 @@ These are not blockers for wiring the chart but should be settled before the met
 - **Reference implementation — dashboard card (horizontal bars)** — `[beta/index.html](../../beta/index.html)` (search `initLoyaltySpendLiftChart`, `SPEND_LIFT_COMPARE_DATA`, `loyaltySpendLiftVisibility`, `toggleLoyaltySpendLiftSeries`)
 - **Reference implementation — detail page (trend + breakdown + table)** — `[beta/dashboard-loyalty-spend-lift.html](../../beta/dashboard-loyalty-spend-lift.html)` (search `SPEND_LIFT_TREND_DATA`, `BREAKDOWN_DATA`, `initSpendLiftTrendChart`, `initSpendLiftBreakdownChart`, `selectBreakdown`)
 - **Card layout CSS** — `[beta/beta.css](../../beta/beta.css)` (search `loyalty-spend-lift`, `chart-detail-charts-stack`)
-- **Sibling spec for the breakdown-dropdown pattern** — `[dashboard_visit_frequency_chart_spec.md](./dashboard_visit_frequency_chart_spec.md)`
+- **Sibling spec for the breakdown-dropdown pattern** — `[visit_frequency_chart_spec.md](./visit_frequency_chart_spec.md)`
