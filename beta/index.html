@@ -274,10 +274,11 @@
       { id: 'reachability',               x: 6, y: 1 },
       { id: 'visit-frequency',            x: 0, y: 2 },
       { id: 'new-guest-acquisition',      x: 6, y: 2 },
+      { id: 'loyalty-spend-lift',         x: 0, y: 3 },
     ];
 
-    // v6: added new-guest-acquisition to default layout
-    var LS_KEY = 'g360-dashboard-layout-v6';
+    // v7: added loyalty-spend-lift to default layout
+    var LS_KEY = 'g360-dashboard-layout-v7';
 
     /* ═══════════════════════════════════════════════════
        GridStack
@@ -399,6 +400,20 @@
           document.fonts.load('700 12px Manrope'),
           document.fonts.load('800 12px Manrope'),
         ]).then(function() { requestAnimationFrame(initVisitFrequencyChart); });
+      }
+      if (id === 'loyalty-spend-lift') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() { requestAnimationFrame(initLoyaltySpendLiftChart); });
+      }
+      if (id === 'guest-repeat-rate') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() { requestAnimationFrame(initGuestRepeatRateChart); });
       }
       // Sync the new card's filter notice with the current date range.
       applyFilterCompatibility(currentDateRange);
@@ -577,6 +592,15 @@
           newGuestAcqTooltipEl = null;
         }
       }
+      if (id === 'loyalty-spend-lift' && loyaltySpendLiftChart) {
+        loyaltySpendLiftChart.destroy();
+        loyaltySpendLiftChart = null;
+        loyaltySpendLiftChartOptions = null;
+        if (loyaltySpendLiftTooltipEl && loyaltySpendLiftTooltipEl.parentNode) {
+          loyaltySpendLiftTooltipEl.parentNode.removeChild(loyaltySpendLiftTooltipEl);
+          loyaltySpendLiftTooltipEl = null;
+        }
+      }
       var el = document.querySelector('.grid-stack-item[gs-id="' + id + '"]');
       if (el) dashGrid.removeWidget(el);
       updateSidebar();
@@ -742,6 +766,31 @@
           '<p class="chart-card__metric-period">2.1 visits prev period</p>'
         );
       }
+      if (id === 'loyalty-spend-lift') {
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">+35%</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+2.8pp</span>' +
+          '</div>' +
+          '<p class="chart-card__metric-period">$24.80 loyalty · $18.40 non-loyalty per visit</p>'
+        );
+      }
+      if (id === 'guest-repeat-rate') {
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">42.8%</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+2.1pts</span>' +
+          '</div>' +
+          '<div class="chart-card__metric-period-row">' +
+            '<span class="chart-card__metric-period">40.7% prev period</span>' +
+            '<div class="chart-card__metric-info-wrap">' +
+              '<span class="material-symbols-rounded chart-card__metric-info-icon">info</span>' +
+              '<span class="chart-card__metric-info-text">Showing 90D minimum</span>' +
+              '<div class="chart-card__metric-info-tooltip">Showing 90 days minimum — Needs at least two months for base and follow-up periods</div>' +
+            '</div>' +
+          '</div>'
+        );
+      }
       return (
         '<p class="chart-card__metric-value">--</p>' +
         '<p class="chart-card__metric-period">-- prev period</p>'
@@ -825,6 +874,34 @@
           '</div>'
         );
       }
+      if (id === 'loyalty-spend-lift') {
+        return (
+          '<div class="chart-card__legend">' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="loyalty" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleLoyaltySpendLiftSeries(this, \'loyalty\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid" style="background:#5A55E3;"></span>' +
+              '<span>Loyalty</span>' +
+            '</button>' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="nonLoyalty" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleLoyaltySpendLiftSeries(this, \'nonLoyalty\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--striped" style="background-image:repeating-linear-gradient(-45deg,#FF6600 0,#FF6600 1.5px,transparent 1.5px,transparent 3px);"></span>' +
+              '<span>Non-loyalty</span>' +
+            '</button>' +
+          '</div>'
+        );
+      }
+      if (id === 'guest-repeat-rate') {
+        return (
+          '<div class="chart-card__legend">' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="current" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleGuestRepeatRateSeries(this, \'current\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>' +
+              '<span>This period</span>' +
+            '</button>' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleGuestRepeatRateSeries(this, \'prev\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
+              '<span>Previous period</span>' +
+            '</button>' +
+          '</div>'
+        );
+      }
       if (id === 'reachability') {
         return '<div class="chart-card__legend">' +
           REACHABILITY_CHANNELS.map(function(ch) {
@@ -852,6 +929,8 @@
       if (id === 'retention-cohort') return 'M+1 retention rate by acquisition cohort';
       if (id === 'reachability') return 'Reachable guests by channel vs. total identified';
       if (id === 'visit-frequency') return 'Guest distribution across visit-count buckets';
+      if (id === 'loyalty-spend-lift') return 'Avg spend per visit over time';
+      if (id === 'guest-repeat-rate') return 'Share of base-period guests who returned in the next period';
       return 'Chart explanation';
     }
 
@@ -866,6 +945,7 @@
     var CHART_CONSTRAINTS = {
       // Cohort retention needs at least 3 monthly cohorts to draw a trend.
       'retention-cohort': { minDays: 90, minLabel: '90D', reason: 'Needs ≥3 months of cohort data' },
+      'guest-repeat-rate': { minDays: 90, minLabel: '90D', reason: 'Needs at least two months for base and follow-up periods' },
     };
 
     function getChartFilterNotice(id, range) {
@@ -957,7 +1037,9 @@
         'guest-lifecycle-breakdown': 'dashboard-guest-lifecycle.html',
         'retention-cohort': 'dashboard-retention-cohort.html',
         'reachability':      'dashboard-reachability.html',
-        'visit-frequency':   'dashboard-visit-frequency.html'
+        'visit-frequency':      'dashboard-visit-frequency.html',
+        'loyalty-spend-lift':   'dashboard-loyalty-spend-lift.html',
+        'guest-repeat-rate':    'dashboard-guest-repeat-rate.html'
       };
       window.location.href = perChartPages[metricId] || 'dashboard-chart-detail.html';
     }
@@ -2536,10 +2618,6 @@
         padding: { top: 8, right: 0, bottom: 0, left: 0 },
         data: VISIT_FREQ_DATA,
         legend: { enabled: false },
-        // Striped decal on prev bars uses the same convention as the
-        // total-guests/new-guest-acquisition cards (see analytics_page_patterns.md
-        // § Bar Chart Period Comparisons).
-        aria: { enabled: true, decal: { show: true } },
         series: [
           {
             type: 'bar',
@@ -2547,9 +2625,12 @@
             xKey: 'bucket',
             yKey: 'prev',
             yName: 'Previous period',
-            fill: '#5A55E3',
+            // AG Charts pattern fill — diagonal lines matching the legend
+            // marker (`.chart-card__legend-marker--striped`: white background
+            // with indigo diagonal stripes).
+            fill: { type: 'pattern', pattern: 'forward-slanted-lines', stroke: '#5A55E3', backgroundFill: '#ffffff' },
             stroke: '#5A55E3',
-            strokeWidth: 0,
+            strokeWidth: 1,
             cornerRadius: 4,
             tooltip: { enabled: false },
           },
@@ -2563,7 +2644,6 @@
             stroke: '#5A55E3',
             strokeWidth: 0,
             cornerRadius: 4,
-            decal: { symbol: 'none' },  // suppress auto-decals from aria
             tooltip: { enabled: false },
           },
         ],
@@ -2699,6 +2779,496 @@
 
       container.addEventListener('mousemove',  visitFreqMouseMove);
       container.addEventListener('mouseleave', visitFreqMouseLeave);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       AG Charts — Loyalty Spend Lift
+       Dual-line card (same pattern as New Guest Acquisition):
+       solid indigo = loyalty avg $/visit, dashed vermilion = non-loyalty.
+    ═══════════════════════════════════════════════════ */
+    var loyaltySpendLiftChart        = null;
+    var loyaltySpendLiftChartOptions = null;
+    var loyaltySpendLiftVisibility   = { loyalty: true, nonLoyalty: true };
+    var loyaltySpendLiftTooltipEl    = null;
+    var loyaltySpendLiftMouseMove    = null;
+    var loyaltySpendLiftMouseLeave   = null;
+
+    var SPEND_LIFT_PALETTE = { loyalty: '#5A55E3', nonLoyalty: '#FF6600' };
+
+    var SPEND_LIFT_CARD_DATA = (function() {
+      var baseDate = new Date(2026, 2, 19);
+      var rows = [];
+      for (var i = 0; i < 39; i++) {
+        var d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() + i);
+        var wobble = Math.sin(i / 4) * 0.35;
+        rows.push({
+          date: d,
+          loyalty: +(24.80 + wobble + (i % 5) * 0.04).toFixed(2),
+          nonLoyalty: +(18.40 + wobble * 0.6 + (i % 7) * 0.02).toFixed(2),
+        });
+      }
+      return rows;
+    }());
+
+    function fmtSpendDollar(v) {
+      return '$' + (+v).toFixed(2);
+    }
+
+    function toggleLoyaltySpendLiftSeries(btn, seriesKey) {
+      if (!loyaltySpendLiftChart || !loyaltySpendLiftChartOptions) return;
+      var nextValue = !loyaltySpendLiftVisibility[seriesKey];
+      var otherKey = seriesKey === 'loyalty' ? 'nonLoyalty' : 'loyalty';
+      if (!nextValue && !loyaltySpendLiftVisibility[otherKey]) return;
+      loyaltySpendLiftVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+      var newSeries = loyaltySpendLiftChartOptions.series.map(function(s) {
+        return Object.assign({}, s, { visible: loyaltySpendLiftVisibility[s.yKey] !== false });
+      });
+      loyaltySpendLiftChartOptions = Object.assign({}, loyaltySpendLiftChartOptions, { series: newSeries });
+      loyaltySpendLiftChart.update(loyaltySpendLiftChartOptions);
+    }
+
+    function initLoyaltySpendLiftChart() {
+      var container = document.getElementById('chart-area-loyalty-spend-lift');
+      if (!container) return;
+      if (loyaltySpendLiftChart) { loyaltySpendLiftChart.destroy(); loyaltySpendLiftChart = null; }
+
+      loyaltySpendLiftVisibility = { loyalty: true, nonLoyalty: true };
+
+      loyaltySpendLiftChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 0, bottom: 0, left: 0 },
+        data: SPEND_LIFT_CARD_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'line',
+            xKey: 'date',
+            yKey: 'nonLoyalty',
+            yName: 'Non-loyalty',
+            stroke: SPEND_LIFT_PALETTE.nonLoyalty,
+            strokeWidth: 2,
+            lineDash: [2, 2],
+            marker: {
+              enabled: true,
+              size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: SPEND_LIFT_PALETTE.nonLoyalty, stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+          {
+            type: 'line',
+            xKey: 'date',
+            yKey: 'loyalty',
+            yName: 'Loyalty',
+            stroke: SPEND_LIFT_PALETTE.loyalty,
+            strokeWidth: 2,
+            marker: {
+              enabled: true,
+              size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: SPEND_LIFT_PALETTE.loyalty, stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+        ],
+        axes: {
+          x: {
+            type: 'time',
+            position: 'bottom',
+            nice: false,
+            min: new Date(2026, 2, 19),
+            max: new Date(2026, 3, 26),
+            gridLine: { enabled: false },
+            line: { enabled: false },
+            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              format: '%b %-d',
+              padding: 8,
+              avoidCollisions: true,
+            },
+            interval: {
+              values: [
+                new Date(2026, 2, 29),
+                new Date(2026, 3, 5),
+                new Date(2026, 3, 12),
+                new Date(2026, 3, 19),
+              ],
+            },
+            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+          },
+          y: {
+            type: 'number',
+            position: 'left',
+            min: 17,
+            max: 27,
+            interval: { values: [18, 20, 22, 24, 26] },
+            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
+            line: { enabled: false },
+            tick: { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              formatter: function(params) { return '$' + (+params.value).toFixed(0); },
+            },
+          },
+        },
+      };
+
+      loyaltySpendLiftChart = agCharts.AgCharts.create(loyaltySpendLiftChartOptions);
+
+      if (loyaltySpendLiftTooltipEl && loyaltySpendLiftTooltipEl.parentNode) {
+        loyaltySpendLiftTooltipEl.parentNode.removeChild(loyaltySpendLiftTooltipEl);
+      }
+      if (loyaltySpendLiftMouseMove) {
+        container.removeEventListener('mousemove',  loyaltySpendLiftMouseMove);
+        container.removeEventListener('mouseleave', loyaltySpendLiftMouseLeave);
+      }
+
+      loyaltySpendLiftTooltipEl = document.createElement('div');
+      loyaltySpendLiftTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(loyaltySpendLiftTooltipEl);
+
+      var PLOT_LEFT      = 46;
+      var PLOT_RIGHT_PAD = 0;
+      var AXIS_MIN_TIME  = new Date(2026, 2, 19).getTime();
+      var AXIS_MAX_TIME  = new Date(2026, 3, 26).getTime();
+
+      loyaltySpendLiftMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+
+        if (mx < PLOT_LEFT || mx > plotRight) {
+          loyaltySpendLiftTooltipEl.style.display = 'none';
+          return;
+        }
+
+        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
+        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
+        var d = SPEND_LIFT_CARD_DATA.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+
+        if (!loyaltySpendLiftVisibility.loyalty) {
+          loyaltySpendLiftTooltipEl.style.display = 'none';
+          return;
+        }
+
+        var liftRaw = (d.loyalty - d.nonLoyalty) / d.nonLoyalty * 100;
+        var liftStr = (liftRaw >= 0 ? '+' : '') + liftRaw.toFixed(1) + '%';
+        var liftColor = liftRaw >= 0 ? '#257469' : '#b1294a';
+        var liftBg    = liftRaw >= 0 ? '#effaf9' : '#fdecef';
+
+        loyaltySpendLiftTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Loyalty spend lift</p>' +
+            '<div style="display:flex;flex-direction:column;gap:8px;">' +
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' +
+                  '<div style="width:12px;height:12px;background:' + SPEND_LIFT_PALETTE.loyalty + ';border-radius:2px;flex-shrink:0;"></div>' +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(d.date) + '</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtSpendDollar(d.loyalty) + '</span>' +
+              '</div>' +
+              '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+                '<span style="background:' + liftBg + ';color:' + liftColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + liftStr + '</span>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. non-loyalty</span>' +
+              '</div>' +
+            '</div>' +
+            (loyaltySpendLiftVisibility.nonLoyalty
+              ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                  '<div style="display:flex;align-items:center;gap:4px;">' +
+                    '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + SPEND_LIFT_PALETTE.nonLoyalty + ' 0,' + SPEND_LIFT_PALETTE.nonLoyalty + ' 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>' +
+                    '<span style="font-size:12px;font-weight:400;color:#60696C;">Non-loyalty</span>' +
+                  '</div>' +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtSpendDollar(d.nonLoyalty) + '</span>' +
+                '</div>'
+              : '') +
+          '</div>'
+        );
+
+        loyaltySpendLiftTooltipEl.style.display = 'block';
+
+        var tw = loyaltySpendLiftTooltipEl.offsetWidth;
+        var th = loyaltySpendLiftTooltipEl.offsetHeight;
+        var tx = e.clientX + 16;
+        var ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8) ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        loyaltySpendLiftTooltipEl.style.left = tx + 'px';
+        loyaltySpendLiftTooltipEl.style.top  = ty + 'px';
+      };
+
+      loyaltySpendLiftMouseLeave = function() {
+        loyaltySpendLiftTooltipEl.style.display = 'none';
+      };
+
+      container.addEventListener('mousemove',  loyaltySpendLiftMouseMove);
+      container.addEventListener('mouseleave', loyaltySpendLiftMouseLeave);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       AG Charts — Guest Repeat Rate
+       Period-over-period: % of guests active in base month who
+       returned in the immediately following month (all actives).
+    ═══════════════════════════════════════════════════ */
+    var guestRepeatRateChart         = null;
+    var guestRepeatRateChartOptions  = null;
+    var guestRepeatRateTooltipEl     = null;
+    var guestRepeatRateMouseMove     = null;
+    var guestRepeatRateMouseLeave    = null;
+    var guestRepeatRateVisibility    = { current: true, prev: true };
+
+    function toggleGuestRepeatRateSeries(btn, seriesKey) {
+      if (!guestRepeatRateChart || !guestRepeatRateChartOptions) return;
+      var nextValue = !guestRepeatRateVisibility[seriesKey];
+      var someoneElseVisible = Object.keys(guestRepeatRateVisibility).some(function(k) {
+        return k !== seriesKey && guestRepeatRateVisibility[k];
+      });
+      if (!nextValue && !someoneElseVisible) return;
+
+      guestRepeatRateVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+
+      var newSeries = guestRepeatRateChartOptions.series.map(function(s, i) {
+        var vis = (i === 0) ? guestRepeatRateVisibility.prev : guestRepeatRateVisibility.current;
+        return Object.assign({}, s, { visible: vis });
+      });
+      var updateOpts = Object.assign({}, guestRepeatRateChartOptions, { series: newSeries });
+      guestRepeatRateChartOptions = updateOpts;
+      guestRepeatRateChart.update(updateOpts);
+    }
+
+    // 12 monthly base periods: Apr 2025 – Mar 2026.
+    // Each point = % of guests with ≥1 visit in month M who also visited in month M+1.
+    var GUEST_REPEAT_RATE_DATA = (function() {
+      var curr = [
+        0.382, 0.388, 0.391, 0.396, 0.401, 0.405,
+        0.409, 0.412, 0.416, 0.419, 0.424, 0.428,
+      ];
+      var prev = [
+        0.365, 0.371, 0.374, 0.378, 0.382, 0.386,
+        0.389, 0.393, 0.397, 0.400, 0.404, 0.407,
+      ];
+      return curr.map(function(c, i) {
+        var d = new Date(2025, 3 + i, 1);
+        return { date: d, current: c, prev: prev[i] };
+      });
+    }());
+
+    function fmtRepeatBaseMonth(d) {
+      return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }).replace(' ', " '");
+    }
+
+    function initGuestRepeatRateChart() {
+      var container = document.getElementById('chart-area-guest-repeat-rate');
+      if (!container) return;
+      if (guestRepeatRateChart) { guestRepeatRateChart.destroy(); guestRepeatRateChart = null; }
+
+      guestRepeatRateVisibility = { current: true, prev: true };
+
+      guestRepeatRateChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 0, bottom: 24, left: 0 },
+        data: GUEST_REPEAT_RATE_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'line',
+            xKey: 'date',
+            yKey: 'prev',
+            yName: 'Previous period',
+            stroke: '#5A55E3',
+            strokeWidth: 2,
+            lineDash: [2, 2],
+            marker: {
+              enabled: true,
+              size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+          {
+            type: 'line',
+            xKey: 'date',
+            yKey: 'current',
+            yName: 'This period',
+            stroke: '#5A55E3',
+            strokeWidth: 2,
+            marker: {
+              enabled: true,
+              size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+        ],
+        axes: {
+          x: {
+            type: 'time',
+            position: 'bottom',
+            nice: false,
+            min: new Date(2025, 3, 1),
+            max: new Date(2026, 2, 1),
+            gridLine: { enabled: false },
+            line: { enabled: false },
+            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              avoidCollisions: true,
+              formatter: function(params) { return fmtRepeatBaseMonth(new Date(params.value)); },
+            },
+            interval: {
+              values: [
+                new Date(2025, 3, 1),
+                new Date(2025, 6, 1),
+                new Date(2025, 9, 1),
+                new Date(2026, 0, 1),
+              ],
+            },
+            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+          },
+          y: {
+            type: 'number',
+            position: 'left',
+            min: 0.34,
+            max: 0.46,
+            interval: { values: [0.34, 0.36, 0.38, 0.40, 0.42, 0.44, 0.46] },
+            gridLine: {
+              enabled: true,
+              style: [{ stroke: '#DFE1E2', lineDash: [] }],
+            },
+            line: { enabled: false },
+            tick: { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              formatter: function(params) { return fmtPct(+params.value); },
+            },
+          },
+        },
+      };
+
+      guestRepeatRateChart = agCharts.AgCharts.create(guestRepeatRateChartOptions);
+
+      if (guestRepeatRateTooltipEl && guestRepeatRateTooltipEl.parentNode) {
+        guestRepeatRateTooltipEl.parentNode.removeChild(guestRepeatRateTooltipEl);
+      }
+      if (guestRepeatRateMouseMove) {
+        container.removeEventListener('mousemove',  guestRepeatRateMouseMove);
+        container.removeEventListener('mouseleave', guestRepeatRateMouseLeave);
+      }
+
+      guestRepeatRateTooltipEl = document.createElement('div');
+      guestRepeatRateTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(guestRepeatRateTooltipEl);
+
+      var PLOT_LEFT      = 38;
+      var PLOT_RIGHT_PAD = 0;
+      var AXIS_MIN_TIME  = new Date(2025, 3, 1).getTime();
+      var AXIS_MAX_TIME  = new Date(2026, 2, 1).getTime();
+
+      guestRepeatRateMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+
+        if (mx < PLOT_LEFT || mx > plotRight) {
+          guestRepeatRateTooltipEl.style.display = 'none';
+          return;
+        }
+
+        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
+        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
+        var d = GUEST_REPEAT_RATE_DATA.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+
+        if (!guestRepeatRateVisibility.current) { guestRepeatRateTooltipEl.style.display = 'none'; return; }
+
+        var ptsDelta = (d.current - d.prev) * 100;
+        var pts      = (ptsDelta >= 0 ? '+' : '') + ptsDelta.toFixed(1) + 'pts';
+        var ptsColor = ptsDelta >= 0 ? '#257469' : '#b1294a';
+        var ptsBg    = ptsDelta >= 0 ? '#effaf9' : '#fdecef';
+        var stripe   = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+
+        guestRepeatRateTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Guest repeat rate</p>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:4px;">' +
+                '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtRepeatBaseMonth(d.date) + ' base</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtPct(d.current) + '</span>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+              '<span style="background:' + ptsBg + ';color:' + ptsColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pts + '</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
+            '</div>' +
+          '</div>' +
+          (guestRepeatRateVisibility.prev
+            ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtPct(d.prev) + '</span>' +
+              '</div>'
+            : '') +
+          '</div>'
+        );
+
+        guestRepeatRateTooltipEl.style.display = 'block';
+
+        var tw = guestRepeatRateTooltipEl.offsetWidth;
+        var th = guestRepeatRateTooltipEl.offsetHeight;
+        var tx = e.clientX + 16;
+        var ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8)                           ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        guestRepeatRateTooltipEl.style.left = tx + 'px';
+        guestRepeatRateTooltipEl.style.top  = ty + 'px';
+      };
+
+      guestRepeatRateMouseLeave = function() {
+        guestRepeatRateTooltipEl.style.display = 'none';
+      };
+
+      container.addEventListener('mousemove',  guestRepeatRateMouseMove);
+      container.addEventListener('mouseleave', guestRepeatRateMouseLeave);
     }
 
     /* ═══════════════════════════════════════════════════

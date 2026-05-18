@@ -1,4 +1,10 @@
-# Dashboard Customize Feature — Implementation Reference
+# Dashboard Customize — Prototype / GridStack Appendix
+
+> **Normative product + API spec:** [`dashboard_customize_spec.md`](./dashboard_customize_spec.md) — use that doc for layout contracts, catalog rules, mode state machine, and widget lifecycle. This file is a **non-normative** supplement (GridStack v10 pitfalls, CSS, Path A/B for live drop shifting) derived from the HTML prototype.
+
+---
+
+# Dashboard Customize Feature — Implementation Reference (legacy)
 
 This document covers the complete implementation of the Customize mode on the Guest360 Dashboard. It is written for developers building the real Vue/React application and includes all behaviours, edge cases, libraries, CSS patterns, and lessons learned from the prototype.
 
