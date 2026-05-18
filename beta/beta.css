@@ -875,6 +875,14 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   flex-shrink: 0;
 }
 
+/* Activity window (30/60/90D) on Active guests detail — compact beside breakdown */
+.chart-card__header--detail .chart-card__header-controls .btn-group .btn-group__item {
+  min-height: 28px;
+  padding: 4px 10px;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
 .chart-card__body {
   display: flex;
   flex-direction: column;
@@ -1075,6 +1083,17 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   min-height: 0;
 }
 
+/* Active guests: same flex-fill treatment as total guests */
+.chart-card[data-metric-id="active-guests"] .chart-card__body {
+  flex: 1;
+  min-height: 0;
+}
+.chart-card[data-metric-id="active-guests"] .chart-card__placeholder {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
 /* New guest acquisition: same flex-fill treatment */
 .chart-card[data-metric-id="new-guest-acquisition"] .chart-card__body {
   flex: 1;
@@ -1155,6 +1174,7 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 
 /* Strip the placeholder background once a real chart has rendered */
 #chart-area-total-guests-echarts,
+#chart-area-active-guests,
 #chart-area-guest-lifecycle-breakdown,
 #chart-area-retention-cohort,
 #chart-area-guest-repeat-rate,
