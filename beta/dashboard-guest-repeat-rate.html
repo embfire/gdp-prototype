@@ -253,10 +253,20 @@
                     </ul>
                   </div>
                 </div>
-                <button class="button outlined dashboard-btn">
-                  <img src="../assets/ava-assistant.svg" alt="" width="20" height="20">
-                  <span class="dashboard-btn__label">Get insight</span>
-                </button>
+                <div class="dropdown" id="dd-trend-breakdown">
+                  <div class="dropdown__wrapper">
+                    <button class="dropdown__button" onclick="toggleDropdown('dd-trend-breakdown')">
+                      <span id="dd-trend-breakdown-label">Total</span>
+                      <i class="material-symbols-rounded">expand_more</i>
+                    </button>
+                  </div>
+                  <div class="dropdown__options dropdown__options--right">
+                    <ul>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectTrendBreakdown(this, 'total')"><span>Total</span></button></li>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectTrendBreakdown(this, 'channel')"><span>By channel</span></button></li>
+                    </ul>
+                  </div>
+                </div>
                 <div class="chart-context-wrap">
                   <button class="button transparent no-content chart-card__dots-btn" onclick="toggleChartMenu(event, 'trend')" aria-label="More options" aria-expanded="false">
                     <i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i>
@@ -265,7 +275,6 @@
                     <ul>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
-                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="../assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava</span></button></li>
                     </ul>
                   </div>
                 </div>
@@ -284,46 +293,6 @@
             </div>
           </div>
 
-          <div class="chart-card" data-metric-id="guest-repeat-rate" data-metric-context="detail">
-            <div class="chart-card__header chart-card__header--detail">
-              <div class="chart-card__header-text">
-                <p class="chart-card__title">Repeat rate by dimension</p>
-                <p class="chart-card__subtitle">Latest complete base month (Mar '26)</p>
-              </div>
-              <div class="chart-card__header-controls">
-                <div class="dropdown" id="dd-breakdown">
-                  <div class="dropdown__wrapper">
-                    <button class="dropdown__button" onclick="toggleDropdown('dd-breakdown')">
-                      <span id="dd-breakdown-label">By location</span>
-                      <i class="material-symbols-rounded">expand_more</i>
-                    </button>
-                  </div>
-                  <div class="dropdown__options dropdown__options--right">
-                    <ul>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectBreakdown(this, 'location')"><span>By location</span></button></li>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectBreakdown(this, 'channel')"><span>By channel</span></button></li>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectBreakdown(this, 'loyalty')"><span>By loyalty status</span></button></li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="chart-context-wrap">
-                  <button class="button transparent no-content chart-card__dots-btn" onclick="toggleChartMenu(event, 'breakdown')" aria-label="More options" aria-expanded="false">
-                    <i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i>
-                  </button>
-                  <div class="chart-context-menu" id="chart-menu-breakdown">
-                    <ul>
-                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
-                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="chart-card__body">
-              <div class="chart-card__legend" id="chart-legend-breakdown"></div>
-              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-guest-repeat-rate-breakdown"></div>
-            </div>
-          </div>
           </div>
           <!-- Data table -->
           <div class="chart-detail-table-wrap">
@@ -600,12 +569,12 @@
     ═══════════════════════════════════════════════════ */
     var repeatRateTrendChart = null;
     var repeatRateTrendOptions = null;
-    var repeatRateBreakdownChart = null;
-    var repeatRateBreakdownOptions = null;
     var repeatRateVisibility = { current: true, prev: true };
     var repeatRateTooltipEl = null, repeatRateMouseMove = null, repeatRateMouseLeave = null;
     var currentCohort = 'all';
-    var currentBreakdown = 'location';
+    var currentTrendBreakdown = 'total';
+
+    var PALETTE = ['#5A55E3', '#FF6600', '#8C9FFF', '#F8931C', '#E83162'];
 
     var AXIS_MIN_TIME = new Date(2025, 3, 1).getTime();
     var AXIS_MAX_TIME = new Date(2026, 2, 1).getTime();
@@ -632,6 +601,15 @@
         prev: +(row.prev - 0.055).toFixed(3),
       };
     });
+
+    var CHANNEL_TREND_DATA = (function() {
+      var inStore  = [0.46,0.461,0.463,0.465,0.467,0.469,0.471,0.473,0.475,0.476,0.478,0.480];
+      var online   = [0.41,0.412,0.413,0.415,0.417,0.419,0.420,0.422,0.424,0.425,0.427,0.428];
+      var delivery = [0.35,0.352,0.353,0.355,0.356,0.358,0.360,0.361,0.363,0.364,0.366,0.368];
+      return inStore.map(function(v, i) {
+        return { date: new Date(2025, 3 + i, 1), inStore: v, online: online[i], delivery: delivery[i] };
+      });
+    }());
 
     var BREAKDOWN_BARS = {
       location: [
@@ -670,20 +648,36 @@
     function renderTrendLegend() {
       var el = document.getElementById('chart-legend-trend');
       if (!el) return;
-      el.innerHTML = [
-        { key: 'current', label: 'This period', striped: false },
-        { key: 'prev', label: 'Previous period', striped: true },
-      ].map(function(s) {
-        var marker = s.striped
-          ? 'background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);'
-          : 'background:#5A55E3;';
-        return (
-          '<button type="button" class="chart-card__legend-item" data-series-key="' + s.key + '" aria-pressed="true" onclick="toggleRepeatRateSeries(this, \'' + s.key + '\')">' +
-            '<span class="chart-card__legend-marker chart-card__legend-marker--solid" style="' + marker + '"></span>' +
-            '<span>' + s.label + '</span>' +
-          '</button>'
-        );
-      }).join('');
+      if (currentTrendBreakdown === 'channel') {
+        var channels = [
+          { label: 'In-store', color: PALETTE[0] },
+          { label: 'Online',   color: PALETTE[1] },
+          { label: 'Delivery', color: PALETTE[2] },
+        ];
+        el.innerHTML = channels.map(function(s) {
+          return (
+            '<span class="chart-card__legend-item">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid" style="background:' + s.color + ';"></span>' +
+              '<span>' + s.label + '</span>' +
+            '</span>'
+          );
+        }).join('');
+      } else {
+        el.innerHTML = [
+          { key: 'current', label: 'This period', striped: false },
+          { key: 'prev', label: 'Previous period', striped: true },
+        ].map(function(s) {
+          var marker = s.striped
+            ? 'background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);'
+            : 'background:#5A55E3;';
+          return (
+            '<button type="button" class="chart-card__legend-item" data-series-key="' + s.key + '" aria-pressed="true" onclick="toggleRepeatRateSeries(this, \'' + s.key + '\')">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid" style="' + marker + '"></span>' +
+              '<span>' + s.label + '</span>' +
+            '</button>'
+          );
+        }).join('');
+      }
     }
 
     function toggleRepeatRateSeries(btn, key) {
@@ -702,6 +696,28 @@
     }
 
     function buildTrendSeries() {
+      if (currentTrendBreakdown === 'channel') {
+        return [
+          { key: 'inStore', name: 'In-store',  color: PALETTE[0] },
+          { key: 'online',  name: 'Online',    color: PALETTE[1] },
+          { key: 'delivery',name: 'Delivery',  color: PALETTE[2] },
+        ].map(function(s) {
+          return {
+            type: 'line', xKey: 'date', yKey: s.key, yName: s.name,
+            stroke: s.color, strokeWidth: 2,
+            marker: {
+              enabled: true, size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: s.color, stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          };
+        });
+      }
       return [
         {
           type: 'line', xKey: 'date', yKey: 'prev', yName: 'Previous period',
@@ -739,7 +755,8 @@
       if (!container) return;
       if (repeatRateTrendChart) { repeatRateTrendChart.destroy(); repeatRateTrendChart = null; }
       repeatRateVisibility = { current: true, prev: true };
-      var data = getTrendData();
+      var isChannel = currentTrendBreakdown === 'channel';
+      var data = isChannel ? CHANNEL_TREND_DATA : getTrendData();
 
       repeatRateTrendOptions = {
         container: container,
@@ -769,8 +786,8 @@
           },
           y: {
             type: 'number', position: 'left',
-            min: 0.32, max: 0.50,
-            interval: { values: [0.32, 0.36, 0.40, 0.44, 0.48] },
+            min: isChannel ? 0.30 : 0.32, max: isChannel ? 0.52 : 0.50,
+            interval: { values: isChannel ? [0.30, 0.35, 0.40, 0.45, 0.50] : [0.32, 0.36, 0.40, 0.44, 0.48] },
             gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
             line: { enabled: false }, tick: { enabled: false },
             label: {
@@ -855,46 +872,6 @@
       container.addEventListener('mouseleave', repeatRateMouseLeave);
     }
 
-    function initRepeatRateBreakdownChart() {
-      var container = document.getElementById('chart-area-guest-repeat-rate-breakdown');
-      if (!container) return;
-      if (repeatRateBreakdownChart) { repeatRateBreakdownChart.destroy(); repeatRateBreakdownChart = null; }
-      var data = BREAKDOWN_BARS[currentBreakdown];
-
-      repeatRateBreakdownOptions = {
-        container: container,
-        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
-        background: { fill: '#ffffff' },
-        padding: { top: 8, right: 16, bottom: 32, left: 8 },
-        data: data,
-        legend: { enabled: false },
-        series: [{
-          type: 'bar', direction: 'vertical', xKey: 'label', yKey: 'rate', yName: 'Repeat rate',
-          fill: '#5A55E3', strokeWidth: 0, cornerRadius: 4,
-          tooltip: { enabled: false },
-        }],
-        axes: {
-          x: {
-            type: 'category', position: 'bottom',
-            gridLine: { enabled: false }, line: { enabled: false },
-            label: { fontSize: 12, color: '#000000', padding: 8 },
-          },
-          y: {
-            type: 'number', position: 'left',
-            min: 0, max: 0.55,
-            interval: { values: [0, 0.10, 0.20, 0.30, 0.40, 0.50] },
-            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
-            line: { enabled: false }, tick: { enabled: false },
-            label: {
-              fontSize: 12, color: '#000000', padding: 8,
-              formatter: function(params) { return fmtPct(+params.value); },
-            },
-          },
-        },
-      };
-      repeatRateBreakdownChart = agCharts.AgCharts.create(repeatRateBreakdownOptions);
-    }
-
     function selectCohort(btn, mode) {
       document.getElementById('dd-cohort-label').textContent = btn.querySelector('span').textContent;
       document.getElementById('dd-cohort').querySelector('.dropdown__options').classList.remove('dropdown__options_open');
@@ -904,12 +881,12 @@
       renderTable();
     }
 
-    function selectBreakdown(btn, mode) {
-      document.getElementById('dd-breakdown-label').textContent = btn.querySelector('span').textContent;
-      document.getElementById('dd-breakdown').querySelector('.dropdown__options').classList.remove('dropdown__options_open');
-      if (mode === currentBreakdown) return;
-      currentBreakdown = mode;
-      initRepeatRateBreakdownChart();
+    function selectTrendBreakdown(btn, mode) {
+      document.getElementById('dd-trend-breakdown-label').textContent = btn.querySelector('span').textContent;
+      document.getElementById('dd-trend-breakdown').querySelector('.dropdown__options').classList.remove('dropdown__options_open');
+      if (mode === currentTrendBreakdown) return;
+      currentTrendBreakdown = mode;
+      initRepeatRateTrendChart();
     }
 
     /* Point menu + table — adapted from total-guests detail */
@@ -1063,7 +1040,6 @@
       ]).then(function() {
         requestAnimationFrame(function() {
           initRepeatRateTrendChart();
-          initRepeatRateBreakdownChart();
         });
       });
     });
