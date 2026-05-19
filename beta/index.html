@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@10.3.1/dist/gridstack.min.css">
   <link rel="stylesheet" href="../assets/bento.css">
   <link rel="stylesheet" href="beta.css">
+  <script src="metric-about.js" defer></script>
 </head>
 <body>
   <div class="app-shell">
@@ -1069,13 +1070,23 @@
 
     function createCardHTML(id, title) {
       var breakdownHTML = '';
+      var info = (window.METRIC_INFO || {})[id];
+      var titleInfoHTML  = info && typeof window.titleInfoTooltipHTML === 'function'
+        ? window.titleInfoTooltipHTML(info.infoTooltip)
+        : '';
+      var aboutMenuHTML  = info && typeof window.aboutMetricMenuItemHTML === 'function'
+        ? window.aboutMetricMenuItemHTML(id, 'widget')
+        : '';
 
       return (
         '<div class="chart-card" data-metric-id="' + id + '">' +
           '<div class="chart-card__header" onclick="openChartDetail(\'' + id + '\')" role="button" tabindex="0">' +
             '<span class="material-symbols-rounded chart-card__drag-icon">drag_indicator</span>' +
             '<div class="chart-card__header-text">' +
-              '<p class="chart-card__title">' + title + '</p>' +
+              '<div class="chart-card__title-row">' +
+                '<p class="chart-card__title">' + title + '</p>' +
+                titleInfoHTML +
+              '</div>' +
               '<p class="chart-card__subtitle">' + getChartSubtitle(id) + '</p>' +
             '</div>' +
             '<div class="chart-card__header-controls">' +
@@ -1088,6 +1099,7 @@
                   '<ul>' +
                     '<li><button class="chart-context-menu__item" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>' +
                     '<li><button class="chart-context-menu__item" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>' +
+                    aboutMenuHTML +
                   '</ul>' +
                 '</div>' +
               '</div>' +
