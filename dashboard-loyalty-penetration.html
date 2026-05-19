@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Guest lifecycle breakdown — PAR Guest360 Beta</title>
+  <title>Loyalty penetration — PAR Guest360 Beta</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
@@ -152,13 +152,13 @@
             <span class="chart-breadcrumbs__separator" aria-hidden="true">
               <span class="material-symbols-rounded">chevron_right</span>
             </span>
-            <span class="chart-breadcrumbs__current">Guest lifecycle breakdown</span>
+            <span class="chart-breadcrumbs__current">Loyalty penetration</span>
           </nav>
 
           <!-- Title bar -->
           <div class="chart-detail-title-bar">
             <div class="chart-detail-title-bar__top">
-              <h1 class="chart-detail-title-bar__title">Guest lifecycle breakdown</h1>
+              <h1 class="chart-detail-title-bar__title">Loyalty penetration</h1>
               <div class="chart-detail-title-bar__actions">
                 <button class="button transparent dashboard-btn">
                   <span class="material-symbols-rounded dashboard-btn__icon">help</span>
@@ -172,10 +172,10 @@
           <div class="dashboard-filter-bar">
             <div class="date-range-wrapper">
               <div class="btn-group" role="group" aria-label="Date range">
-                <button class="btn-group__item btn-group__item--active" onclick="setDateRange(this, '7D')">7D</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '7D')">7D</button>
                 <button class="btn-group__item" onclick="setDateRange(this, '30D')">30D</button>
                 <button class="btn-group__item" onclick="setDateRange(this, '90D')">90D</button>
-                <button class="btn-group__item" onclick="setDateRange(this, '12M')">12M</button>
+                <button class="btn-group__item btn-group__item--active" onclick="setDateRange(this, '12M')">12M</button>
                 <button class="btn-group__item" onclick="setDateRange(this, 'YTD')">YTD</button>
                 <button class="btn-group__item btn-group__item--icon" id="btn-custom-range" onclick="setDateRange(this, 'custom')">
                   <span class="material-symbols-rounded">calendar_month</span>
@@ -285,23 +285,37 @@
           </div>
           <!-- /filter bar -->
 
-          <!-- Chart card -->
-          <div class="chart-card" data-metric-id="guest-lifecycle-breakdown" data-metric-context="detail">
+          <div class="chart-detail-charts-stack">
+          <div class="chart-card" data-metric-id="loyalty-penetration" data-metric-context="detail">
             <div class="chart-card__header chart-card__header--detail">
               <div class="chart-card__header-text">
-                <p class="chart-card__title">Guest lifecycle breakdown</p>
-                <p class="chart-card__subtitle">Distribution of identified guests across lifecycle stages</p>
+                <p class="chart-card__title">Loyalty penetration</p>
+                <p class="chart-card__subtitle">Share of identified transactions tied to a loyalty member, over time</p>
               </div>
               <div class="chart-card__header-controls">
+                <div class="dropdown" id="dd-trend-breakdown">
+                  <div class="dropdown__wrapper">
+                    <button class="dropdown__button" onclick="toggleDropdown('dd-trend-breakdown')">
+                      <span id="dd-trend-breakdown-label">Total</span>
+                      <i class="material-symbols-rounded">expand_more</i>
+                    </button>
+                  </div>
+                  <div class="dropdown__options dropdown__options--right">
+                    <ul>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectTrendBreakdown(this, 'total')"><span>Total</span></button></li>
+                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectTrendBreakdown(this, 'channel')"><span>By channel</span></button></li>
+                    </ul>
+                  </div>
+                </div>
                 <button class="button outlined dashboard-btn">
                   <img src="assets/ava-assistant.svg" alt="" width="20" height="20">
                   <span class="dashboard-btn__label">Get insight</span>
                 </button>
                 <div class="chart-context-wrap">
-                  <button class="button transparent no-content chart-card__dots-btn" onclick="toggleChartMenu(event, 'detail')" aria-label="More options" aria-expanded="false">
+                  <button class="button transparent no-content chart-card__dots-btn" onclick="toggleChartMenu(event, 'trend')" aria-label="More options" aria-expanded="false">
                     <i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i>
                   </button>
-                  <div class="chart-context-menu" id="chart-menu-detail">
+                  <div class="chart-context-menu" id="chart-menu-trend">
                     <ul>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
@@ -314,17 +328,17 @@
             <div class="chart-card__body">
               <div class="chart-card__metric">
                 <div class="chart-card__metric-row">
-                  <p class="chart-card__metric-value">142.8K</p>
-                  <span class="chart-card__metric-pill chart-card__metric-pill--up chart-card__metric-pill--inverse">+3.4%</span>
+                  <p class="chart-card__metric-value">62%</p>
+                  <span class="chart-card__metric-pill chart-card__metric-pill--up">+4pts</span>
                 </div>
-                <p class="chart-card__metric-period">At-Risk · 138.1K prev period</p>
+                <p class="chart-card__metric-period">58% prev period · Mar '26</p>
               </div>
-              <div class="chart-card__legend" id="lifecycle-legend"></div>
-              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-guest-lifecycle-breakdown"></div>
+              <div class="chart-card__legend" id="chart-legend-trend"></div>
+              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-loyalty-penetration-trend"></div>
             </div>
           </div>
-          <!-- /chart card -->
 
+          </div>
           <!-- Data table -->
           <div class="chart-detail-table-wrap">
             <div class="table-container">
@@ -332,32 +346,20 @@
                 <thead>
                   <tr style="background-color: #dfe1e2; border-bottom: none;">
                     <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner chart-th-inner--start">Date <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                      <span class="chart-th-inner chart-th-inner--start">Period <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
                     </th>
                     <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">First-time <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                      <span class="chart-th-inner">Loyalty Txns <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
                     </th>
                     <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Returning <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                      <span class="chart-th-inner">Identified Txns <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
                     </th>
                     <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Win-back <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Loyal <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">At-Risk <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Churned <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Δ At-Risk <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                      <span class="chart-th-inner">Penetration Rate <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
                     </th>
                   </tr>
                 </thead>
-                <tbody id="lifecycle-table-body"></tbody>
+                <tbody id="loyalty-penetration-table-body"></tbody>
               </table>
             </div>
 
@@ -386,7 +388,7 @@
                     <ul id="page-options-list"></ul>
                   </div>
                 </div>
-                <label id="total-pages-text">of 4 pages</label>
+                <label id="total-pages-text">of 2 pages</label>
                 <div class="pagination__navigation__arrows">
                   <button class="pagination__nav-arrow" id="prev-btn" onclick="prevPage()" disabled>
                     <i class="ph ph-caret-left"></i>
@@ -608,289 +610,331 @@
     }
 
     /* ═══════════════════════════════════════════════════
-       AG Charts — Guest Lifecycle Breakdown (stacked area, mirrors beta/index.html)
+       AG Charts — Loyalty Penetration (detail)
     ═══════════════════════════════════════════════════ */
-    // Bento palette assigned by health: emerald=loyal, indigo=returning, sky=first-time, periwinkle=win-back, amber=at-risk, crimson=churned.
-    var LIFECYCLE_STAGES = [
-      { key: 'firstTime',    label: 'First-time',   color: '#30ACEE' },
-      { key: 'returning',    label: 'Returning',    color: '#5A55E3' },
-      { key: 'winBack',      label: 'Win-back',     color: '#8C9FFF' },
-      { key: 'loyal',        label: 'Loyal',        color: '#0CC281' },
-      { key: 'atRisk',       label: 'At-Risk',      color: '#F8931C' },
-      { key: 'churned',      label: 'Churned',      color: '#E83162' },
-    ];
+    var penetrationTrendChart = null;
+    var penetrationTrendOptions = null;
+    var penetrationVisibility = { current: true, prev: true };
+    var penetrationTooltipEl = null, penetrationMouseMove = null, penetrationMouseLeave = null;
+    var currentTrendBreakdown = 'total';
 
-    var lifecycleChart = null;
-    var lifecycleChartOptions = null;
-    var lifecycleVisibility = {
-      firstTime: true, returning: true, winBack: true,
-      loyal: true, atRisk: true, churned: true,
-    };
-    var lifecycleTooltipEl = null;
-    var lifecycleLineEl = null;
-    var lifecycleMouseMove = null;
-    var lifecycleMouseLeave = null;
+    var PALETTE = ['#5A55E3', '#FF6600', '#8C9FFF', '#F8931C', '#E83162'];
 
-    /* ── Chart-point context menu state ── */
-    var pointMenuAnchor = null;   // data row at the snapped X
-    var pointMenuStage  = null;   // stage object {key,label,color} that was clicked
-    var pointMenuOpts   = null;
+    var AXIS_MIN_TIME = new Date(2025, 3, 1).getTime();
+    var AXIS_MAX_TIME = new Date(2026, 2, 1).getTime();
 
-    // 39 days (Mar 19 – Apr 26, 2026), values in K guests.
-    // At-Risk drifts upward over the window to match the +3.4% hero pill.
-    var LIFECYCLE_DATA = (function() {
-      var baseDate = new Date(2026, 2, 19);
-      var rows = [];
-      var days = 39;
-      var seeded = function(seed, i) { return Math.sin(seed * 1.7 + i * 0.41) * 0.5 + 0.5; };
-      for (var i = 0; i < days; i++) {
-        var d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() + i);
-        var t = i / (days - 1);
-        rows.push({
+    var PENETRATION_TREND_DATA = (function() {
+      var curr = [
+        0.552, 0.558, 0.561, 0.568, 0.574, 0.579,
+        0.585, 0.590, 0.598, 0.605, 0.612, 0.620,
+      ];
+      var prev = [
+        0.530, 0.536, 0.540, 0.545, 0.550, 0.555,
+        0.560, 0.565, 0.570, 0.575, 0.580, 0.585,
+      ];
+      return curr.map(function(c, i) {
+        var d = new Date(2025, 3 + i, 1);
+        var identified = 920000 + i * 12000;
+        var loyalty = Math.round(identified * c);
+        return {
           date: d,
-          firstTime:    Math.round((110 + seeded(1, i) * 8)            * 10) / 10,
-          returning:    Math.round((132 + seeded(2, i) * 10)           * 10) / 10,
-          winBack: Math.round((32  + seeded(3, i) * 5)            * 10) / 10,
-          loyal:        Math.round((451 - t * 12 + seeded(4, i) * 14)  * 10) / 10,
-          atRisk:       Math.round((138 + t * 6  + seeded(5, i) * 6)   * 10) / 10,
-          churned:      Math.round((285 + seeded(6, i) * 12)           * 10) / 10,
-        });
-      }
-      return rows;
+          current: c,
+          prev: prev[i],
+          loyaltyTxns: loyalty,
+          identifiedTxns: identified,
+        };
+      });
     }());
 
-    function fmtChartDate(d) {
-      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }
-
-    function buildLifecycleLegend() {
-      var host = document.getElementById('lifecycle-legend');
-      if (!host) return;
-      host.innerHTML = LIFECYCLE_STAGES.map(function(stage) {
-        return (
-          '<button type="button" class="chart-card__legend-item" data-series-key="' + stage.key + '" onclick="toggleLifecycleSeries(this, \'' + stage.key + '\')" aria-pressed="true">' +
-            '<span class="chart-card__legend-marker" style="background:' + stage.color + ';"></span>' +
-            '<span>' + stage.label + '</span>' +
-          '</button>'
-        );
-      }).join('');
-    }
-
-    function toggleLifecycleSeries(btn, seriesKey) {
-      if (!lifecycleChart || !lifecycleChartOptions) return;
-      var nextValue = !lifecycleVisibility[seriesKey];
-      var someoneElseVisible = Object.keys(lifecycleVisibility).some(function(k) {
-        return k !== seriesKey && lifecycleVisibility[k];
+    var CHANNEL_TREND_DATA = (function() {
+      var inStore  = [0.68,0.682,0.684,0.686,0.689,0.691,0.694,0.696,0.699,0.701,0.703,0.705];
+      var online   = [0.60,0.602,0.605,0.607,0.610,0.613,0.615,0.618,0.621,0.623,0.626,0.628];
+      var delivery = [0.52,0.522,0.524,0.527,0.529,0.532,0.534,0.537,0.540,0.542,0.545,0.548];
+      return inStore.map(function(v, i) {
+        return { date: new Date(2025, 3 + i, 1), inStore: v, online: online[i], delivery: delivery[i] };
       });
-      if (!nextValue && !someoneElseVisible) return;
+    }());
 
-      lifecycleVisibility[seriesKey] = nextValue;
-      btn.setAttribute('aria-pressed', String(nextValue));
+    var BREAKDOWN_BARS = {
+      location: [
+        { label: 'Downtown', rate: 0.68 },
+        { label: 'Midtown', rate: 0.64 },
+        { label: 'Airport', rate: 0.52 },
+        { label: 'Suburbs', rate: 0.59 },
+        { label: 'University', rate: 0.55 },
+      ],
+      channel: [
+        { label: 'In-store', rate: 0.65 },
+        { label: 'Digital', rate: 0.61 },
+        { label: 'Delivery', rate: 0.54 },
+        { label: 'Drive-thru', rate: 0.58 },
+      ],
+      dma: [
+        { label: 'Dallas–Fort Worth', rate: 0.63 },
+        { label: 'Houston', rate: 0.60 },
+        { label: 'Austin', rate: 0.57 },
+        { label: 'San Antonio', rate: 0.55 },
+      ],
+    };
 
-      var newSeries = lifecycleChartOptions.series.map(function(s) {
-        return Object.assign({}, s, { visible: lifecycleVisibility[s.yKey] !== false });
-      });
-      var updateOpts = Object.assign({}, lifecycleChartOptions, { series: newSeries });
-      lifecycleChartOptions = updateOpts;
-      lifecycleChart.update(updateOpts);
+    function getTrendData() {
+      return PENETRATION_TREND_DATA;
     }
 
-    function initLifecycleChart() {
-      var container = document.getElementById('chart-area-guest-lifecycle-breakdown');
+    function fmtTxn(n) {
+      return n.toLocaleString('en-US');
+    }
+
+    function fmtPct(v) { return (v * 100).toFixed(1).replace(/\.0$/, '') + '%'; }
+    function fmtPctFull(v) { return (v * 100).toFixed(2) + '%'; }
+    function fmtPeriodMonth(d) {
+      return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }).replace(' ', " '");
+    }
+    function fmtPts(delta) {
+      var pts = delta * 100;
+      return (pts >= 0 ? '+' : '') + pts.toFixed(1) + 'pts';
+    }
+
+    function renderTrendLegend() {
+      var el = document.getElementById('chart-legend-trend');
+      if (!el) return;
+      if (currentTrendBreakdown === 'channel') {
+        var channels = [
+          { label: 'In-store', color: PALETTE[0] },
+          { label: 'Online',   color: PALETTE[1] },
+          { label: 'Delivery', color: PALETTE[2] },
+        ];
+        el.innerHTML = channels.map(function(s) {
+          return (
+            '<span class="chart-card__legend-item">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid" style="background:' + s.color + ';"></span>' +
+              '<span>' + s.label + '</span>' +
+            '</span>'
+          );
+        }).join('');
+      } else {
+        el.innerHTML = [
+          { key: 'current', label: 'This period', striped: false },
+          { key: 'prev', label: 'Previous period', striped: true },
+        ].map(function(s) {
+          var marker = s.striped
+            ? 'background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);'
+            : 'background:#5A55E3;';
+          return (
+            '<button type="button" class="chart-card__legend-item" data-series-key="' + s.key + '" aria-pressed="true" onclick="togglePenetrationSeries(this, \'' + s.key + '\')">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid" style="' + marker + '"></span>' +
+              '<span>' + s.label + '</span>' +
+            '</button>'
+          );
+        }).join('');
+      }
+    }
+
+    function togglePenetrationSeries(btn, key) {
+      if (!penetrationTrendChart || !penetrationTrendOptions) return;
+      var next = !penetrationVisibility[key];
+      var other = key === 'current' ? 'prev' : 'current';
+      if (!next && !penetrationVisibility[other]) return;
+      penetrationVisibility[key] = next;
+      btn.setAttribute('aria-pressed', String(next));
+      var newSeries = penetrationTrendOptions.series.map(function(s, i) {
+        var vis = (i === 0) ? penetrationVisibility.prev : penetrationVisibility.current;
+        return Object.assign({}, s, { visible: vis });
+      });
+      penetrationTrendOptions = Object.assign({}, penetrationTrendOptions, { series: newSeries });
+      penetrationTrendChart.update(penetrationTrendOptions);
+    }
+
+    function buildTrendSeries() {
+      if (currentTrendBreakdown === 'channel') {
+        return [
+          { key: 'inStore',  name: 'In-store',  color: PALETTE[0] },
+          { key: 'online',   name: 'Online',    color: PALETTE[1] },
+          { key: 'delivery', name: 'Delivery',  color: PALETTE[2] },
+        ].map(function(s) {
+          return {
+            type: 'line', xKey: 'date', yKey: s.key, yName: s.name,
+            stroke: s.color, strokeWidth: 2,
+            marker: {
+              enabled: true, size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: s.color, stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          };
+        });
+      }
+      return [
+        {
+          type: 'line', xKey: 'date', yKey: 'prev', yName: 'Previous period',
+          stroke: '#5A55E3', strokeWidth: 2, lineDash: [2, 2],
+          marker: {
+            enabled: true, size: 0,
+            itemStyler: function(params) {
+              if (params.highlightState === 'highlighted-item') {
+                return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+              }
+              return { size: 0 };
+            },
+          },
+          tooltip: { enabled: false },
+        },
+        {
+          type: 'line', xKey: 'date', yKey: 'current', yName: 'This period',
+          stroke: '#5A55E3', strokeWidth: 2,
+          marker: {
+            enabled: true, size: 0,
+            itemStyler: function(params) {
+              if (params.highlightState === 'highlighted-item') {
+                return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+              }
+              return { size: 0 };
+            },
+          },
+          tooltip: { enabled: false },
+        },
+      ];
+    }
+
+    function initPenetrationTrendChart() {
+      var container = document.getElementById('chart-area-loyalty-penetration-trend');
       if (!container) return;
-      if (lifecycleChart) { lifecycleChart.destroy(); lifecycleChart = null; }
-      lifecycleVisibility = {
-        firstTime: true, returning: true, winBack: true,
-        loyal: true, atRisk: true, churned: true,
-      };
+      if (penetrationTrendChart) { penetrationTrendChart.destroy(); penetrationTrendChart = null; }
+      penetrationVisibility = { current: true, prev: true };
+      var isChannel = currentTrendBreakdown === 'channel';
+      var data = isChannel ? CHANNEL_TREND_DATA : getTrendData();
 
-      lifecycleChartOptions = {
+      penetrationTrendOptions = {
         container: container,
         theme: { params: { fontFamily: 'Manrope, sans-serif' } },
         background: { fill: '#ffffff' },
-        padding: { top: 8, right: 0, bottom: 0, left: 0 },
-        data: LIFECYCLE_DATA,
+        padding: { top: 8, right: 16, bottom: 32, left: 8 },
+        data: data,
         legend: { enabled: false },
-        series: LIFECYCLE_STAGES.map(function(stage) {
-          return {
-            type: 'area',
-            xKey: 'date',
-            yKey: stage.key,
-            yName: stage.label,
-            stacked: true,
-            stackGroup: 'lifecycle',
-            fill: stage.color,
-            fillOpacity: 0.9,
-            stroke: '#ffffff',
-            strokeWidth: 1,
-            marker: { enabled: false },
-            tooltip: { enabled: false },
-          };
-        }),
+        series: buildTrendSeries(),
         axes: {
           x: {
             type: 'time', position: 'bottom', nice: false,
-            min: new Date(2026, 2, 19),
-            max: new Date(2026, 3, 26),
-            gridLine: { enabled: false },
-            line: { enabled: false },
+            min: new Date(2025, 3, 1), max: new Date(2026, 2, 1),
+            gridLine: { enabled: false }, line: { enabled: false },
             tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
-            label: { fontSize: 12, color: '#000000', format: '%b %-d', padding: 8, avoidCollisions: true },
-            interval: {
-              values: (function() {
-                var ticks = [];
-                var d = new Date(2026, 2, 22);
-                var end = new Date(2026, 3, 25);
-                while (d <= end) {
-                  ticks.push(new Date(d));
-                  d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 3);
-                }
-                return ticks;
-              }()),
+            label: {
+              fontSize: 12, color: '#000000', padding: 8, avoidCollisions: true,
+              formatter: function(params) { return fmtPeriodMonth(new Date(params.value)); },
             },
-            crosshair: { enabled: false },
+            interval: {
+              values: [
+                new Date(2025, 3, 1), new Date(2025, 6, 1),
+                new Date(2025, 9, 1), new Date(2026, 0, 1),
+              ],
+            },
+            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
           },
           y: {
             type: 'number', position: 'left',
-            min: 0, max: 1200, nice: false,
+            min: isChannel ? 0.48 : 0.50, max: isChannel ? 0.74 : 0.70,
+            interval: { values: isChannel ? [0.50, 0.55, 0.60, 0.65, 0.70] : [0.50, 0.55, 0.60, 0.65, 0.70] },
             gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
-            line: { enabled: false },
-            tick: { enabled: false },
+            line: { enabled: false }, tick: { enabled: false },
             label: {
               fontSize: 12, color: '#000000', padding: 8,
-              formatter: function(params) { return (+params.value).toFixed(0) + 'K'; },
+              formatter: function(params) { return fmtPct(+params.value); },
             },
-            interval: { values: [0, 300, 600, 900, 1200] },
           },
         },
       };
 
-      lifecycleChart = agCharts.AgCharts.create(lifecycleChartOptions);
-
-      // ── Manual tooltip + dashed vertical line ───────────────────────────
-      // AG Charts native crosshair only fires on series hover; with a stacked
-      // area the line should follow the cursor anywhere in the plot area.
-      // Both elements float on document.body to avoid AG Charts repaints.
-
-      if (lifecycleTooltipEl && lifecycleTooltipEl.parentNode) {
-        lifecycleTooltipEl.parentNode.removeChild(lifecycleTooltipEl);
-      }
-      if (lifecycleLineEl && lifecycleLineEl.parentNode) {
-        lifecycleLineEl.parentNode.removeChild(lifecycleLineEl);
-      }
-      if (lifecycleMouseMove) {
-        container.removeEventListener('mousemove',  lifecycleMouseMove);
-        container.removeEventListener('mouseleave', lifecycleMouseLeave);
-      }
-
-      lifecycleTooltipEl = document.createElement('div');
-      lifecycleTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(lifecycleTooltipEl);
-
-      lifecycleLineEl = document.createElement('div');
-      lifecycleLineEl.style.cssText = (
-        'position:fixed;pointer-events:none;display:none;z-index:9998;width:1px;' +
-        'background-image:linear-gradient(to bottom,#c6c6c6 50%,transparent 50%);' +
-        'background-size:1px 8px;background-repeat:repeat-y;'
-      );
-      document.body.appendChild(lifecycleLineEl);
-
-      var L_PLOT_LEFT      = 46;
-      var L_PLOT_RIGHT_PAD = 0;
-      var L_PLOT_TOP       = 8;   // matches chart padding.top
-      var L_X_AXIS_H       = 28;  // approx X-axis label area
-      var L_AXIS_MIN_TIME  = new Date(2026, 2, 19).getTime();
-      var L_AXIS_MAX_TIME  = new Date(2026, 3, 26).getTime();
-      var fmtK = function(v) { return (+v).toFixed(1) + 'K'; };
-
-      lifecycleMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - L_PLOT_RIGHT_PAD;
-
-        if (mx < L_PLOT_LEFT || mx > plotRight) {
-          lifecycleTooltipEl.style.display = 'none';
-          lifecycleLineEl.style.display = 'none';
-          return;
-        }
-
-        var relX = (mx - L_PLOT_LEFT) / (plotRight - L_PLOT_LEFT);
-        var targetTime = L_AXIS_MIN_TIME + relX * (L_AXIS_MAX_TIME - L_AXIS_MIN_TIME);
-        var d = LIFECYCLE_DATA.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-
-        var rowsHTML = LIFECYCLE_STAGES
-          .filter(function(s) { return lifecycleVisibility[s.key] !== false; })
-          .map(function(s) {
-            return (
-              '<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;white-space:nowrap;">' +
-                '<div style="display:flex;align-items:center;gap:6px;">' +
-                  '<div style="width:12px;height:12px;background:' + s.color + ';border-radius:2px;flex-shrink:0;"></div>' +
-                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + s.label + '</span>' +
-                '</div>' +
-                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtK(d[s.key]) + '</span>' +
-              '</div>'
-            );
-          })
-          .join('');
-
-        if (!rowsHTML) {
-          lifecycleTooltipEl.style.display = 'none';
-          lifecycleLineEl.style.display = 'none';
-          return;
-        }
-
-        lifecycleTooltipEl.innerHTML = (
-          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
-            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 4px;line-height:1.5;white-space:nowrap;">Guest lifecycle</p>' +
-            '<p style="font-size:12px;font-weight:400;color:#60696C;margin:0 0 12px;line-height:1.5;white-space:nowrap;">' + fmtChartDate(d.date) + '</p>' +
-            '<div style="display:flex;flex-direction:column;gap:8px;">' + rowsHTML + '</div>' +
-          '</div>'
-        );
-        lifecycleTooltipEl.style.display = 'block';
-
-        var dataRelX = (d.date.getTime() - L_AXIS_MIN_TIME) / (L_AXIS_MAX_TIME - L_AXIS_MIN_TIME);
-        var dataX    = L_PLOT_LEFT + dataRelX * (plotRight - L_PLOT_LEFT);
-        lifecycleLineEl.style.left    = (rect.left + dataX) + 'px';
-        lifecycleLineEl.style.top     = (rect.top + L_PLOT_TOP) + 'px';
-        lifecycleLineEl.style.height  = (rect.height - L_PLOT_TOP - L_X_AXIS_H) + 'px';
-        lifecycleLineEl.style.display = 'block';
-
-        var tw = lifecycleTooltipEl.offsetWidth, th = lifecycleTooltipEl.offsetHeight;
-        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
-        if (ty < 8)                           ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        lifecycleTooltipEl.style.left = tx + 'px';
-        lifecycleTooltipEl.style.top  = ty + 'px';
-      };
-
-      lifecycleMouseLeave = function() {
-        lifecycleTooltipEl.style.display = 'none';
-        lifecycleLineEl.style.display = 'none';
-      };
-
-      container.addEventListener('mousemove',  lifecycleMouseMove);
-      container.addEventListener('mouseleave', lifecycleMouseLeave);
-
+      penetrationTrendChart = agCharts.AgCharts.create(penetrationTrendOptions);
+      renderTrendLegend();
+      wireTrendTooltip(container, data);
       attachChartPointMenu(container, {
-        plotLeft:     L_PLOT_LEFT,
-        plotRightPad: L_PLOT_RIGHT_PAD,
-        plotTop:      L_PLOT_TOP,
-        xAxisHeight:  L_X_AXIS_H,
-        axisMinTime:  L_AXIS_MIN_TIME,
-        axisMaxTime:  L_AXIS_MAX_TIME,
-        axisMinValue: 0,
-        axisMaxValue: 1200,
-        data:         LIFECYCLE_DATA,
+        plotLeft: 46,
+        plotRightPad: 16,
+        axisMinTime: AXIS_MIN_TIME,
+        axisMaxTime: AXIS_MAX_TIME,
+        axisMinValue: 0.50,
+        axisMaxValue: 0.70,
+        plotTop: 8,
+        xAxisHeight: 32,
+        data: data,
+        seriesValueKeys: { current: 'current', prev: 'prev' },
       });
     }
 
-    /* ── Chart-point context menu ──
-       Click inside a stage's stacked band → menu opens next to the cursor
-       with that stage as the metric (date + K value + matching color dot).
-       Clicks outside any visible stage band do nothing. */
+    function wireTrendTooltip(container, data) {
+      if (penetrationTooltipEl && penetrationTooltipEl.parentNode) {
+        penetrationTooltipEl.parentNode.removeChild(penetrationTooltipEl);
+      }
+      if (penetrationMouseMove) {
+        container.removeEventListener('mousemove', penetrationMouseMove);
+        container.removeEventListener('mouseleave', penetrationMouseLeave);
+      }
+      penetrationTooltipEl = document.createElement('div');
+      penetrationTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(penetrationTooltipEl);
+
+      var PLOT_LEFT = 46, PLOT_RIGHT_PAD = 16;
+      penetrationMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+        if (mx < PLOT_LEFT || mx > plotRight) { penetrationTooltipEl.style.display = 'none'; return; }
+        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
+        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
+        var d = data.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+        if (!penetrationVisibility.current) { penetrationTooltipEl.style.display = 'none'; return; }
+        var ptsDelta = d.current - d.prev;
+        var ptsColor = ptsDelta >= 0 ? '#257469' : '#b1294a';
+        var ptsBg = ptsDelta >= 0 ? '#effaf9' : '#fdecef';
+        var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+        penetrationTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;">Loyalty penetration</p>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">' +
+              '<div style="display:flex;align-items:center;gap:4px;"><div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;"></div>' +
+              '<span style="font-size:12px;color:#60696C;">' + fmtPeriodMonth(d.date) + '</span></div>' +
+              '<span style="font-size:12px;font-weight:700;">' + fmtPct(d.current) + '</span></div>' +
+            '<div style="display:flex;align-items:center;gap:4px;"><span style="background:' + ptsBg + ';color:' + ptsColor + ';padding:2px 4px;border-radius:4px;font-size:12px;">' + fmtPts(ptsDelta) + '</span>' +
+              '<span style="font-size:12px;color:#60696C;">vs. previous period</span></div>' +
+          '</div>' +
+          (penetrationVisibility.prev ? '<div style="margin-top:16px;display:flex;justify-content:space-between;gap:16px;">' + stripe +
+            '<span style="font-size:12px;color:#60696C;">Previous period</span><span style="font-size:12px;color:#60696C;">' + fmtPct(d.prev) + '</span></div>' : '') +
+          '</div>'
+        );
+        penetrationTooltipEl.style.display = 'block';
+        var tw = penetrationTooltipEl.offsetWidth, th = penetrationTooltipEl.offsetHeight;
+        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth - 8) tx = e.clientX - tw - 16;
+        if (ty < 8) ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        penetrationTooltipEl.style.left = tx + 'px';
+        penetrationTooltipEl.style.top = ty + 'px';
+      };
+      penetrationMouseLeave = function() { penetrationTooltipEl.style.display = 'none'; };
+      container.addEventListener('mousemove', penetrationMouseMove);
+      container.addEventListener('mouseleave', penetrationMouseLeave);
+    }
+
+    function selectTrendBreakdown(btn, mode) {
+      document.getElementById('dd-trend-breakdown-label').textContent = btn.querySelector('span').textContent;
+      document.getElementById('dd-trend-breakdown').querySelector('.dropdown__options').classList.remove('dropdown__options_open');
+      if (mode === currentTrendBreakdown) return;
+      currentTrendBreakdown = mode;
+      initPenetrationTrendChart();
+    }
+
+    /* Point menu + table — adapted from total-guests detail */
+    var pointMenuAnchor = null;
+    var pointMenuSeries = 'current';
+    var pointMenuOpts = null;
+
     function attachChartPointMenu(container, opts) {
       pointMenuOpts = opts;
       container.style.cursor = 'pointer';
@@ -900,37 +944,27 @@
         var my = e.clientY - rect.top;
         var plotRight = rect.width - opts.plotRightPad;
         if (mx < opts.plotLeft || mx > plotRight) return;
-
-        // Don't let this click bubble to the outside-listener that a
-        // previously-open menu installed — it would close the new menu.
         e.stopPropagation();
-
-        // Snap to nearest data point on X.
         var relX = (mx - opts.plotLeft) / (plotRight - opts.plotLeft);
         var targetTime = opts.axisMinTime + relX * (opts.axisMaxTime - opts.axisMinTime);
         var d = opts.data.reduce(function(best, row) {
           return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
         });
-
-        // Walk the stacked bands bottom→top using only visible stages.
-        // Each band spans [bottomY, topY] in pixels; topY < bottomY because
-        // higher Y values are lower on the screen.
-        var plotH = rect.height - opts.plotTop - opts.xAxisHeight;
-        var range = opts.axisMaxValue - opts.axisMinValue;
-        var hitStage = null;
-        var cum = 0;
-        for (var i = 0; i < LIFECYCLE_STAGES.length; i++) {
-          var s = LIFECYCLE_STAGES[i];
-          if (lifecycleVisibility[s.key] === false) continue;
-          var bottomY = opts.plotTop + (1 - cum / range) * plotH;
-          cum += +d[s.key];
-          var topY    = opts.plotTop + (1 - cum / range) * plotH;
-          if (my >= topY && my <= bottomY) { hitStage = s; break; }
+        var seriesKey = 'current';
+        if (opts.axisMinValue != null && opts.axisMaxValue != null && opts.seriesValueKeys) {
+          var plotH = rect.height - (opts.plotTop || 0) - (opts.xAxisHeight || 0);
+          var range = opts.axisMaxValue - opts.axisMinValue;
+          var bestDist = Infinity;
+          Object.keys(opts.seriesValueKeys).forEach(function(key) {
+            if (penetrationVisibility[key] === false) return;
+            var v = d[opts.seriesValueKeys[key]];
+            var y = (opts.plotTop || 0) + (1 - (v - opts.axisMinValue) / range) * plotH;
+            var dist = Math.abs(my - y);
+            if (dist < bestDist) { bestDist = dist; seriesKey = key; }
+          });
         }
-        if (!hitStage) return; // outside any visible band → no menu
-
         pointMenuAnchor = d;
-        pointMenuStage  = hitStage;
+        pointMenuSeries = seriesKey;
         openPointMenu(e.clientX, e.clientY);
       });
     }
@@ -938,41 +972,28 @@
     function openPointMenu(clientX, clientY) {
       var menu = document.getElementById('chart-point-menu');
       document.removeEventListener('click', closePointMenuOnOutside);
-
-      if (pointMenuAnchor && pointMenuStage) {
-        var dateEl  = document.getElementById('chart-point-menu-date');
+      if (pointMenuAnchor) {
+        var dateEl = document.getElementById('chart-point-menu-date');
         var valueEl = document.getElementById('chart-point-menu-value');
-        var dotEl   = menu.querySelector('.chart-point-menu__color-dot');
-        if (dateEl)  dateEl.textContent  = fmtChartDate(pointMenuAnchor.date) + ', ' + pointMenuAnchor.date.getFullYear();
-        if (valueEl) valueEl.textContent = (+pointMenuAnchor[pointMenuStage.key]).toFixed(1) + 'K';
-        if (dotEl) {
-          dotEl.classList.remove('chart-point-menu__color-dot--striped');
-          dotEl.style.backgroundColor = pointMenuStage.color;
-        }
+        var dotEl = menu.querySelector('.chart-point-menu__color-dot');
+        var valueKey = (pointMenuOpts && pointMenuOpts.seriesValueKeys && pointMenuOpts.seriesValueKeys[pointMenuSeries]) || pointMenuSeries;
+        if (dateEl) dateEl.textContent = fmtPeriodMonth(pointMenuAnchor.date);
+        if (valueEl) valueEl.textContent = fmtPct(pointMenuAnchor[valueKey]);
+        if (dotEl) dotEl.classList.toggle('chart-point-menu__color-dot--striped', pointMenuSeries === 'prev');
       }
-
       menu.classList.add('chart-point-menu--open');
       menu.setAttribute('aria-hidden', 'false');
-
-      // Hide tooltip + dashed line while the menu is open.
-      if (lifecycleTooltipEl) lifecycleTooltipEl.style.display = 'none';
-      if (lifecycleLineEl)    lifecycleLineEl.style.display    = 'none';
-
+      if (penetrationTooltipEl) penetrationTooltipEl.style.display = 'none';
       var mw = menu.offsetWidth, mh = menu.offsetHeight;
       var x = clientX + 12, y = clientY + 12;
-      if (x + mw > window.innerWidth  - 8) x = clientX - mw - 12;
+      if (x + mw > window.innerWidth - 8) x = clientX - mw - 12;
       if (y + mh > window.innerHeight - 8) y = clientY - mh - 12;
       if (y < 8) y = 8;
-      // Translate viewport coords → unscrolled offsetParent coords (the
-      // .content-area--chart-detail scroll container).
       var ref = menu.offsetParent || document.body;
       var refRect = ref.getBoundingClientRect();
       menu.style.left = (x - refRect.left + ref.scrollLeft) + 'px';
-      menu.style.top  = (y - refRect.top  + ref.scrollTop)  + 'px';
-
-      setTimeout(function() {
-        document.addEventListener('click', closePointMenuOnOutside);
-      }, 0);
+      menu.style.top = (y - refRect.top + ref.scrollTop) + 'px';
+      setTimeout(function() { document.addEventListener('click', closePointMenuOnOutside); }, 0);
     }
 
     function closePointMenu() {
@@ -981,108 +1002,42 @@
       menu.setAttribute('aria-hidden', 'true');
       document.removeEventListener('click', closePointMenuOnOutside);
     }
-
     function closePointMenuOnOutside(e) {
       if (!e.target.closest('#chart-point-menu')) closePointMenu();
     }
-
     function onPointMenuAction(action) {
-      // Stub — wire up real behavior later. pointMenuAnchor + pointMenuStage
-      // hold the clicked data row and the stage that was selected.
-      console.log('chart-point-menu action:', action, pointMenuAnchor, pointMenuStage);
+      console.log('chart-point-menu action:', action, pointMenuAnchor);
       closePointMenu();
     }
 
-    /* ── Full-precision numbers ──
-       Source data is at M-scale (e.g. 1.156). Multiply to integers and add
-       a deterministic 0–999 offset derived from the date so the trailing
-       digits look real and stay stable across renders. */
-    function seedFromDate(d) {
-      var s = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
-      return ((s * 9301 + 49297) % 233280);
-    }
-    function fullNumber(mValue, d, salt) {
-      var base = Math.round(mValue * 1000) * 1000; // e.g. 1.156 → 1,156,000
-      var seed = (seedFromDate(d) + salt * 7919) % 1000;
-      return base + seed;
-    }
-    function fmtFull(n) {
-      var sign = n < 0 ? '-' : '';
-      var abs = Math.abs(Math.round(n));
-      return sign + abs.toLocaleString('en-US');
-    }
-    function fmtFullSigned(n) {
-      var sign = n >= 0 ? '+' : '-';
-      return sign + Math.abs(Math.round(n)).toLocaleString('en-US');
-    }
-
-    /* ── Pagination state ── */
     var PER_PAGE = 10;
     var currentPage = 1;
-
-    function totalPages() {
-      return Math.max(1, Math.ceil(LIFECYCLE_DATA.length / PER_PAGE));
-    }
-
-    // Convert a K-scale value (e.g. 142.8) to a deterministic full integer count
-    // (e.g. 142,847) — adds a stable trailing-three-digit offset derived from
-    // (date, salt) so rendered cells look real and stay consistent across renders.
-    function fullCountFromK(kValue, d, salt) {
-      var base = Math.round(kValue * 1000);                 // 142.8 → 142800
-      var seed = (seedFromDate(d) + salt * 7919) % 1000;    // deterministic 0–999 offset
-      return base + seed - 500;                             // recenter around base
-    }
+    function tableData() { return getTrendData(); }
+    function totalPages() { return Math.max(1, Math.ceil(tableData().length / PER_PAGE)); }
 
     function renderTable() {
-      var tbody = document.getElementById('lifecycle-table-body');
+      var tbody = document.getElementById('loyalty-penetration-table-body');
+      var data = tableData();
       var tp = totalPages();
       if (currentPage > tp) currentPage = tp;
-      var start = (currentPage - 1) * PER_PAGE;
-      var pageRows = LIFECYCLE_DATA.slice(start, start + PER_PAGE);
-
-      tbody.innerHTML = pageRows.map(function(d, idx) {
-        var ft   = fullCountFromK(d.firstTime,    d.date, 1);
-        var rt   = fullCountFromK(d.returning,    d.date, 2);
-        var ro   = fullCountFromK(d.winBack, d.date, 3);
-        var ly   = fullCountFromK(d.loyal,        d.date, 4);
-        var ar   = fullCountFromK(d.atRisk,       d.date, 5);
-        var ch   = fullCountFromK(d.churned,      d.date, 6);
-
-        // Δ At-Risk = today vs. previous row in the dataset (or 0 for the first row).
-        var globalIdx = start + idx;
-        var prevAr = globalIdx > 0
-          ? fullCountFromK(LIFECYCLE_DATA[globalIdx - 1].atRisk, LIFECYCLE_DATA[globalIdx - 1].date, 5)
-          : ar;
-        var delta = ar - prevAr;
-        // Inverse semantics on Δ At-Risk: growth = bad (red), shrinkage = good (green).
-        var pctColor = delta <= 0 ? '#257469' : '#b1294a';
-        var pctBg    = delta <= 0 ? '#effaf9' : '#fdecef';
-
+      var pageRows = data.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
+      tbody.innerHTML = pageRows.map(function(d) {
         return (
           '<tr>' +
-            '<td>' + fmtChartDate(d.date) + ', 2026</td>' +
-            '<td class="chart-data-col">' + fmtFull(ft) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(rt) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(ro) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(ly) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(ar) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(ch) + '</td>' +
-            '<td class="chart-data-col">' +
-              '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 6px;border-radius:4px;font-size:0.875rem;font-weight:500;">' +
-                fmtFullSigned(delta) +
-              '</span>' +
-            '</td>' +
+            '<td>' + fmtPeriodMonth(d.date) + '</td>' +
+            '<td class="chart-data-col">' + fmtTxn(d.loyaltyTxns) + '</td>' +
+            '<td class="chart-data-col">' + fmtTxn(d.identifiedTxns) + '</td>' +
+            '<td class="chart-data-col">' + fmtPctFull(d.current) + '</td>' +
           '</tr>'
         );
       }).join('');
-
       document.getElementById('page-dropdown-label').textContent = currentPage;
       document.getElementById('total-pages-text').textContent = 'of ' + tp + ' page' + (tp !== 1 ? 's' : '');
       document.getElementById('prev-btn').disabled = currentPage <= 1;
       document.getElementById('next-btn').disabled = currentPage >= tp;
       document.getElementById('page-options-list').innerHTML = Array.from({ length: tp }, function(_, i) { return i + 1; })
         .map(function(p) {
-          return '<li><button onclick="goToPage(' + p + ')" style="background:none;border:none;width:100%;text-align:left;padding:8px 12px;cursor:pointer;font-family:\'Manrope\',sans-serif;font-size:16px;font-weight:' + (p === currentPage ? 700 : 400) + ';">' + p + '</button></li>';
+          return '<li><button onclick="goToPage(' + p + ')" style="background:none;border:none;width:100%;text-align:left;padding:8px 12px;cursor:pointer;font-family:Manrope,sans-serif;font-size:16px;font-weight:' + (p === currentPage ? 700 : 400) + ';">' + p + '</button></li>';
         }).join('');
     }
 
@@ -1096,22 +1051,23 @@
     function togglePageDropdown() {
       document.getElementById('page-options').classList.toggle('dropdown__options_open');
     }
-
     document.addEventListener('click', function(e) {
       if (!e.target.closest('#page-dropdown-btn') && !e.target.closest('#page-options')) {
         document.getElementById('page-options').classList.remove('dropdown__options_open');
       }
     });
-
     /* ── Boot ── */
     document.addEventListener('DOMContentLoaded', function() {
-      buildLifecycleLegend();
       renderTable();
       Promise.all([
         document.fonts.load('400 12px Manrope'),
         document.fonts.load('700 12px Manrope'),
         document.fonts.load('800 12px Manrope'),
-      ]).then(function() { requestAnimationFrame(initLifecycleChart); });
+      ]).then(function() {
+        requestAnimationFrame(function() {
+          initPenetrationTrendChart();
+        });
+      });
     });
   </script>
 
