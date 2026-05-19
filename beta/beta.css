@@ -1172,6 +1172,17 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   min-height: 0;
 }
 
+/* Loyalty spend lift: flex-fill so the paired bar chart fills the card height. */
+.chart-card[data-metric-id="loyalty-spend-lift"] .chart-card__body {
+  flex: 1;
+  min-height: 0;
+}
+.chart-card[data-metric-id="loyalty-spend-lift"] .chart-card__placeholder {
+  flex: 1;
+  height: auto;
+  min-height: 256px;
+}
+
 /* Strip the placeholder background once a real chart has rendered */
 #chart-area-total-guests-echarts,
 #chart-area-active-guests,

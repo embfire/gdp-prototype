@@ -625,10 +625,6 @@
         loyaltySpendLiftChart.destroy();
         loyaltySpendLiftChart = null;
         loyaltySpendLiftChartOptions = null;
-        if (loyaltySpendLiftTooltipEl && loyaltySpendLiftTooltipEl.parentNode) {
-          loyaltySpendLiftTooltipEl.parentNode.removeChild(loyaltySpendLiftTooltipEl);
-          loyaltySpendLiftTooltipEl = null;
-        }
       }
       if (id === 'loyalty-penetration' && loyaltyPenetrationChart) {
         loyaltyPenetrationChart.destroy();
@@ -816,10 +812,17 @@
       if (id === 'loyalty-spend-lift') {
         return (
           '<div class="chart-card__metric-row">' +
-            '<p class="chart-card__metric-value">+35%</p>' +
-            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+2.8pp</span>' +
+            '<p class="chart-card__metric-value">+$4.39</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+109.05%</span>' +
           '</div>' +
-          '<p class="chart-card__metric-period">$24.80 loyalty · $18.40 non-loyalty per visit</p>'
+          '<div class="chart-card__metric-period-row">' +
+            '<span class="chart-card__metric-period">$2.10 previous period avg</span>' +
+            '<div class="chart-card__metric-info-wrap">' +
+              '<span class="material-symbols-rounded chart-card__metric-info-icon">info</span>' +
+              '<span class="chart-card__metric-info-text">Included cohorts: May 17, 2024 to May 17, 2025</span>' +
+              '<div class="chart-card__metric-info-tooltip">This chart uses guests who enrolled during this cohort window. We shift the cohort back so every guest has a complete post-enrollment window for the selected date range.</div>' +
+            '</div>' +
+          '</div>'
         );
       }
       if (id === 'guest-repeat-rate') {
@@ -952,18 +955,7 @@
         );
       }
       if (id === 'loyalty-spend-lift') {
-        return (
-          '<div class="chart-card__legend">' +
-            '<button type="button" class="chart-card__legend-item" data-series-key="loyalty" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleLoyaltySpendLiftSeries(this, \'loyalty\')" aria-pressed="true">' +
-              '<span class="chart-card__legend-marker chart-card__legend-marker--solid" style="background:#5A55E3;"></span>' +
-              '<span>Loyalty</span>' +
-            '</button>' +
-            '<button type="button" class="chart-card__legend-item" data-series-key="nonLoyalty" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleLoyaltySpendLiftSeries(this, \'nonLoyalty\')" aria-pressed="true">' +
-              '<span class="chart-card__legend-marker chart-card__legend-marker--striped" style="background-image:repeating-linear-gradient(-45deg,#FF6600 0,#FF6600 1.5px,transparent 1.5px,transparent 3px);"></span>' +
-              '<span>Non-loyalty</span>' +
-            '</button>' +
-          '</div>'
-        );
+        return '';
       }
       if (id === 'guest-repeat-rate') {
         return (
@@ -1021,7 +1013,7 @@
       if (id === 'retention-cohort') return 'M+1 retention rate by acquisition cohort';
       if (id === 'reachability') return 'Reachable guests by channel vs. total identified';
       if (id === 'visit-frequency') return 'Guest distribution across visit-count buckets';
-      if (id === 'loyalty-spend-lift') return 'Avg spend per visit over time';
+      if (id === 'loyalty-spend-lift') return 'Avg transaction value lift after enrollment';
       if (id === 'guest-repeat-rate') return 'Share of base-period guests who returned in the next period';
       if (id === 'loyalty-penetration') return 'Share of transactions tied to a loyalty member';
       return 'Chart explanation';
@@ -2570,7 +2562,7 @@
       container.addEventListener('mouseleave', activeGuestsMouseLeave);
     }
 
-       (loyalty + non-loyalty via IDR). Same single-series Indigo
+    /* (loyalty + non-loyalty via IDR). Same single-series Indigo
        line + dashed prev-period overlay pattern as Total Guests.
     ═══════════════════════════════════════════════════ */
     var newGuestAcqChart        = null;
@@ -3064,142 +3056,82 @@
 
     /* ═══════════════════════════════════════════════════
        AG Charts — Loyalty Spend Lift
-       Dual-line card (same pattern as New Guest Acquisition):
-       solid indigo = loyalty avg $/visit, dashed vermilion = non-loyalty.
+       Vertical paired bar card: pre-enrollment avg spend vs post-enrollment avg spend.
+       No tooltip on card — bar labels carry the values.
     ═══════════════════════════════════════════════════ */
     var loyaltySpendLiftChart        = null;
     var loyaltySpendLiftChartOptions = null;
-    var loyaltySpendLiftVisibility   = { loyalty: true, nonLoyalty: true };
-    var loyaltySpendLiftTooltipEl    = null;
-    var loyaltySpendLiftMouseMove    = null;
-    var loyaltySpendLiftMouseLeave   = null;
 
-    var SPEND_LIFT_PALETTE = { loyalty: '#5A55E3', nonLoyalty: '#FF6600' };
+    var SPEND_LIFT_SUMMARY = {
+      avgPreSpend:       3.07,
+      avgPostSpend:      7.46,
+      lift:              4.39,
+      liftPrev:          2.10,
+      deltaPct:         109.05,
+      effectiveDateFrom: '2024-05-17',
+      effectiveDateTo:   '2025-05-17',
+    };
 
-    var SPEND_LIFT_CARD_DATA = (function() {
-      var baseDate = new Date(2026, 2, 19);
-      var rows = [];
-      for (var i = 0; i < 39; i++) {
-        var d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() + i);
-        var wobble = Math.sin(i / 4) * 0.35;
-        rows.push({
-          date: d,
-          loyalty: +(24.80 + wobble + (i % 5) * 0.04).toFixed(2),
-          nonLoyalty: +(18.40 + wobble * 0.6 + (i % 7) * 0.02).toFixed(2),
-        });
-      }
-      return rows;
-    }());
-
-    function fmtSpendDollar(v) {
-      return '$' + (+v).toFixed(2);
-    }
-
-    function toggleLoyaltySpendLiftSeries(btn, seriesKey) {
-      if (!loyaltySpendLiftChart || !loyaltySpendLiftChartOptions) return;
-      var nextValue = !loyaltySpendLiftVisibility[seriesKey];
-      var otherKey = seriesKey === 'loyalty' ? 'nonLoyalty' : 'loyalty';
-      if (!nextValue && !loyaltySpendLiftVisibility[otherKey]) return;
-      loyaltySpendLiftVisibility[seriesKey] = nextValue;
-      btn.setAttribute('aria-pressed', String(nextValue));
-      var newSeries = loyaltySpendLiftChartOptions.series.map(function(s) {
-        return Object.assign({}, s, { visible: loyaltySpendLiftVisibility[s.yKey] !== false });
-      });
-      loyaltySpendLiftChartOptions = Object.assign({}, loyaltySpendLiftChartOptions, { series: newSeries });
-      loyaltySpendLiftChart.update(loyaltySpendLiftChartOptions);
-    }
+    var SPEND_LIFT_CARD_DATA = [
+      { stage: 'Pre-enrollment\navg spend',  value: SPEND_LIFT_SUMMARY.avgPreSpend,  tone: 'pre' },
+      { stage: 'Post-enrollment\navg spend', value: SPEND_LIFT_SUMMARY.avgPostSpend, tone: 'post' },
+    ];
 
     function initLoyaltySpendLiftChart() {
       var container = document.getElementById('chart-area-loyalty-spend-lift');
       if (!container) return;
       if (loyaltySpendLiftChart) { loyaltySpendLiftChart.destroy(); loyaltySpendLiftChart = null; }
 
-      loyaltySpendLiftVisibility = { loyalty: true, nonLoyalty: true };
+      var maxValue = Math.max(SPEND_LIFT_SUMMARY.avgPreSpend, SPEND_LIFT_SUMMARY.avgPostSpend);
 
       loyaltySpendLiftChartOptions = {
         container: container,
         theme: { params: { fontFamily: 'Manrope, sans-serif' } },
         background: { fill: '#ffffff' },
-        padding: { top: 8, right: 0, bottom: 0, left: 0 },
+        padding: { top: 8, right: 8, bottom: 0, left: 0 },
         data: SPEND_LIFT_CARD_DATA,
         legend: { enabled: false },
         series: [
           {
-            type: 'line',
-            xKey: 'date',
-            yKey: 'nonLoyalty',
-            yName: 'Non-loyalty',
-            stroke: SPEND_LIFT_PALETTE.nonLoyalty,
-            strokeWidth: 2,
-            lineDash: [2, 2],
-            marker: {
+            type: 'bar',
+            xKey: 'stage',
+            yKey: 'value',
+            cornerRadius: 6,
+            strokeWidth: 0,
+            tooltip: { enabled: false },
+            label: {
               enabled: true,
-              size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: SPEND_LIFT_PALETTE.nonLoyalty, stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
+              color: '#000000',
+              fontSize: 11,
+              formatter: function(params) {
+                return '$' + (+params.value).toFixed(2);
               },
             },
-            tooltip: { enabled: false },
-          },
-          {
-            type: 'line',
-            xKey: 'date',
-            yKey: 'loyalty',
-            yName: 'Loyalty',
-            stroke: SPEND_LIFT_PALETTE.loyalty,
-            strokeWidth: 2,
-            marker: {
-              enabled: true,
-              size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: SPEND_LIFT_PALETTE.loyalty, stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
+            itemStyler: function(params) {
+              return { fill: params.datum && params.datum.tone === 'pre' ? '#A9A6FF' : '#5A55E3' };
             },
-            tooltip: { enabled: false },
           },
         ],
         axes: {
           x: {
-            type: 'time',
+            type: 'category',
             position: 'bottom',
-            nice: false,
-            min: new Date(2026, 2, 19),
-            max: new Date(2026, 3, 26),
             gridLine: { enabled: false },
-            line: { enabled: false },
-            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
-            label: {
-              fontSize: 12,
-              color: '#000000',
-              format: '%b %-d',
-              padding: 8,
-              avoidCollisions: true,
-            },
-            interval: {
-              values: [
-                new Date(2026, 2, 29),
-                new Date(2026, 3, 5),
-                new Date(2026, 3, 12),
-                new Date(2026, 3, 19),
-              ],
-            },
-            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+            line:     { enabled: false },
+            tick:     { enabled: false },
+            crosshair: { enabled: false },
+            label: { fontSize: 12, color: '#000000', padding: 8 },
           },
           y: {
             type: 'number',
             position: 'left',
-            min: 17,
-            max: 27,
-            interval: { values: [18, 20, 22, 24, 26] },
+            min: 0,
+            max: maxValue * 1.2,
+            nice: false,
             gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
-            line: { enabled: false },
-            tick: { enabled: false },
+            line:     { enabled: false },
+            tick:     { enabled: false },
+            crosshair: { enabled: false },
             label: {
               fontSize: 12,
               color: '#000000',
@@ -3211,97 +3143,6 @@
       };
 
       loyaltySpendLiftChart = agCharts.AgCharts.create(loyaltySpendLiftChartOptions);
-
-      if (loyaltySpendLiftTooltipEl && loyaltySpendLiftTooltipEl.parentNode) {
-        loyaltySpendLiftTooltipEl.parentNode.removeChild(loyaltySpendLiftTooltipEl);
-      }
-      if (loyaltySpendLiftMouseMove) {
-        container.removeEventListener('mousemove',  loyaltySpendLiftMouseMove);
-        container.removeEventListener('mouseleave', loyaltySpendLiftMouseLeave);
-      }
-
-      loyaltySpendLiftTooltipEl = document.createElement('div');
-      loyaltySpendLiftTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(loyaltySpendLiftTooltipEl);
-
-      var PLOT_LEFT      = 46;
-      var PLOT_RIGHT_PAD = 0;
-      var AXIS_MIN_TIME  = new Date(2026, 2, 19).getTime();
-      var AXIS_MAX_TIME  = new Date(2026, 3, 26).getTime();
-
-      loyaltySpendLiftMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - PLOT_RIGHT_PAD;
-
-        if (mx < PLOT_LEFT || mx > plotRight) {
-          loyaltySpendLiftTooltipEl.style.display = 'none';
-          return;
-        }
-
-        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
-        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
-        var d = SPEND_LIFT_CARD_DATA.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-
-        if (!loyaltySpendLiftVisibility.loyalty) {
-          loyaltySpendLiftTooltipEl.style.display = 'none';
-          return;
-        }
-
-        var liftRaw = (d.loyalty - d.nonLoyalty) / d.nonLoyalty * 100;
-        var liftStr = (liftRaw >= 0 ? '+' : '') + liftRaw.toFixed(1) + '%';
-        var liftColor = liftRaw >= 0 ? '#257469' : '#b1294a';
-        var liftBg    = liftRaw >= 0 ? '#effaf9' : '#fdecef';
-
-        loyaltySpendLiftTooltipEl.innerHTML = (
-          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
-            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Loyalty spend lift</p>' +
-            '<div style="display:flex;flex-direction:column;gap:8px;">' +
-              '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
-                '<div style="display:flex;align-items:center;gap:4px;">' +
-                  '<div style="width:12px;height:12px;background:' + SPEND_LIFT_PALETTE.loyalty + ';border-radius:2px;flex-shrink:0;"></div>' +
-                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(d.date) + '</span>' +
-                '</div>' +
-                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtSpendDollar(d.loyalty) + '</span>' +
-              '</div>' +
-              '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
-                '<span style="background:' + liftBg + ';color:' + liftColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + liftStr + '</span>' +
-                '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. non-loyalty</span>' +
-              '</div>' +
-            '</div>' +
-            (loyaltySpendLiftVisibility.nonLoyalty
-              ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
-                  '<div style="display:flex;align-items:center;gap:4px;">' +
-                    '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + SPEND_LIFT_PALETTE.nonLoyalty + ' 0,' + SPEND_LIFT_PALETTE.nonLoyalty + ' 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>' +
-                    '<span style="font-size:12px;font-weight:400;color:#60696C;">Non-loyalty</span>' +
-                  '</div>' +
-                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtSpendDollar(d.nonLoyalty) + '</span>' +
-                '</div>'
-              : '') +
-          '</div>'
-        );
-
-        loyaltySpendLiftTooltipEl.style.display = 'block';
-
-        var tw = loyaltySpendLiftTooltipEl.offsetWidth;
-        var th = loyaltySpendLiftTooltipEl.offsetHeight;
-        var tx = e.clientX + 16;
-        var ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
-        if (ty < 8) ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        loyaltySpendLiftTooltipEl.style.left = tx + 'px';
-        loyaltySpendLiftTooltipEl.style.top  = ty + 'px';
-      };
-
-      loyaltySpendLiftMouseLeave = function() {
-        loyaltySpendLiftTooltipEl.style.display = 'none';
-      };
-
-      container.addEventListener('mousemove',  loyaltySpendLiftMouseMove);
-      container.addEventListener('mouseleave', loyaltySpendLiftMouseLeave);
     }
 
     /* ═══════════════════════════════════════════════════
