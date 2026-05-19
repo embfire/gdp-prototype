@@ -1,305 +1,326 @@
-# Loyalty Spend Lift Chart — Implementation Spec
+# Loyalty Spend Lift Chart — Implementation Spec (v2)
 
-**Audience:** Engineering — connecting the prototype to real data
-**Last updated:** 2026-05-17
-**Reference implementation:** `[beta/index.html](../../beta/index.html)` (dashboard card, horizontal bars) and `[beta/dashboard-loyalty-spend-lift.html](../../beta/dashboard-loyalty-spend-lift.html)` (detail page, trend line + grouped breakdown bars + table)
+**Audience:** Engineering — connecting the prototype to real data  
+**Last updated:** 2026-05-19  
+**Reference implementation:** `[beta/index.html](../../beta/index.html)` (dashboard card, vertical bars) and `[beta/dashboard-loyalty-spend-lift.html](../../beta/dashboard-loyalty-spend-lift.html)` (detail page, trend line chart + table)
 
-> Visual treatment, copy, and exact pixel values are not normative — read them off the HTML/CSS. This doc covers **what data is needed, how the lift metric is calculated, what filters do, what the breakdown dimensions are, and what the detail page must include**. The dashboard card and the detail page draw from the same underlying loyalty-vs-non-loyalty split — keep that in mind when shaping the API.
+> Visual treatment, copy, and exact pixel values are not normative — read them off the HTML/CSS. This doc covers **what data is needed, how the lift metric is calculated, what the cohort window rule is, what filters do, and what the detail page must include**.
 
 ---
 
 ## 1. Overview
 
-**Loyalty Spend Lift** measures how much more (or less) loyalty members spend per visit compared to identified non-loyalty guests in the same period. It answers the board-level question: *"What is the incremental spend attributable to loyalty program membership?"*
+**Loyalty Spend Lift** measures how much more (or less) guests spend per visit *after* they enrol in the loyalty program compared to *before* they enrolled — using the same cohort of guests as both the baseline and the treatment.
 
-The metric maps directly to Punchh QBR **Spend Lift (loyalty vs. anonymous)** and to PAG exercise metric **Loyalty Spend Lift** (#3 at 72% selection). Keep the formula identical to the QBR definition so cross-platform numbers reconcile.
+The metric answers: *"Does joining the loyalty program increase how much a guest spends per visit?"*
 
-The chart has two views over the same data:
+The chart has two views over the same underlying cohort data:
 
-- **Dashboard card** — comparison KPI. Hero = **lift %**; subtext = the two avg-$/visit values; chart body = a horizontal paired bar showing loyalty vs. non-loyalty avg $/visit.
-- **Detail page** — three artifacts stacked:
-  1. **Trend chart** — daily avg $/visit for loyalty and non-loyalty over the selected range, with its own hero metric repeated.
-  2. **Breakdown chart** — vertical grouped bars (loyalty vs. non-loyalty) per dimension, switchable via a dropdown (**By location / By channel / By enrollment cohort**).
-  3. **Data table** — one row per time bucket with loyalty avg, non-loyalty avg, and lift %.
+- **Dashboard card** — summary KPI. Hero = `$ lift` (signed dollar delta). Chart body = two vertical bars showing the before and after average ticket for the effective cohort window.
+- **Detail page** — two artifacts stacked:
+  1. **Trend chart** — daily avg `$ lift` per enrollment-cohort date, current and previous period as two line series.
+  2. **Data table** — one row per enrollment-cohort date with enrolled guests, avg pre/post ticket, `$ lift`, and `% lift`.
 
-Both views derive from the same loyalty-vs-non-loyalty visit-level aggregation; the card collapses everything to a single period summary, the detail page slices that summary by date and dimension.
+> **Metric framing.** This is a *before/after enrollment* measure, not a *loyalty-vs-anonymous* comparison. A guest who has never enrolled does not appear in this data. This is the correct framing for proving the program changes behavior.
 
 ---
 
 ## 2. Metric Definition
 
-These rules are the source of truth for what a "visit", "loyalty member", and "lift" mean. Keep parity with the Punchh QBR definition unless PM explicitly approves a divergence.
+These rules are the source of truth for what a "cohort", "window", and "lift" mean.
 
-| Concept                            | Definition                                                                                                                                                                                                                                                                                  |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Visit**                          | One guest-day with at least one qualifying transaction — dedupe by `(guest_id, calendar_day)`. Two transactions on the same day by the same guest count as one visit. (Confirm with PM if PunchhCheck-in semantics require a different dedupe key — see § 10.)                              |
-| **Avg spend per visit — Loyalty**  | Σ(net purchase amount on loyalty-member visits) ÷ count(loyalty-member visits) in the period.                                                                                                                                                                                              |
-| **Avg spend per visit — Non-loyalty** | Same calculation over identified guests who are **not** loyalty members. Identity must be resolved via the same IDR / CDP rules as Total Guests and Visit Frequency.                                                                                                                       |
-| **Net purchase amount**            | Post-discount, pre-tax (or post-tax — match Punchh **Avg Checkin Net Purchase Amount**). Pick once and stick with it; document the choice next to the query.                                                                                                                                |
-| **Loyalty status**                 | Member vs. non-member **as of transaction time**, not as of "today". A guest who enrolls mid-period transitions from non-loyalty visits before enrollment to loyalty visits after. The simpler "current status" approach is acceptable for v1 if PM accepts the parity gap — confirm in § 10. |
-| **Lift %**                         | `(loyaltyAvg − nonLoyaltyAvg) / nonLoyaltyAvg × 100`, rounded to one decimal. A positive value means loyalty members spend more per visit; negative means less.                                                                                                                              |
-| **Lift Δ (period over period)**    | The change in lift % between the current and comparison windows, expressed in **percentage points** (`pp`), not percent. Lift is already a percent — comparing percents would be ambiguous.                                                                                                  |
+| Concept | Definition |
+|---|---|
+| **Enrollment cohort window** | The range of enrollment dates used for this period. Not the same as the selected dashboard date range — see § Cohort Shifting below. |
+| **N (window length)** | `DATEDIFF(selected_dateTo, selected_dateFrom) + 1` (inclusive). The pre-enrollment window and post-enrollment window are both exactly `N` days long. |
+| **Pre-enrollment avg ticket** | `Σ(transaction amounts in the N days before the guest's enrollment date) ÷ count(transactions)` for all enrolled guests in the cohort. |
+| **Post-enrollment avg ticket** | `Σ(transaction amounts in the N days from enrollment date) ÷ count(transactions)` for the same guests. |
+| **$ lift** | `post-enrollment avg ticket − pre-enrollment avg ticket`. Signed. Positive = guests spend more after enrolling. |
+| **% lift** | `$ lift ÷ pre-enrollment avg ticket × 100`, rounded to two decimals. `null` when pre-enrollment spend is zero. |
+| **Lift Δ (period over period)** | `((current lift − prev lift) / prev lift) × 100` expressed as a percentage. Used only for the hero delta pill. |
+
+### Cohort shifting rule
+
+The dashboard filter selects an *as-of* period (e.g. the last 30 days). To ensure every enrolled guest's full post-enrollment window has actually elapsed by the end of that period, the enrollment cohort window is **shifted backward by its own length**:
+
+```
+cohortDateFrom = selected_dateFrom − N days
+cohortDateTo   = selected_dateTo   − N days
+completeAsOf   = selected_dateTo
+```
+
+Only guests whose `enrollment_date + N ≤ completeAsOf` are included. This guarantees complete pre and post windows for every cohort member.
+
+**Consequence for the UI:** The effective cohort dates shown on the card and detail page will always be older than the selected dashboard range. A 30-day dashboard selection, for example, will show cohorts from 30–60 days ago. This is expected and correct — it must be communicated to the user via the cohort range notice (see § 7).
 
 ### What does and does not count
 
-- **Identified guests only.** Anonymous traffic with no IDR match is excluded from both numerator and denominator on both sides of the split. Consistent with every other dashboard chart.
-- **Loyalty member ↔ identified non-member only.** Do not include un-identified anonymous traffic in the non-loyalty bucket — that would inflate the lift artificially because anonymous check sizes skew low.
-- **Pre-enrollment vs. post-enrollment lift** for the *same* guest is a different metric (the "loyalty conversion uplift") and out of scope for this chart.
-- **Hardcoded thresholds for beta**, configurable per-tenant at GA. The enrollment-cohort buckets in the breakdown (currently `< 90d` / `Established` / `Non-members`) should live in config, not in queries.
+- **Enrolled guests only.** Guests who have never enrolled are not in either window.
+- **Complete windows only.** Any enrolled guest whose post-enrollment window extends beyond `completeAsOf` is excluded entirely from the cohort for that period.
+- **Transaction amount.** Use `checkins.receipt_amount` (Punchh). This is post-discount, pre-tax — confirm with PM if the target is net-purchase or gross.
+- **Transaction deduplication.** Transactions are counted at the `checkin_id` level (one row per unique check-in event), joined from `fact_point_events` via `checkin_id`.
 
 ---
 
 ## 3. Hero Metric
 
-The hero appears on the dashboard card and is repeated on the detail page's trend card.
+The hero appears on the dashboard card and is repeated on the detail page's chart card.
 
-- **Primary value:** lift % for the selected period (e.g. `+35%`). Sign always shown — `+` for non-negative, `−` for negative. One whole-percent precision on the card (matches the reference); the detail page repeats the same value at the same precision.
-- **Delta pill:** lift Δ vs. the comparison window in **percentage points** (e.g. `+2.8pp`). Sign always shown.
-- **Pill semantics — default (non-inverse).** Higher lift is better, so:
-  - Lift **up** vs. comparison → green `chart-card__metric-pill--up`
-  - Lift **down** vs. comparison → red `chart-card__metric-pill--down`
-- **Period text — card:** `$24.80 loyalty · $18.40 non-loyalty per visit`. Two avg-$/visit values for the current period, no comparison suffix.
-- **Period text — detail trend card:** `$24.80 loyalty · $18.40 non-loyalty per visit · +32% prev period lift`. Adds the prior-period lift as the suffix.
-- **No info badge / no `CHART_CONSTRAINTS` entry.** Unlike the retention cohort chart, this metric has no minimum-window requirement; even a 7-day range computes a valid lift.
-- **No-comparison case.** When `Compare to` = `No comparison`, the delta pill hides and the period text drops the trailing `· +32% prev period lift` suffix on the detail page. The card period text never carries the suffix, so it is unaffected.
+- **Primary value:** `$ lift` for the effective cohort window (e.g. `+$4.39`). Sign always shown — `+` for non-negative, `−` for negative.
+- **Delta pill:** `% change` of `$ lift` vs. the previous-period cohort window (e.g. `+22.11%`). Sign always shown. Standard non-inverse colors: higher lift is better, green for up, red for down.
+- **Period sub-text — card:** `{value} previous period avg` — the previous period's `$ lift` value. Hides when `Compare to` = `No comparison`.
+- **Period sub-text — detail card:** same value, same position, same hide rule.
+- **Cohort range notice:** `Included cohorts: {from} to {to}` — shown below the period sub-text on both card and detail. An info icon with a tooltip explains the shifting: *"This chart uses guests who enrolled during this cohort window. We shift the cohort back so every guest has a complete post-enrollment window for the selected date range."* Hides when no cohort data is available.
 
 ---
 
 ## 4. Required Data Shape
 
-The chart needs **one period summary + one daily time series + one breakdown row set**, all keyed by loyalty status. The card uses the summary; the detail page uses all three.
+The chart needs **one period summary + two daily series (current and previous period)**, keyed by enrollment-cohort date.
 
-```ts
-// Period summary — card hero + bars, detail hero
-type SpendLiftPeriod = {
-  loyaltyAvg: number;        // e.g. 24.80
-  nonLoyaltyAvg: number;     // e.g. 18.40
-  loyaltyAvgPrev: number;    // comparison window, used only for the hero pill
-  nonLoyaltyAvgPrev: number; // comparison window, used only for the hero pill
-  // Lift % and lift Δ are derived client-side from the four numbers above.
+```js
+// Period summary — card hero bars
+const SpendLiftSummary = {
+  avgPreSpend:  14.25,    // avg ticket before enrollment across the whole cohort
+  avgPostSpend: 17.40,    // avg ticket after enrollment
+  lift:          3.15,    // avgPostSpend - avgPreSpend
+  liftPct:      22.11,    // lift / avgPreSpend * 100
+  liftPrev:      2.10,    // lift for the previous-period cohort
+  deltaPct:     50.00,    // (lift - liftPrev) / liftPrev * 100
+  effectiveDateFrom: '2026-03-18',   // cohort window start (after shifting)
+  effectiveDateTo:   '2026-04-17',   // cohort window end
 };
 
-// Daily trend — detail trend chart + data table
-type SpendLiftTrendRow = {
-  date: string;       // ISO date, one row per calendar day in the selected range
-  loyalty: number;    // avg $/visit on that day
-  nonLoyalty: number; // avg $/visit on that day
+// Daily series — detail trend chart
+// One entry per enrollment-cohort date (after shifting + completeness filter)
+const SpendLiftSeriesPoint = {
+  date:           '2026-03-18',
+  enrolledGuests: 120,         // guests enrolled on this date who have a complete window
+  avgPreSpend:     14.10,
+  avgPostSpend:    17.20,
+  lift:             3.10,
+  liftPct:         21.99,
 };
 
-// Breakdown — detail breakdown chart, one row per dimension value
-type SpendLiftBreakdownRow = {
-  label: string;      // location name, channel, or enrollment cohort label
-  loyalty: number;    // avg $/visit for the period within that bucket
-  nonLoyalty: number; // avg $/visit for the period within that bucket
-};
-
-// One breakdown set per dimension key
-type SpendLiftBreakdowns = {
-  location: SpendLiftBreakdownRow[];
-  channel: SpendLiftBreakdownRow[];
-  enrollment: SpendLiftBreakdownRow[];
-};
+// Two arrays: seriesCurrent (current cohort window) and seriesPrevious (prev-period cohort)
 ```
 
 ### Aggregation contract
 
-- **All three shapes are computed server-side from the same underlying visit-level fact**. Do not let the client recompute averages from raw transactions; the dedupe, identity-resolution, and net-amount rules all live in the warehouse.
-- **Trend rows** need a continuous daily series for the selected range. Missing days (genuinely zero loyalty *or* non-loyalty visits) should still render — return the day with `null` on the missing side rather than dropping the row, so the data table reads continuously. The chart should skip null points without breaking the line.
-- **Breakdown rows** are not paginated server-side. The default detail view caps at the top ~10 rows per dimension (locations, channels, enrollment cohorts are small cardinality today); confirm with PM if any dimension grows beyond what the grouped bar can readably show.
-- **Filters** (date range, stores, segments — see § 6) are applied **before** the loyalty/non-loyalty split, server-side. The Loyalty filter is **not** applied (it would invalidate the split — see § 6).
-- The comparison window summary is computed independently with the same rules over `[prevDateFrom, prevDateTo]`. The detail page does **not** render comparison series on the trend chart in v1 — only the hero pill uses them.
-
-### Single endpoint, three projections
-
-Card consumes `SpendLiftPeriod`. Detail trend consumes `SpendLiftPeriod` + `SpendLiftTrendRow[]`. Detail breakdown consumes `SpendLiftBreakdowns`. A single `GET /metrics/loyalty-spend-lift?from=…&to=…&prevFrom=…&prevTo=…` returning all three plus comparison is the simplest shape; split only if a downstream caller requires it.
+- All aggregation happens server-side. The client never recomputes averages from raw transaction rows.
+- `seriesCurrent` and `seriesPrevious` are aligned by index for the chart renderer — position `i` in `seriesCurrent` is paired with position `i` in `seriesPrevious`. They may be different lengths if cohort sizes differ.
+- Missing cohort dates (days where no guests passed the completeness filter) produce no row — the series is sparse, not continuous. The chart skips null points without breaking the line.
+- The comparison window runs the same shifting logic over `[prevDateFrom, prevDateTo]`.
 
 ---
 
 ## 5. Chart Specifications
 
-The card and the detail page use three different chart types. Treat the sub-sections below as independent specs sharing the same data source.
+The card and the detail page use two different chart types from the same data source.
 
-### 5.1 Dashboard card — horizontal paired bars
+### 5.1 Dashboard card — vertical paired bars
 
-| Property                    | Value                                                                                                                                                                                                                                       |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Library                     | AG Charts (Community v13)                                                                                                                                                                                                                   |
-| Type                        | Bar, `direction: 'horizontal'`, **single series with per-row colors** (not two series — see note below)                                                                                                                                     |
-| `xKey` / `yKey`             | `cohort` / `amount` (in horizontal mode `xKey` is the categorical, `yKey` is the numeric)                                                                                                                                                  |
-| X-axis (numeric, bottom)    | `min: 0, max: 28`, `interval: { values: [0, 7, 14, 21, 28] }`, label formatter `$XX`. **These are placeholder data bounds — derive from the real period when wiring up.**                                                                  |
-| Y-axis (category, left)     | `paddingInner: 0.35, paddingOuter: 0.2`, no tick, no line, labels `Loyalty` / `Non-loyalty` at 12px                                                                                                                                        |
-| Colors                      | Per-row via `itemStyler` reading `params.datum.fill`: Loyalty = `#5A55E3` (chart-indigo-900), Non-loyalty = `#FF6600` (chart-vermilion-900)                                                                                               |
-| Corner radius / stroke      | `cornerRadius: 4`, `strokeWidth: 0`                                                                                                                                                                                                         |
-| Legend                      | Disabled at the AG Charts level (`legend: { enabled: false }`); a custom legend (see § 7) sits above the plot area                                                                                                                          |
-| Native AG Charts tooltip    | Disabled (`tooltip: { enabled: false }`). **No manual tooltip is wired today** — flag in § 10                                                                                                                                                |
-| Native AG Charts crosshair  | N/A (categorical chart)                                                                                                                                                                                                                     |
+| Property | Value |
+|---|---|
+| Library | AG Charts (Community v13) |
+| Type | `bar`, vertical (`direction` default), **single series with per-row fill colors** |
+| `xKey` | `stage` (category label: `Pre-enrollment avg spend` / `Post-enrollment avg spend`) |
+| `yKey` | `value` (dollar amount) |
+| X-axis | Category, `position: 'bottom'`, no tick, no line, no gridline. Labels `12px` black. |
+| Y-axis | Number, `position: 'left'`, `min: 0`, `max: maxValue × 1.2`, `nice: false`. Horizontal gridlines `#DFE1E2`. Labels `$XX` compact format. |
+| Colors | Per-bar via `itemStyler`: pre = `#A9A6FF` (indigo-300), post = `#5A55E3` (indigo-900). |
+| Corner radius / stroke | `cornerRadius: 6`, `strokeWidth: 0` |
+| Bar labels | `label.enabled: true`, `color: '#000000'`, `fontSize: 11`, formatted `$XX.XX` |
+| Legend | Disabled at AG Charts level. No custom legend on the card — the bars are self-labelled by the X-axis. |
+| Native AG Charts tooltip | Disabled (`tooltip: { enabled: false }`). No hover tooltip on the card bars. |
+| Chart body padding | `{ top: 8, right: 8, bottom: 0, left: 0 }` |
 
-**Why a single series with per-row fills, not two series?** The legend toggle on the card *filters the data array* rather than hiding a series — this lets each bar disappear cleanly without leaving a phantom category slot on the Y-axis. If both cohorts are visible the data has two rows; toggling one off rebuilds the data with one row and updates the chart. Don't refactor into two series without re-thinking the toggle UX.
+**Chart data shape for the card:**
 
-### 5.2 Detail trend card — line chart (two series)
+```js
+const chartData = [
+  { stage: 'Pre-enrollment avg spend',  value: 14.25, tone: 'pre' },
+  { stage: 'Post-enrollment avg spend', value: 17.40, tone: 'post' },
+];
+```
 
-| Property                    | Value                                                                                                                                                                                                                                       |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Library                     | AG Charts (Community v13.2.1)                                                                                                                                                                                                               |
-| Type                        | Line, two series                                                                                                                                                                                                                            |
-| X-axis                      | Time, `nice: false`, `min` / `max` = first / last day in the data. Ticks every 4 days in the reference (computed in code; do not hardcode the count). Label format `%b %-d`.                                                                |
-| Y-axis                      | Number, `min: 17, max: 28`, `interval: { values: [17, 19, 21, 23, 25, 27] }`, label formatter `$XX`. **These hardcoded bounds are placeholder data scaling — replace with values derived from the real series range when wiring up.**       |
-| Series order                | Loyalty first, Non-loyalty second                                                                                                                                                                                                           |
-| Series colors               | Loyalty = `#5A55E3` (indigo-900), Non-loyalty = `#FF6600` (vermilion-900). Both solid `strokeWidth: 2`. **Two palette colors are correct here** — unlike Total Guests / Retention Cohort, the two series are semantically distinct cohorts, not the same metric over two windows. |
-| Markers                     | `enabled: true, size: 0`. No `itemStyler` is wired today so markers stay hidden even on hover — flag in § 10 if PM wants the standard hover-marker treatment.                                                                              |
-| Native AG Charts tooltip    | Disabled (`tooltip: { enabled: false }`). **No manual tooltip is wired today** — flag in § 10                                                                                                                                                 |
-| Native AG Charts crosshair  | Enabled on X (`crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] }`). This is native AG Charts crosshair, unlike Total Guests / Guest Lifecycle which roll their own.                                                          |
-| Legend                      | Disabled at AG Charts level; custom legend above the plot area (see § 8)                                                                                                                                                                    |
+### 5.2 Detail page — line chart (two series)
 
-### 5.3 Detail breakdown card — vertical grouped bars
+| Property | Value |
+|---|---|
+| Library | AG Charts (Community v13) |
+| Type | Line, two series |
+| `xKey` | `date` (JS `Date` object, constructed at local midnight) |
+| X-axis | Time, `nice: false`, `min`/`max` = first/last date in the data. Label format `%b %-d` (e.g. `Mar 18`), `avoidCollisions: true`. Tick marks `size: 4`. |
+| Y-axis | Number, `position: 'left'`. `min`/`max` derived from data: `lo − range × 0.1` / `hi + range × 0.1` (10% padding). Horizontal gridlines `#DFE1E2`. Labels `$XX` compact format. |
+| Series — This period | `yKey: 'current'`, color `#5A55E3`, `strokeWidth: 2`, solid line, `lineDash` unset. |
+| Series — Previous period | `yKey: 'prev'`, same color `#5A55E3`, `strokeWidth: 2`, `lineDash: [2, 2]` dashed. Hidden when `Compare to` = `No comparison`. |
+| Markers | `enabled: true, size: 0`. On hover (`highlightState === 'highlighted-item'`): `size: 10`, fill `#5A55E3`, white stroke `strokeWidth: 2`. |
+| Native AG Charts tooltip | Disabled (`tooltip: { enabled: false }`). Replaced with manual tooltip — see § 9. |
+| Native AG Charts crosshair | Disabled. Replaced with manual dashed vertical line — see § 9. |
+| Legend | Disabled at AG Charts level; custom toggleable legend above the chart — see § 8. |
+| Chart body padding | `{ top: 8, right: 0, bottom: 0, left: 0 }` |
 
-| Property                    | Value                                                                                                                                                                                                                                       |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Library                     | AG Charts (Community v13.2.1)                                                                                                                                                                                                               |
-| Type                        | Two `bar` series, `direction: 'vertical'`, sharing the same `xKey: 'label'` (grouped by category)                                                                                                                                          |
-| X-axis (category, bottom)   | `paddingInner: 0.32, paddingOuter: 0.18`, no tick, no line, no grid                                                                                                                                                                         |
-| Y-axis (number, left)       | `min: 0, max: 30`, `interval: { values: [0, 10, 20, 30] }`, label formatter `$XX`. **These hardcoded bounds are placeholder data scaling — replace when wiring up.**                                                                       |
-| Series                      | `loyalty` (fill `#5A55E3`) and `nonLoyalty` (fill `#FF6600`). `cornerRadius: 4`, `strokeWidth: 0`. Visibility driven by `breakdownVisibility` state, toggled via the custom legend (see § 8).                                              |
-| Native AG Charts tooltip    | Disabled. **No manual tooltip is wired today** — flag in § 10.                                                                                                                                                                              |
+**Chart data shape for the detail (one row per cohort date):**
+
+```js
+const chartRow = {
+  date:    new Date('2026-03-18T00:00:00'),   // local midnight
+  current: 3.10,   // $ lift for this cohort date, current period
+  prev:    2.30,   // $ lift for this cohort date, previous period (null if no prev)
+};
+```
 
 ---
 
 ## 6. Filters
 
-Inherited from the global dashboard filter bar — see `[dashboard_beta_ux.md` § Global Filters](../dashboard_beta_ux.md#global-filters). All globally defined filters apply, with **one explicit override**: the global Loyalty filter is invalid for this chart.
+Inherited from the global dashboard filter bar — see `[dashboard_beta_ux.md` § Global Filters](../dashboard_beta_ux.md#global-filters).
 
-| Filter                      | Options                                                | Applies                | Notes                                                                                                                                                                                                                                                                                                                                                          |
-| --------------------------- | ------------------------------------------------------ | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Date range**              | 7D, 30D, **90D (default)**, 12M, YTD, Custom           | Yes — full support     | Drives the trend X-axis range, the period summary used by the card hero and detail hero, and the breakdown's aggregation window. **The default landing range on this chart's detail page is 90D** (not 12M), because daily $/visit signals stabilize with at least ~30 visits per cohort per bucket. No minimum-range constraint enforced today — confirm in § 10. |
-| **Compare to**              | **Previous period (default)**, Previous year, No comparison | Yes — hero pills only  | Used to compute the lift Δ pp pill and (on detail) the `+32% prev period lift` suffix. The trend chart body does **not** render the comparison window in v1 — only the hero uses it. When `No comparison` is chosen, both the pill and the suffix hide.                                                                                                  |
-| **Stores and Store groups** | Single or multi-store / store group                    | Yes                    | Applied server-side before the loyalty split. Constrains every shape — period summary, trend, and breakdown all reflect only the selected stores' visits. Filter scope is "visits at the selected store(s)" — there is no "guest-acquired-at-store" wrinkle here, unlike Retention Cohort. |
-| **Loyalty / non-loyalty**   | Loyalty members / non-members                          | **No — disabled / ignored** | The metric is *defined* by the loyalty vs. non-loyalty split — pre-filtering to one side would zero out the other and make lift undefined. The global Loyalty filter should be **visually disabled or hidden** when this card / detail page is in view, **or** the chart should ignore it server-side and surface a "Loyalty filter ignored on this chart" notice. PM to confirm UX — see § 10. |
-| **Segments**                | Any saved guest segment                                | Yes                    | Restricts visits to guests in the selected segment(s). Each cohort's average is then computed over that intersection — useful for "what is the spend lift among guests in segment X?" Loyalty status is still split within the segment.                                                                                                                          |
+| Filter | Options | Applies | Notes |
+|---|---|---|---|
+| **Date range** | 7D, 30D, **90D**, 12M, YTD, Custom | Yes — full support | Determines `N` (window length) and drives the cohort shift. Shorter ranges produce more recent but smaller cohorts. Longer ranges push cohorts further back in time. No minimum-range constraint — even 7D is valid. |
+| **Compare to** | Previous period, No comparison | Yes — hero pill and prev-period line | When `No comparison`: delta pill hides, period sub-text hides, the previous-period line series is removed from the detail chart. The card bars are unaffected (they show only the current cohort). |
+| **Stores and Store groups** | Single or multi-store | Yes | Applied server-side: only transactions at the selected store(s) count toward pre/post-enrollment spend. Enrollment eligibility is unaffected — a guest is still in the cohort if they enrolled in the program, even if they visited many stores. Only their spend at the filtered stores is counted. |
+| **Loyalty / non-loyalty** | Loyalty members | **Not applicable** | This metric is defined by enrolled guests only. The non-loyalty half of this filter would produce an empty result set. The filter should be visually disabled or ignored when this chart is in view. Confirm UX behavior with PM — see § 10. |
+| **Segments** | Any saved segment | Yes | Restricts the enrolled-guest cohort to guests who are also in the selected segment. Useful for: "what is the spend lift among first-time buyers who enrolled?" |
 
-### Filter scope semantics (Stores and Store groups)
+### Cohort shifting with filters
 
-A loyalty member who visited Store A in March and Store B in April, with a store filter `Store A`, contributes only her March (Store A) visits to both the loyalty visit count and the loyalty spend numerator. Her April Store B visits are excluded entirely on both sides. This is straightforward "visit-at-store" filtering with no cross-month wrinkle.
-
-### Loyalty filter vs. loyalty cohort — important to disambiguate
-
-The same word powers two unrelated concepts:
-
-- **Loyalty filter** (global): is the guest enrolled in the loyalty program? Yes / No.
-- **Loyalty cohort** (this chart): the *Y* of the loyalty-vs-non-loyalty split that defines the metric.
-
-These are the same dimension. That's exactly why the global filter is incompatible — picking one side of the split as a filter collapses the chart. The same dimension shows up *as* the metric here, not *applied to* the metric.
+When a `Stores` filter is applied, the `completeAsOf` date and the shifting logic operate identically — the store filter constrains which transactions count, but the dates of the cohort window are still derived from the selected dashboard range.
 
 ### No-comparison case
 
 When `Compare to` = `No comparison`:
-- Card: delta pill hides; period text is unchanged (it never carried the comparison suffix on the card).
-- Detail page: delta pill hides; period text drops the `· +32% prev period lift` suffix; the trend chart body is unaffected (it never rendered comparison series).
+- Card: delta pill hides; bars show only the current cohort window summary; period sub-text hides.
+- Detail: delta pill hides; period sub-text hides; the dashed `prev` line series is removed from the chart; the legend shows only `This period`.
 
 ---
 
 ## 7. Dashboard Card (`beta/index.html`)
 
-Compact card in the 2-column dashboard grid (`data-metric-id="loyalty-spend-lift"`). Default layout position: **row 4, column 0** (`{ id: 'loyalty-spend-lift', x: 0, y: 3 }` in `DEFAULT_LAYOUT`, layout key `g360-dashboard-layout-v7`).
+Compact card in the 2-column dashboard grid (`data-metric-id="loyalty-spend-lift"`).
 
-- **Header:** title `Loyalty spend lift` + subtitle `Avg spend per visit, loyalty vs. non-loyalty`. Header is clickable → navigates to `dashboard-loyalty-spend-lift.html` (wired via the `perChartPages` map in `openChartDetail`).
-- **Hero metric block:** `+35%` lift value + `+2.8pp` non-inverse delta pill. Period text directly below: `$24.80 loyalty · $18.40 non-loyalty per visit`. No info icon, no comparison suffix.
-- **Toggleable legend:** 2 buttons — `Loyalty` (solid `#5A55E3` marker) and `Non-loyalty` (solid `#FF6600` marker). Toggling one **removes that row from the chart data** (the bar disappears entirely; the remaining bar shifts up into the freed Y-axis slot). At least one cohort must remain visible — the toggle returns early if you try to disable the only visible cohort.
-- **Horizontal bar chart** filling the remaining card space — see § 5.1.
-- **No breakdown dropdown** on the card (the breakdown lives only on the detail page).
-- **3-dot overflow menu** with the standard `Export CSV / Download chart / Ask Ava` items inherited from the dashboard card chrome.
+- **Header:** title `Loyalty spend lift` + subtitle `Avg transaction value lift after enrollment`. Header is clickable → navigates to `dashboard-loyalty-spend-lift.html`.
+- **Hero metric block:**
+  - Primary value: `$ lift` (e.g. `+$4.39`), bold `20px`.
+  - Delta pill: `%` change vs. previous cohort (e.g. `+22.11%`). Standard non-inverse colors (green = up, red = down).
+  - Period sub-text row: `{value} previous period avg` on the left; `Included cohorts: {from} to {to}` with an info icon on the right. The cohort range text has a tooltip explaining the shift.
+- **No legend** — the bars carry their own X-axis labels.
+- **Vertical bar chart** filling the remaining card space (uses `flex: 1` to fill the stretched card body — see § Layout below).
+- **3-dot overflow menu:** `Export CSV`, `Download chart`.
+- **No breakdown dropdown** on the card.
+
+### Layout note
+
+The dashboard grid stretches all cards in a row to equal height. The card body must set `flex: 1` so the chart canvas absorbs the extra space rather than leaving blank space below the bars. The chart canvas should have a `min-height` of `256px` and `flex: 1`.
 
 ---
 
 ## 8. Detail Page (`beta/dashboard-loyalty-spend-lift.html`)
 
-Top-to-bottom: breadcrumb → title bar (h1 `Loyalty spend lift` + Help button) → global filter bar → two stacked chart cards (`chart-detail-charts-stack`) → data table + pagination → chart-point context menu.
-
-**Default date range on the detail page is 90D**, not 12M — the `90D` button has `btn-group__item--active` in the markup. This differs from most other detail pages, which default to 12M. Document the choice if you intend to keep it.
+Top-to-bottom: breadcrumb → title bar (h1 `Loyalty spend lift` + Help button) → global filter bar → chart card → data table → pagination.
 
 ### 8.1 Trend card
 
-- **Header:** title `Loyalty spend lift`, subtitle `Avg spend per visit over time`, 3-dot menu with `Export CSV / Download chart` (no Ask Ava in the prototype — confirm with PM whether to add for parity with the dashboard card menu).
-- **Hero metric block:** same `+35%` value + `+2.8pp` pill as the card. Period text: `$24.80 loyalty · $18.40 non-loyalty per visit · +32% prev period lift`. The prev-period suffix is the only delta from the card hero.
-- **Legend:** `Loyalty` / `Non-loyalty` toggles. Toggling sets `visible` on the corresponding line series — at least one must remain visible.
-- **Chart:** line chart, two series — see § 5.2.
+- **Header:** title `Loyalty spend lift`, subtitle `Avg transaction value lift after enrollment`, 3-dot menu with `Export CSV / Download chart`.
+- **Hero metric block:** same `$ lift`, delta pill, and period sub-text as the card. The cohort range notice sits in the same row as the period sub-text, pushed to the right. Both follow the same hide rules as the card.
+- **Toggleable legend:** two buttons — `This period` (solid indigo swatch `#5A55E3`) and `Previous period` (striped/dashed indigo swatch). Toggling a button hides that series in the chart and removes it from the tooltip. At least one must remain visible — the toggle is a no-op if you try to disable the only visible series. `Previous period` only appears when `Compare to` ≠ `No comparison`.
+- **Line chart:** two series as defined in § 5.2. Taller plot area (`389px`).
 
-### 8.2 Breakdown card
+### 8.2 Data table
 
-- **Header:** title `Spend lift by dimension`, subtitle `Avg spend per visit, loyalty vs. non-loyalty`, right-aligned dropdown control + 3-dot menu.
-- **Breakdown dropdown:** `By location` (default) / `By channel` / `By enrollment cohort`. Selecting an option:
-  1. Updates the dropdown button label.
-  2. Resets legend visibility to `{ loyalty: true, nonLoyalty: true }`.
-  3. Re-renders the legend, the data table, and re-initializes the breakdown chart with `BREAKDOWN_DATA[mode]`.
-- **Legend:** `Loyalty` / `Non-loyalty` toggles — same behavior as the trend card legend.
-- **Chart:** vertical grouped bars — see § 5.3.
+| Column | Format | Notes |
+|---|---|---|
+| Enrollment cohort | `Mar 18, 2026` | Left-aligned. One row per day in `seriesCurrent`. |
+| Enrolled guests | Integer, comma-separated (e.g. `9,675`) | Right-aligned. Guests who enrolled on that date and have a complete post-window. |
+| Avg pre-enrollment ticket | `$XX.XX` (two decimals) | Right-aligned. |
+| Avg post-enrollment ticket | `$XX.XX` | Right-aligned. |
+| $ lift | Signed `±$XX.XX` (e.g. `+$7.17`, `−$1.20`) | Right-aligned. |
+| % lift | `XX.XX%` (e.g. `787.91%`) | Right-aligned. Rendered as plain text — no pill. `—` when pre-enrollment spend is zero. |
 
-**Prototype breakdown values** (replace with real query results):
-
-| Dimension          | Categories                                                              |
-| ------------------ | ----------------------------------------------------------------------- |
-| `location`         | Downtown, Midtown, Airport, Suburbs, University                         |
-| `channel`          | In-store, Digital, Delivery, Drive-thru                                 |
-| `enrollment`       | `New members (<90d)`, `Established members`, `Identified non-members`  |
-
-The `Identified non-members` bucket in the enrollment breakdown is a useful sanity-check: both bars should be equal (and equal to the period's non-loyalty avg) because the row represents "identified non-members compared against identified non-members". In the prototype both = $18.40. Validate this stays true in production.
-
-### 8.3 Data table
-
-| Column          | Format                                                          | Notes                                                                                              |
-| --------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Date            | `Jan 28` (`%b %-d`)                                             | Left-aligned. Header uses `.chart-th-inner--start` + sort affordance                              |
-| Loyalty avg     | `$XX.XX` (two decimals)                                         | Right-aligned                                                                                       |
-| Non-loyalty avg | `$XX.XX`                                                        | Right-aligned                                                                                       |
-| Lift            | Signed `±X.X%` pill — green `#effaf9 / #257469` if ≥ 0, red `#fdecef / #b1294a` if negative | Right-aligned, font-weight 500, computed via `(loyalty - nonLoyalty) / nonLoyalty * 100`, one decimal |
-
-- Standard Bento `thead` styling — `background: #dfe1e2`, no `border-bottom`, `text-transform: none`, `font-size: 1rem`, `font-weight: 800`, `color: #000`, `height: 3.5rem`, `padding: 8px 16px`. Each header cell carries a sort icon (`material-symbols-rounded` `sort`) — sorting is markup-only in the prototype; wire to real sort handlers.
-- **Pagination:** standard pattern (`.pagination__*` classes), 10 rows per page. The prototype hardcodes "of 3 pages" for 30 trend rows but `prevPage` / `nextPage` are no-ops — wire to real handlers.
-- Filter changes refetch and re-render the entire detail page (both charts + table) in lockstep.
+- Standard Bento `thead` styling — `background: #dfe1e2`, `text-transform: none`, `font-size: 1rem`, `font-weight: 800`, `color: #000`, `height: 3.5rem`, `padding: 8px 16px`.
+- Sort affordances in column headers (markup only in the prototype — wire to real sort handlers in production).
+- **Pagination:** 10 rows per page, standard `.pagination__*` classes. Filter changes refetch and re-render both the chart and the table.
 
 ---
 
 ## 9. Interactions
 
-### Hover → Tooltip
+### Hover → Tooltip + dashed vertical line (detail page only)
 
-**Card (horizontal bars):** native AG Charts tooltip is `enabled: false` and no manual tooltip is wired today. Hover does nothing in the prototype. If PM wants the standard tooltip treatment, mirror the Total Guests / Guest Lifecycle pattern (manual tooltip floated next to the cursor, plot-area snap math computed from `getBoundingClientRect()` + the AG Charts `padding`). Tracked in § 10.
+Manual implementation, not AG Charts native (mirror the Total Guests / Guest Lifecycle pattern).
 
-**Detail trend chart:** same situation — native tooltip disabled, no manual implementation. The AG Charts X-axis crosshair *is* enabled (`stroke: '#c6c6c6'`, `lineDash: [4, 4]`), so the user gets a vertical guide line without value readout. Wire a manual tooltip following the lifecycle / total-guests pattern when productionizing — the snapped data row should include both `loyalty` and `nonLoyalty` $/visit, the lift on that day, and respect the legend's visibility flags.
+- On `mousemove` over the chart container, snap to the nearest data point on X by mapping cursor position to an array index (`plotLeft ≈ 46px`, `plotRightPad ≈ 0`).
+- Show a tooltip floated fixed next to the cursor:
+  - **Heading:** `Daily cohort lift`, bold `16px`.
+  - **Body:** one row showing the snapped cohort date + the `$ lift` value for that day. Indigo solid swatch on the left.
+  - **Delta pill row:** `% change` vs. prev-period lift for that date, with `vs. previous period` label. Hidden when the prev-period series is not visible.
+  - **Prev row (below separator):** striped indigo swatch + `Previous period` label + the prev-period `$ lift` value. Hidden when the prev-period series is not visible.
+- Show a **dashed vertical line** (`#c6c6c6`, 4-on/4-off, `strokeWidth: 1`) at the snapped X, driven by updating `chart.updateDelta({ axes: { x: { crossLines: [...] } } })` via `requestAnimationFrame` (same pattern as Guest Repeat Rate).
+- Both tooltip and crosshair hide on `mouseleave` and on `scroll`/`resize`.
+- On `detach()`, cancel any pending `requestAnimationFrame` and remove the crosshair.
 
-**Detail breakdown chart:** native tooltip disabled, no manual implementation. Productionize the same way — tooltip per bar with cohort label + value + lift for that category.
+### Hover — card bars
 
-### Click → Context menu (detail page only)
+No hover tooltip on the dashboard card bars. The bar labels (`$XX.XX` inside each bar) are the only value readout.
 
-- The `chart-point-menu` markup (View users / Create segment / Ask Ava) is present at the bottom of the detail page DOM but **no click handlers wire it to either chart in the prototype script**. The menu currently never opens.
-- To productionize: on click inside either detail chart's plot area, snap to the nearest data row (for the trend) or the clicked bar (for the breakdown), and open the menu anchored next to the cursor with the standard header (color dot for the clicked series, date or category label, value). Pattern is the same as Total Guests detail; reuse `attachChartPointMenu` if it has been generalized.
-- The card never opens a context menu — clicking the card navigates to the detail page.
+### Click → Context menu
+
+Not implemented in the prototype. Tracked as a follow-up — see § 10.
 
 ---
 
 ## 10. Open Questions for PM
 
-These are not blockers for wiring the chart but should be settled before the metric ships:
+These are not blockers for the prototype but should be settled before production:
 
-1. **Visit dedupe rule.** Guest-day is the assumed unit. Confirm vs. Punchh Check-in semantics (transaction-level? store-visit-level?) so the avg-$/visit numerator and denominator match QBR.
-2. **Loyalty status timing.** As-of-transaction-time is the correct answer for QBR parity; as-of-today is simpler and what some other charts use. Confirm parity priority.
-3. **Net amount basis.** Pre-tax vs. post-tax. Pick to match Punchh `Avg Checkin Net Purchase Amount` exactly.
-4. **Channel scope.** POS-only vs. all channels in the avg-$/visit numerator (matters for tenants where Delivery / Drive-thru are routed through a non-POS path).
-5. **Loyalty filter UX.** When the global Loyalty filter is on and the user navigates to this chart, do we (a) visually disable the filter, (b) hide it, or (c) silently ignore it server-side and show a banner? Behavior must be explicit because the chart will look broken otherwise.
-6. **Detail-page default range.** The prototype defaults to 90D (not 12M like other detail pages). Confirm intentional.
-7. **Comparison treatment on the trend chart.** v1 shows comparison only in the hero pill / period suffix. Should the trend chart also draw a dashed prev-period line per series (4 lines total)? Visual density gets busy fast — confirm desired scope.
-8. **Enrollment cohort buckets.** Prototype uses `< 90d / Established / Identified non-members`. Confirm thresholds and labels per tenant.
-9. **Tooltip + context-menu wiring.** Both are unwired today. Confirm the standard hover-tooltip + click-context-menu pattern applies (it almost certainly does for parity with other detail pages).
-10. **Hero precision on negative lift.** Card hero rounds to whole percent (`+35%`). Negative lift values like `-3.2%` would lose useful precision at whole-percent rounding — confirm with PM whether the card should switch to one-decimal precision when |lift| < 10.
-11. **Identified-guest scope.** Confirm anonymous traffic is excluded from both cohorts.
+1. **Transaction amount basis.** `checkins.receipt_amount` is used today. Confirm whether this matches the QBR `Avg Checkin Net Purchase Amount` (post-discount, pre-tax vs. post-tax).
+2. **Transaction deduplication within a window.** If a guest has two transactions on the same enrollment-cohort day, both count toward the pre/post spend total. Confirm "all transactions in window" vs. "one per day" semantics.
+3. **Loyalty filter UX.** When the global Loyalty filter is active and the user views this chart, do we (a) visually disable the filter, (b) hide it, or (c) silently ignore it server-side and show a notice? Behavior must be explicit.
+4. **Zero pre-enrollment spend.** Some guests have no transactions in their pre-enrollment window (e.g. they enrolled immediately on first visit). `% lift` is `null` for those guests. Confirm whether to exclude them from both the series point and the cohort summary `avgPreSpend`, or include them with `$0` pre-spend.
+5. **Context menu wiring.** The prototype does not wire a click-to-context-menu on the detail chart. Confirm whether the standard `View users / Create segment / Ask Ava` pattern applies.
+6. **Detail-page default date range.** Should the detail page open with the same range as the dashboard card, or a fixed default (the existing prototype spec suggested 90D for this chart type)?
+7. **Hero precision on small lifts.** `$ lift` is shown to two decimal places. For brands with very low average tickets (e.g. `$0.12`), this may still round aggressively. Confirm precision is sufficient.
+8. **Identified-guest scope.** Confirm anonymous traffic (guests with no IDR match) is excluded from enrollment cohorts entirely.
 
 ---
 
-## 11. Reference Files
+## 11. Mock Data Shape (prototype)
 
-- **Source proposition (QBR / PAG parity)** — `[docs/analytics_proposition.md](../analytics_proposition.md)` (search `Spend Lift`, `Loyalty Spend Lift`)
+Use the following shape for `SPEND_LIFT_DATA` in `beta/index.html` and `SPEND_LIFT_TREND_DATA` in `beta/dashboard-loyalty-spend-lift.html`. Replace with real API data when wiring up.
+
+```js
+// dashboard card — summary
+const SPEND_LIFT_SUMMARY = {
+  avgPreSpend:       3.07,
+  avgPostSpend:      7.46,
+  lift:              4.39,
+  liftPct:         143.00,
+  liftPrev:          2.10,
+  deltaPct:         109.05,
+  effectiveDateFrom: '2024-05-17',
+  effectiveDateTo:   '2025-05-17',
+};
+
+// detail page — trend series (one entry per cohort date)
+const SPEND_LIFT_TREND_DATA = [
+  { date: '2024-05-17', enrolledGuests: 9675, avgPreSpend:  0.91, avgPostSpend:  8.08, lift:  7.17, liftPct: 787.91 },
+  { date: '2024-05-18', enrolledGuests: 7791, avgPreSpend:  1.09, avgPostSpend:  8.36, lift:  7.27, liftPct: 666.97 },
+  { date: '2024-05-19', enrolledGuests: 6784, avgPreSpend:  1.33, avgPostSpend:  8.45, lift:  7.12, liftPct: 535.34 },
+  { date: '2024-05-20', enrolledGuests: 7636, avgPreSpend:  0.90, avgPostSpend:  8.02, lift:  7.12, liftPct: 791.11 },
+  { date: '2024-05-21', enrolledGuests: 7872, avgPreSpend:  1.05, avgPostSpend:  8.20, lift:  7.15, liftPct: 680.95 },
+  // ...continue for the full cohort window
+];
+```
+
+---
+
+## 12. Reference Files
+
 - **Dashboard UX patterns (cards, filters, detail page)** — `[docs/dashboard_beta_ux.md](../dashboard_beta_ux.md)`
-- **Reusable chart conventions (palette order, font, tooltip + context-menu patterns)** — `[docs/dashboard_beta_ux.md` § Chart Colors](../dashboard_beta_ux.md#chart-colors) and `[analytics_page_patterns.md](../../analytics_page_patterns.md)`
-- **Reference implementation — dashboard card (horizontal bars)** — `[beta/index.html](../../beta/index.html)` (search `initLoyaltySpendLiftChart`, `SPEND_LIFT_COMPARE_DATA`, `loyaltySpendLiftVisibility`, `toggleLoyaltySpendLiftSeries`)
-- **Reference implementation — detail page (trend + breakdown + table)** — `[beta/dashboard-loyalty-spend-lift.html](../../beta/dashboard-loyalty-spend-lift.html)` (search `SPEND_LIFT_TREND_DATA`, `BREAKDOWN_DATA`, `initSpendLiftTrendChart`, `initSpendLiftBreakdownChart`, `selectBreakdown`)
-- **Card layout CSS** — `[beta/beta.css](../../beta/beta.css)` (search `loyalty-spend-lift`, `chart-detail-charts-stack`)
-- **Sibling spec for the breakdown-dropdown pattern** — `[visit_frequency_chart_spec.md](./visit_frequency_chart_spec.md)`
+- **Reusable chart conventions (palette order, font, tooltip + context-menu patterns)** — `[docs/dashboard_beta_ux.md` § Chart Colors](../dashboard_beta_ux.md#chart-colors)`
+- **Prototype spec for the alternative loyalty-vs-anonymous definition** — `[docs/charts_spec/dashboard_loyalty_spend_lift_chart_spec.md](./dashboard_loyalty_spend_lift_chart_spec.md)` (kept for reference — different metric, do not mix)
+- **Reference implementation — dashboard card (vertical bars)** — `[beta/index.html](../../beta/index.html)` (search `loyalty-spend-lift`)
+- **Reference implementation — detail page (trend line + table)** — `[beta/dashboard-loyalty-spend-lift.html](../../beta/dashboard-loyalty-spend-lift.html)`
+- **Card layout CSS** — `[beta/beta.css](../../beta/beta.css)` (search `loyalty-spend-lift`)

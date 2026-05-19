@@ -235,7 +235,7 @@
             <div class="chart-card__header chart-card__header--detail">
               <div class="chart-card__header-text">
                 <p class="chart-card__title">Loyalty spend lift</p>
-                <p class="chart-card__subtitle">Avg spend per visit over time</p>
+                <p class="chart-card__subtitle">Avg transaction value lift after enrollment</p>
               </div>
               <div class="chart-card__header-controls">
                 <div class="chart-context-wrap">
@@ -245,7 +245,7 @@
                   <div class="chart-context-menu" id="chart-menu-trend">
                     <ul>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
-                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
+                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">image</span><span>Download chart</span></button></li>
                     </ul>
                   </div>
                 </div>
@@ -254,54 +254,20 @@
             <div class="chart-card__body">
               <div class="chart-card__metric">
                 <div class="chart-card__metric-row">
-                  <p class="chart-card__metric-value">+35%</p>
-                  <span class="chart-card__metric-pill chart-card__metric-pill--up">+2.8pp</span>
+                  <p class="chart-card__metric-value">+$4.39</p>
+                  <span class="chart-card__metric-pill chart-card__metric-pill--up">+109.05%</span>
                 </div>
-                <p class="chart-card__metric-period">$24.80 loyalty · $18.40 non-loyalty per visit · +32% prev period lift</p>
+                <div class="chart-card__metric-period-row">
+                  <span class="chart-card__metric-period">$2.10 previous period avg</span>
+                  <div class="chart-card__metric-info-wrap">
+                    <span class="material-symbols-rounded chart-card__metric-info-icon">info</span>
+                    <span class="chart-card__metric-info-text">Included cohorts: May 17, 2024 to May 17, 2025</span>
+                    <div class="chart-card__metric-info-tooltip">This chart uses guests who enrolled during this cohort window. We shift the cohort back so every guest has a complete post-enrollment window for the selected date range.</div>
+                  </div>
+                </div>
               </div>
               <div class="chart-card__legend" id="chart-legend-trend"></div>
               <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-spend-lift-trend"></div>
-            </div>
-          </div>
-
-          <div class="chart-card">
-            <div class="chart-card__header chart-card__header--detail">
-              <div class="chart-card__header-text">
-                <p class="chart-card__title">Spend lift by dimension</p>
-                <p class="chart-card__subtitle">Avg spend per visit, loyalty vs. non-loyalty</p>
-              </div>
-              <div class="chart-card__header-controls">
-                <div class="dropdown" id="dd-breakdown">
-                  <div class="dropdown__wrapper">
-                    <button class="dropdown__button" onclick="toggleDropdown('dd-breakdown')">
-                      <span id="dd-breakdown-label">By location</span>
-                      <i class="material-symbols-rounded">expand_more</i>
-                    </button>
-                  </div>
-                  <div class="dropdown__options dropdown__options--right">
-                    <ul>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectBreakdown(this, 'location')"><span>By location</span></button></li>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectBreakdown(this, 'channel')"><span>By channel</span></button></li>
-                      <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectBreakdown(this, 'enrollment')"><span>By enrollment cohort</span></button></li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="chart-context-wrap">
-                  <button class="button transparent no-content chart-card__dots-btn" onclick="toggleChartMenu(event, 'breakdown')" aria-label="More options" aria-expanded="false">
-                    <i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i>
-                  </button>
-                  <div class="chart-context-menu" id="chart-menu-breakdown">
-                    <ul>
-                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
-                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="chart-card__body">
-              <div class="chart-card__legend" id="chart-legend-breakdown"></div>
-              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-spend-lift-breakdown"></div>
             </div>
           </div>
           </div>
@@ -554,88 +520,82 @@
 
     /* ═══════════════════════════════════════════════════
        Loyalty Spend Lift — detail page charts
+       Line chart: daily $ lift per enrollment-cohort date.
+       Two series: current period (solid) + previous period (dashed).
     ═══════════════════════════════════════════════════ */
-    var PALETTE = { loyalty: '#5A55E3', nonLoyalty: '#FF6600' };
+    var SPEND_LIFT_COLOR    = '#5A55E3';
     var spendLiftTrendChart = null;
     var spendLiftTrendOptions = null;
-    var spendLiftBreakdownChart = null;
-    var spendLiftBreakdownOptions = null;
-    var trendVisibility = { loyalty: true, nonLoyalty: true };
-    var breakdownVisibility = { loyalty: true, nonLoyalty: true };
-    var currentBreakdown = 'location';
+    var trendVisibility = { current: true, prev: true };
+    var spendLiftTooltipEl = null;
+    var spendLiftCrossLinePending = null;
+    var spendLiftCrossLineFrame  = null;
+    var spendLiftLastCrossLine   = null;
 
+    // Mock data: one row per enrollment-cohort date, current and previous period $ lift.
     var SPEND_LIFT_TREND_DATA = (function() {
-      var base = new Date(2026, 0, 28);
-      var loyaltyBase = 24.80;
-      var nonBase = 18.40;
       var rows = [];
-      for (var i = 0; i < 30; i++) {
-        var d = new Date(base.getFullYear(), base.getMonth(), base.getDate() + i);
-        var wobble = Math.sin(i / 4) * 0.35;
-        rows.push({
-          date: d,
-          loyalty: +(loyaltyBase + wobble + (i % 5) * 0.04).toFixed(2),
-          nonLoyalty: +(nonBase + wobble * 0.6 + (i % 7) * 0.02).toFixed(2),
-        });
-      }
-      return rows;
+      var rawPoints = [
+        { date: new Date(2024, 4, 17), current: 7.17, prev: 5.12 },
+        { date: new Date(2024, 4, 18), current: 7.27, prev: 5.20 },
+        { date: new Date(2024, 4, 19), current: 7.12, prev: 4.98 },
+        { date: new Date(2024, 4, 20), current: 7.12, prev: 5.05 },
+        { date: new Date(2024, 4, 21), current: 7.15, prev: 5.10 },
+        { date: new Date(2024, 4, 22), current: 6.89, prev: 4.80 },
+        { date: new Date(2024, 4, 23), current: 6.95, prev: 4.87 },
+        { date: new Date(2024, 4, 24), current: 7.04, prev: 4.91 },
+        { date: new Date(2024, 4, 25), current: 7.31, prev: 5.14 },
+        { date: new Date(2024, 4, 26), current: 7.44, prev: 5.28 },
+        { date: new Date(2024, 4, 27), current: 7.22, prev: 5.03 },
+        { date: new Date(2024, 4, 28), current: 6.78, prev: 4.62 },
+        { date: new Date(2024, 4, 29), current: 6.94, prev: 4.73 },
+        { date: new Date(2024, 4, 30), current: 7.08, prev: 4.88 },
+        { date: new Date(2024, 4, 31), current: 7.19, prev: 4.97 },
+        { date: new Date(2024, 5,  1), current: 7.36, prev: 5.22 },
+        { date: new Date(2024, 5,  2), current: 7.48, prev: 5.35 },
+        { date: new Date(2024, 5,  3), current: 7.29, prev: 5.11 },
+        { date: new Date(2024, 5,  4), current: 6.85, prev: 4.68 },
+        { date: new Date(2024, 5,  5), current: 6.91, prev: 4.74 },
+        { date: new Date(2024, 5,  6), current: 7.03, prev: 4.86 },
+        { date: new Date(2024, 5,  7), current: 7.25, prev: 5.08 },
+        { date: new Date(2024, 5,  8), current: 7.41, prev: 5.26 },
+        { date: new Date(2024, 5,  9), current: 7.17, prev: 5.01 },
+        { date: new Date(2024, 5, 10), current: 6.72, prev: 4.57 },
+        { date: new Date(2024, 5, 11), current: 6.88, prev: 4.70 },
+        { date: new Date(2024, 5, 12), current: 7.10, prev: 4.93 },
+        { date: new Date(2024, 5, 13), current: 7.33, prev: 5.18 },
+        { date: new Date(2024, 5, 14), current: 7.52, prev: 5.40 },
+        { date: new Date(2024, 5, 15), current: 7.39, prev: 5.23 },
+      ];
+      return rawPoints;
     }());
-
-    var BREAKDOWN_DATA = {
-      location: [
-        { label: 'Downtown', loyalty: 26.50, nonLoyalty: 19.20 },
-        { label: 'Midtown', loyalty: 24.10, nonLoyalty: 18.50 },
-        { label: 'Airport', loyalty: 22.40, nonLoyalty: 17.80 },
-        { label: 'Suburbs', loyalty: 25.60, nonLoyalty: 18.90 },
-        { label: 'University', loyalty: 23.80, nonLoyalty: 17.40 },
-      ],
-      channel: [
-        { label: 'In-store', loyalty: 25.20, nonLoyalty: 17.90 },
-        { label: 'Digital', loyalty: 24.10, nonLoyalty: 18.60 },
-        { label: 'Delivery', loyalty: 26.80, nonLoyalty: 19.40 },
-        { label: 'Drive-thru', loyalty: 23.50, nonLoyalty: 18.10 },
-      ],
-      enrollment: [
-        { label: 'New members (<90d)', loyalty: 23.10, nonLoyalty: 18.40 },
-        { label: 'Established members', loyalty: 25.40, nonLoyalty: 18.40 },
-        { label: 'Identified non-members', loyalty: 18.40, nonLoyalty: 18.40 },
-      ],
-    };
 
     function fmtChartDate(d) {
       return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
+    function fmtTableDate(d) {
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
     function fmtDollar(v) { return '$' + (+v).toFixed(2); }
-    function calcLiftPct(loyalty, nonLoyalty) {
-      return ((loyalty - nonLoyalty) / nonLoyalty) * 100;
+    function fmtSignedDollar(v) {
+      if (v === null || v === undefined) return '—';
+      return (v >= 0 ? '+$' : '-$') + Math.abs(v).toFixed(2);
     }
 
     function renderTrendLegend() {
       var el = document.getElementById('chart-legend-trend');
       if (!el) return;
       el.innerHTML = [
-        { key: 'loyalty', label: 'Loyalty', color: PALETTE.loyalty },
-        { key: 'nonLoyalty', label: 'Non-loyalty', color: PALETTE.nonLoyalty },
+        { key: 'current', label: 'This period',     dashed: false },
+        { key: 'prev',    label: 'Previous period', dashed: true  },
       ].map(function(s) {
+        var markerClass = s.dashed ? 'chart-card__legend-marker--striped' : 'chart-card__legend-marker--solid';
+        var markerStyle = s.dashed
+          ? 'background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + SPEND_LIFT_COLOR + ' 0,' + SPEND_LIFT_COLOR + ' 1.5px,transparent 1.5px,transparent 3px);'
+          : 'background:' + SPEND_LIFT_COLOR + ';';
         return (
           '<button type="button" class="chart-card__legend-item" data-series-key="' + s.key + '" aria-pressed="true" onclick="toggleTrendSeries(this, \'' + s.key + '\')">' +
-            '<span class="chart-card__legend-marker chart-card__legend-marker--solid" style="background:' + s.color + ';"></span>' +
-            '<span>' + s.label + '</span>' +
-          '</button>'
-        );
-      }).join('');
-    }
-
-    function renderBreakdownLegend() {
-      var el = document.getElementById('chart-legend-breakdown');
-      if (!el) return;
-      el.innerHTML = [
-        { key: 'loyalty', label: 'Loyalty', color: PALETTE.loyalty },
-        { key: 'nonLoyalty', label: 'Non-loyalty', color: PALETTE.nonLoyalty },
-      ].map(function(s) {
-        return (
-          '<button type="button" class="chart-card__legend-item" data-series-key="' + s.key + '" aria-pressed="true" onclick="toggleBreakdownSeries(this, \'' + s.key + '\')">' +
-            '<span class="chart-card__legend-marker chart-card__legend-marker--solid" style="background:' + s.color + ';"></span>' +
+            '<span class="chart-card__legend-marker ' + markerClass + '" style="' + markerStyle + '" aria-hidden="true"></span>' +
             '<span>' + s.label + '</span>' +
           '</button>'
         );
@@ -644,8 +604,8 @@
 
     function toggleTrendSeries(btn, key) {
       if (!spendLiftTrendChart || !spendLiftTrendOptions) return;
+      var other = key === 'current' ? 'prev' : 'current';
       var next = !trendVisibility[key];
-      var other = key === 'loyalty' ? 'nonLoyalty' : 'loyalty';
       if (!next && !trendVisibility[other]) return;
       trendVisibility[key] = next;
       btn.setAttribute('aria-pressed', String(next));
@@ -657,26 +617,153 @@
       spendLiftTrendChart.update(spendLiftTrendOptions);
     }
 
-    function toggleBreakdownSeries(btn, key) {
-      if (!spendLiftBreakdownChart || !spendLiftBreakdownOptions) return;
-      var next = !breakdownVisibility[key];
-      var other = key === 'loyalty' ? 'nonLoyalty' : 'loyalty';
-      if (!next && !breakdownVisibility[other]) return;
-      breakdownVisibility[key] = next;
-      btn.setAttribute('aria-pressed', String(next));
-      var newSeries = spendLiftBreakdownOptions.series.map(function(s) {
-        if (s.yKey === key) return Object.assign({}, s, { visible: next });
-        return s;
+    function computeTrendYBounds() {
+      var values = [];
+      SPEND_LIFT_TREND_DATA.forEach(function(row) {
+        if (trendVisibility.current && row.current !== null) values.push(row.current);
+        if (trendVisibility.prev    && row.prev    !== null) values.push(row.prev);
       });
-      spendLiftBreakdownOptions = Object.assign({}, spendLiftBreakdownOptions, { series: newSeries });
-      spendLiftBreakdownChart.update(spendLiftBreakdownOptions);
+      if (values.length === 0) return { min: null, max: null };
+      var lo = Math.min.apply(null, values);
+      var hi = Math.max.apply(null, values);
+      var range = Math.max(hi - lo, Math.max(Math.abs(hi), Math.abs(lo)) * 0.05) || 0.1;
+      return { min: lo - range * 0.1, max: hi + range * 0.1 };
+    }
+
+    function scheduleCrossLine(date) {
+      spendLiftCrossLinePending = date ? date.getTime() : null;
+      if (spendLiftCrossLineFrame !== null) return;
+      spendLiftCrossLineFrame = requestAnimationFrame(function() {
+        spendLiftCrossLineFrame = null;
+        if (!spendLiftTrendChart) return;
+        if (spendLiftCrossLinePending === spendLiftLastCrossLine) return;
+        spendLiftLastCrossLine = spendLiftCrossLinePending;
+        var crossLines = spendLiftCrossLinePending === null ? [] : [{
+          type: 'line',
+          value: new Date(spendLiftCrossLinePending),
+          stroke: '#c6c6c6',
+          strokeWidth: 1,
+          lineDash: [4, 4],
+          label: { enabled: false },
+        }];
+        Promise.resolve(spendLiftTrendChart.updateDelta({ axes: { x: { crossLines: crossLines } } })).catch(function() {});
+      });
+    }
+
+    function attachSpendLiftTooltip(container) {
+      if (spendLiftTooltipEl && spendLiftTooltipEl.parentNode) {
+        spendLiftTooltipEl.parentNode.removeChild(spendLiftTooltipEl);
+      }
+      spendLiftTooltipEl = document.createElement('div');
+      spendLiftTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(spendLiftTooltipEl);
+
+      var PLOT_LEFT      = 46;
+      var PLOT_RIGHT_PAD = 0;
+      var SLOP_PX        = 8;
+
+      function hide() {
+        spendLiftTooltipEl.style.display = 'none';
+        scheduleCrossLine(null);
+      }
+
+      function onMove(e) {
+        if (!SPEND_LIFT_TREND_DATA.length) { hide(); return; }
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+        if (mx < PLOT_LEFT - SLOP_PX || mx > plotRight + SLOP_PX) { hide(); return; }
+        var cx = Math.max(PLOT_LEFT, Math.min(plotRight, mx));
+        var usable = plotRight - PLOT_LEFT;
+        if (usable <= 0) { hide(); return; }
+        var relX = (cx - PLOT_LEFT) / usable;
+        var firstTime = SPEND_LIFT_TREND_DATA[0].date.getTime();
+        var lastTime  = SPEND_LIFT_TREND_DATA[SPEND_LIFT_TREND_DATA.length - 1].date.getTime();
+        var targetTime = firstTime === lastTime ? firstTime : firstTime + (lastTime - firstTime) * relX;
+        var row = SPEND_LIFT_TREND_DATA.reduce(function(best, r) {
+          return Math.abs(r.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? r : best;
+        });
+
+        var currentVisible = trendVisibility.current;
+        var prevVisible    = trendVisibility.prev;
+        var currentVal = currentVisible ? row.current : null;
+        var prevVal    = prevVisible    ? row.prev    : null;
+        var primaryVal = currentVal !== null ? currentVal : prevVal;
+        if (primaryVal === null) { hide(); return; }
+
+        var deltaPill = '';
+        if (currentVisible && prevVisible && currentVal !== null && prevVal !== null && prevVal !== 0) {
+          var deltaPct = ((currentVal - prevVal) / Math.abs(prevVal)) * 100;
+          var sign     = deltaPct >= 0 ? '+' : '';
+          var bg       = deltaPct >= 0 ? '#effaf9' : '#fdecef';
+          var fg       = deltaPct >= 0 ? '#257469' : '#b1294a';
+          deltaPill = (
+            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+              '<span style="display:inline-flex;align-items:center;padding:2px 4px;border-radius:4px;background:' + bg + ';color:' + fg + ';font-size:12px;font-weight:400;">' +
+                sign + deltaPct.toFixed(2) + '%' +
+              '</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
+            '</div>'
+          );
+        }
+
+        var prevRow = '';
+        if (currentVisible && prevVisible && prevVal !== null) {
+          prevRow = (
+            '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:4px;">' +
+                '<span style="width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + SPEND_LIFT_COLOR + ' 0,' + SPEND_LIFT_COLOR + ' 1.5px,transparent 1.5px,transparent 3px);" aria-hidden="true"></span>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtSignedDollar(prevVal) + '</span>' +
+            '</div>'
+          );
+        }
+
+        spendLiftTooltipEl.innerHTML = (
+          '<div style="background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);padding:16px;font-family:Manrope,sans-serif;">' +
+            '<p style="font-weight:800;font-size:16px;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Daily cohort lift</p>' +
+            '<div style="display:flex;flex-direction:column;gap:8px;">' +
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' +
+                  '<span style="width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background:' + SPEND_LIFT_COLOR + ';" aria-hidden="true"></span>' +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(row.date) + '</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtSignedDollar(primaryVal) + '</span>' +
+              '</div>' +
+              deltaPill +
+            '</div>' +
+            prevRow +
+          '</div>'
+        );
+
+        spendLiftTooltipEl.style.display = 'block';
+        scheduleCrossLine(row.date);
+
+        var tw = spendLiftTooltipEl.offsetWidth;
+        var th = spendLiftTooltipEl.offsetHeight;
+        var tx = e.clientX + 16;
+        var ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8) ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        spendLiftTooltipEl.style.left = tx + 'px';
+        spendLiftTooltipEl.style.top  = ty + 'px';
+      }
+
+      container.addEventListener('mousemove',  onMove);
+      container.addEventListener('mouseleave', hide);
+      window.addEventListener('scroll', hide, true);
+      window.addEventListener('resize', hide);
     }
 
     function initSpendLiftTrendChart() {
       var container = document.getElementById('chart-area-spend-lift-trend');
       if (!container) return;
       if (spendLiftTrendChart) { spendLiftTrendChart.destroy(); spendLiftTrendChart = null; }
-      trendVisibility = { loyalty: true, nonLoyalty: true };
+      trendVisibility = { current: true, prev: true };
+
+      var yBounds = computeTrendYBounds();
 
       spendLiftTrendOptions = {
         container: container,
@@ -687,15 +774,31 @@
         legend: { enabled: false },
         series: [
           {
-            type: 'line', xKey: 'date', yKey: 'loyalty', yName: 'Loyalty',
-            stroke: PALETTE.loyalty, strokeWidth: 2,
-            marker: { enabled: true, size: 0 },
+            type: 'line', xKey: 'date', yKey: 'prev', yName: 'Previous period',
+            stroke: SPEND_LIFT_COLOR, strokeWidth: 2, lineDash: [2, 2],
+            marker: {
+              enabled: true, size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: SPEND_LIFT_COLOR, stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
             tooltip: { enabled: false },
           },
           {
-            type: 'line', xKey: 'date', yKey: 'nonLoyalty', yName: 'Non-loyalty',
-            stroke: PALETTE.nonLoyalty, strokeWidth: 2,
-            marker: { enabled: true, size: 0 },
+            type: 'line', xKey: 'date', yKey: 'current', yName: 'This period',
+            stroke: SPEND_LIFT_COLOR, strokeWidth: 2,
+            marker: {
+              enabled: true, size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: SPEND_LIFT_COLOR, stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
             tooltip: { enabled: false },
           },
         ],
@@ -705,30 +808,21 @@
             min: SPEND_LIFT_TREND_DATA[0].date,
             max: SPEND_LIFT_TREND_DATA[SPEND_LIFT_TREND_DATA.length - 1].date,
             gridLine: { enabled: false },
-            line: { enabled: false },
-            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
-            label: { fontSize: 12, color: '#000000', format: '%b %-d', padding: 8 },
-            interval: {
-              values: (function() {
-                var ticks = [];
-                var d = new Date(2026, 0, 30);
-                var end = new Date(2026, 1, 26);
-                while (d <= end) {
-                  ticks.push(new Date(d));
-                  d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 4);
-                }
-                return ticks;
-              }()),
+            line:     { enabled: false },
+            tick:     { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
+            crosshair: { enabled: false },
+            label: {
+              fontSize: 12, color: '#000000', format: '%b %-d', padding: 8,
+              avoidCollisions: true,
             },
-            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
           },
           y: {
             type: 'number', position: 'left',
-            min: 17, max: 28,
-            interval: { values: [17, 19, 21, 23, 25, 27] },
+            min: yBounds.min, max: yBounds.max,
             gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
-            line: { enabled: false },
-            tick: { enabled: false },
+            line:     { enabled: false },
+            tick:     { enabled: false },
+            crosshair: { enabled: false },
             label: {
               fontSize: 12, color: '#000000', padding: 8,
               formatter: function(p) { return '$' + (+p.value).toFixed(0); },
@@ -736,111 +830,117 @@
           },
         },
       };
+
       spendLiftTrendChart = agCharts.AgCharts.create(spendLiftTrendOptions);
-    }
-
-    function buildBreakdownSeries() {
-      return [
-        {
-          type: 'bar', direction: 'vertical', xKey: 'label', yKey: 'loyalty', yName: 'Loyalty',
-          fill: PALETTE.loyalty, strokeWidth: 0, cornerRadius: 4,
-          visible: breakdownVisibility.loyalty !== false,
-          tooltip: { enabled: false },
-        },
-        {
-          type: 'bar', direction: 'vertical', xKey: 'label', yKey: 'nonLoyalty', yName: 'Non-loyalty',
-          fill: PALETTE.nonLoyalty, strokeWidth: 0, cornerRadius: 4,
-          visible: breakdownVisibility.nonLoyalty !== false,
-          tooltip: { enabled: false },
-        },
-      ];
-    }
-
-    function initSpendLiftBreakdownChart() {
-      var container = document.getElementById('chart-area-spend-lift-breakdown');
-      if (!container) return;
-      if (spendLiftBreakdownChart) { spendLiftBreakdownChart.destroy(); spendLiftBreakdownChart = null; }
-      var data = BREAKDOWN_DATA[currentBreakdown];
-
-      spendLiftBreakdownOptions = {
-        container: container,
-        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
-        background: { fill: '#ffffff' },
-        padding: { top: 8, right: 0, bottom: 0, left: 0 },
-        data: data,
-        legend: { enabled: false },
-        series: buildBreakdownSeries(),
-        axes: {
-          x: {
-            type: 'category', position: 'bottom',
-            paddingInner: 0.32, paddingOuter: 0.18,
-            gridLine: { enabled: false }, line: { enabled: false }, tick: { enabled: false },
-            label: { fontSize: 12, color: '#000000', padding: 8 },
-          },
-          y: {
-            type: 'number', position: 'left', min: 0, max: 30,
-            interval: { values: [0, 10, 20, 30] },
-            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
-            line: { enabled: false }, tick: { enabled: false },
-            label: {
-              fontSize: 12, color: '#000000', padding: 8,
-              formatter: function(p) { return '$' + (+p.value).toFixed(0); },
-            },
-          },
-        },
-      };
-      spendLiftBreakdownChart = agCharts.AgCharts.create(spendLiftBreakdownOptions);
-    }
-
-    function selectBreakdown(btn, mode) {
-      document.getElementById('dd-breakdown-label').textContent = btn.querySelector('span').textContent;
-      document.getElementById('dd-breakdown').querySelector('.dropdown__options').classList.remove('dropdown__options_open');
-      if (mode === currentBreakdown) return;
-      currentBreakdown = mode;
-      breakdownVisibility = { loyalty: true, nonLoyalty: true };
-      renderBreakdownLegend();
-      renderTable();
-      initSpendLiftBreakdownChart();
+      attachSpendLiftTooltip(container);
     }
 
     var TABLE_HEADER_CELL = 'style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;"';
+
+    // Table rows built from the trend data — each point is one enrollment-cohort day.
+    var SPEND_LIFT_TABLE_DATA = (function() {
+      var raw = [
+        { date: new Date(2024, 4, 17), enrolledGuests:  9675, avgPreSpend: 0.91, avgPostSpend:  8.08, lift:  7.17, liftPct: 787.91 },
+        { date: new Date(2024, 4, 18), enrolledGuests:  7791, avgPreSpend: 1.09, avgPostSpend:  8.36, lift:  7.27, liftPct: 666.97 },
+        { date: new Date(2024, 4, 19), enrolledGuests:  6784, avgPreSpend: 1.33, avgPostSpend:  8.45, lift:  7.12, liftPct: 535.34 },
+        { date: new Date(2024, 4, 20), enrolledGuests:  7636, avgPreSpend: 0.90, avgPostSpend:  8.02, lift:  7.12, liftPct: 791.11 },
+        { date: new Date(2024, 4, 21), enrolledGuests:  7872, avgPreSpend: 1.05, avgPostSpend:  8.20, lift:  7.15, liftPct: 680.95 },
+        { date: new Date(2024, 4, 22), enrolledGuests:  5984, avgPreSpend: 1.42, avgPostSpend:  8.31, lift:  6.89, liftPct: 485.21 },
+        { date: new Date(2024, 4, 23), enrolledGuests:  6120, avgPreSpend: 1.28, avgPostSpend:  8.23, lift:  6.95, liftPct: 542.97 },
+        { date: new Date(2024, 4, 24), enrolledGuests:  7204, avgPreSpend: 1.11, avgPostSpend:  8.15, lift:  7.04, liftPct: 634.23 },
+        { date: new Date(2024, 4, 25), enrolledGuests:  8341, avgPreSpend: 0.87, avgPostSpend:  8.18, lift:  7.31, liftPct: 840.23 },
+        { date: new Date(2024, 4, 26), enrolledGuests:  9012, avgPreSpend: 0.94, avgPostSpend:  8.38, lift:  7.44, liftPct: 791.49 },
+        { date: new Date(2024, 4, 27), enrolledGuests:  8175, avgPreSpend: 1.16, avgPostSpend:  8.38, lift:  7.22, liftPct: 622.41 },
+        { date: new Date(2024, 4, 28), enrolledGuests:  5430, avgPreSpend: 1.67, avgPostSpend:  8.45, lift:  6.78, liftPct: 406.29 },
+        { date: new Date(2024, 4, 29), enrolledGuests:  5810, avgPreSpend: 1.48, avgPostSpend:  8.42, lift:  6.94, liftPct: 469.26 },
+        { date: new Date(2024, 4, 30), enrolledGuests:  6988, avgPreSpend: 1.22, avgPostSpend:  8.30, lift:  7.08, liftPct: 580.33 },
+        { date: new Date(2024, 4, 31), enrolledGuests:  7521, avgPreSpend: 1.08, avgPostSpend:  8.27, lift:  7.19, liftPct: 665.74 },
+        { date: new Date(2024, 5,  1), enrolledGuests:  8890, avgPreSpend: 0.92, avgPostSpend:  8.28, lift:  7.36, liftPct: 800.00 },
+        { date: new Date(2024, 5,  2), enrolledGuests:  9340, avgPreSpend: 0.89, avgPostSpend:  8.37, lift:  7.48, liftPct: 840.45 },
+        { date: new Date(2024, 5,  3), enrolledGuests:  8102, avgPreSpend: 1.19, avgPostSpend:  8.48, lift:  7.29, liftPct: 612.61 },
+        { date: new Date(2024, 5,  4), enrolledGuests:  5235, avgPreSpend: 1.72, avgPostSpend:  8.57, lift:  6.85, liftPct: 398.26 },
+        { date: new Date(2024, 5,  5), enrolledGuests:  5640, avgPreSpend: 1.54, avgPostSpend:  8.45, lift:  6.91, liftPct: 448.70 },
+        { date: new Date(2024, 5,  6), enrolledGuests:  7056, avgPreSpend: 1.27, avgPostSpend:  8.30, lift:  7.03, liftPct: 553.54 },
+        { date: new Date(2024, 5,  7), enrolledGuests:  7623, avgPreSpend: 1.06, avgPostSpend:  8.31, lift:  7.25, liftPct: 683.96 },
+        { date: new Date(2024, 5,  8), enrolledGuests:  8857, avgPreSpend: 0.91, avgPostSpend:  8.32, lift:  7.41, liftPct: 814.29 },
+        { date: new Date(2024, 5,  9), enrolledGuests:  7930, avgPreSpend: 1.14, avgPostSpend:  8.31, lift:  7.17, liftPct: 629.39 },
+        { date: new Date(2024, 5, 10), enrolledGuests:  5210, avgPreSpend: 1.78, avgPostSpend:  8.50, lift:  6.72, liftPct: 377.53 },
+        { date: new Date(2024, 5, 11), enrolledGuests:  5580, avgPreSpend: 1.61, avgPostSpend:  8.49, lift:  6.88, liftPct: 427.33 },
+        { date: new Date(2024, 5, 12), enrolledGuests:  7088, avgPreSpend: 1.24, avgPostSpend:  8.34, lift:  7.10, liftPct: 572.58 },
+        { date: new Date(2024, 5, 13), enrolledGuests:  7744, avgPreSpend: 1.01, avgPostSpend:  8.34, lift:  7.33, liftPct: 725.74 },
+        { date: new Date(2024, 5, 14), enrolledGuests:  9106, avgPreSpend: 0.86, avgPostSpend:  8.38, lift:  7.52, liftPct: 874.42 },
+        { date: new Date(2024, 5, 15), enrolledGuests:  8412, avgPreSpend: 1.07, avgPostSpend:  8.46, lift:  7.39, liftPct: 690.65 },
+      ];
+      return raw;
+    }());
+
+    var TABLE_PAGE_SIZE = 10;
+    var tablePage = 1;
+    var totalTablePages = Math.ceil(SPEND_LIFT_TABLE_DATA.length / TABLE_PAGE_SIZE);
 
     function renderTable() {
       var thead = document.getElementById('spend-lift-table-head');
       var tbody = document.getElementById('spend-lift-table-body');
       thead.innerHTML =
         '<tr style="background-color: #dfe1e2; border-bottom: none;">' +
-          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner chart-th-inner--start">Date <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
-          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner">Loyalty avg <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
-          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner">Non-loyalty avg <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
-          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner">Lift <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
+          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner chart-th-inner--start">Enrollment cohort <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
+          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner">Enrolled guests <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
+          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner">Avg pre-enrollment ticket <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
+          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner">Avg post-enrollment ticket <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
+          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner">$ lift <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
+          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner">% lift <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
         '</tr>';
-      tbody.innerHTML = SPEND_LIFT_TREND_DATA.map(function(row) {
-        var lift = calcLiftPct(row.loyalty, row.nonLoyalty);
-        var sign = lift >= 0 ? '+' : '';
-        var color = lift >= 0 ? '#257469' : '#b1294a';
-        var bg = lift >= 0 ? '#effaf9' : '#fdecef';
+      var start = (tablePage - 1) * TABLE_PAGE_SIZE;
+      var pageRows = SPEND_LIFT_TABLE_DATA.slice(start, start + TABLE_PAGE_SIZE);
+      tbody.innerHTML = pageRows.map(function(row) {
+        var liftPctCell;
+        if (row.liftPct === null) {
+          liftPctCell = '—';
+        } else {
+          var pctBg    = row.liftPct >= 0 ? '#effaf9' : '#fdecef';
+          var pctColor = row.liftPct >= 0 ? '#257469' : '#b1294a';
+          var pctSign  = row.liftPct >= 0 ? '+' : '';
+          liftPctCell = '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 6px;border-radius:4px;font-size:0.875rem;font-weight:500;">' + pctSign + row.liftPct.toFixed(2) + '%</span>';
+        }
         return (
           '<tr>' +
-            '<td>' + fmtChartDate(row.date) + '</td>' +
-            '<td class="chart-data-col">' + fmtDollar(row.loyalty) + '</td>' +
-            '<td class="chart-data-col">' + fmtDollar(row.nonLoyalty) + '</td>' +
-            '<td class="chart-data-col">' +
-              '<span style="background:' + bg + ';color:' + color + ';padding:2px 6px;border-radius:4px;font-size:0.875rem;font-weight:500;">' +
-                sign + lift.toFixed(1) + '%' +
-              '</span>' +
-            '</td>' +
+            '<td>' + fmtTableDate(row.date) + '</td>' +
+            '<td class="chart-data-col">' + row.enrolledGuests.toLocaleString() + '</td>' +
+            '<td class="chart-data-col">' + fmtDollar(row.avgPreSpend) + '</td>' +
+            '<td class="chart-data-col">' + fmtDollar(row.avgPostSpend) + '</td>' +
+            '<td class="chart-data-col">' + fmtSignedDollar(row.lift) + '</td>' +
+            '<td class="chart-data-col">' + liftPctCell + '</td>' +
           '</tr>'
         );
       }).join('');
-      document.getElementById('page-dropdown-label').textContent = '1';
-      document.getElementById('total-pages-text').textContent = 'of 3 pages';
-      document.getElementById('prev-btn').disabled = true;
-      document.getElementById('next-btn').disabled = false;
+      document.getElementById('page-dropdown-label').textContent = String(tablePage);
+      document.getElementById('total-pages-text').textContent = 'of ' + totalTablePages + ' pages';
+      document.getElementById('prev-btn').disabled = tablePage <= 1;
+      document.getElementById('next-btn').disabled = tablePage >= totalTablePages;
+      var pageList = document.getElementById('page-options-list');
+      if (pageList) {
+        pageList.innerHTML = '';
+        for (var p = 1; p <= totalTablePages; p++) {
+          (function(pg) {
+            var li = document.createElement('li');
+            var btn = document.createElement('button');
+            btn.className = 'button transparent';
+            btn.style.cssText = 'width:100%;justify-content:flex-start;';
+            btn.textContent = String(pg);
+            btn.addEventListener('click', function() { tablePage = pg; renderTable(); togglePageDropdown(); });
+            li.appendChild(btn);
+            pageList.appendChild(li);
+          })(p);
+        }
+      }
     }
 
-    function prevPage() {}
-    function nextPage() {}
+    function prevPage() {
+      if (tablePage > 1) { tablePage--; renderTable(); }
+    }
+    function nextPage() {
+      if (tablePage < totalTablePages) { tablePage++; renderTable(); }
+    }
     function togglePageDropdown() {
       document.getElementById('page-options').classList.toggle('dropdown__options_open');
     }
@@ -848,7 +948,6 @@
     document.addEventListener('DOMContentLoaded', function() {
       renderTable();
       renderTrendLegend();
-      renderBreakdownLegend();
       Promise.all([
         document.fonts.load('400 12px Manrope'),
         document.fonts.load('700 12px Manrope'),
@@ -856,7 +955,6 @@
       ]).then(function() {
         requestAnimationFrame(function() {
           initSpendLiftTrendChart();
-          initSpendLiftBreakdownChart();
         });
       });
     });
