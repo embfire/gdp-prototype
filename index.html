@@ -11,7 +11,8 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@10.3.1/dist/gridstack.min.css">
   <link rel="stylesheet" href="assets/bento.css">
-  <link rel="stylesheet" href="beta/beta.css">
+  <link rel="stylesheet" href="beta.css">
+  <script src="metric-about.js" defer></script>
 </head>
 <body>
   <div class="app-shell">
@@ -306,6 +307,7 @@
     ═══════════════════════════════════════════════════ */
     var ALL_METRICS = [
       { id: 'total-guests',               title: 'Total guests' },
+      { id: 'new-guest-acquisition',      title: 'New guest acquisition' },
       { id: 'guest-lifecycle-breakdown',  title: 'Guest lifecycle breakdown' },
       { id: 'retention-cohort',           title: 'Retention cohort' },
       { id: 'reachability',               title: 'Reachability' },
@@ -325,7 +327,6 @@
       { id: 'guest-value-distribution',   title: 'Guest value distribution' },
 
       // From Analytics — Acquisition
-      { id: 'new-guest-acquisition',      title: 'New guest acquisition' },
       { id: 'first-visit-conversion-funnel', title: 'First-visit conversion (funnel)' },
       { id: 'first-visit-conversion-trend',  title: 'First-visit conversion (trend)' },
       { id: 'acquisition-by-channel',     title: 'Acquisition by channel' },
@@ -348,14 +349,17 @@
 
     var DEFAULT_LAYOUT = [
       { id: 'total-guests',               x: 0, y: 0 },
-      { id: 'guest-lifecycle-breakdown',  x: 6, y: 0 },
+      { id: 'active-guests',              x: 6, y: 0 },
       { id: 'retention-cohort',           x: 0, y: 1 },
       { id: 'reachability',               x: 6, y: 1 },
       { id: 'visit-frequency',            x: 0, y: 2 },
+      { id: 'new-guest-acquisition',      x: 6, y: 2 },
+      { id: 'guest-lifecycle-breakdown',  x: 0, y: 3 },
+      { id: 'loyalty-spend-lift',         x: 6, y: 3 },
     ];
 
-    // v5: added guest-lifecycle-breakdown to default layout
-    var LS_KEY = 'g360-dashboard-layout-v5';
+    // v8: added active-guests (paired with total-guests on row 0)
+    var LS_KEY = 'g360-dashboard-layout-v8';
 
     /* ═══════════════════════════════════════════════════
        GridStack
@@ -443,6 +447,13 @@
           document.fonts.load('800 12px Manrope'),
         ]).then(function() { requestAnimationFrame(initTotalGuestsChart); });
       }
+      if (id === 'active-guests') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() { requestAnimationFrame(initActiveGuestsChart); });
+      }
       if (id === 'guest-lifecycle-breakdown') {
         Promise.all([
           document.fonts.load('400 12px Manrope'),
@@ -463,6 +474,46 @@
           document.fonts.load('700 12px Manrope'),
           document.fonts.load('800 12px Manrope'),
         ]).then(function() { requestAnimationFrame(initReachabilityChart); });
+      }
+      if (id === 'new-guest-acquisition') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() { requestAnimationFrame(initNewGuestAcqChart); });
+      }
+      if (id === 'visit-frequency') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() { requestAnimationFrame(initVisitFrequencyChart); });
+      }
+      if (id === 'loyalty-spend-lift') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() { requestAnimationFrame(initLoyaltySpendLiftChart); });
+      }
+      if (id === 'guest-repeat-rate') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() { requestAnimationFrame(initGuestRepeatRateChart); });
+      }
+      if (id === 'loyalty-penetration') {
+        Promise.all([
+          document.fonts.load('400 12px Manrope'),
+          document.fonts.load('700 12px Manrope'),
+          document.fonts.load('800 12px Manrope'),
+        ]).then(function() {
+          requestAnimationFrame(function() {
+            initLoyaltyPenetrationChart();
+            updateLoyaltyPenetrationFilterNotice(currentDateRange);
+          });
+        });
       }
       // Sync the new card's filter notice with the current date range.
       applyFilterCompatibility(currentDateRange);
@@ -632,6 +683,38 @@
           reachabilityTooltipEl = null;
         }
       }
+      if (id === 'active-guests' && activeGuestsChart) {
+        activeGuestsChart.destroy();
+        activeGuestsChart = null;
+        activeGuestsChartOptions = null;
+        if (activeGuestsTooltipEl && activeGuestsTooltipEl.parentNode) {
+          activeGuestsTooltipEl.parentNode.removeChild(activeGuestsTooltipEl);
+          activeGuestsTooltipEl = null;
+        }
+      }
+      if (id === 'new-guest-acquisition' && newGuestAcqChart) {
+        newGuestAcqChart.destroy();
+        newGuestAcqChart = null;
+        newGuestAcqChartOptions = null;
+        if (newGuestAcqTooltipEl && newGuestAcqTooltipEl.parentNode) {
+          newGuestAcqTooltipEl.parentNode.removeChild(newGuestAcqTooltipEl);
+          newGuestAcqTooltipEl = null;
+        }
+      }
+      if (id === 'loyalty-spend-lift' && loyaltySpendLiftChart) {
+        loyaltySpendLiftChart.destroy();
+        loyaltySpendLiftChart = null;
+        loyaltySpendLiftChartOptions = null;
+      }
+      if (id === 'loyalty-penetration' && loyaltyPenetrationChart) {
+        loyaltyPenetrationChart.destroy();
+        loyaltyPenetrationChart = null;
+        loyaltyPenetrationChartOptions = null;
+        if (loyaltyPenetrationTooltipEl && loyaltyPenetrationTooltipEl.parentNode) {
+          loyaltyPenetrationTooltipEl.parentNode.removeChild(loyaltyPenetrationTooltipEl);
+          loyaltyPenetrationTooltipEl = null;
+        }
+      }
       var el = document.querySelector('.grid-stack-item[gs-id="' + id + '"]');
       if (el) dashGrid.removeWidget(el);
       updateSidebar();
@@ -733,6 +816,24 @@
           '<p class="chart-card__metric-period">1.13M prev period</p>'
         );
       }
+      if (id === 'active-guests') {
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">346K</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+2.2%</span>' +
+          '</div>' +
+          '<p class="chart-card__metric-period">338K prev period · 90D window</p>'
+        );
+      }
+      if (id === 'new-guest-acquisition') {
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">47.2K</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+8.6%</span>' +
+          '</div>' +
+          '<p class="chart-card__metric-period">43.5K prev period</p>'
+        );
+      }
       if (id === 'guest-lifecycle-breakdown') {
         // Hero is At-Risk count. Inverse pill: At-Risk growing = bad = red.
         return (
@@ -777,6 +878,65 @@
           '</div>'
         );
       }
+      if (id === 'visit-frequency') {
+        // Hero = average visits per identified guest over the period.
+        // Higher = stickier guest base; default (non-inverse) pill.
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">2.4</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+14.3%</span>' +
+          '</div>' +
+          '<p class="chart-card__metric-period">2.1 visits prev period</p>'
+        );
+      }
+      if (id === 'loyalty-spend-lift') {
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">+$4.39</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+109.05%</span>' +
+          '</div>' +
+          '<div class="chart-card__metric-period-row">' +
+            '<span class="chart-card__metric-period">$2.10 previous period avg</span>' +
+            '<div class="chart-card__metric-info-wrap">' +
+              '<span class="material-symbols-rounded chart-card__metric-info-icon">info</span>' +
+              '<span class="chart-card__metric-info-text">Included cohorts: May 17, 2024 to May 17, 2025</span>' +
+              '<div class="chart-card__metric-info-tooltip">This chart uses guests who enrolled during this cohort window. We shift the cohort back so every guest has a complete post-enrollment window for the selected date range.</div>' +
+            '</div>' +
+          '</div>'
+        );
+      }
+      if (id === 'guest-repeat-rate') {
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">42.8%</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+2.1pts</span>' +
+          '</div>' +
+          '<div class="chart-card__metric-period-row">' +
+            '<span class="chart-card__metric-period">40.7% prev period</span>' +
+            '<div class="chart-card__metric-info-wrap">' +
+              '<span class="material-symbols-rounded chart-card__metric-info-icon">info</span>' +
+              '<span class="chart-card__metric-info-text">Showing 90D minimum</span>' +
+              '<div class="chart-card__metric-info-tooltip">Showing 90 days minimum — Needs at least two months for base and follow-up periods</div>' +
+            '</div>' +
+          '</div>'
+        );
+      }
+      if (id === 'loyalty-penetration') {
+        return (
+          '<div class="chart-card__metric-row">' +
+            '<p class="chart-card__metric-value">62%</p>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+4pts</span>' +
+          '</div>' +
+          '<div class="chart-card__metric-period-row">' +
+            '<span class="chart-card__metric-period">58% prior period · 38% non-loyalty</span>' +
+            '<div class="chart-card__metric-info-wrap" id="loyalty-penetration-info-wrap" hidden>' +
+              '<span class="material-symbols-rounded chart-card__metric-info-icon">info</span>' +
+              '<span class="chart-card__metric-info-text">Showing 90D minimum</span>' +
+              '<div class="chart-card__metric-info-tooltip">Showing 90 days minimum — Needs a stable comparison window for penetration rate</div>' +
+            '</div>' +
+          '</div>'
+        );
+      }
       return (
         '<p class="chart-card__metric-value">--</p>' +
         '<p class="chart-card__metric-period">-- prev period</p>'
@@ -808,6 +968,34 @@
           '</div>'
         );
       }
+      if (id === 'active-guests') {
+        return (
+          '<div class="chart-card__legend">' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="current" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleActiveGuestsSeries(this, \'current\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>' +
+              '<span>This period</span>' +
+            '</button>' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleActiveGuestsSeries(this, \'prev\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
+              '<span>Previous period</span>' +
+            '</button>' +
+          '</div>'
+        );
+      }
+      if (id === 'new-guest-acquisition') {
+        return (
+          '<div class="chart-card__legend">' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="current" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleNewGuestAcqSeries(this, \'current\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>' +
+              '<span>This period</span>' +
+            '</button>' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleNewGuestAcqSeries(this, \'prev\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
+              '<span>Previous period</span>' +
+            '</button>' +
+          '</div>'
+        );
+      }
       if (id === 'guest-lifecycle-breakdown') {
         return '<div class="chart-card__legend">' + LIFECYCLE_STAGES.map(function(stage) {
           return (
@@ -826,6 +1014,51 @@
               '<span>This period</span>' +
             '</button>' +
             '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleRetentionSeries(this, \'prev\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
+              '<span>Previous period</span>' +
+            '</button>' +
+          '</div>'
+        );
+      }
+      if (id === 'visit-frequency') {
+        return (
+          '<div class="chart-card__legend">' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="current" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleVisitFrequencySeries(this, \'current\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>' +
+              '<span>This period</span>' +
+            '</button>' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleVisitFrequencySeries(this, \'prev\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
+              '<span>Previous period</span>' +
+            '</button>' +
+          '</div>'
+        );
+      }
+      if (id === 'loyalty-spend-lift') {
+        return '';
+      }
+      if (id === 'guest-repeat-rate') {
+        return (
+          '<div class="chart-card__legend">' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="current" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleGuestRepeatRateSeries(this, \'current\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>' +
+              '<span>This period</span>' +
+            '</button>' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleGuestRepeatRateSeries(this, \'prev\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
+              '<span>Previous period</span>' +
+            '</button>' +
+          '</div>'
+        );
+      }
+      if (id === 'loyalty-penetration') {
+        return (
+          '<div class="chart-card__legend">' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="current" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleLoyaltyPenetrationSeries(this, \'current\')" aria-pressed="true">' +
+              '<span class="chart-card__legend-marker chart-card__legend-marker--solid"></span>' +
+              '<span>This period</span>' +
+            '</button>' +
+            '<button type="button" class="chart-card__legend-item" data-series-key="prev" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); toggleLoyaltyPenetrationSeries(this, \'prev\')" aria-pressed="true">' +
               '<span class="chart-card__legend-marker chart-card__legend-marker--striped"></span>' +
               '<span>Previous period</span>' +
             '</button>' +
@@ -854,9 +1087,15 @@
 
     function getChartSubtitle(id) {
       if (id === 'total-guests') return 'Identified guests over time';
+      if (id === 'active-guests') return 'Guests with ≥1 transaction in the trailing activity window';
+      if (id === 'new-guest-acquisition') return 'New guest profiles created over time';
       if (id === 'guest-lifecycle-breakdown') return 'Distribution of identified guests across lifecycle stages';
       if (id === 'retention-cohort') return 'M+1 retention rate by acquisition cohort';
       if (id === 'reachability') return 'Reachable guests by channel vs. total identified';
+      if (id === 'visit-frequency') return 'Guest distribution across visit-count buckets';
+      if (id === 'loyalty-spend-lift') return 'Avg transaction value lift after enrollment';
+      if (id === 'guest-repeat-rate') return 'Share of base-period guests who returned in the next period';
+      if (id === 'loyalty-penetration') return 'Share of transactions tied to a loyalty member';
       return 'Chart explanation';
     }
 
@@ -871,6 +1110,8 @@
     var CHART_CONSTRAINTS = {
       // Cohort retention needs at least 3 monthly cohorts to draw a trend.
       'retention-cohort': { minDays: 90, minLabel: '90D', reason: 'Needs ≥3 months of cohort data' },
+      'guest-repeat-rate': { minDays: 90, minLabel: '90D', reason: 'Needs at least two months for base and follow-up periods' },
+      'loyalty-penetration': { minDays: 90, minLabel: '90D', reason: 'Needs a stable comparison window for penetration rate' },
     };
 
     function getChartFilterNotice(id, range) {
@@ -889,6 +1130,7 @@
 
     function applyFilterCompatibility(range) {
       currentDateRange = range;
+      updateLoyaltyPenetrationFilterNotice(range);
       document.querySelectorAll('.chart-card[data-metric-id]').forEach(function(card) {
         var id = card.getAttribute('data-metric-id');
         var banner = card.querySelector('[data-filter-notice="' + id + '"]');
@@ -904,15 +1146,26 @@
       });
     }
 
+
     function createCardHTML(id, title) {
       var breakdownHTML = '';
+      var info = (window.METRIC_INFO || {})[id];
+      var titleInfoHTML  = info && typeof window.titleInfoTooltipHTML === 'function'
+        ? window.titleInfoTooltipHTML(info.infoTooltip)
+        : '';
+      var aboutMenuHTML  = info && typeof window.aboutMetricMenuItemHTML === 'function'
+        ? window.aboutMetricMenuItemHTML(id, 'widget')
+        : '';
 
       return (
         '<div class="chart-card" data-metric-id="' + id + '">' +
           '<div class="chart-card__header" onclick="openChartDetail(\'' + id + '\')" role="button" tabindex="0">' +
             '<span class="material-symbols-rounded chart-card__drag-icon">drag_indicator</span>' +
             '<div class="chart-card__header-text">' +
-              '<p class="chart-card__title">' + title + '</p>' +
+              '<div class="chart-card__title-row">' +
+                '<p class="chart-card__title">' + title + '</p>' +
+                titleInfoHTML +
+              '</div>' +
               '<p class="chart-card__subtitle">' + getChartSubtitle(id) + '</p>' +
             '</div>' +
             '<div class="chart-card__header-controls">' +
@@ -925,6 +1178,7 @@
                   '<ul>' +
                     '<li><button class="chart-context-menu__item" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>' +
                     '<li><button class="chart-context-menu__item" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>' +
+                    aboutMenuHTML +
                     '<li><button class="chart-context-menu__item chart-context-menu__item--ava" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><img src="assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava</span></button></li>' +
                   '</ul>' +
                 '</div>' +
@@ -958,9 +1212,15 @@
       if (document.querySelector('.app-shell').classList.contains('app-shell--customize')) return;
       var perChartPages = {
         'total-guests': 'dashboard-total-guests.html',
+        'active-guests': 'dashboard-active-guests.html',
+        'new-guest-acquisition': 'dashboard-new-guest-acquisition.html',
         'guest-lifecycle-breakdown': 'dashboard-guest-lifecycle.html',
         'retention-cohort': 'dashboard-retention-cohort.html',
-        'reachability':      'dashboard-reachability.html'
+        'reachability':      'dashboard-reachability.html',
+        'visit-frequency':      'dashboard-visit-frequency.html',
+        'loyalty-spend-lift':   'dashboard-loyalty-spend-lift.html',
+        'guest-repeat-rate':    'dashboard-guest-repeat-rate.html',
+        'loyalty-penetration':  'dashboard-loyalty-penetration.html'
       };
       window.location.href = perChartPages[metricId] || 'dashboard-chart-detail.html';
     }
@@ -2210,6 +2470,1233 @@
 
       container.addEventListener('mousemove',  reachabilityMouseMove);
       container.addEventListener('mouseleave', reachabilityMouseLeave);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       AG Charts — Active Guests (rolling activity window)
+       Count of identified guests with ≥1 transaction in trailing
+       30/60/90D window. Same line + prev-period overlay as Total Guests.
+    ═══════════════════════════════════════════════════ */
+    var activeGuestsChart        = null;
+    var activeGuestsChartOptions = null;
+    var activeGuestsVisibility   = { current: true, prev: true };
+    var activeGuestsTooltipEl    = null;
+    var activeGuestsMouseMove    = null;
+    var activeGuestsMouseLeave   = null;
+
+    function toggleActiveGuestsSeries(btn, seriesKey) {
+      if (!activeGuestsChart || !activeGuestsChartOptions) return;
+      var nextValue = !activeGuestsVisibility[seriesKey];
+      var otherKey = seriesKey === 'current' ? 'prev' : 'current';
+      if (!nextValue && !activeGuestsVisibility[otherKey]) return;
+      activeGuestsVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+      var newSeries = activeGuestsChartOptions.series.map(function(s, i) {
+        var vis = (i === 0) ? activeGuestsVisibility.prev : activeGuestsVisibility.current;
+        return Object.assign({}, s, { visible: vis });
+      });
+      var updateOpts = Object.assign({}, activeGuestsChartOptions, { series: newSeries });
+      activeGuestsChartOptions = updateOpts;
+      activeGuestsChart.update(updateOpts);
+    }
+
+    var ACTIVE_GUESTS_DATA = (function() {
+      var baseDate = new Date(2026, 2, 19);
+      var curr = [
+        338.2, 338.8, 338.5, 339.2, 339.5, 339.0, 338.6, 339.0, 339.4,
+        339.2, 338.4, 337.8, 339.0, 339.5,
+        340.0, 342.5, 348.2, 343.0, 340.5,
+        339.8, 339.5, 338.5, 337.5, 337.2,
+        338.5, 339.5, 339.0, 338.6, 339.2,
+        339.8, 339.5, 339.0, 338.5, 339.5,
+        341.0, 344.0, 345.5, 345.0, 346.0,
+      ];
+      var prev = [
+        331.0, 331.5, 331.2, 331.8, 332.0, 331.6, 331.2, 331.5, 331.8,
+        331.6, 331.0, 330.5, 331.8, 332.2,
+        332.8, 334.5, 339.0, 335.0, 333.0,
+        332.5, 332.2, 331.5, 330.8, 330.5,
+        331.2, 332.0, 331.6, 331.2, 331.8,
+        332.2, 332.0, 331.6, 331.2, 332.0,
+        333.0, 335.0, 336.2, 335.8, 336.0,
+      ];
+      return curr.map(function(c, i) {
+        var d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() + i);
+        return { date: d, current: c, prev: prev[i] };
+      });
+    }());
+
+    function initActiveGuestsChart() {
+      var container = document.getElementById('chart-area-active-guests');
+      if (!container) return;
+      if (activeGuestsChart) { activeGuestsChart.destroy(); activeGuestsChart = null; }
+
+      activeGuestsVisibility = { current: true, prev: true };
+      var fmtK = function(v) { return (+v).toFixed(1).replace(/\.0$/, '') + 'K'; };
+
+      activeGuestsChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 0, bottom: 0, left: 0 },
+        data: ACTIVE_GUESTS_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'line', xKey: 'date', yKey: 'prev', yName: 'Previous period',
+            stroke: '#5A55E3', strokeWidth: 2, lineDash: [2, 2],
+            marker: { enabled: true, size: 0, itemStyler: function(params) {
+              if (params.highlightState === 'highlighted-item') return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+              return { size: 0 };
+            }},
+            tooltip: { enabled: false },
+          },
+          {
+            type: 'line', xKey: 'date', yKey: 'current', yName: 'This period',
+            stroke: '#5A55E3', strokeWidth: 2,
+            marker: { enabled: true, size: 0, itemStyler: function(params) {
+              if (params.highlightState === 'highlighted-item') return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+              return { size: 0 };
+            }},
+            tooltip: { enabled: false },
+          },
+        ],
+        axes: {
+          x: {
+            type: 'time', position: 'bottom', nice: false,
+            min: new Date(2026, 2, 19), max: new Date(2026, 3, 26),
+            gridLine: { enabled: false }, line: { enabled: false },
+            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
+            label: { fontSize: 12, color: '#000000', format: '%b %-d', padding: 8, avoidCollisions: true },
+            interval: { values: [new Date(2026, 2, 29), new Date(2026, 3, 5), new Date(2026, 3, 12), new Date(2026, 3, 19)] },
+            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+          },
+          y: {
+            type: 'number', position: 'left', min: 330, max: 352,
+            interval: { values: [332, 336, 340, 344, 348] },
+            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
+            line: { enabled: false }, tick: { enabled: false },
+            label: { fontSize: 12, color: '#000000', padding: 8,
+              formatter: function(params) { return (+params.value).toFixed(0) + 'K'; },
+            },
+          },
+        },
+      };
+
+      activeGuestsChart = agCharts.AgCharts.create(activeGuestsChartOptions);
+
+      if (activeGuestsTooltipEl && activeGuestsTooltipEl.parentNode) {
+        activeGuestsTooltipEl.parentNode.removeChild(activeGuestsTooltipEl);
+      }
+      if (activeGuestsMouseMove) {
+        container.removeEventListener('mousemove', activeGuestsMouseMove);
+        container.removeEventListener('mouseleave', activeGuestsMouseLeave);
+      }
+
+      activeGuestsTooltipEl = document.createElement('div');
+      activeGuestsTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(activeGuestsTooltipEl);
+
+      var PLOT_LEFT = 46, PLOT_RIGHT_PAD = 0;
+      var AXIS_MIN_TIME = new Date(2026, 2, 19).getTime();
+      var AXIS_MAX_TIME = new Date(2026, 3, 26).getTime();
+
+      activeGuestsMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+        if (mx < PLOT_LEFT || mx > plotRight) { activeGuestsTooltipEl.style.display = 'none'; return; }
+        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
+        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
+        var d = ACTIVE_GUESTS_DATA.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+        if (!activeGuestsVisibility.current) { activeGuestsTooltipEl.style.display = 'none'; return; }
+        var pctRaw = (d.current - d.prev) / d.prev * 100;
+        var pct = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
+        var pctColor = pctRaw >= 0 ? '#257469' : '#b1294a';
+        var pctBg = pctRaw >= 0 ? '#effaf9' : '#fdecef';
+        var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+        activeGuestsTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Active guests</p>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:4px;">' +
+                '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(d.date) + '</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtK(d.current) + '</span>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+              '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pct + '</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
+            '</div>' +
+          '</div>' +
+          (activeGuestsVisibility.prev
+            ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtK(d.prev) + '</span>' +
+              '</div>'
+            : '') +
+          '</div>'
+        );
+        activeGuestsTooltipEl.style.display = 'block';
+        var tw = activeGuestsTooltipEl.offsetWidth, th = activeGuestsTooltipEl.offsetHeight;
+        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth - 8) tx = e.clientX - tw - 16;
+        if (ty < 8) ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        activeGuestsTooltipEl.style.left = tx + 'px';
+        activeGuestsTooltipEl.style.top = ty + 'px';
+      };
+      activeGuestsMouseLeave = function() { activeGuestsTooltipEl.style.display = 'none'; };
+      container.addEventListener('mousemove', activeGuestsMouseMove);
+      container.addEventListener('mouseleave', activeGuestsMouseLeave);
+    }
+
+    /* (loyalty + non-loyalty via IDR). Same single-series Indigo
+       line + dashed prev-period overlay pattern as Total Guests.
+    ═══════════════════════════════════════════════════ */
+    var newGuestAcqChart        = null;
+    var newGuestAcqChartOptions = null;
+    var newGuestAcqVisibility   = { current: true, prev: true };
+    var newGuestAcqTooltipEl    = null;
+    var newGuestAcqMouseMove    = null;
+    var newGuestAcqMouseLeave   = null;
+
+    function toggleNewGuestAcqSeries(btn, seriesKey) {
+      if (!newGuestAcqChart || !newGuestAcqChartOptions) return;
+      var nextValue = !newGuestAcqVisibility[seriesKey];
+      var someoneElseVisible = Object.keys(newGuestAcqVisibility).some(function(k) {
+        return k !== seriesKey && newGuestAcqVisibility[k];
+      });
+      if (!nextValue && !someoneElseVisible) return;
+
+      newGuestAcqVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+
+      var newSeries = newGuestAcqChartOptions.series.map(function(s, i) {
+        var vis = (i === 0) ? newGuestAcqVisibility.prev : newGuestAcqVisibility.current;
+        return Object.assign({}, s, { visible: vis });
+      });
+      var updateOpts = Object.assign({}, newGuestAcqChartOptions, { series: newSeries });
+      newGuestAcqChartOptions = updateOpts;
+      newGuestAcqChart.update(updateOpts);
+    }
+
+    // 39 daily data points: Mar 19 – Apr 26, 2026. Values in thousands of
+    // new guests/day. Mar 19–27 is pre-label lead-in (chart starts flush
+    // with the Y-axis); Mar 28 – Apr 26 spans the displayed tick labels.
+    var NEW_GUEST_ACQ_DATA = (function() {
+      var baseDate = new Date(2026, 2, 19);
+      var curr = [
+        // Mar 19–27 (pre-label lead-in)
+        1.48, 1.50, 1.47, 1.52, 1.51,
+        1.49, 1.53, 1.50, 1.52,
+        // Mar 28 – Apr 26
+        1.50, 1.45, 1.42, 1.55, 1.60,
+        1.68, 1.75, 1.82, 1.70, 1.62,
+        1.58, 1.55, 1.50, 1.48, 1.52,
+        1.60, 1.65, 1.62, 1.58, 1.55,
+        1.62, 1.70, 1.75, 1.68, 1.65,
+        1.72, 1.85, 1.95, 1.92, 1.88,
+      ];
+      var prev = [
+        // Mar 19–27
+        1.40, 1.42, 1.38, 1.44, 1.43,
+        1.41, 1.45, 1.42, 1.44,
+        // Mar 28 – Apr 26
+        1.42, 1.40, 1.45, 1.48, 1.52,
+        1.55, 1.58, 1.55, 1.50, 1.48,
+        1.45, 1.42, 1.40, 1.43, 1.46,
+        1.48, 1.50, 1.52, 1.48, 1.45,
+        1.50, 1.55, 1.58, 1.55, 1.52,
+        1.55, 1.60, 1.65, 1.62, 1.60,
+      ];
+      return curr.map(function(c, i) {
+        var d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() + i);
+        return { date: d, current: c, prev: prev[i] };
+      });
+    }());
+
+    function initNewGuestAcqChart() {
+      var container = document.getElementById('chart-area-new-guest-acquisition');
+      if (!container) return;
+      if (newGuestAcqChart) { newGuestAcqChart.destroy(); newGuestAcqChart = null; }
+
+      newGuestAcqVisibility = { current: true, prev: true };
+
+      var fmtK = function(v) { return (+v).toFixed(2).replace(/\.?0+$/, '') + 'K'; };
+
+      newGuestAcqChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 0, bottom: 0, left: 0 },
+        data: NEW_GUEST_ACQ_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'line',
+            xKey: 'date',
+            yKey: 'prev',
+            yName: 'Previous period',
+            stroke: '#5A55E3',
+            strokeWidth: 2,
+            lineDash: [2, 2],
+            marker: {
+              enabled: true,
+              size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+          {
+            type: 'line',
+            xKey: 'date',
+            yKey: 'current',
+            yName: 'This period',
+            stroke: '#5A55E3',
+            strokeWidth: 2,
+            marker: {
+              enabled: true,
+              size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+        ],
+        axes: {
+          x: {
+            type: 'time',
+            position: 'bottom',
+            nice: false,
+            min: new Date(2026, 2, 19),
+            max: new Date(2026, 3, 26),
+            gridLine: { enabled: false },
+            line: { enabled: false },
+            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              format: '%b %-d',
+              padding: 8,
+              avoidCollisions: true,
+            },
+            interval: {
+              values: [
+                new Date(2026, 2, 29),
+                new Date(2026, 3, 5),
+                new Date(2026, 3, 12),
+                new Date(2026, 3, 19),
+              ],
+            },
+            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+          },
+          y: {
+            type: 'number',
+            position: 'left',
+            min: 1.397,
+            max: 2.003,
+            interval: { values: [1.40, 1.60, 1.80, 2.00] },
+            gridLine: {
+              enabled: true,
+              style: [{ stroke: '#DFE1E2', lineDash: [] }],
+            },
+            line: { enabled: false },
+            tick: { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              formatter: function(params) {
+                return (+params.value).toFixed(2).replace(/\.?0+$/, '') + 'K';
+              },
+            },
+          },
+        },
+      };
+
+      newGuestAcqChart = agCharts.AgCharts.create(newGuestAcqChartOptions);
+
+      // ── Manual tooltip (mirrors Total Guests; fires anywhere in plot area) ──
+      if (newGuestAcqTooltipEl && newGuestAcqTooltipEl.parentNode) {
+        newGuestAcqTooltipEl.parentNode.removeChild(newGuestAcqTooltipEl);
+      }
+      if (newGuestAcqMouseMove) {
+        container.removeEventListener('mousemove',  newGuestAcqMouseMove);
+        container.removeEventListener('mouseleave', newGuestAcqMouseLeave);
+      }
+
+      newGuestAcqTooltipEl = document.createElement('div');
+      newGuestAcqTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(newGuestAcqTooltipEl);
+
+      // Y-axis labels "1.40K"–"2.00K" (~5 chars × 7px) + 8px padding ≈ 43px.
+      var PLOT_LEFT      = 46;
+      var PLOT_RIGHT_PAD = 0;
+      var AXIS_MIN_TIME  = new Date(2026, 2, 19).getTime();
+      var AXIS_MAX_TIME  = new Date(2026, 3, 26).getTime();
+
+      newGuestAcqMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+
+        if (mx < PLOT_LEFT || mx > plotRight) {
+          newGuestAcqTooltipEl.style.display = 'none';
+          return;
+        }
+
+        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
+        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
+        var d = NEW_GUEST_ACQ_DATA.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+
+        if (!newGuestAcqVisibility.current) { newGuestAcqTooltipEl.style.display = 'none'; return; }
+
+        var pctRaw   = (d.current - d.prev) / d.prev * 100;
+        var pct      = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
+        var pctColor = pctRaw >= 0 ? '#257469' : '#b1294a';
+        var pctBg    = pctRaw >= 0 ? '#effaf9' : '#fdecef';
+        var stripe   = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+
+        newGuestAcqTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">New guest acquisition</p>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:4px;">' +
+                '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(d.date) + '</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtK(d.current) + '</span>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+              '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pct + '</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
+            '</div>' +
+          '</div>' +
+          (newGuestAcqVisibility.prev
+            ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtK(d.prev) + '</span>' +
+              '</div>'
+            : '') +
+          '</div>'
+        );
+
+        newGuestAcqTooltipEl.style.display = 'block';
+
+        var tw = newGuestAcqTooltipEl.offsetWidth;
+        var th = newGuestAcqTooltipEl.offsetHeight;
+        var tx = e.clientX + 16;
+        var ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8)                           ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        newGuestAcqTooltipEl.style.left = tx + 'px';
+        newGuestAcqTooltipEl.style.top  = ty + 'px';
+      };
+
+      newGuestAcqMouseLeave = function() {
+        newGuestAcqTooltipEl.style.display = 'none';
+      };
+
+      container.addEventListener('mousemove',  newGuestAcqMouseMove);
+      container.addEventListener('mouseleave', newGuestAcqMouseLeave);
+    }
+
+    /* ═══════════════════════════════════════════════════
+
+    /* ═══════════════════════════════════════════════════
+       AG Charts — Visit Frequency (grouped column histogram)
+       Distribution of identified guests across visit-count buckets
+       in the selected window. Two bars per bucket: current period
+       (solid indigo) vs. previous period (striped indigo). Comparing
+       buckets period-over-period surfaces guests shifting up/down the
+       frequency ladder — the core "is loyalty driving stickiness?"
+       question raised in customer interviews.
+    ═══════════════════════════════════════════════════ */
+    var visitFreqChart        = null;
+    var visitFreqChartOptions = null;
+    var visitFreqTooltipEl    = null;
+    var visitFreqMouseMove    = null;
+    var visitFreqMouseLeave   = null;
+    var visitFreqVisibility   = { current: true, prev: true };
+
+    // Bucket convention from QBR frequency cohorts (Punchh) and customer
+    // interviews. Values in thousands of identified guests in the 90D window.
+    // Totals: current 847K, prev 814K. Weighted avg = 2.4 vs 2.1 visits.
+    var VISIT_FREQ_DATA = [
+      { bucket: '1 visit',      current: 320, prev: 335 },
+      { bucket: '2 visits',     current: 210, prev: 205 },
+      { bucket: '3-5 visits',   current: 180, prev: 165 },
+      { bucket: '6-10 visits',  current:  95, prev:  78 },
+      { bucket: '11+ visits',   current:  42, prev:  31 },
+    ];
+
+    function toggleVisitFrequencySeries(btn, seriesKey) {
+      if (!visitFreqChart || !visitFreqChartOptions) return;
+      var nextValue = !visitFreqVisibility[seriesKey];
+      var otherKey = seriesKey === 'current' ? 'prev' : 'current';
+      if (!nextValue && !visitFreqVisibility[otherKey]) return;
+      visitFreqVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+      var newSeries = visitFreqChartOptions.series.map(function(s) {
+        return Object.assign({}, s, { visible: visitFreqVisibility[s.yKey] !== false });
+      });
+      visitFreqChartOptions = Object.assign({}, visitFreqChartOptions, { series: newSeries });
+      visitFreqChart.update(visitFreqChartOptions);
+    }
+
+    function initVisitFrequencyChart() {
+      var container = document.getElementById('chart-area-visit-frequency');
+      if (!container) return;
+      if (visitFreqChart) { visitFreqChart.destroy(); visitFreqChart = null; }
+
+      visitFreqVisibility = { current: true, prev: true };
+
+      var fmtVK = function(v) {
+        var n = +v;
+        if (n >= 1000) return (n / 1000).toFixed(2).replace(/\.?0+$/, '') + 'M';
+        return Math.round(n) + 'K';
+      };
+
+      visitFreqChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 0, bottom: 0, left: 0 },
+        data: VISIT_FREQ_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'bar',
+            direction: 'vertical',
+            xKey: 'bucket',
+            yKey: 'prev',
+            yName: 'Previous period',
+            // AG Charts pattern fill — diagonal lines matching the legend
+            // marker (`.chart-card__legend-marker--striped`: white background
+            // with indigo diagonal stripes).
+            fill: { type: 'pattern', pattern: 'forward-slanted-lines', stroke: '#5A55E3', backgroundFill: '#ffffff' },
+            stroke: '#5A55E3',
+            strokeWidth: 1,
+            cornerRadius: 4,
+            tooltip: { enabled: false },
+          },
+          {
+            type: 'bar',
+            direction: 'vertical',
+            xKey: 'bucket',
+            yKey: 'current',
+            yName: 'This period',
+            fill: '#5A55E3',
+            stroke: '#5A55E3',
+            strokeWidth: 0,
+            cornerRadius: 4,
+            tooltip: { enabled: false },
+          },
+        ],
+        axes: {
+          x: {
+            type: 'category',
+            position: 'bottom',
+            paddingInner: 0.32,
+            paddingOuter: 0.18,
+            gridLine: { enabled: false },
+            line:     { enabled: false },
+            tick:     { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+            },
+          },
+          y: {
+            type: 'number',
+            position: 'left',
+            min: 0,
+            max: 360,
+            interval: { values: [0, 100, 200, 300] },
+            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
+            line: { enabled: false },
+            tick: { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              formatter: function(params) { return fmtVK(+params.value); },
+            },
+          },
+        },
+      };
+
+      visitFreqChart = agCharts.AgCharts.create(visitFreqChartOptions);
+
+      // ── Manual tooltip — fires per bucket on hover ────────────────
+      if (visitFreqTooltipEl && visitFreqTooltipEl.parentNode) {
+        visitFreqTooltipEl.parentNode.removeChild(visitFreqTooltipEl);
+      }
+      if (visitFreqMouseMove) {
+        container.removeEventListener('mousemove',  visitFreqMouseMove);
+        container.removeEventListener('mouseleave', visitFreqMouseLeave);
+      }
+
+      visitFreqTooltipEl = document.createElement('div');
+      visitFreqTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(visitFreqTooltipEl);
+
+      // Y-axis labels "0"–"300K" (~4 chars × 7px) + 8px padding ≈ 36px.
+      var VF_PLOT_LEFT      = 38;
+      var VF_PLOT_RIGHT_PAD = 8;
+      var VF_X_AXIS_HEIGHT  = 28;
+
+      visitFreqMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var my = e.clientY - rect.top;
+        var plotRight = rect.width - VF_PLOT_RIGHT_PAD;
+        var plotBottom = rect.height - VF_X_AXIS_HEIGHT;
+
+        if (mx < VF_PLOT_LEFT || mx > plotRight || my > plotBottom) {
+          visitFreqTooltipEl.style.display = 'none';
+          return;
+        }
+
+        // Snap to nearest bucket on X.
+        var relX = (mx - VF_PLOT_LEFT) / (plotRight - VF_PLOT_LEFT);
+        var idx = Math.min(VISIT_FREQ_DATA.length - 1, Math.max(0, Math.floor(relX * VISIT_FREQ_DATA.length)));
+        var d = VISIT_FREQ_DATA[idx];
+
+        var totalCur = VISIT_FREQ_DATA.reduce(function(s, r) { return s + r.current; }, 0);
+        var totalPrev = VISIT_FREQ_DATA.reduce(function(s, r) { return s + r.prev; }, 0);
+        var pctCur  = (d.current / totalCur  * 100).toFixed(1) + '%';
+        var pctPrev = (d.prev    / totalPrev * 100).toFixed(1) + '%';
+
+        var deltaRaw = (d.current - d.prev) / d.prev * 100;
+        var deltaStr = (deltaRaw >= 0 ? '+' : '') + deltaRaw.toFixed(1) + '%';
+        var deltaColor = deltaRaw >= 0 ? '#257469' : '#b1294a';
+        var deltaBg    = deltaRaw >= 0 ? '#effaf9' : '#fdecef';
+        var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+
+        visitFreqTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">' + d.bucket + '</p>' +
+            '<div style="display:flex;flex-direction:column;gap:8px;">' +
+              (visitFreqVisibility.current
+                ? '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                    '<div style="display:flex;align-items:center;gap:4px;">' +
+                      '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                      '<span style="font-size:12px;font-weight:400;color:#60696C;">This period</span>' +
+                    '</div>' +
+                    '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtVK(d.current) + ' · ' + pctCur + '</span>' +
+                  '</div>'
+                : '') +
+              (visitFreqVisibility.prev
+                ? '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                    '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
+                      '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
+                    '</div>' +
+                    '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtVK(d.prev) + ' · ' + pctPrev + '</span>' +
+                  '</div>'
+                : '') +
+              (visitFreqVisibility.current && visitFreqVisibility.prev
+                ? '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+                    '<span style="background:' + deltaBg + ';color:' + deltaColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + deltaStr + '</span>' +
+                    '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
+                  '</div>'
+                : '') +
+            '</div>' +
+          '</div>'
+        );
+
+        visitFreqTooltipEl.style.display = 'block';
+
+        var tw = visitFreqTooltipEl.offsetWidth;
+        var th = visitFreqTooltipEl.offsetHeight;
+        var tx = e.clientX + 16;
+        var ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8) ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        visitFreqTooltipEl.style.left = tx + 'px';
+        visitFreqTooltipEl.style.top  = ty + 'px';
+      };
+
+      visitFreqMouseLeave = function() {
+        visitFreqTooltipEl.style.display = 'none';
+      };
+
+      container.addEventListener('mousemove',  visitFreqMouseMove);
+      container.addEventListener('mouseleave', visitFreqMouseLeave);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       AG Charts — Loyalty Spend Lift
+       Vertical paired bar card: pre-enrollment avg spend vs post-enrollment avg spend.
+       No tooltip on card — bar labels carry the values.
+    ═══════════════════════════════════════════════════ */
+    var loyaltySpendLiftChart        = null;
+    var loyaltySpendLiftChartOptions = null;
+
+    var SPEND_LIFT_SUMMARY = {
+      avgPreSpend:       3.07,
+      avgPostSpend:      7.46,
+      lift:              4.39,
+      liftPrev:          2.10,
+      deltaPct:         109.05,
+      effectiveDateFrom: '2024-05-17',
+      effectiveDateTo:   '2025-05-17',
+    };
+
+    var SPEND_LIFT_CARD_DATA = [
+      { stage: 'Pre-enrollment\navg spend',  value: SPEND_LIFT_SUMMARY.avgPreSpend,  tone: 'pre' },
+      { stage: 'Post-enrollment\navg spend', value: SPEND_LIFT_SUMMARY.avgPostSpend, tone: 'post' },
+    ];
+
+    function initLoyaltySpendLiftChart() {
+      var container = document.getElementById('chart-area-loyalty-spend-lift');
+      if (!container) return;
+      if (loyaltySpendLiftChart) { loyaltySpendLiftChart.destroy(); loyaltySpendLiftChart = null; }
+
+      var maxValue = Math.max(SPEND_LIFT_SUMMARY.avgPreSpend, SPEND_LIFT_SUMMARY.avgPostSpend);
+
+      loyaltySpendLiftChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 8, bottom: 0, left: 0 },
+        data: SPEND_LIFT_CARD_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'bar',
+            xKey: 'stage',
+            yKey: 'value',
+            cornerRadius: 6,
+            strokeWidth: 0,
+            tooltip: { enabled: false },
+            label: {
+              enabled: true,
+              color: '#000000',
+              fontSize: 11,
+              formatter: function(params) {
+                return '$' + (+params.value).toFixed(2);
+              },
+            },
+            itemStyler: function(params) {
+              return { fill: params.datum && params.datum.tone === 'pre' ? '#A9A6FF' : '#5A55E3' };
+            },
+          },
+        ],
+        axes: {
+          x: {
+            type: 'category',
+            position: 'bottom',
+            gridLine: { enabled: false },
+            line:     { enabled: false },
+            tick:     { enabled: false },
+            crosshair: { enabled: false },
+            label: { fontSize: 12, color: '#000000', padding: 8 },
+          },
+          y: {
+            type: 'number',
+            position: 'left',
+            min: 0,
+            max: maxValue * 1.2,
+            nice: false,
+            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
+            line:     { enabled: false },
+            tick:     { enabled: false },
+            crosshair: { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              formatter: function(params) { return '$' + (+params.value).toFixed(0); },
+            },
+          },
+        },
+      };
+
+      loyaltySpendLiftChart = agCharts.AgCharts.create(loyaltySpendLiftChartOptions);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       AG Charts — Guest Repeat Rate
+       Period-over-period: % of guests active in base month who
+       returned in the immediately following month (all actives).
+    ═══════════════════════════════════════════════════ */
+    var guestRepeatRateChart         = null;
+    var guestRepeatRateChartOptions  = null;
+    var guestRepeatRateTooltipEl     = null;
+    var guestRepeatRateMouseMove     = null;
+    var guestRepeatRateMouseLeave    = null;
+    var guestRepeatRateVisibility    = { current: true, prev: true };
+
+    function toggleGuestRepeatRateSeries(btn, seriesKey) {
+      if (!guestRepeatRateChart || !guestRepeatRateChartOptions) return;
+      var nextValue = !guestRepeatRateVisibility[seriesKey];
+      var someoneElseVisible = Object.keys(guestRepeatRateVisibility).some(function(k) {
+        return k !== seriesKey && guestRepeatRateVisibility[k];
+      });
+      if (!nextValue && !someoneElseVisible) return;
+
+      guestRepeatRateVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+
+      var newSeries = guestRepeatRateChartOptions.series.map(function(s, i) {
+        var vis = (i === 0) ? guestRepeatRateVisibility.prev : guestRepeatRateVisibility.current;
+        return Object.assign({}, s, { visible: vis });
+      });
+      var updateOpts = Object.assign({}, guestRepeatRateChartOptions, { series: newSeries });
+      guestRepeatRateChartOptions = updateOpts;
+      guestRepeatRateChart.update(updateOpts);
+    }
+
+    // 12 monthly base periods: Apr 2025 – Mar 2026.
+    // Each point = % of guests with ≥1 visit in month M who also visited in month M+1.
+    var GUEST_REPEAT_RATE_DATA = (function() {
+      var curr = [
+        0.382, 0.388, 0.391, 0.396, 0.401, 0.405,
+        0.409, 0.412, 0.416, 0.419, 0.424, 0.428,
+      ];
+      var prev = [
+        0.365, 0.371, 0.374, 0.378, 0.382, 0.386,
+        0.389, 0.393, 0.397, 0.400, 0.404, 0.407,
+      ];
+      return curr.map(function(c, i) {
+        var d = new Date(2025, 3 + i, 1);
+        return { date: d, current: c, prev: prev[i] };
+      });
+    }());
+
+    function fmtRepeatBaseMonth(d) {
+      return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }).replace(' ', " '");
+    }
+
+    function initGuestRepeatRateChart() {
+      var container = document.getElementById('chart-area-guest-repeat-rate');
+      if (!container) return;
+      if (guestRepeatRateChart) { guestRepeatRateChart.destroy(); guestRepeatRateChart = null; }
+
+      guestRepeatRateVisibility = { current: true, prev: true };
+
+      guestRepeatRateChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 0, bottom: 24, left: 0 },
+        data: GUEST_REPEAT_RATE_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'line',
+            xKey: 'date',
+            yKey: 'prev',
+            yName: 'Previous period',
+            stroke: '#5A55E3',
+            strokeWidth: 2,
+            lineDash: [2, 2],
+            marker: {
+              enabled: true,
+              size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+          {
+            type: 'line',
+            xKey: 'date',
+            yKey: 'current',
+            yName: 'This period',
+            stroke: '#5A55E3',
+            strokeWidth: 2,
+            marker: {
+              enabled: true,
+              size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+        ],
+        axes: {
+          x: {
+            type: 'time',
+            position: 'bottom',
+            nice: false,
+            min: new Date(2025, 3, 1),
+            max: new Date(2026, 2, 1),
+            gridLine: { enabled: false },
+            line: { enabled: false },
+            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              avoidCollisions: true,
+              formatter: function(params) { return fmtRepeatBaseMonth(new Date(params.value)); },
+            },
+            interval: {
+              values: [
+                new Date(2025, 3, 1),
+                new Date(2025, 6, 1),
+                new Date(2025, 9, 1),
+                new Date(2026, 0, 1),
+              ],
+            },
+            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+          },
+          y: {
+            type: 'number',
+            position: 'left',
+            min: 0.34,
+            max: 0.46,
+            interval: { values: [0.34, 0.36, 0.38, 0.40, 0.42, 0.44, 0.46] },
+            gridLine: {
+              enabled: true,
+              style: [{ stroke: '#DFE1E2', lineDash: [] }],
+            },
+            line: { enabled: false },
+            tick: { enabled: false },
+            label: {
+              fontSize: 12,
+              color: '#000000',
+              padding: 8,
+              formatter: function(params) { return fmtPct(+params.value); },
+            },
+          },
+        },
+      };
+
+      guestRepeatRateChart = agCharts.AgCharts.create(guestRepeatRateChartOptions);
+
+      if (guestRepeatRateTooltipEl && guestRepeatRateTooltipEl.parentNode) {
+        guestRepeatRateTooltipEl.parentNode.removeChild(guestRepeatRateTooltipEl);
+      }
+      if (guestRepeatRateMouseMove) {
+        container.removeEventListener('mousemove',  guestRepeatRateMouseMove);
+        container.removeEventListener('mouseleave', guestRepeatRateMouseLeave);
+      }
+
+      guestRepeatRateTooltipEl = document.createElement('div');
+      guestRepeatRateTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(guestRepeatRateTooltipEl);
+
+      var PLOT_LEFT      = 38;
+      var PLOT_RIGHT_PAD = 0;
+      var AXIS_MIN_TIME  = new Date(2025, 3, 1).getTime();
+      var AXIS_MAX_TIME  = new Date(2026, 2, 1).getTime();
+
+      guestRepeatRateMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+
+        if (mx < PLOT_LEFT || mx > plotRight) {
+          guestRepeatRateTooltipEl.style.display = 'none';
+          return;
+        }
+
+        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
+        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
+        var d = GUEST_REPEAT_RATE_DATA.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+
+        if (!guestRepeatRateVisibility.current) { guestRepeatRateTooltipEl.style.display = 'none'; return; }
+
+        var ptsDelta = (d.current - d.prev) * 100;
+        var pts      = (ptsDelta >= 0 ? '+' : '') + ptsDelta.toFixed(1) + 'pts';
+        var ptsColor = ptsDelta >= 0 ? '#257469' : '#b1294a';
+        var ptsBg    = ptsDelta >= 0 ? '#effaf9' : '#fdecef';
+        var stripe   = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+
+        guestRepeatRateTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Guest repeat rate</p>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:4px;">' +
+                '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtRepeatBaseMonth(d.date) + ' base</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtPct(d.current) + '</span>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+              '<span style="background:' + ptsBg + ';color:' + ptsColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pts + '</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
+            '</div>' +
+          '</div>' +
+          (guestRepeatRateVisibility.prev
+            ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtPct(d.prev) + '</span>' +
+              '</div>'
+            : '') +
+          '</div>'
+        );
+
+        guestRepeatRateTooltipEl.style.display = 'block';
+
+        var tw = guestRepeatRateTooltipEl.offsetWidth;
+        var th = guestRepeatRateTooltipEl.offsetHeight;
+        var tx = e.clientX + 16;
+        var ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8)                           ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        guestRepeatRateTooltipEl.style.left = tx + 'px';
+        guestRepeatRateTooltipEl.style.top  = ty + 'px';
+      };
+
+      guestRepeatRateMouseLeave = function() {
+        guestRepeatRateTooltipEl.style.display = 'none';
+      };
+
+      container.addEventListener('mousemove',  guestRepeatRateMouseMove);
+      container.addEventListener('mouseleave', guestRepeatRateMouseLeave);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       AG Charts — Loyalty Penetration (dashboard card)
+    ═══════════════════════════════════════════════════ */
+    var loyaltyPenetrationChart         = null;
+    var loyaltyPenetrationChartOptions  = null;
+    var loyaltyPenetrationTooltipEl     = null;
+    var loyaltyPenetrationMouseMove     = null;
+    var loyaltyPenetrationMouseLeave    = null;
+    var loyaltyPenetrationVisibility    = { current: true, prev: true };
+
+    function updateLoyaltyPenetrationFilterNotice(range) {
+      var wrap = document.getElementById('loyalty-penetration-info-wrap');
+      if (!wrap) return;
+      var msg = getChartFilterNotice('loyalty-penetration', range);
+      wrap.hidden = !msg;
+    }
+
+    function toggleLoyaltyPenetrationSeries(btn, seriesKey) {
+      if (!loyaltyPenetrationChart || !loyaltyPenetrationChartOptions) return;
+      var nextValue = !loyaltyPenetrationVisibility[seriesKey];
+      var someoneElseVisible = Object.keys(loyaltyPenetrationVisibility).some(function(k) {
+        return k !== seriesKey && loyaltyPenetrationVisibility[k];
+      });
+      if (!nextValue && !someoneElseVisible) return;
+      loyaltyPenetrationVisibility[seriesKey] = nextValue;
+      btn.setAttribute('aria-pressed', String(nextValue));
+      var newSeries = loyaltyPenetrationChartOptions.series.map(function(s, i) {
+        var vis = (i === 0) ? loyaltyPenetrationVisibility.prev : loyaltyPenetrationVisibility.current;
+        return Object.assign({}, s, { visible: vis });
+      });
+      var updateOpts = Object.assign({}, loyaltyPenetrationChartOptions, { series: newSeries });
+      loyaltyPenetrationChartOptions = updateOpts;
+      loyaltyPenetrationChart.update(updateOpts);
+    }
+
+    var LOYALTY_PENETRATION_DATA = (function() {
+      var curr = [
+        0.552, 0.558, 0.561, 0.568, 0.574, 0.579,
+        0.585, 0.590, 0.598, 0.605, 0.612, 0.620,
+      ];
+      var prev = [
+        0.530, 0.536, 0.540, 0.545, 0.550, 0.555,
+        0.560, 0.565, 0.570, 0.575, 0.580, 0.585,
+      ];
+      return curr.map(function(c, i) {
+        return { date: new Date(2025, 3 + i, 1), current: c, prev: prev[i] };
+      });
+    }());
+
+    function initLoyaltyPenetrationChart() {
+      var container = document.getElementById('chart-area-loyalty-penetration');
+      if (!container) return;
+      if (loyaltyPenetrationChart) { loyaltyPenetrationChart.destroy(); loyaltyPenetrationChart = null; }
+
+      loyaltyPenetrationVisibility = { current: true, prev: true };
+
+      loyaltyPenetrationChartOptions = {
+        container: container,
+        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
+        background: { fill: '#ffffff' },
+        padding: { top: 8, right: 0, bottom: 24, left: 0 },
+        data: LOYALTY_PENETRATION_DATA,
+        legend: { enabled: false },
+        series: [
+          {
+            type: 'line', xKey: 'date', yKey: 'prev', yName: 'Previous period',
+            stroke: '#5A55E3', strokeWidth: 2, lineDash: [2, 2],
+            marker: {
+              enabled: true, size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+          {
+            type: 'line', xKey: 'date', yKey: 'current', yName: 'This period',
+            stroke: '#5A55E3', strokeWidth: 2,
+            marker: {
+              enabled: true, size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+        ],
+        axes: {
+          x: {
+            type: 'time', position: 'bottom', nice: false,
+            min: new Date(2025, 3, 1), max: new Date(2026, 2, 1),
+            gridLine: { enabled: false }, line: { enabled: false },
+            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
+            label: {
+              fontSize: 12, color: '#000000', padding: 8, avoidCollisions: true,
+              formatter: function(params) { return fmtRepeatBaseMonth(new Date(params.value)); },
+            },
+            interval: {
+              values: [
+                new Date(2025, 3, 1), new Date(2025, 6, 1),
+                new Date(2025, 9, 1), new Date(2026, 0, 1),
+              ],
+            },
+            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+          },
+          y: {
+            type: 'number', position: 'left',
+            min: 0.50, max: 0.70,
+            interval: { values: [0.50, 0.55, 0.60, 0.65, 0.70] },
+            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
+            line: { enabled: false }, tick: { enabled: false },
+            label: {
+              fontSize: 12, color: '#000000', padding: 8,
+              formatter: function(params) { return fmtPct(+params.value); },
+            },
+          },
+        },
+      };
+
+      loyaltyPenetrationChart = agCharts.AgCharts.create(loyaltyPenetrationChartOptions);
+
+      if (loyaltyPenetrationTooltipEl && loyaltyPenetrationTooltipEl.parentNode) {
+        loyaltyPenetrationTooltipEl.parentNode.removeChild(loyaltyPenetrationTooltipEl);
+      }
+      if (loyaltyPenetrationMouseMove) {
+        container.removeEventListener('mousemove', loyaltyPenetrationMouseMove);
+        container.removeEventListener('mouseleave', loyaltyPenetrationMouseLeave);
+      }
+
+      loyaltyPenetrationTooltipEl = document.createElement('div');
+      loyaltyPenetrationTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(loyaltyPenetrationTooltipEl);
+
+      var PLOT_LEFT = 38, PLOT_RIGHT_PAD = 0;
+      var AXIS_MIN_TIME = new Date(2025, 3, 1).getTime();
+      var AXIS_MAX_TIME = new Date(2026, 2, 1).getTime();
+
+      loyaltyPenetrationMouseMove = function(e) {
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+        if (mx < PLOT_LEFT || mx > plotRight) {
+          loyaltyPenetrationTooltipEl.style.display = 'none';
+          return;
+        }
+        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
+        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
+        var d = LOYALTY_PENETRATION_DATA.reduce(function(best, row) {
+          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
+        });
+        if (!loyaltyPenetrationVisibility.current) {
+          loyaltyPenetrationTooltipEl.style.display = 'none';
+          return;
+        }
+        var ptsDelta = (d.current - d.prev) * 100;
+        var pts = (ptsDelta >= 0 ? '+' : '') + ptsDelta.toFixed(1) + 'pts';
+        var ptsColor = ptsDelta >= 0 ? '#257469' : '#b1294a';
+        var ptsBg = ptsDelta >= 0 ? '#effaf9' : '#fdecef';
+        var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+        loyaltyPenetrationTooltipEl.innerHTML = (
+          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Loyalty penetration</p>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:4px;">' +
+                '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtRepeatBaseMonth(d.date) + '</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtPct(d.current) + '</span>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+              '<span style="background:' + ptsBg + ';color:' + ptsColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pts + '</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
+            '</div>' +
+          '</div>' +
+          (loyaltyPenetrationVisibility.prev
+            ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtPct(d.prev) + '</span>' +
+              '</div>'
+            : '') +
+          '</div>'
+        );
+        loyaltyPenetrationTooltipEl.style.display = 'block';
+        var tw = loyaltyPenetrationTooltipEl.offsetWidth;
+        var th = loyaltyPenetrationTooltipEl.offsetHeight;
+        var tx = e.clientX + 16;
+        var ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth - 8) tx = e.clientX - tw - 16;
+        if (ty < 8) ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        loyaltyPenetrationTooltipEl.style.left = tx + 'px';
+        loyaltyPenetrationTooltipEl.style.top = ty + 'px';
+      };
+
+      loyaltyPenetrationMouseLeave = function() {
+        loyaltyPenetrationTooltipEl.style.display = 'none';
+      };
+
+      container.addEventListener('mousemove', loyaltyPenetrationMouseMove);
+      container.addEventListener('mouseleave', loyaltyPenetrationMouseLeave);
     }
 
     /* ═══════════════════════════════════════════════════

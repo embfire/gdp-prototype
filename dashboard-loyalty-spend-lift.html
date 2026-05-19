@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Guest lifecycle breakdown — PAR Guest360 Beta</title>
+  <title>Loyalty spend lift — PAR Guest360 Beta</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
@@ -152,13 +152,13 @@
             <span class="chart-breadcrumbs__separator" aria-hidden="true">
               <span class="material-symbols-rounded">chevron_right</span>
             </span>
-            <span class="chart-breadcrumbs__current">Guest lifecycle breakdown</span>
+            <span class="chart-breadcrumbs__current">Loyalty spend lift</span>
           </nav>
 
           <!-- Title bar -->
           <div class="chart-detail-title-bar">
             <div class="chart-detail-title-bar__top">
-              <h1 class="chart-detail-title-bar__title">Guest lifecycle breakdown</h1>
+              <h1 class="chart-detail-title-bar__title">Loyalty spend lift</h1>
               <div class="chart-detail-title-bar__actions">
                 <button class="button transparent dashboard-btn">
                   <span class="material-symbols-rounded dashboard-btn__icon">help</span>
@@ -172,9 +172,9 @@
           <div class="dashboard-filter-bar">
             <div class="date-range-wrapper">
               <div class="btn-group" role="group" aria-label="Date range">
-                <button class="btn-group__item btn-group__item--active" onclick="setDateRange(this, '7D')">7D</button>
+                <button class="btn-group__item" onclick="setDateRange(this, '7D')">7D</button>
                 <button class="btn-group__item" onclick="setDateRange(this, '30D')">30D</button>
-                <button class="btn-group__item" onclick="setDateRange(this, '90D')">90D</button>
+                <button class="btn-group__item btn-group__item--active" onclick="setDateRange(this, '90D')">90D</button>
                 <button class="btn-group__item" onclick="setDateRange(this, '12M')">12M</button>
                 <button class="btn-group__item" onclick="setDateRange(this, 'YTD')">YTD</button>
                 <button class="btn-group__item btn-group__item--icon" id="btn-custom-range" onclick="setDateRange(this, 'custom')">
@@ -285,12 +285,12 @@
           </div>
           <!-- /filter bar -->
 
-          <!-- Chart card -->
-          <div class="chart-card" data-metric-id="guest-lifecycle-breakdown" data-metric-context="detail">
+          <div class="chart-detail-charts-stack">
+          <div class="chart-card" data-metric-id="loyalty-spend-lift" data-metric-context="detail">
             <div class="chart-card__header chart-card__header--detail">
               <div class="chart-card__header-text">
-                <p class="chart-card__title">Guest lifecycle breakdown</p>
-                <p class="chart-card__subtitle">Distribution of identified guests across lifecycle stages</p>
+                <p class="chart-card__title">Loyalty spend lift</p>
+                <p class="chart-card__subtitle">Avg transaction value lift after enrollment</p>
               </div>
               <div class="chart-card__header-controls">
                 <button class="button outlined dashboard-btn">
@@ -298,13 +298,13 @@
                   <span class="dashboard-btn__label">Get insight</span>
                 </button>
                 <div class="chart-context-wrap">
-                  <button class="button transparent no-content chart-card__dots-btn" onclick="toggleChartMenu(event, 'detail')" aria-label="More options" aria-expanded="false">
+                  <button class="button transparent no-content chart-card__dots-btn" onclick="toggleChartMenu(event, 'trend')" aria-label="More options" aria-expanded="false">
                     <i class="ph ph-dots-three-vertical" style="font-size: 20px;"></i>
                   </button>
-                  <div class="chart-context-menu" id="chart-menu-detail">
+                  <div class="chart-context-menu" id="chart-menu-trend">
                     <ul>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
-                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
+                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">image</span><span>Download chart</span></button></li>
                       <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava</span></button></li>
                     </ul>
                   </div>
@@ -314,50 +314,31 @@
             <div class="chart-card__body">
               <div class="chart-card__metric">
                 <div class="chart-card__metric-row">
-                  <p class="chart-card__metric-value">142.8K</p>
-                  <span class="chart-card__metric-pill chart-card__metric-pill--up chart-card__metric-pill--inverse">+3.4%</span>
+                  <p class="chart-card__metric-value">+$4.39</p>
+                  <span class="chart-card__metric-pill chart-card__metric-pill--up">+109.05%</span>
                 </div>
-                <p class="chart-card__metric-period">At-Risk · 138.1K prev period</p>
+                <div class="chart-card__metric-period-row">
+                  <span class="chart-card__metric-period">$2.10 previous period avg</span>
+                  <div class="chart-card__metric-info-wrap">
+                    <span class="material-symbols-rounded chart-card__metric-info-icon">info</span>
+                    <span class="chart-card__metric-info-text">Included cohorts: May 17, 2024 to May 17, 2025</span>
+                    <div class="chart-card__metric-info-tooltip">This chart uses guests who enrolled during this cohort window. We shift the cohort back so every guest has a complete post-enrollment window for the selected date range.</div>
+                  </div>
+                </div>
               </div>
-              <div class="chart-card__legend" id="lifecycle-legend"></div>
-              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-guest-lifecycle-breakdown"></div>
+              <div class="chart-card__legend" id="chart-legend-trend"></div>
+              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-spend-lift-trend"></div>
             </div>
           </div>
-          <!-- /chart card -->
+          </div>
+
 
           <!-- Data table -->
           <div class="chart-detail-table-wrap">
             <div class="table-container">
               <table class="table">
-                <thead>
-                  <tr style="background-color: #dfe1e2; border-bottom: none;">
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner chart-th-inner--start">Date <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">First-time <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Returning <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Win-back <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Loyal <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">At-Risk <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Churned <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Δ At-Risk <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody id="lifecycle-table-body"></tbody>
+                <thead id="spend-lift-table-head"></thead>
+                <tbody id="spend-lift-table-body"></tbody>
               </table>
             </div>
 
@@ -386,12 +367,12 @@
                     <ul id="page-options-list"></ul>
                   </div>
                 </div>
-                <label id="total-pages-text">of 4 pages</label>
+                <label id="total-pages-text">of 1 page</label>
                 <div class="pagination__navigation__arrows">
                   <button class="pagination__nav-arrow" id="prev-btn" onclick="prevPage()" disabled>
                     <i class="ph ph-caret-left"></i>
                   </button>
-                  <button class="pagination__nav-arrow" id="next-btn" onclick="nextPage()">
+                  <button class="pagination__nav-arrow" id="next-btn" onclick="nextPage()" disabled>
                     <i class="ph ph-caret-right"></i>
                   </button>
                 </div>
@@ -498,7 +479,7 @@
       dd.querySelector('.dropdown__options').classList.remove('dropdown__options_open');
     }
 
-    /* ── Date range picker (verbatim from dashboard-chart-detail.html) ── */
+    /* ── Date range picker (verbatim from dashboard-new-guest-acquisition.html) ── */
     var dpStartDate = null, dpEndDate = null, dpHoverDate = null;
     var dpLeftMonth = null, dpRightMonth = null, dpOutsideHandler = null;
     var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -536,14 +517,7 @@
         firstBtn.classList.add('btn-group__item--active');
       }
     }
-    function applyDateRange() {
-      if (dpStartDate && dpEndDate) {
-        var label = fmtDate(dpStartDate) + ' – ' + fmtDate(dpEndDate);
-        var customBtn = document.getElementById('btn-custom-range');
-        customBtn.querySelector('.dp-custom-label') && (customBtn.querySelector('.dp-custom-label').textContent = label);
-      }
-      closeDatePicker();
-    }
+    function applyDateRange() { closeDatePicker(); }
     function dpClearHover() {
       if (dpStartDate && !dpEndDate) { dpHoverDate = null; renderDatePicker(); }
     }
@@ -608,511 +582,449 @@
     }
 
     /* ═══════════════════════════════════════════════════
-       AG Charts — Guest Lifecycle Breakdown (stacked area, mirrors beta/index.html)
+       Loyalty Spend Lift — detail page charts
+       Line chart: daily $ lift per enrollment-cohort date.
+       Two series: current period (solid) + previous period (dashed).
     ═══════════════════════════════════════════════════ */
-    // Bento palette assigned by health: emerald=loyal, indigo=returning, sky=first-time, periwinkle=win-back, amber=at-risk, crimson=churned.
-    var LIFECYCLE_STAGES = [
-      { key: 'firstTime',    label: 'First-time',   color: '#30ACEE' },
-      { key: 'returning',    label: 'Returning',    color: '#5A55E3' },
-      { key: 'winBack',      label: 'Win-back',     color: '#8C9FFF' },
-      { key: 'loyal',        label: 'Loyal',        color: '#0CC281' },
-      { key: 'atRisk',       label: 'At-Risk',      color: '#F8931C' },
-      { key: 'churned',      label: 'Churned',      color: '#E83162' },
-    ];
+    var SPEND_LIFT_COLOR    = '#5A55E3';
+    var spendLiftTrendChart = null;
+    var spendLiftTrendOptions = null;
+    var trendVisibility = { current: true, prev: true };
+    var spendLiftTooltipEl = null;
+    var spendLiftCrossLinePending = null;
+    var spendLiftCrossLineFrame  = null;
+    var spendLiftLastCrossLine   = null;
 
-    var lifecycleChart = null;
-    var lifecycleChartOptions = null;
-    var lifecycleVisibility = {
-      firstTime: true, returning: true, winBack: true,
-      loyal: true, atRisk: true, churned: true,
-    };
-    var lifecycleTooltipEl = null;
-    var lifecycleLineEl = null;
-    var lifecycleMouseMove = null;
-    var lifecycleMouseLeave = null;
-
-    /* ── Chart-point context menu state ── */
-    var pointMenuAnchor = null;   // data row at the snapped X
-    var pointMenuStage  = null;   // stage object {key,label,color} that was clicked
-    var pointMenuOpts   = null;
-
-    // 39 days (Mar 19 – Apr 26, 2026), values in K guests.
-    // At-Risk drifts upward over the window to match the +3.4% hero pill.
-    var LIFECYCLE_DATA = (function() {
-      var baseDate = new Date(2026, 2, 19);
+    // Mock data: one row per enrollment-cohort date, current and previous period $ lift.
+    var SPEND_LIFT_TREND_DATA = (function() {
       var rows = [];
-      var days = 39;
-      var seeded = function(seed, i) { return Math.sin(seed * 1.7 + i * 0.41) * 0.5 + 0.5; };
-      for (var i = 0; i < days; i++) {
-        var d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() + i);
-        var t = i / (days - 1);
-        rows.push({
-          date: d,
-          firstTime:    Math.round((110 + seeded(1, i) * 8)            * 10) / 10,
-          returning:    Math.round((132 + seeded(2, i) * 10)           * 10) / 10,
-          winBack: Math.round((32  + seeded(3, i) * 5)            * 10) / 10,
-          loyal:        Math.round((451 - t * 12 + seeded(4, i) * 14)  * 10) / 10,
-          atRisk:       Math.round((138 + t * 6  + seeded(5, i) * 6)   * 10) / 10,
-          churned:      Math.round((285 + seeded(6, i) * 12)           * 10) / 10,
-        });
-      }
-      return rows;
+      var rawPoints = [
+        { date: new Date(2024, 4, 17), current: 7.17, prev: 5.12 },
+        { date: new Date(2024, 4, 18), current: 7.27, prev: 5.20 },
+        { date: new Date(2024, 4, 19), current: 7.12, prev: 4.98 },
+        { date: new Date(2024, 4, 20), current: 7.12, prev: 5.05 },
+        { date: new Date(2024, 4, 21), current: 7.15, prev: 5.10 },
+        { date: new Date(2024, 4, 22), current: 6.89, prev: 4.80 },
+        { date: new Date(2024, 4, 23), current: 6.95, prev: 4.87 },
+        { date: new Date(2024, 4, 24), current: 7.04, prev: 4.91 },
+        { date: new Date(2024, 4, 25), current: 7.31, prev: 5.14 },
+        { date: new Date(2024, 4, 26), current: 7.44, prev: 5.28 },
+        { date: new Date(2024, 4, 27), current: 7.22, prev: 5.03 },
+        { date: new Date(2024, 4, 28), current: 6.78, prev: 4.62 },
+        { date: new Date(2024, 4, 29), current: 6.94, prev: 4.73 },
+        { date: new Date(2024, 4, 30), current: 7.08, prev: 4.88 },
+        { date: new Date(2024, 4, 31), current: 7.19, prev: 4.97 },
+        { date: new Date(2024, 5,  1), current: 7.36, prev: 5.22 },
+        { date: new Date(2024, 5,  2), current: 7.48, prev: 5.35 },
+        { date: new Date(2024, 5,  3), current: 7.29, prev: 5.11 },
+        { date: new Date(2024, 5,  4), current: 6.85, prev: 4.68 },
+        { date: new Date(2024, 5,  5), current: 6.91, prev: 4.74 },
+        { date: new Date(2024, 5,  6), current: 7.03, prev: 4.86 },
+        { date: new Date(2024, 5,  7), current: 7.25, prev: 5.08 },
+        { date: new Date(2024, 5,  8), current: 7.41, prev: 5.26 },
+        { date: new Date(2024, 5,  9), current: 7.17, prev: 5.01 },
+        { date: new Date(2024, 5, 10), current: 6.72, prev: 4.57 },
+        { date: new Date(2024, 5, 11), current: 6.88, prev: 4.70 },
+        { date: new Date(2024, 5, 12), current: 7.10, prev: 4.93 },
+        { date: new Date(2024, 5, 13), current: 7.33, prev: 5.18 },
+        { date: new Date(2024, 5, 14), current: 7.52, prev: 5.40 },
+        { date: new Date(2024, 5, 15), current: 7.39, prev: 5.23 },
+      ];
+      return rawPoints;
     }());
 
     function fmtChartDate(d) {
       return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
+    function fmtTableDate(d) {
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    function fmtDollar(v) { return '$' + (+v).toFixed(2); }
+    function fmtSignedDollar(v) {
+      if (v === null || v === undefined) return '—';
+      return (v >= 0 ? '+$' : '-$') + Math.abs(v).toFixed(2);
+    }
 
-    function buildLifecycleLegend() {
-      var host = document.getElementById('lifecycle-legend');
-      if (!host) return;
-      host.innerHTML = LIFECYCLE_STAGES.map(function(stage) {
+    function renderTrendLegend() {
+      var el = document.getElementById('chart-legend-trend');
+      if (!el) return;
+      el.innerHTML = [
+        { key: 'current', label: 'This period',     dashed: false },
+        { key: 'prev',    label: 'Previous period', dashed: true  },
+      ].map(function(s) {
+        var markerClass = s.dashed ? 'chart-card__legend-marker--striped' : 'chart-card__legend-marker--solid';
+        var markerStyle = s.dashed
+          ? 'background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + SPEND_LIFT_COLOR + ' 0,' + SPEND_LIFT_COLOR + ' 1.5px,transparent 1.5px,transparent 3px);'
+          : 'background:' + SPEND_LIFT_COLOR + ';';
         return (
-          '<button type="button" class="chart-card__legend-item" data-series-key="' + stage.key + '" onclick="toggleLifecycleSeries(this, \'' + stage.key + '\')" aria-pressed="true">' +
-            '<span class="chart-card__legend-marker" style="background:' + stage.color + ';"></span>' +
-            '<span>' + stage.label + '</span>' +
+          '<button type="button" class="chart-card__legend-item" data-series-key="' + s.key + '" aria-pressed="true" onclick="toggleTrendSeries(this, \'' + s.key + '\')">' +
+            '<span class="chart-card__legend-marker ' + markerClass + '" style="' + markerStyle + '" aria-hidden="true"></span>' +
+            '<span>' + s.label + '</span>' +
           '</button>'
         );
       }).join('');
     }
 
-    function toggleLifecycleSeries(btn, seriesKey) {
-      if (!lifecycleChart || !lifecycleChartOptions) return;
-      var nextValue = !lifecycleVisibility[seriesKey];
-      var someoneElseVisible = Object.keys(lifecycleVisibility).some(function(k) {
-        return k !== seriesKey && lifecycleVisibility[k];
+    function toggleTrendSeries(btn, key) {
+      if (!spendLiftTrendChart || !spendLiftTrendOptions) return;
+      var other = key === 'current' ? 'prev' : 'current';
+      var next = !trendVisibility[key];
+      if (!next && !trendVisibility[other]) return;
+      trendVisibility[key] = next;
+      btn.setAttribute('aria-pressed', String(next));
+      var newSeries = spendLiftTrendOptions.series.map(function(s) {
+        if (s.yKey === key) return Object.assign({}, s, { visible: next });
+        return s;
       });
-      if (!nextValue && !someoneElseVisible) return;
-
-      lifecycleVisibility[seriesKey] = nextValue;
-      btn.setAttribute('aria-pressed', String(nextValue));
-
-      var newSeries = lifecycleChartOptions.series.map(function(s) {
-        return Object.assign({}, s, { visible: lifecycleVisibility[s.yKey] !== false });
-      });
-      var updateOpts = Object.assign({}, lifecycleChartOptions, { series: newSeries });
-      lifecycleChartOptions = updateOpts;
-      lifecycleChart.update(updateOpts);
+      spendLiftTrendOptions = Object.assign({}, spendLiftTrendOptions, { series: newSeries });
+      spendLiftTrendChart.update(spendLiftTrendOptions);
     }
 
-    function initLifecycleChart() {
-      var container = document.getElementById('chart-area-guest-lifecycle-breakdown');
-      if (!container) return;
-      if (lifecycleChart) { lifecycleChart.destroy(); lifecycleChart = null; }
-      lifecycleVisibility = {
-        firstTime: true, returning: true, winBack: true,
-        loyal: true, atRisk: true, churned: true,
-      };
+    function computeTrendYBounds() {
+      var values = [];
+      SPEND_LIFT_TREND_DATA.forEach(function(row) {
+        if (trendVisibility.current && row.current !== null) values.push(row.current);
+        if (trendVisibility.prev    && row.prev    !== null) values.push(row.prev);
+      });
+      if (values.length === 0) return { min: null, max: null };
+      var lo = Math.min.apply(null, values);
+      var hi = Math.max.apply(null, values);
+      var range = Math.max(hi - lo, Math.max(Math.abs(hi), Math.abs(lo)) * 0.05) || 0.1;
+      return { min: lo - range * 0.1, max: hi + range * 0.1 };
+    }
 
-      lifecycleChartOptions = {
+    function scheduleCrossLine(date) {
+      spendLiftCrossLinePending = date ? date.getTime() : null;
+      if (spendLiftCrossLineFrame !== null) return;
+      spendLiftCrossLineFrame = requestAnimationFrame(function() {
+        spendLiftCrossLineFrame = null;
+        if (!spendLiftTrendChart) return;
+        if (spendLiftCrossLinePending === spendLiftLastCrossLine) return;
+        spendLiftLastCrossLine = spendLiftCrossLinePending;
+        var crossLines = spendLiftCrossLinePending === null ? [] : [{
+          type: 'line',
+          value: new Date(spendLiftCrossLinePending),
+          stroke: '#c6c6c6',
+          strokeWidth: 1,
+          lineDash: [4, 4],
+          label: { enabled: false },
+        }];
+        Promise.resolve(spendLiftTrendChart.updateDelta({ axes: { x: { crossLines: crossLines } } })).catch(function() {});
+      });
+    }
+
+    function attachSpendLiftTooltip(container) {
+      if (spendLiftTooltipEl && spendLiftTooltipEl.parentNode) {
+        spendLiftTooltipEl.parentNode.removeChild(spendLiftTooltipEl);
+      }
+      spendLiftTooltipEl = document.createElement('div');
+      spendLiftTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      document.body.appendChild(spendLiftTooltipEl);
+
+      var PLOT_LEFT      = 46;
+      var PLOT_RIGHT_PAD = 0;
+      var SLOP_PX        = 8;
+
+      function hide() {
+        spendLiftTooltipEl.style.display = 'none';
+        scheduleCrossLine(null);
+      }
+
+      function onMove(e) {
+        if (!SPEND_LIFT_TREND_DATA.length) { hide(); return; }
+        var rect = container.getBoundingClientRect();
+        var mx = e.clientX - rect.left;
+        var plotRight = rect.width - PLOT_RIGHT_PAD;
+        if (mx < PLOT_LEFT - SLOP_PX || mx > plotRight + SLOP_PX) { hide(); return; }
+        var cx = Math.max(PLOT_LEFT, Math.min(plotRight, mx));
+        var usable = plotRight - PLOT_LEFT;
+        if (usable <= 0) { hide(); return; }
+        var relX = (cx - PLOT_LEFT) / usable;
+        var firstTime = SPEND_LIFT_TREND_DATA[0].date.getTime();
+        var lastTime  = SPEND_LIFT_TREND_DATA[SPEND_LIFT_TREND_DATA.length - 1].date.getTime();
+        var targetTime = firstTime === lastTime ? firstTime : firstTime + (lastTime - firstTime) * relX;
+        var row = SPEND_LIFT_TREND_DATA.reduce(function(best, r) {
+          return Math.abs(r.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? r : best;
+        });
+
+        var currentVisible = trendVisibility.current;
+        var prevVisible    = trendVisibility.prev;
+        var currentVal = currentVisible ? row.current : null;
+        var prevVal    = prevVisible    ? row.prev    : null;
+        var primaryVal = currentVal !== null ? currentVal : prevVal;
+        if (primaryVal === null) { hide(); return; }
+
+        var deltaPill = '';
+        if (currentVisible && prevVisible && currentVal !== null && prevVal !== null && prevVal !== 0) {
+          var deltaPct = ((currentVal - prevVal) / Math.abs(prevVal)) * 100;
+          var sign     = deltaPct >= 0 ? '+' : '';
+          var bg       = deltaPct >= 0 ? '#effaf9' : '#fdecef';
+          var fg       = deltaPct >= 0 ? '#257469' : '#b1294a';
+          deltaPill = (
+            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+              '<span style="display:inline-flex;align-items:center;padding:2px 4px;border-radius:4px;background:' + bg + ';color:' + fg + ';font-size:12px;font-weight:400;">' +
+                sign + deltaPct.toFixed(2) + '%' +
+              '</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
+            '</div>'
+          );
+        }
+
+        var prevRow = '';
+        if (currentVisible && prevVisible && prevVal !== null) {
+          prevRow = (
+            '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:4px;">' +
+                '<span style="width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + SPEND_LIFT_COLOR + ' 0,' + SPEND_LIFT_COLOR + ' 1.5px,transparent 1.5px,transparent 3px);" aria-hidden="true"></span>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtSignedDollar(prevVal) + '</span>' +
+            '</div>'
+          );
+        }
+
+        spendLiftTooltipEl.innerHTML = (
+          '<div style="background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);padding:16px;font-family:Manrope,sans-serif;">' +
+            '<p style="font-weight:800;font-size:16px;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Daily cohort lift</p>' +
+            '<div style="display:flex;flex-direction:column;gap:8px;">' +
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' +
+                  '<span style="width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background:' + SPEND_LIFT_COLOR + ';" aria-hidden="true"></span>' +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(row.date) + '</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtSignedDollar(primaryVal) + '</span>' +
+              '</div>' +
+              deltaPill +
+            '</div>' +
+            prevRow +
+          '</div>'
+        );
+
+        spendLiftTooltipEl.style.display = 'block';
+        scheduleCrossLine(row.date);
+
+        var tw = spendLiftTooltipEl.offsetWidth;
+        var th = spendLiftTooltipEl.offsetHeight;
+        var tx = e.clientX + 16;
+        var ty = e.clientY - Math.round(th / 2);
+        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
+        if (ty < 8) ty = 8;
+        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
+        spendLiftTooltipEl.style.left = tx + 'px';
+        spendLiftTooltipEl.style.top  = ty + 'px';
+      }
+
+      container.addEventListener('mousemove',  onMove);
+      container.addEventListener('mouseleave', hide);
+      window.addEventListener('scroll', hide, true);
+      window.addEventListener('resize', hide);
+    }
+
+    function initSpendLiftTrendChart() {
+      var container = document.getElementById('chart-area-spend-lift-trend');
+      if (!container) return;
+      if (spendLiftTrendChart) { spendLiftTrendChart.destroy(); spendLiftTrendChart = null; }
+      trendVisibility = { current: true, prev: true };
+
+      var yBounds = computeTrendYBounds();
+
+      spendLiftTrendOptions = {
         container: container,
         theme: { params: { fontFamily: 'Manrope, sans-serif' } },
         background: { fill: '#ffffff' },
         padding: { top: 8, right: 0, bottom: 0, left: 0 },
-        data: LIFECYCLE_DATA,
+        data: SPEND_LIFT_TREND_DATA,
         legend: { enabled: false },
-        series: LIFECYCLE_STAGES.map(function(stage) {
-          return {
-            type: 'area',
-            xKey: 'date',
-            yKey: stage.key,
-            yName: stage.label,
-            stacked: true,
-            stackGroup: 'lifecycle',
-            fill: stage.color,
-            fillOpacity: 0.9,
-            stroke: '#ffffff',
-            strokeWidth: 1,
-            marker: { enabled: false },
+        series: [
+          {
+            type: 'line', xKey: 'date', yKey: 'prev', yName: 'Previous period',
+            stroke: SPEND_LIFT_COLOR, strokeWidth: 2, lineDash: [2, 2],
+            marker: {
+              enabled: true, size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: SPEND_LIFT_COLOR, stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
             tooltip: { enabled: false },
-          };
-        }),
+          },
+          {
+            type: 'line', xKey: 'date', yKey: 'current', yName: 'This period',
+            stroke: SPEND_LIFT_COLOR, strokeWidth: 2,
+            marker: {
+              enabled: true, size: 0,
+              itemStyler: function(params) {
+                if (params.highlightState === 'highlighted-item') {
+                  return { size: 10, fill: SPEND_LIFT_COLOR, stroke: '#ffffff', strokeWidth: 2 };
+                }
+                return { size: 0 };
+              },
+            },
+            tooltip: { enabled: false },
+          },
+        ],
         axes: {
           x: {
             type: 'time', position: 'bottom', nice: false,
-            min: new Date(2026, 2, 19),
-            max: new Date(2026, 3, 26),
+            min: SPEND_LIFT_TREND_DATA[0].date,
+            max: SPEND_LIFT_TREND_DATA[SPEND_LIFT_TREND_DATA.length - 1].date,
             gridLine: { enabled: false },
-            line: { enabled: false },
-            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
-            label: { fontSize: 12, color: '#000000', format: '%b %-d', padding: 8, avoidCollisions: true },
-            interval: {
-              values: (function() {
-                var ticks = [];
-                var d = new Date(2026, 2, 22);
-                var end = new Date(2026, 3, 25);
-                while (d <= end) {
-                  ticks.push(new Date(d));
-                  d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 3);
-                }
-                return ticks;
-              }()),
-            },
+            line:     { enabled: false },
+            tick:     { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
             crosshair: { enabled: false },
+            label: {
+              fontSize: 12, color: '#000000', format: '%b %-d', padding: 8,
+              avoidCollisions: true,
+            },
           },
           y: {
             type: 'number', position: 'left',
-            min: 0, max: 1200, nice: false,
+            min: yBounds.min, max: yBounds.max,
             gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
-            line: { enabled: false },
-            tick: { enabled: false },
+            line:     { enabled: false },
+            tick:     { enabled: false },
+            crosshair: { enabled: false },
             label: {
               fontSize: 12, color: '#000000', padding: 8,
-              formatter: function(params) { return (+params.value).toFixed(0) + 'K'; },
+              formatter: function(p) { return '$' + (+p.value).toFixed(0); },
             },
-            interval: { values: [0, 300, 600, 900, 1200] },
           },
         },
       };
 
-      lifecycleChart = agCharts.AgCharts.create(lifecycleChartOptions);
-
-      // ── Manual tooltip + dashed vertical line ───────────────────────────
-      // AG Charts native crosshair only fires on series hover; with a stacked
-      // area the line should follow the cursor anywhere in the plot area.
-      // Both elements float on document.body to avoid AG Charts repaints.
-
-      if (lifecycleTooltipEl && lifecycleTooltipEl.parentNode) {
-        lifecycleTooltipEl.parentNode.removeChild(lifecycleTooltipEl);
-      }
-      if (lifecycleLineEl && lifecycleLineEl.parentNode) {
-        lifecycleLineEl.parentNode.removeChild(lifecycleLineEl);
-      }
-      if (lifecycleMouseMove) {
-        container.removeEventListener('mousemove',  lifecycleMouseMove);
-        container.removeEventListener('mouseleave', lifecycleMouseLeave);
-      }
-
-      lifecycleTooltipEl = document.createElement('div');
-      lifecycleTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(lifecycleTooltipEl);
-
-      lifecycleLineEl = document.createElement('div');
-      lifecycleLineEl.style.cssText = (
-        'position:fixed;pointer-events:none;display:none;z-index:9998;width:1px;' +
-        'background-image:linear-gradient(to bottom,#c6c6c6 50%,transparent 50%);' +
-        'background-size:1px 8px;background-repeat:repeat-y;'
-      );
-      document.body.appendChild(lifecycleLineEl);
-
-      var L_PLOT_LEFT      = 46;
-      var L_PLOT_RIGHT_PAD = 0;
-      var L_PLOT_TOP       = 8;   // matches chart padding.top
-      var L_X_AXIS_H       = 28;  // approx X-axis label area
-      var L_AXIS_MIN_TIME  = new Date(2026, 2, 19).getTime();
-      var L_AXIS_MAX_TIME  = new Date(2026, 3, 26).getTime();
-      var fmtK = function(v) { return (+v).toFixed(1) + 'K'; };
-
-      lifecycleMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - L_PLOT_RIGHT_PAD;
-
-        if (mx < L_PLOT_LEFT || mx > plotRight) {
-          lifecycleTooltipEl.style.display = 'none';
-          lifecycleLineEl.style.display = 'none';
-          return;
-        }
-
-        var relX = (mx - L_PLOT_LEFT) / (plotRight - L_PLOT_LEFT);
-        var targetTime = L_AXIS_MIN_TIME + relX * (L_AXIS_MAX_TIME - L_AXIS_MIN_TIME);
-        var d = LIFECYCLE_DATA.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-
-        var rowsHTML = LIFECYCLE_STAGES
-          .filter(function(s) { return lifecycleVisibility[s.key] !== false; })
-          .map(function(s) {
-            return (
-              '<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;white-space:nowrap;">' +
-                '<div style="display:flex;align-items:center;gap:6px;">' +
-                  '<div style="width:12px;height:12px;background:' + s.color + ';border-radius:2px;flex-shrink:0;"></div>' +
-                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + s.label + '</span>' +
-                '</div>' +
-                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtK(d[s.key]) + '</span>' +
-              '</div>'
-            );
-          })
-          .join('');
-
-        if (!rowsHTML) {
-          lifecycleTooltipEl.style.display = 'none';
-          lifecycleLineEl.style.display = 'none';
-          return;
-        }
-
-        lifecycleTooltipEl.innerHTML = (
-          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
-            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 4px;line-height:1.5;white-space:nowrap;">Guest lifecycle</p>' +
-            '<p style="font-size:12px;font-weight:400;color:#60696C;margin:0 0 12px;line-height:1.5;white-space:nowrap;">' + fmtChartDate(d.date) + '</p>' +
-            '<div style="display:flex;flex-direction:column;gap:8px;">' + rowsHTML + '</div>' +
-          '</div>'
-        );
-        lifecycleTooltipEl.style.display = 'block';
-
-        var dataRelX = (d.date.getTime() - L_AXIS_MIN_TIME) / (L_AXIS_MAX_TIME - L_AXIS_MIN_TIME);
-        var dataX    = L_PLOT_LEFT + dataRelX * (plotRight - L_PLOT_LEFT);
-        lifecycleLineEl.style.left    = (rect.left + dataX) + 'px';
-        lifecycleLineEl.style.top     = (rect.top + L_PLOT_TOP) + 'px';
-        lifecycleLineEl.style.height  = (rect.height - L_PLOT_TOP - L_X_AXIS_H) + 'px';
-        lifecycleLineEl.style.display = 'block';
-
-        var tw = lifecycleTooltipEl.offsetWidth, th = lifecycleTooltipEl.offsetHeight;
-        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
-        if (ty < 8)                           ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        lifecycleTooltipEl.style.left = tx + 'px';
-        lifecycleTooltipEl.style.top  = ty + 'px';
-      };
-
-      lifecycleMouseLeave = function() {
-        lifecycleTooltipEl.style.display = 'none';
-        lifecycleLineEl.style.display = 'none';
-      };
-
-      container.addEventListener('mousemove',  lifecycleMouseMove);
-      container.addEventListener('mouseleave', lifecycleMouseLeave);
-
-      attachChartPointMenu(container, {
-        plotLeft:     L_PLOT_LEFT,
-        plotRightPad: L_PLOT_RIGHT_PAD,
-        plotTop:      L_PLOT_TOP,
-        xAxisHeight:  L_X_AXIS_H,
-        axisMinTime:  L_AXIS_MIN_TIME,
-        axisMaxTime:  L_AXIS_MAX_TIME,
-        axisMinValue: 0,
-        axisMaxValue: 1200,
-        data:         LIFECYCLE_DATA,
-      });
+      spendLiftTrendChart = agCharts.AgCharts.create(spendLiftTrendOptions);
+      attachSpendLiftTooltip(container);
     }
 
-    /* ── Chart-point context menu ──
-       Click inside a stage's stacked band → menu opens next to the cursor
-       with that stage as the metric (date + K value + matching color dot).
-       Clicks outside any visible stage band do nothing. */
-    function attachChartPointMenu(container, opts) {
-      pointMenuOpts = opts;
-      container.style.cursor = 'pointer';
-      container.addEventListener('click', function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var my = e.clientY - rect.top;
-        var plotRight = rect.width - opts.plotRightPad;
-        if (mx < opts.plotLeft || mx > plotRight) return;
+    var TABLE_HEADER_CELL = 'style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;"';
 
-        // Don't let this click bubble to the outside-listener that a
-        // previously-open menu installed — it would close the new menu.
-        e.stopPropagation();
+    // Table rows built from the trend data — each point is one enrollment-cohort day.
+    var SPEND_LIFT_TABLE_DATA = (function() {
+      var raw = [
+        { date: new Date(2024, 4, 17), enrolledGuests:  9675, avgPreSpend: 0.91, avgPostSpend:  8.08, lift:  7.17, liftPct: 787.91 },
+        { date: new Date(2024, 4, 18), enrolledGuests:  7791, avgPreSpend: 1.09, avgPostSpend:  8.36, lift:  7.27, liftPct: 666.97 },
+        { date: new Date(2024, 4, 19), enrolledGuests:  6784, avgPreSpend: 1.33, avgPostSpend:  8.45, lift:  7.12, liftPct: 535.34 },
+        { date: new Date(2024, 4, 20), enrolledGuests:  7636, avgPreSpend: 0.90, avgPostSpend:  8.02, lift:  7.12, liftPct: 791.11 },
+        { date: new Date(2024, 4, 21), enrolledGuests:  7872, avgPreSpend: 1.05, avgPostSpend:  8.20, lift:  7.15, liftPct: 680.95 },
+        { date: new Date(2024, 4, 22), enrolledGuests:  5984, avgPreSpend: 1.42, avgPostSpend:  8.31, lift:  6.89, liftPct: 485.21 },
+        { date: new Date(2024, 4, 23), enrolledGuests:  6120, avgPreSpend: 1.28, avgPostSpend:  8.23, lift:  6.95, liftPct: 542.97 },
+        { date: new Date(2024, 4, 24), enrolledGuests:  7204, avgPreSpend: 1.11, avgPostSpend:  8.15, lift:  7.04, liftPct: 634.23 },
+        { date: new Date(2024, 4, 25), enrolledGuests:  8341, avgPreSpend: 0.87, avgPostSpend:  8.18, lift:  7.31, liftPct: 840.23 },
+        { date: new Date(2024, 4, 26), enrolledGuests:  9012, avgPreSpend: 0.94, avgPostSpend:  8.38, lift:  7.44, liftPct: 791.49 },
+        { date: new Date(2024, 4, 27), enrolledGuests:  8175, avgPreSpend: 1.16, avgPostSpend:  8.38, lift:  7.22, liftPct: 622.41 },
+        { date: new Date(2024, 4, 28), enrolledGuests:  5430, avgPreSpend: 1.67, avgPostSpend:  8.45, lift:  6.78, liftPct: 406.29 },
+        { date: new Date(2024, 4, 29), enrolledGuests:  5810, avgPreSpend: 1.48, avgPostSpend:  8.42, lift:  6.94, liftPct: 469.26 },
+        { date: new Date(2024, 4, 30), enrolledGuests:  6988, avgPreSpend: 1.22, avgPostSpend:  8.30, lift:  7.08, liftPct: 580.33 },
+        { date: new Date(2024, 4, 31), enrolledGuests:  7521, avgPreSpend: 1.08, avgPostSpend:  8.27, lift:  7.19, liftPct: 665.74 },
+        { date: new Date(2024, 5,  1), enrolledGuests:  8890, avgPreSpend: 0.92, avgPostSpend:  8.28, lift:  7.36, liftPct: 800.00 },
+        { date: new Date(2024, 5,  2), enrolledGuests:  9340, avgPreSpend: 0.89, avgPostSpend:  8.37, lift:  7.48, liftPct: 840.45 },
+        { date: new Date(2024, 5,  3), enrolledGuests:  8102, avgPreSpend: 1.19, avgPostSpend:  8.48, lift:  7.29, liftPct: 612.61 },
+        { date: new Date(2024, 5,  4), enrolledGuests:  5235, avgPreSpend: 1.72, avgPostSpend:  8.57, lift:  6.85, liftPct: 398.26 },
+        { date: new Date(2024, 5,  5), enrolledGuests:  5640, avgPreSpend: 1.54, avgPostSpend:  8.45, lift:  6.91, liftPct: 448.70 },
+        { date: new Date(2024, 5,  6), enrolledGuests:  7056, avgPreSpend: 1.27, avgPostSpend:  8.30, lift:  7.03, liftPct: 553.54 },
+        { date: new Date(2024, 5,  7), enrolledGuests:  7623, avgPreSpend: 1.06, avgPostSpend:  8.31, lift:  7.25, liftPct: 683.96 },
+        { date: new Date(2024, 5,  8), enrolledGuests:  8857, avgPreSpend: 0.91, avgPostSpend:  8.32, lift:  7.41, liftPct: 814.29 },
+        { date: new Date(2024, 5,  9), enrolledGuests:  7930, avgPreSpend: 1.14, avgPostSpend:  8.31, lift:  7.17, liftPct: 629.39 },
+        { date: new Date(2024, 5, 10), enrolledGuests:  5210, avgPreSpend: 1.78, avgPostSpend:  8.50, lift:  6.72, liftPct: 377.53 },
+        { date: new Date(2024, 5, 11), enrolledGuests:  5580, avgPreSpend: 1.61, avgPostSpend:  8.49, lift:  6.88, liftPct: 427.33 },
+        { date: new Date(2024, 5, 12), enrolledGuests:  7088, avgPreSpend: 1.24, avgPostSpend:  8.34, lift:  7.10, liftPct: 572.58 },
+        { date: new Date(2024, 5, 13), enrolledGuests:  7744, avgPreSpend: 1.01, avgPostSpend:  8.34, lift:  7.33, liftPct: 725.74 },
+        { date: new Date(2024, 5, 14), enrolledGuests:  9106, avgPreSpend: 0.86, avgPostSpend:  8.38, lift:  7.52, liftPct: 874.42 },
+        { date: new Date(2024, 5, 15), enrolledGuests:  8412, avgPreSpend: 1.07, avgPostSpend:  8.46, lift:  7.39, liftPct: 690.65 },
+      ];
+      return raw;
+    }());
 
-        // Snap to nearest data point on X.
-        var relX = (mx - opts.plotLeft) / (plotRight - opts.plotLeft);
-        var targetTime = opts.axisMinTime + relX * (opts.axisMaxTime - opts.axisMinTime);
-        var d = opts.data.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-
-        // Walk the stacked bands bottom→top using only visible stages.
-        // Each band spans [bottomY, topY] in pixels; topY < bottomY because
-        // higher Y values are lower on the screen.
-        var plotH = rect.height - opts.plotTop - opts.xAxisHeight;
-        var range = opts.axisMaxValue - opts.axisMinValue;
-        var hitStage = null;
-        var cum = 0;
-        for (var i = 0; i < LIFECYCLE_STAGES.length; i++) {
-          var s = LIFECYCLE_STAGES[i];
-          if (lifecycleVisibility[s.key] === false) continue;
-          var bottomY = opts.plotTop + (1 - cum / range) * plotH;
-          cum += +d[s.key];
-          var topY    = opts.plotTop + (1 - cum / range) * plotH;
-          if (my >= topY && my <= bottomY) { hitStage = s; break; }
-        }
-        if (!hitStage) return; // outside any visible band → no menu
-
-        pointMenuAnchor = d;
-        pointMenuStage  = hitStage;
-        openPointMenu(e.clientX, e.clientY);
-      });
-    }
-
-    function openPointMenu(clientX, clientY) {
-      var menu = document.getElementById('chart-point-menu');
-      document.removeEventListener('click', closePointMenuOnOutside);
-
-      if (pointMenuAnchor && pointMenuStage) {
-        var dateEl  = document.getElementById('chart-point-menu-date');
-        var valueEl = document.getElementById('chart-point-menu-value');
-        var dotEl   = menu.querySelector('.chart-point-menu__color-dot');
-        if (dateEl)  dateEl.textContent  = fmtChartDate(pointMenuAnchor.date) + ', ' + pointMenuAnchor.date.getFullYear();
-        if (valueEl) valueEl.textContent = (+pointMenuAnchor[pointMenuStage.key]).toFixed(1) + 'K';
-        if (dotEl) {
-          dotEl.classList.remove('chart-point-menu__color-dot--striped');
-          dotEl.style.backgroundColor = pointMenuStage.color;
-        }
-      }
-
-      menu.classList.add('chart-point-menu--open');
-      menu.setAttribute('aria-hidden', 'false');
-
-      // Hide tooltip + dashed line while the menu is open.
-      if (lifecycleTooltipEl) lifecycleTooltipEl.style.display = 'none';
-      if (lifecycleLineEl)    lifecycleLineEl.style.display    = 'none';
-
-      var mw = menu.offsetWidth, mh = menu.offsetHeight;
-      var x = clientX + 12, y = clientY + 12;
-      if (x + mw > window.innerWidth  - 8) x = clientX - mw - 12;
-      if (y + mh > window.innerHeight - 8) y = clientY - mh - 12;
-      if (y < 8) y = 8;
-      // Translate viewport coords → unscrolled offsetParent coords (the
-      // .content-area--chart-detail scroll container).
-      var ref = menu.offsetParent || document.body;
-      var refRect = ref.getBoundingClientRect();
-      menu.style.left = (x - refRect.left + ref.scrollLeft) + 'px';
-      menu.style.top  = (y - refRect.top  + ref.scrollTop)  + 'px';
-
-      setTimeout(function() {
-        document.addEventListener('click', closePointMenuOnOutside);
-      }, 0);
-    }
-
-    function closePointMenu() {
-      var menu = document.getElementById('chart-point-menu');
-      menu.classList.remove('chart-point-menu--open');
-      menu.setAttribute('aria-hidden', 'true');
-      document.removeEventListener('click', closePointMenuOnOutside);
-    }
-
-    function closePointMenuOnOutside(e) {
-      if (!e.target.closest('#chart-point-menu')) closePointMenu();
-    }
-
-    function onPointMenuAction(action) {
-      // Stub — wire up real behavior later. pointMenuAnchor + pointMenuStage
-      // hold the clicked data row and the stage that was selected.
-      console.log('chart-point-menu action:', action, pointMenuAnchor, pointMenuStage);
-      closePointMenu();
-    }
-
-    /* ── Full-precision numbers ──
-       Source data is at M-scale (e.g. 1.156). Multiply to integers and add
-       a deterministic 0–999 offset derived from the date so the trailing
-       digits look real and stay stable across renders. */
-    function seedFromDate(d) {
-      var s = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
-      return ((s * 9301 + 49297) % 233280);
-    }
-    function fullNumber(mValue, d, salt) {
-      var base = Math.round(mValue * 1000) * 1000; // e.g. 1.156 → 1,156,000
-      var seed = (seedFromDate(d) + salt * 7919) % 1000;
-      return base + seed;
-    }
-    function fmtFull(n) {
-      var sign = n < 0 ? '-' : '';
-      var abs = Math.abs(Math.round(n));
-      return sign + abs.toLocaleString('en-US');
-    }
-    function fmtFullSigned(n) {
-      var sign = n >= 0 ? '+' : '-';
-      return sign + Math.abs(Math.round(n)).toLocaleString('en-US');
-    }
-
-    /* ── Pagination state ── */
-    var PER_PAGE = 10;
-    var currentPage = 1;
-
-    function totalPages() {
-      return Math.max(1, Math.ceil(LIFECYCLE_DATA.length / PER_PAGE));
-    }
-
-    // Convert a K-scale value (e.g. 142.8) to a deterministic full integer count
-    // (e.g. 142,847) — adds a stable trailing-three-digit offset derived from
-    // (date, salt) so rendered cells look real and stay consistent across renders.
-    function fullCountFromK(kValue, d, salt) {
-      var base = Math.round(kValue * 1000);                 // 142.8 → 142800
-      var seed = (seedFromDate(d) + salt * 7919) % 1000;    // deterministic 0–999 offset
-      return base + seed - 500;                             // recenter around base
-    }
+    var TABLE_PAGE_SIZE = 10;
+    var tablePage = 1;
+    var totalTablePages = Math.ceil(SPEND_LIFT_TABLE_DATA.length / TABLE_PAGE_SIZE);
 
     function renderTable() {
-      var tbody = document.getElementById('lifecycle-table-body');
-      var tp = totalPages();
-      if (currentPage > tp) currentPage = tp;
-      var start = (currentPage - 1) * PER_PAGE;
-      var pageRows = LIFECYCLE_DATA.slice(start, start + PER_PAGE);
-
-      tbody.innerHTML = pageRows.map(function(d, idx) {
-        var ft   = fullCountFromK(d.firstTime,    d.date, 1);
-        var rt   = fullCountFromK(d.returning,    d.date, 2);
-        var ro   = fullCountFromK(d.winBack, d.date, 3);
-        var ly   = fullCountFromK(d.loyal,        d.date, 4);
-        var ar   = fullCountFromK(d.atRisk,       d.date, 5);
-        var ch   = fullCountFromK(d.churned,      d.date, 6);
-
-        // Δ At-Risk = today vs. previous row in the dataset (or 0 for the first row).
-        var globalIdx = start + idx;
-        var prevAr = globalIdx > 0
-          ? fullCountFromK(LIFECYCLE_DATA[globalIdx - 1].atRisk, LIFECYCLE_DATA[globalIdx - 1].date, 5)
-          : ar;
-        var delta = ar - prevAr;
-        // Inverse semantics on Δ At-Risk: growth = bad (red), shrinkage = good (green).
-        var pctColor = delta <= 0 ? '#257469' : '#b1294a';
-        var pctBg    = delta <= 0 ? '#effaf9' : '#fdecef';
-
+      var thead = document.getElementById('spend-lift-table-head');
+      var tbody = document.getElementById('spend-lift-table-body');
+      thead.innerHTML =
+        '<tr style="background-color: #dfe1e2; border-bottom: none;">' +
+          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner chart-th-inner--start">Enrollment cohort <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
+          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner">Enrolled guests <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
+          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner">Avg pre-enrollment ticket <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
+          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner">Avg post-enrollment ticket <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
+          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner">$ lift <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
+          '<th ' + TABLE_HEADER_CELL + '><span class="chart-th-inner">% lift <span class="material-symbols-rounded chart-sort-icon">sort</span></span></th>' +
+        '</tr>';
+      var start = (tablePage - 1) * TABLE_PAGE_SIZE;
+      var pageRows = SPEND_LIFT_TABLE_DATA.slice(start, start + TABLE_PAGE_SIZE);
+      tbody.innerHTML = pageRows.map(function(row) {
+        var liftPctCell;
+        if (row.liftPct === null) {
+          liftPctCell = '—';
+        } else {
+          var pctBg    = row.liftPct >= 0 ? '#effaf9' : '#fdecef';
+          var pctColor = row.liftPct >= 0 ? '#257469' : '#b1294a';
+          var pctSign  = row.liftPct >= 0 ? '+' : '';
+          liftPctCell = '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 6px;border-radius:4px;font-size:0.875rem;font-weight:500;">' + pctSign + row.liftPct.toFixed(2) + '%</span>';
+        }
         return (
           '<tr>' +
-            '<td>' + fmtChartDate(d.date) + ', 2026</td>' +
-            '<td class="chart-data-col">' + fmtFull(ft) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(rt) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(ro) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(ly) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(ar) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(ch) + '</td>' +
-            '<td class="chart-data-col">' +
-              '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 6px;border-radius:4px;font-size:0.875rem;font-weight:500;">' +
-                fmtFullSigned(delta) +
-              '</span>' +
-            '</td>' +
+            '<td>' + fmtTableDate(row.date) + '</td>' +
+            '<td class="chart-data-col">' + row.enrolledGuests.toLocaleString() + '</td>' +
+            '<td class="chart-data-col">' + fmtDollar(row.avgPreSpend) + '</td>' +
+            '<td class="chart-data-col">' + fmtDollar(row.avgPostSpend) + '</td>' +
+            '<td class="chart-data-col">' + fmtSignedDollar(row.lift) + '</td>' +
+            '<td class="chart-data-col">' + liftPctCell + '</td>' +
           '</tr>'
         );
       }).join('');
-
-      document.getElementById('page-dropdown-label').textContent = currentPage;
-      document.getElementById('total-pages-text').textContent = 'of ' + tp + ' page' + (tp !== 1 ? 's' : '');
-      document.getElementById('prev-btn').disabled = currentPage <= 1;
-      document.getElementById('next-btn').disabled = currentPage >= tp;
-      document.getElementById('page-options-list').innerHTML = Array.from({ length: tp }, function(_, i) { return i + 1; })
-        .map(function(p) {
-          return '<li><button onclick="goToPage(' + p + ')" style="background:none;border:none;width:100%;text-align:left;padding:8px 12px;cursor:pointer;font-family:\'Manrope\',sans-serif;font-size:16px;font-weight:' + (p === currentPage ? 700 : 400) + ';">' + p + '</button></li>';
-        }).join('');
+      document.getElementById('page-dropdown-label').textContent = String(tablePage);
+      document.getElementById('total-pages-text').textContent = 'of ' + totalTablePages + ' pages';
+      document.getElementById('prev-btn').disabled = tablePage <= 1;
+      document.getElementById('next-btn').disabled = tablePage >= totalTablePages;
+      var pageList = document.getElementById('page-options-list');
+      if (pageList) {
+        pageList.innerHTML = '';
+        for (var p = 1; p <= totalTablePages; p++) {
+          (function(pg) {
+            var li = document.createElement('li');
+            var btn = document.createElement('button');
+            btn.className = 'button transparent';
+            btn.style.cssText = 'width:100%;justify-content:flex-start;';
+            btn.textContent = String(pg);
+            btn.addEventListener('click', function() { tablePage = pg; renderTable(); togglePageDropdown(); });
+            li.appendChild(btn);
+            pageList.appendChild(li);
+          })(p);
+        }
+      }
     }
 
-    function prevPage() { if (currentPage > 1) { currentPage--; renderTable(); } }
-    function nextPage() { if (currentPage < totalPages()) { currentPage++; renderTable(); } }
-    function goToPage(p) {
-      currentPage = p;
-      document.getElementById('page-options').classList.remove('dropdown__options_open');
-      renderTable();
+    function prevPage() {
+      if (tablePage > 1) { tablePage--; renderTable(); }
+    }
+    function nextPage() {
+      if (tablePage < totalTablePages) { tablePage++; renderTable(); }
     }
     function togglePageDropdown() {
       document.getElementById('page-options').classList.toggle('dropdown__options_open');
     }
 
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('#page-dropdown-btn') && !e.target.closest('#page-options')) {
-        document.getElementById('page-options').classList.remove('dropdown__options_open');
-      }
-    });
-
-    /* ── Boot ── */
     document.addEventListener('DOMContentLoaded', function() {
-      buildLifecycleLegend();
       renderTable();
+      renderTrendLegend();
       Promise.all([
         document.fonts.load('400 12px Manrope'),
         document.fonts.load('700 12px Manrope'),
         document.fonts.load('800 12px Manrope'),
-      ]).then(function() { requestAnimationFrame(initLifecycleChart); });
+      ]).then(function() {
+        requestAnimationFrame(function() {
+          initSpendLiftTrendChart();
+        });
+      });
     });
+
+    function onPointMenuAction(action) {
+      console.log('chart-point-menu action:', action);
+    }
   </script>
 
 </body>

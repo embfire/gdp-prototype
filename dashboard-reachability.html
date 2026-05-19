@@ -10,7 +10,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <link rel="stylesheet" href="assets/bento.css">
-  <link rel="stylesheet" href="beta/beta.css">
+  <link rel="stylesheet" href="beta.css">
+  <script src="metric-about.js" defer></script>
   <style>
     .chart-card[data-metric-id="reachability"] .chart-card__placeholder--detail {
       height: 320px;
@@ -50,7 +51,7 @@
 
     <div class="app-shell__body">
 
-      <!-- Sidebar -->
+      <!-- Nav sidebar -->
       <aside class="sidebar">
         <nav class="sidebar-nav" aria-label="Main navigation">
 
@@ -273,7 +274,7 @@
           <!-- /filter bar -->
 
           <!-- Chart card -->
-          <div class="chart-card" data-metric-id="reachability">
+          <div class="chart-card" data-metric-id="reachability" data-metric-context="detail">
             <div class="chart-card__header chart-card__header--detail">
               <div class="chart-card__header-text">
                 <p class="chart-card__title">Reachability</p>
@@ -292,7 +293,7 @@
                     <ul>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
-                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava about this</span></button></li>
+                      <li><button class="chart-context-menu__item chart-context-menu__item--ava"><img src="assets/ava-assistant.svg" alt="" width="24" height="24"><span>Ask Ava</span></button></li>
                     </ul>
                   </div>
                 </div>
