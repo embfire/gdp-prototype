@@ -1,11 +1,10 @@
 # Loyalty Penetration Chart — Implementation Spec
 
 **Audience:** Engineering — connecting the prototype to real data
-**Last updated:** 2026-05-18 (PM definition lock)
-**Customer-facing reference:** Loyalty Penetration dashboard card mock (May 2026) — donut + period comparison
-**Reference implementation:** `[beta/index.html](../../beta/index.html)` (dashboard card, donut) and `[beta/dashboard-loyalty-penetration.html](../../beta/dashboard-loyalty-penetration.html)` (detail page, trend + dimension breakdown + table)
+**Last updated:** 2026-05-27 (matches current prototype: line card + in-trend channel breakdown)
+**Reference implementation:** `[beta/index.html](../../beta/index.html)` (dashboard card — single-line trend) and `[beta/dashboard-loyalty-penetration.html](../../beta/dashboard-loyalty-penetration.html)` (detail page — trend with Total / By channel breakdown + sortable table)
 
-> Visual treatment, copy, and exact pixel values are not normative — read them off the HTML/CSS and the customer mock. This doc covers **what data is needed, how penetration is calculated, what filters do, what the breakdown dimensions are, and what the detail page must include**.
+> Visual treatment, copy, and exact pixel values are not normative — read them off the HTML/CSS. This doc covers **what data is needed, how penetration is calculated, what filters do, what the in-trend breakdown does, and what the detail page must include**.
 
 ---
 
@@ -17,14 +16,14 @@
 Loyalty Penetration = loyalty_transactions / identified_transactions × 100
 ```
 
-**Customer-facing copy (dashboard card):** subtitle `Share of transactions tied to a loyalty member`; donut center label `loyalty txns`; companion line `Non-loyalty: {X}%`.
+**Customer-facing copy (dashboard card):** subtitle `Share of transactions tied to a loyalty member`; hero metric `62%` with `+4pts` delta pill; period text `58% prior period · 38% non-loyalty`.
 
 Aligns with Punchh QBR **Participation Rate** (transaction share). **Not** the same as loyalty members ÷ identified guests (enrollment conversion) — see § 10 if a separate guest-enrollment card is needed later.
 
 | Surface | Contents |
 | ------- | -------- |
-| **Dashboard card** | Donut — loyalty % in center, non-loyalty as complement arc. Right column: **pts delta pill**, **prior period %**, **Non-loyalty: X%** (complement). No time-series on the card. |
-| **Detail page** | (1) **Period trend** — line chart, penetration % over time (`current` solid, `prev` dashed). (2) **Breakdown** — penetration % by **location / channel / DMA** for the latest complete period. (3) **Sortable data table** — one row per period; columns: **Period**, **Loyalty Txns**, **Identified Txns**, **Penetration Rate** (comparison deltas live on the trend hero, not in the table). |
+| **Dashboard card** | Single-line trend chart (`current` solid, `prev` dashed) — same pattern as Guest repeat rate / Active guests. Hero block above chart: **current %**, **pts delta pill**, period suffix that combines **prior period %** and **non-loyalty %** (`58% prior period · 38% non-loyalty`). Legend: `This period` / `Previous period` toggle. |
+| **Detail page** | (1) **Period trend** — single-line chart with an in-card **breakdown dropdown**: `Total` (default — `current` solid + `prev` dashed) or `By channel` (three solid series: **In-store / Online / Delivery**, no `prev` overlay). (2) **Sortable data table** — one row per period; columns: **Period**, **Loyalty Txns**, **Identified Txns**, **Penetration Rate** (comparison deltas live on the trend hero, not in the table). No separate breakdown bar chart. |
 
 All values are **computed server-side**; the client does not recompute penetration from raw transaction rows.
 
@@ -59,11 +58,12 @@ Loyalty Penetration (%) = loyalty_transactions / identified_transactions × 100
 | **Minimum date range** | **90 days** floor on dashboard card and detail page. Below 90D, render as 90D and show info indicator: `Showing 90D minimum` (tooltip explains need for a stable comparison window). `CHART_CONSTRAINTS.loyalty-penetration`: `minDays: 90`. |
 | **Comparison delta** | Δ pill = **pts** change vs. **prior period of equal length** (e.g. `+4pts` vs. prior 90D when 90D is selected). Not relative percent. |
 | **Server-side aggregation** | Penetration %, counts, and comparison values are returned pre-computed. Client displays only; does not divide raw rows. |
-| **Non-loyalty % (card)** | `100% − penetration%` within identified base — display as `Non-loyalty: {X}%`. |
+| **Non-loyalty % (card)** | `100% − penetration%` within identified base — displayed inline in the period text as `{X}% non-loyalty` (e.g. `· 38% non-loyalty`). |
 
 ### Display precision
 
-- Donut center: **whole percent** (e.g. `62%`).
+- Hero metric (dashboard card and detail trend hero): **whole percent** (e.g. `62%`).
+- Y-axis labels and tooltip values: **one decimal, trailing `.0` stripped** (e.g. `62.4%` → displayed as `62.4%`; `60.0%` → displayed as `60%`).
 - Detail table penetration column: **two decimals** (e.g. `62.41%`).
 
 ### Open implementation details (§ 10)
@@ -73,63 +73,55 @@ Loyalty Penetration (%) = loyalty_transactions / identified_transactions × 100
 
 ---
 
-## 3. Hero Metric (dashboard card — customer mock)
+## 3. Hero Metric (dashboard card)
 
-The card hero lives **inside the donut**, not above it.
+The card hero lives **above the trend chart**, matching the Guest repeat rate / Active guests / Retention cohort pattern. There is no donut — the card shows a single-line trend with `current` (solid) and `prev` (dashed) series.
 
-| Element | Mock example | Spec |
-| ------- | ------------ | ---- |
-| **Center value** | `62%` | Loyalty penetration for the selected period. Whole percent, bold. |
-| **Center label** | `loyalty txns` | Lowercase, subdued — clarifies this is transaction share, not guest share. |
-| **Δ pill** | `↑ 4pts` (green) | Signed `pts` vs. comparison window. Higher = better (non-inverse). |
-| **Prior period** | `58% prior period` | Comparison-window penetration %, subdued text below the pill. |
-| **Non-loyalty line** | `Non-loyalty: 38%` | Complement within identified transaction base. Bottom-right of the metrics column. |
+| Element | Prototype example | Spec |
+| ------- | ----------------- | ---- |
+| **Hero value** | `62%` | Loyalty penetration for the selected period. Whole percent, bold. Rendered in `.chart-card__metric-value`. |
+| **Δ pill** | `+4pts` (green) | Signed `pts` vs. comparison window. Higher = better (non-inverse). Inline with the hero value in `.chart-card__metric-row`. |
+| **Period text** | `58% prior period · 38% non-loyalty` | Single line in `.chart-card__metric-period`. Combines comparison-window penetration % and the non-loyalty complement (`100% − penetration%`). When `Compare to = No comparison`, drop the `58% prior period · ` portion and show only `38% non-loyalty`. |
+| **90D info indicator** | `Showing 90D minimum` | Inline info chip in the period row when the active range is below 90D — same pattern as Guest repeat rate / Retention cohort. |
 
-- **No separate headline % above the chart** — the donut center is the current penetration % for the effective period (after 90D floor).
-- **90D minimum:** when user selects 7D or 30D, card still computes at 90D and shows `Showing 90D minimum` info indicator (same pattern as Guest repeat rate / Retention cohort).
-- **Library category label:** mock shows `LOYALTY` in small caps above the title — use the metrics-library category chip if other cards have one; otherwise omit in v1.
+- **Library category label:** if other cards expose a metrics-library category chip (`LOYALTY`), apply the same; otherwise omit.
 
-Detail trend card (detail page only): repeat penetration % + `pts` pill + `58% prev period` above the line chart, matching Guest repeat rate.
+Detail trend card hero is the same row (`62%` + `+4pts`) plus a base-month suffix on the period line: `58% prev period · Mar '26`.
 
 ---
 
 ## 4. Required Data Shape
 
-The chart needs **one period summary + one monthly time series + one breakdown row set**, all keyed by the same identified-transaction aggregation. The card uses the period summary only; the detail page uses all three.
+The chart needs **one period summary + one monthly time series for Total + one monthly time series broken out by channel**. The dashboard card uses the period summary plus the Total trend. The detail page uses all three (period summary for the hero, Total trend for the default chart + table, channel trend when the in-card breakdown dropdown is switched to **By channel**).
 
 ```ts
-// Period summary — card donut + detail hero
+// Period summary — card hero + detail hero
 type LoyaltyPenetrationPeriod = {
   loyaltyTxns: number;        // count of loyalty-member transactions in period
   identifiedTxns: number;     // loyaltyTxns + identified non-loyalty txns (denominator)
   penetration: number;        // decimal, e.g. 0.62 = 62%
-  prevPenetration: number;    // comparison window — for pill + "58% prior period"
-  // nonLoyaltyPct derived client-side: (1 - penetration) * 100
+  prevPenetration: number;    // comparison window — feeds pill + "58% prior period"
+  // nonLoyaltyPct derived client-side: (1 - penetration) * 100  → "38% non-loyalty"
 };
 
-// Monthly trend — dashboard line + detail trend chart + data table
+// Monthly trend — dashboard line + detail trend (Total mode) + data table
 type LoyaltyPenetrationTrendRow = {
   date: string;               // ISO date — first day of the period (e.g. 2025-04-01 for Apr '25)
-  current: number;            // penetration as decimal (e.g. 0.324 = 32.4%)
+  current: number;            // penetration as decimal (e.g. 0.62 = 62%)
   prev: number;               // comparison penetration for the aligned period, decimal
   // Optional but recommended for table drill-down and QA:
   loyaltyTxns?: number;
   identifiedTxns?: number;
 };
 
-// Breakdown — detail breakdown chart, one row per dimension value for the latest complete period
-type LoyaltyPenetrationBreakdownRow = {
-  label: string;              // location name, channel, or DMA label
-  penetration: number;        // decimal, e.g. 0.412 = 41.2%
-  loyaltyTxns?: number;
-  identifiedTxns?: number;
-};
-
-// One breakdown set per dimension key
-type LoyaltyPenetrationBreakdowns = {
-  location: LoyaltyPenetrationBreakdownRow[];
-  channel:  LoyaltyPenetrationBreakdownRow[];
-  dma:      LoyaltyPenetrationBreakdownRow[];
+// Monthly trend — detail trend (By channel mode)
+type LoyaltyPenetrationChannelTrendRow = {
+  date: string;               // ISO date — first day of the period
+  inStore: number;            // penetration among in-store transactions, decimal
+  online: number;             // penetration among online transactions, decimal
+  delivery: number;           // penetration among delivery transactions, decimal
+  // No prev series in this mode — channel comparison is the value proposition,
+  // not period-over-period overlay.
 };
 ```
 
@@ -137,59 +129,60 @@ type LoyaltyPenetrationBreakdowns = {
 
 - **All shapes are computed server-side from the same underlying identified-transaction fact.** Do not let the client recompute penetration from raw transactions; dedupe, IDR, and loyalty-attribution rules live in the warehouse.
 - **Trend rows** need a continuous monthly series for the selected range. Months with zero identified transactions should still render — return the row with `null` on `current` rather than dropping it.
-- **Breakdown rows** are not paginated server-side. Default detail view caps at the top ~10 rows per dimension by `identifiedTxns`.
+- **Channel trend rows** use the same monthly grid as the Total trend so the chart can swap data sources without re-laying out the X axis.
 - **Filters** (date range, comparison, stores, segments — see § 6) are applied **server-side** before the loyalty split.
-- **Comparison series (`prev` on the chart).** When "Compare to" is active, populate `prev` on each trend row. When comparison is off, omit `prev` or return null and hide the comparison series and pill.
+- **Comparison series (`prev` on the chart).** Total mode only. When "Compare to" is active, populate `prev` on each Total trend row. When comparison is off, omit `prev` or return null and hide the comparison series, legend toggle, and pill. By channel mode never shows `prev`.
 
 ### Single endpoint, three projections
 
-Card consumes `LoyaltyPenetrationPeriod` + `LoyaltyPenetrationTrendRow[]`. Detail trend consumes the same. Detail breakdown consumes `LoyaltyPenetrationBreakdowns`. A single `GET /metrics/loyalty-penetration?from=…&to=…&prevFrom=…&prevTo=…` returning all three plus comparison is the simplest shape; split only if a downstream caller requires it.
+A single `GET /metrics/loyalty-penetration?from=…&to=…&prevFrom=…&prevTo=…` returning the period summary, the Total trend (`current` + `prev`), and the channel trend is the simplest shape. The channel trend is small enough (~12 rows × 3 series) to ship in the same payload; split only if a downstream caller requires lazy loading.
 
 ---
 
 ## 5. Chart Specifications
 
-### 5.1 Dashboard card — donut (customer mock)
-
-| Property | Value |
-| -------- | ----- |
-| Library | AG Charts (Community v13) |
-| Type | Donut (`innerRadiusRatio` ~0.65–0.7) |
-| Data | Two slices: `{ label: 'Loyalty', value: loyaltyTxns }`, `{ label: 'Non-loyalty', value: identifiedTxns - loyaltyTxns }` |
-| Colors | Loyalty slice: indigo `#5A55E3` (`var(--chart-indigo-900)`). Non-loyalty slice: light grey `#E8E8E8` or Bento neutral — match mock. |
-| Center labels | `innerLabels`: line 1 = penetration % (bold, ~24px); line 2 = `loyalty txns` (12px, `#6b7280`) |
-| Legend | Disabled at AG Charts level; no external legend on the card (slices are self-explanatory + `Non-loyalty` text line). |
-| Layout | Two-column body: donut left (~45%), metrics column right (~55%) — pill, prior period, non-loyalty line. |
-| Native tooltip | Disabled on card |
-
-Reference AG Charts donut pattern: `beta/chart-lab.js` (`type: 'donut'`, `innerRadiusRatio: 0.65`).
-
-### 5.2 Detail trend — single-line trend (two series)
+### 5.1 Dashboard card — single-line trend (two series)
 
 | Property | Value |
 | -------- | ----- |
 | Library | AG Charts (Community v13) |
 | Type | Line — two series |
 | X-axis | Time (period start date). Prototype uses **monthly** buckets with labels like `Apr '25` |
-| Y-axis | Rate as decimal, formatted as percent (e.g. `0.32` → `32%`) |
+| Y-axis | Rate as decimal, formatted as percent (e.g. `0.62` → `62%`) |
 | Series 1 (rendered first) | `prev` — indigo `#5A55E3`, `lineDash: [2, 2]`, legend marker striped |
 | Series 2 | `current` — indigo `#5A55E3`, solid, legend marker solid |
-| Native AG Charts tooltip | Disabled — manual tooltip on dashboard and detail (mirror Guest repeat rate) |
+| Legend | External, two-button toggle (`This period` / `Previous period`) — at least one must remain visible |
+| Native AG Charts tooltip | Disabled — manual tooltip (mirror `initGuestRepeatRateChart` in `dashboard-guest-repeat-rate.html`) |
 | Native AG Charts crosshair | Enabled on X (`#c6c6c6`, dashed) |
-| Chart padding | Dashboard: `bottom: 24` (reserves space for monthly X labels). Detail trend: `bottom: 32`, `right: 16`, `left: 8` |
+| Chart padding | Dashboard: `top: 8, right: 0, bottom: 24, left: 0`. `PLOT_LEFT = 38, PLOT_RIGHT_PAD = 0` for tooltip math |
 
-Y-axis bounds in the prototype are placeholder (`min`/`max` / `interval.values` hardcoded around 0–50%). **Replace with values derived from the filtered data range** (suggested: pad ~5% below min and above max rate, snap ticks to sensible 5% or 10% increments; never let Y-axis exceed 100%).
+### 5.2 Detail trend — single-line trend with in-card breakdown dropdown
 
-### 5.3 Detail breakdown — vertical single-series bars
+The detail trend chart has two modes, controlled by the **breakdown dropdown** in the chart header (`Total` / `By channel`). Switching modes destroys and re-creates the chart with new series; the X axis (12 monthly buckets) is shared.
+
+**Total mode (default):** same shape as the dashboard card — `prev` dashed + `current` solid, both indigo `#5A55E3`. Legend renders the standard `This period` / `Previous period` toggle.
+
+**By channel mode:** three solid series, no `prev` overlay.
+
+| Series | yKey | Color | Legend label |
+| ------ | ---- | ----- | ------------ |
+| 1 | `inStore` | `#5A55E3` (indigo) | In-store |
+| 2 | `online` | `#FF6600` (orange) | Online |
+| 3 | `delivery` | `#8C9FFF` (periwinkle) | Delivery |
+
+Channel-mode legend uses solid markers and is **non-toggleable** (display-only) — channel comparison is the value of this mode; hiding series defeats it.
 
 | Property | Value |
 | -------- | ----- |
-| Type | Vertical bar, single series |
-| X-axis | Category (`label`) |
-| Y-axis | Rate 0–100% (`min: 0`, top tick derived from max + ~10% headroom) |
-| Fill | Indigo `#5A55E3`, `cornerRadius: 4`, `strokeWidth: 0` |
-| Native AG Charts tooltip | Disabled — manual tooltip wired per the standard pattern |
-| Legend | None on breakdown card (single series) |
+| Library | AG Charts (Community v13) |
+| Type | Line — 2 series (Total) or 3 series (By channel) |
+| X-axis | Time, monthly. `min` / `max` span the active range; ticks at the four quarter-start months in the prototype |
+| Y-axis | Rate as decimal, formatted as percent. Prototype: Total `min: 0.50, max: 0.70`; By channel `min: 0.48, max: 0.74` |
+| Native AG Charts tooltip | Disabled — manual tooltip wired only in Total mode (see § 9) |
+| Native AG Charts crosshair | Enabled on X (`#c6c6c6`, dashed) |
+| Chart padding | `top: 8, right: 16, bottom: 32, left: 8`. `PLOT_LEFT = 46, PLOT_RIGHT_PAD = 16` for tooltip / point-menu math |
+
+Y-axis bounds in the prototype are hardcoded. **Replace with values derived from the filtered data range** (suggested: pad ~5% below min and above max rate, snap ticks to sensible 5% increments; never let Y-axis exceed 100%).
 
 ---
 
@@ -242,48 +235,38 @@ When `Compare to` = `No comparison`:
 
 Compact card in the 2-column dashboard grid (`data-metric-id="loyalty-penetration"`). **Library-only — not in `DEFAULT_LAYOUT`** for v1. Users add via Manage mode. (Already registered in `ALL_METRICS` as `loyalty-penetration` / `Loyalty penetration`.)
 
-**Match the customer mock (May 2026):**
+**Current prototype layout** — matches the Guest repeat rate / Active guests pattern:
 
-- **Header:** title `Loyalty penetration` + subtitle `Share of transactions tied to a loyalty member`. Optional category chip `LOYALTY` above title if library pattern supports it. Header click → `dashboard-loyalty-penetration.html`. Add mapping in `perChartPages` / `openChartDetail`.
-- **Body layout:** `.chart-card__donut-row` (or equivalent) — donut left, metrics right.
-- **Donut:** see § 5.1. Center `62%` / `loyalty txns` (mock values).
-- **Metrics column (right):** `+4pts` green pill → `58% prior period` (subdued) → `Non-loyalty: 38%` (bottom). Current % lives in the donut center, not duplicated in the right column unless design adds it.
-- **90D minimum info indicator** when selected range is below 90D (see § 2).
-- **No trend line, no toggleable legend** on the card.
-- **3-dot overflow menu:** Export CSV / Download chart / Ask Ava.
+- **Header:** title `Loyalty penetration` + subtitle `Share of transactions tied to a loyalty member`. Header click → `dashboard-loyalty-penetration.html` (mapping in `perChartPages` / `openChartDetail`).
+- **Hero block** (`buildMetricBlock`): `.chart-card__metric-row` → `62%` value + `+4pts` green pill, then `.chart-card__metric-period-row` → `58% prior period · 38% non-loyalty`. When the active range is below 90D, the `loyalty-penetration-info-wrap` element becomes visible (`Showing 90D minimum` with tooltip — see § 2).
+- **Legend** (`buildLegendHTML`): two toggleable buttons — `This period` (solid marker) / `Previous period` (striped marker). At least one must remain pressed; toggle handler is `toggleLoyaltyPenetrationSeries`.
+- **Chart container:** `<div class="chart-card__placeholder" id="chart-area-loyalty-penetration">` — single-line trend, see § 5.1.
+- **3-dot overflow menu:** Export CSV / Download chart / Ask Ava (standard card menu).
 
 ---
 
 ## 8. Detail Page (`beta/dashboard-loyalty-penetration.html`)
 
-**Layout (top to bottom):** breadcrumb → title bar (`Loyalty penetration` + Help) → global filter bar → **period trend (line)** + **breakdown by location / channel / DMA** (stacked in `chart-detail-charts-stack`) → **sortable data table** → chart-point context menu (trend chart only).
+**Layout (top to bottom):** breadcrumb → title bar (`Loyalty penetration` + Help) → global filter bar → **period trend (line)** with in-card breakdown dropdown (`chart-detail-charts-stack` contains one chart card only) → **sortable data table** → chart-point context menu (trend chart only).
 
 **Default date range on the detail page is 12M** (the `12M` button has `btn-group__item--active` in the markup), consistent with most other detail pages.
 
+There is **no separate breakdown bar chart** on this detail page. Channel comparison is overlaid on the trend chart itself via the in-card breakdown dropdown (see § 8.1).
+
 ### 8.1 Trend card
 
-- **Header:** title `Loyalty penetration`, subtitle `Share of identified transactions tied to a loyalty member, over time`, 3-dot menu with `Export CSV / Download chart / Ask Ava`.
-- **Hero metric block:** same `32.4%` value + `+3.5pts` pill as the card. Period text: `28.9% prev period · Mar '26`. The base-month suffix is the only delta from the card hero.
-- **Legend:** `This period` / `Previous period` toggles. Toggling sets `visible` on the corresponding line series — at least one must remain visible.
-- **Chart:** single-line trend with `prev` dashed — see § 5.1.
-- **Click → context menu** on the trend chart (View users / Create segment / Ask Ava) — uses `attachChartPointMenu()` with Y-axis bounds for series-aware clicks (solid vs. striped prev line). See `[dashboard_beta_ux.md` § Click → Context Menu](../dashboard_beta_ux.md#click--context-menu) and `[analytics_page_patterns.md](../../analytics_page_patterns.md)`.
+- **Header:** title `Loyalty penetration`, subtitle `Share of identified transactions tied to a loyalty member, over time`.
+- **Header controls (right-aligned, in `.chart-card__header-controls`):**
+  - **Breakdown dropdown** (`dd-trend-breakdown`): `Total` (default) / `By channel`. Selecting an option updates the dropdown label and calls `selectTrendBreakdown(mode)`, which sets `currentTrendBreakdown` and re-runs `initPenetrationTrendChart()` to swap the chart between the Total (2-series) and channel (3-series) datasets — see § 5.2.
+  - **3-dot menu:** `Export CSV` / `Download chart`. **No `Ask Ava` entry** in the detail trend card menu (the dashboard card menu still has it; this is intentionally trimmed on the detail surface).
+- **Hero metric block:** same `62%` value + `+4pts` pill as the dashboard card. Period text: `58% prev period · Mar '26` (base-month suffix is the only delta from the card hero).
+- **Legend** (`renderTrendLegend`): mode-dependent.
+  - **Total mode:** two toggleable buttons — `This period` (solid) / `Previous period` (striped). `togglePenetrationSeries` enforces "at least one visible".
+  - **By channel mode:** three display-only items — `In-store` (indigo), `Online` (orange), `Delivery` (periwinkle), all with solid markers. Not clickable / not toggleable.
+- **Chart:** see § 5.2 for both modes.
+- **Click → context menu** on the trend chart (View users / Create segment / Ask Ava) — uses `attachChartPointMenu()` with Y-axis bounds for series-aware clicks (solid vs. striped prev line in Total mode). The point menu fires in both modes; in By channel mode it snaps to the nearest visible series by Y distance. See `[dashboard_beta_ux.md` § Click → Context Menu](../dashboard_beta_ux.md#click--context-menu) and `[analytics_page_patterns.md](../../analytics_page_patterns.md)`.
 
-### 8.2 Breakdown card
-
-- **Header:** title `Penetration by dimension`, subtitle references latest complete period (e.g. `Mar '26`), right-aligned dropdown control + 3-dot menu.
-- **Breakdown dropdown:** `By location` (default) / `By channel` / `By DMA`. Selecting an option updates the dropdown label and re-initializes the breakdown chart with `BREAKDOWN_DATA[mode]`. Does **not** change the data table (table rows are period buckets from the trend series, not dimension values).
-- **Chart:** single-series vertical bars — see § 5.3.
-- **No legend** (single series).
-
-**Prototype breakdown values** (replace with real query results):
-
-| Dimension | Categories |
-| --------- | ---------- |
-| `location` | Downtown, Midtown, Airport, Suburbs, University |
-| `channel` | In-store, Digital, Delivery, Drive-thru |
-| `dma` | Dallas–Fort Worth, Houston, Austin, San Antonio |
-
-### 8.3 Data table
+### 8.2 Data table
 
 **Sortable** table — one row per period in the trend series (same periods as the line chart X-axis). **Four columns only** (no Previous period, Δ pts, or Δ% columns; period-over-period comparison stays on the trend card hero and chart).
 
@@ -303,34 +286,20 @@ Compact card in the 2-column dashboard grid (`data-metric-id="loyalty-penetratio
 
 ## 9. Interactions
 
-### Hover → Tooltip (dashboard donut)
+### Hover → Tooltip (dashboard card trend)
 
-No tooltip on the dashboard donut in v1 (static snapshot). Optional future: hover slice → txn count + %.
+Manual implementation (mirror `initGuestRepeatRateChart` in `beta/dashboard-guest-repeat-rate.html`). Snap to nearest period on X; header `Loyalty penetration`; body shows period label + `This period` rate, `pts` delta vs. that row's `prev`, and an optional `Previous period` row (striped marker) when the `prev` series is visible. Hidden when `current` is toggled off.
 
 ### Hover → Tooltip (detail trend)
 
-Manual implementation (mirror `initGuestRepeatRateChart` / `wireTrendTooltip` in `beta/dashboard-guest-repeat-rate.html`).
-
-- Snap to nearest period on X.
-- Tooltip header: `Loyalty penetration`.
-- Body: period label + **This period** rate; row showing `pts` delta vs. that row's `prev` rate; optional **Previous period** row when `prev` series visible (striped marker).
-- Hidden when `current` series is toggled off.
-- Dashboard uses `PLOT_LEFT: 38`; detail trend uses `46` / `plotRightPad: 16` — pass real plot metrics from the chart layout when wiring production.
-
-### Hover → Tooltip (detail breakdown)
-
-Manual tooltip per bar: dimension label + penetration % + loyalty txns / identified txns counts. Pattern matches Guest repeat rate breakdown.
+Same pattern as the card. Wired only in **Total mode** (`wireTrendTooltip`); when the breakdown dropdown switches to **By channel**, no manual tooltip is wired in the prototype (re-evaluate before GA — likely want a 3-row channel readout). Dashboard uses `PLOT_LEFT: 38, PLOT_RIGHT_PAD: 0`; detail trend uses `PLOT_LEFT: 46, PLOT_RIGHT_PAD: 16` — pass real plot metrics from the chart layout when wiring production.
 
 ### Click → Context menu (detail trend only)
 
 - Click inside plot area → menu anchored to cursor, snapped to nearest period.
-- Header: color dot (striped if `prev` series selected) + `{period} period` + rate value.
-- Menu actions (stubbed): View users / Create segment / Ask Ava.
-- `pointMenuAnchor` holds the snapped `LoyaltyPenetrationTrendRow`; wire `onPointMenuAction` to real flows.
-
-### Breakdown card
-
-No point menu in prototype. Optional future: click bar → filter to that dimension value and drill to a guest list of "identified non-members at this location/channel/DMA" (the actionable cohort for an enrollment campaign).
+- Header: color dot (striped if the `prev` series was the closest line in Total mode) + period label + rate value at that point on the closest series.
+- Menu actions (stubbed): `View users` / `Create segment` / `Ask Ava`.
+- `pointMenuAnchor` holds the snapped trend row; `pointMenuSeries` records which series was clicked (Total mode: `current` or `prev`; By channel mode: `inStore`, `online`, or `delivery`). Wire `onPointMenuAction` to real flows.
 
 ---
 
@@ -345,10 +314,12 @@ These are not blockers for wiring the chart but should be settled before the met
 5. **Loyalty filter UX.** **Resolved:** filter disabled/ignored. Confirm UI: disable control vs. hide vs. banner when user had filter active before navigation.
 6. **Trend bucket granularity at exactly 90D.** Three monthly points vs. weekly — confirm with data eng.
 7. **Comparison-period alignment on trend chart.** **Resolved for hero pill:** prior period of equal length. Confirm each monthly `prev` point uses aligned calendar month in prior comparison window vs. YoY month.
-8. **Benchmark band.** Punchh has cohort-adjusted Participation Rate benchmarks (50th / 75th percentile by program age). Should the trend chart overlay a benchmark band (gray shaded area)? Or surface benchmarks only as a contextual line on the location breakdown bar chart (matches `analytics_proposition.md` location-page treatment)? Recommend: location breakdown only for v1 — trend overlay adds visual noise.
+8. **Benchmark band.** Punchh has cohort-adjusted Participation Rate benchmarks (50th / 75th percentile by program age). Should the trend chart overlay a benchmark band (gray shaded area)? With the breakdown bar chart removed, the only surface for a benchmark would be the trend itself — confirm with PM whether to add the band or skip benchmarks in v1.
 9. **Default layout placement.** Library-only in v1. After 4–6 weeks of usage data, evaluate whether to promote into `DEFAULT_LAYOUT` (e.g. row 4 alongside `loyalty-spend-lift`). Bumps localStorage key to v8.
 10. **Cross-link to Loyalty Spend Lift.** Both are loyalty-conversion metrics. Worth a "Related metric" link in either card header? Recommend: not in v1 (no precedent in current cards); revisit in a follow-up navigation pass.
 11. **Small denominators.** When `identifiedTxns` is small (single store, niche segment), penetration swings wildly. Empty state or confidence indicator below a minimum txn threshold (e.g. <500)?
+12. **By channel tooltip.** Prototype wires the manual tooltip only in Total mode. Confirm desired By-channel behavior: 3-row channel readout at the snapped period, or a single-series readout based on the closest line?
+13. **Channel is the only per-chart breakdown.** Earlier drafts planned location and DMA breakdowns in-card. **Resolved:** all geographic scoping — individual stores, custom store groups, and DMA groupings (which are just a flavor of store group) — is handled by the global **Stores / Store groups** filter (see [dashboard_beta_ux.md § Global Filters](../dashboard_beta_ux.md#global-filters)). A per-chart location or DMA breakdown would duplicate that control.
 
 ---
 
@@ -356,10 +327,8 @@ These are not blockers for wiring the chart but should be settled before the met
 
 - **Source proposition (PAG #6 at 67%, conversion category framing)** — `[docs/analytics_proposition.md](../analytics_proposition.md)` (search `Loyalty Penetration`)
 - **Sibling spec — single-line trend pattern** — `[guest_repeat_rate_chart_spec.md](./guest_repeat_rate_chart_spec.md)`
-- **Sibling spec — loyalty filter incompatibility + breakdown dropdown pattern** — `[dashboard_loyalty_spend_lift_chart_spec.md](./dashboard_loyalty_spend_lift_chart_spec.md)`
+- **Sibling spec — loyalty filter incompatibility** — `[dashboard_loyalty_spend_lift_chart_spec.md](./dashboard_loyalty_spend_lift_chart_spec.md)`
 - **Dashboard UX patterns (cards, filters, detail page, table columns)** — `[docs/dashboard_beta_ux.md](../dashboard_beta_ux.md)`
 - **Reusable chart conventions (palette, flex-fill, point menu)** — `[analytics_page_patterns.md](../../analytics_page_patterns.md)`
-- **AG Charts donut lab** — `[beta/chart-lab.js](../../beta/chart-lab.js)` (search `type: 'donut'`, `innerRadiusRatio`)
-- **Reference implementation — dashboard card** — `[beta/index.html](../../beta/index.html)` (to add: `loyalty-penetration`, `LOYALTY_PENETRATION_DATA`, `initLoyaltyPenetrationChart`)
-- **Reference implementation — detail page** — clone trend from `[beta/dashboard-guest-repeat-rate.html](../../beta/dashboard-guest-repeat-rate.html)`; breakdown + table from `[beta/dashboard-loyalty-spend-lift.html](../../beta/dashboard-loyalty-spend-lift.html)`
-- **Card layout CSS** — new `.chart-card[data-metric-id="loyalty-penetration"]` donut-row styles in `[beta/beta.css](../../beta/beta.css)`
+- **Reference implementation — dashboard card** — `[beta/index.html](../../beta/index.html)` (`LOYALTY_PENETRATION_DATA`, `initLoyaltyPenetrationChart`, `toggleLoyaltyPenetrationSeries`)
+- **Reference implementation — detail page** — `[beta/dashboard-loyalty-penetration.html](../../beta/dashboard-loyalty-penetration.html)` (`PENETRATION_TREND_DATA`, `CHANNEL_TREND_DATA`, `initPenetrationTrendChart`, `selectTrendBreakdown`, `renderTrendLegend`)
