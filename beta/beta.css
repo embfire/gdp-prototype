@@ -719,7 +719,7 @@ body { margin: 0; font-family: 'Manrope', sans-serif; }
 .dashboard-meta-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .dashboard-last-updated {
@@ -981,7 +981,7 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   font-weight: 400;
   line-height: 136%;
   white-space: normal;
-  max-width: 175px;
+  max-width: 240px;
   word-break: break-word;
   pointer-events: none;
   transition: opacity 0.15s;
@@ -1116,6 +1116,15 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   min-height: 0;
 }
 
+/* Lifecycle legend has six stages — wrap rather than overflow the card. */
+.chart-card[data-metric-id="guest-lifecycle-breakdown"] .chart-card__legend {
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+.chart-card[data-metric-id="guest-lifecycle-breakdown"] .chart-card__legend-item {
+  white-space: nowrap;
+}
+
 /* Retention cohort: same flex-fill treatment */
 .chart-card[data-metric-id="retention-cohort"] .chart-card__body {
   flex: 1;
@@ -1180,10 +1189,22 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 .chart-card[data-metric-id="loyalty-spend-lift"] .chart-card__placeholder {
   flex: 1;
   height: auto;
-  min-height: 256px;
+  min-height: 200px;
+}
+
+/* Average order value: same flex-fill treatment as active guests */
+.chart-card[data-metric-id="avg-order-value"] .chart-card__body {
+  flex: 1;
+  min-height: 0;
+}
+.chart-card[data-metric-id="avg-order-value"] .chart-card__placeholder {
+  flex: 1;
+  height: auto;
+  min-height: 0;
 }
 
 /* Strip the placeholder background once a real chart has rendered */
+#chart-area-avg-order-value,
 #chart-area-total-guests-echarts,
 #chart-area-active-guests,
 #chart-area-guest-lifecycle-breakdown,
@@ -2981,3 +3002,165 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 /* `.about-panel__got-it` inherits all visual styles from
    `.button.primary` (bento). Only the hook class is kept in case
    future tweaks are needed. */
+
+/* "Stages" section (categorical metrics only) — informational notice
+   above a term/body definitions list with a color swatch per term. */
+.about-panel__notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  background: #f4f4f4;
+  border-left: 4px solid #1d5eff;
+  border-radius: 4px;
+}
+.about-panel__notice-icon {
+  font-size: 20px;
+  color: #1d5eff;
+  flex-shrink: 0;
+}
+.about-panel__notice-text {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.72;
+  color: #000000;
+}
+.about-panel__definitions {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.about-panel__definition {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.about-panel__term {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #000000;
+}
+.about-panel__swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.about-panel__definition-body {
+  margin: 0 0 0 20px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #60696c;
+}
+
+/* "About this metric" help (?) button beside the ⋮ trigger — production
+   AboutMetricButton (G360-257). Reuses the .chart-tooltip bubble. */
+.chart-help-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.chart-help-wrap:hover .chart-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+/* Centre the bubble (and its arrow) over the ? icon — the shared
+   .chart-tooltip is right-aligned for the customize Remove button. */
+.chart-help-wrap .chart-tooltip {
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.chart-card__help-btn .material-symbols-rounded {
+  font-size: 20px;
+}
+.app-shell--customize .chart-help-wrap { display: none; }
+
+/* Dismissible dashboard tip pointing at the help (?) buttons —
+   production DashboardView `aboutMetricTip`. */
+.dashboard-about-tip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 16px;
+  background: #f4f4f4;
+  border-left: 4px solid #000000;
+  border-radius: 4px;
+}
+.dashboard-about-tip[hidden] { display: none; }
+.dashboard-about-tip__icon {
+  font-size: 20px;
+  color: #000000;
+}
+.dashboard-about-tip__text {
+  flex: 1;
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.72;
+  color: #000000;
+}
+.app-shell--customize .dashboard-about-tip { display: none; }
+
+/* ── Guest lifecycle share strip ──
+   Thin part-to-whole bar above the horizontal stage bars (production
+   GuestLifecycleStripSegment). Each segment shows a dark caption
+   tooltip below it: "{Stage} {count} • {share}". */
+.lifecycle-strip {
+  display: flex;
+  width: 100%;
+  height: 8px;
+  gap: 2px;
+}
+.lifecycle-strip__segment {
+  position: relative;
+  height: 100%;
+  min-width: 2px;
+  border-radius: 2px;
+  cursor: default;
+}
+.lifecycle-strip__tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2223;
+  color: #ffffff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 136%;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  z-index: 10;
+}
+.lifecycle-strip__tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 0.25rem solid transparent;
+  border-right: 0.25rem solid transparent;
+  border-bottom: 0.25rem solid #1f2223;
+}
+.lifecycle-strip__segment:hover .lifecycle-strip__tooltip {
+  visibility: visible;
+  opacity: 1;
+}

@@ -68,11 +68,14 @@
           </div>
 
           <div class="nav-group" data-nav-group-id="bottom">
-            <a href="settings.html" class="nav-item active">
+            <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
               <span class="nav-item__label">Settings</span>
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
-            </a>
+            </button>
+            <div class="nav-sub-group">
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+            </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
               <span class="nav-item__label">Cockpit</span>

@@ -69,11 +69,14 @@
           </div>
 
           <div class="nav-group" data-nav-group-id="bottom">
-            <a href="settings.html" class="nav-item">
+            <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
               <span class="nav-item__label">Settings</span>
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
-            </a>
+            </button>
+            <div class="nav-sub-group">
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+            </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
               <span class="nav-item__label">Cockpit</span>
@@ -209,25 +212,19 @@
             <div class="dropdown" id="dd-compare">
               <div class="dropdown__wrapper">
                 <button class="dropdown__button" onclick="toggleDropdown('dd-compare')">
-                  <span>Previous period</span>
+                  <span>Prev period</span>
                   <i class="material-symbols-rounded">expand_more</i>
                 </button>
               </div>
               <div class="dropdown__options">
                 <ul>
-                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous period</span></button></li>
-                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous year</span></button></li>
-                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>No comparison</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Prev period</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Prior year</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>None</span></button></li>
                 </ul>
               </div>
             </div>
 
-            <div class="dashboard-filter-spacer"></div>
-
-            <button class="button outlined dashboard-btn">
-              <span class="material-symbols-rounded dashboard-btn__icon">filter_alt</span>
-              <span class="dashboard-btn__label">More filters</span>
-            </button>
           </div>
           <!-- /filter bar -->
 
@@ -236,7 +233,7 @@
             <div class="chart-card__header chart-card__header--detail">
               <div class="chart-card__header-text">
                 <p class="chart-card__title">Loyalty penetration</p>
-                <p class="chart-card__subtitle">Share of identified transactions tied to a loyalty member, over time</p>
+                <p class="chart-card__subtitle">Share of identified transactions tied to a loyalty member, over time.</p>
               </div>
               <div class="chart-card__header-controls">
                 <div class="dropdown" id="dd-trend-breakdown">
@@ -260,7 +257,7 @@
                   <div class="chart-context-menu" id="chart-menu-trend">
                     <ul>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
-                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
+                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">image</span><span>Download chart</span></button></li>
                     </ul>
                   </div>
                 </div>
@@ -371,7 +368,7 @@
               <li>
                 <button type="button" class="chart-point-menu__item" onclick="onPointMenuAction('ask-ava')">
                   <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
-                  <span>Ask Ava</span>
+                  <span>Ask Ava about this</span>
                 </button>
               </li>
             </ul>
@@ -630,7 +627,52 @@
     }
     function fmtPts(delta) {
       var pts = delta * 100;
-      return (pts >= 0 ? '+' : '') + pts.toFixed(1) + 'pts';
+      return (pts >= 0 ? '+' : '') + pts.toFixed(1).replace(/\.0$/, '') + 'pts';
+    }
+    function fmtChartDate(d) { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+    var TOOLTIP_SWATCH_SOLID = 'width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background:#5A55E3;';
+    var TOOLTIP_SWATCH_DASHED = 'width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);';
+
+    function renderPenetrationTotalTooltip(d, data) {
+      // Comparison period = the window right before the plotted range, so shift back by data.length months.
+      var prevDate = new Date(d.date.getFullYear(), d.date.getMonth() - data.length, d.date.getDate());
+      var showCurrent = penetrationVisibility.current, showPrev = penetrationVisibility.prev;
+      var currentValue = showCurrent ? d.current : null;
+      var pill = '';
+      if (showCurrent && showPrev) {
+        var ptsDelta = d.current - d.prev;
+        var ptsColor = ptsDelta >= 0 ? '#257469' : '#b1294a';
+        var ptsBg = ptsDelta >= 0 ? '#effaf9' : '#fdecef';
+        pill = '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+            '<span style="display:inline-flex;align-items:center;padding:2px 4px;border-radius:4px;background:' + ptsBg + ';color:' + ptsColor + ';font-size:12px;font-weight:400;">' + fmtPts(ptsDelta) + '</span>' +
+            '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. comparison period</span>' +
+          '</div>';
+      }
+      var prevRow = showPrev
+        ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+            '<div style="display:flex;align-items:center;gap:4px;">' +
+              '<span aria-hidden="true" style="' + TOOLTIP_SWATCH_DASHED + '"></span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">Prev period (' + fmtChartDate(prevDate) + ')</span>' +
+            '</div>' +
+            '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtPct(d.prev) + '</span>' +
+          '</div>'
+        : '';
+      return (
+        '<div style="background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);padding:16px;font-family:Manrope,sans-serif;">' +
+          '<p style="font-weight:800;font-size:16px;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Loyalty penetration</p>' +
+          '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:4px;">' +
+                (showCurrent ? '<span aria-hidden="true" style="' + TOOLTIP_SWATCH_SOLID + '"></span>' : '') +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(d.date) + '</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#000;">' + (currentValue == null ? '—' : fmtPct(currentValue)) + '</span>' +
+            '</div>' +
+            pill +
+          '</div>' +
+          prevRow +
+        '</div>'
+      );
     }
 
     function renderTrendLegend() {
@@ -653,7 +695,7 @@
       } else {
         el.innerHTML = [
           { key: 'current', label: 'This period', striped: false },
-          { key: 'prev', label: 'Previous period', striped: true },
+          { key: 'prev', label: 'Prev period', striped: true },
         ].map(function(s) {
           var marker = s.striped
             ? 'background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);'
@@ -708,7 +750,7 @@
       }
       return [
         {
-          type: 'line', xKey: 'date', yKey: 'prev', yName: 'Previous period',
+          type: 'line', xKey: 'date', yKey: 'prev', yName: 'Prev period',
           stroke: '#5A55E3', strokeWidth: 2, lineDash: [2, 2],
           marker: {
             enabled: true, size: 0,
@@ -826,26 +868,30 @@
         var d = data.reduce(function(best, row) {
           return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
         });
-        if (!penetrationVisibility.current) { penetrationTooltipEl.style.display = 'none'; return; }
-        var ptsDelta = d.current - d.prev;
-        var ptsColor = ptsDelta >= 0 ? '#257469' : '#b1294a';
-        var ptsBg = ptsDelta >= 0 ? '#effaf9' : '#fdecef';
-        var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
-        penetrationTooltipEl.innerHTML = (
-          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
-          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;">Loyalty penetration</p>' +
-          '<div style="display:flex;flex-direction:column;gap:8px;">' +
-            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">' +
-              '<div style="display:flex;align-items:center;gap:4px;"><div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;"></div>' +
-              '<span style="font-size:12px;color:#60696C;">' + fmtPeriodMonth(d.date) + '</span></div>' +
-              '<span style="font-size:12px;font-weight:700;">' + fmtPct(d.current) + '</span></div>' +
-            '<div style="display:flex;align-items:center;gap:4px;"><span style="background:' + ptsBg + ';color:' + ptsColor + ';padding:2px 4px;border-radius:4px;font-size:12px;">' + fmtPts(ptsDelta) + '</span>' +
-              '<span style="font-size:12px;color:#60696C;">vs. previous period</span></div>' +
-          '</div>' +
-          (penetrationVisibility.prev ? '<div style="margin-top:16px;display:flex;justify-content:space-between;gap:16px;">' + stripe +
-            '<span style="font-size:12px;color:#60696C;">Previous period</span><span style="font-size:12px;color:#60696C;">' + fmtPct(d.prev) + '</span></div>' : '') +
-          '</div>'
-        );
+        if (currentTrendBreakdown === 'total') {
+          penetrationTooltipEl.innerHTML = renderPenetrationTotalTooltip(d, data);
+        } else {
+          if (!penetrationVisibility.current) { penetrationTooltipEl.style.display = 'none'; return; }
+          var ptsDelta = d.current - d.prev;
+          var ptsColor = ptsDelta >= 0 ? '#257469' : '#b1294a';
+          var ptsBg = ptsDelta >= 0 ? '#effaf9' : '#fdecef';
+          var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+          penetrationTooltipEl.innerHTML = (
+            '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;">Loyalty penetration</p>' +
+            '<div style="display:flex;flex-direction:column;gap:8px;">' +
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">' +
+                '<div style="display:flex;align-items:center;gap:4px;"><div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;"></div>' +
+                '<span style="font-size:12px;color:#60696C;">' + fmtPeriodMonth(d.date) + '</span></div>' +
+                '<span style="font-size:12px;font-weight:700;">' + fmtPct(d.current) + '</span></div>' +
+              '<div style="display:flex;align-items:center;gap:4px;"><span style="background:' + ptsBg + ';color:' + ptsColor + ';padding:2px 4px;border-radius:4px;font-size:12px;">' + fmtPts(ptsDelta) + '</span>' +
+                '<span style="font-size:12px;color:#60696C;">vs. comparison period</span></div>' +
+            '</div>' +
+            (penetrationVisibility.prev ? '<div style="margin-top:16px;display:flex;justify-content:space-between;gap:16px;">' + stripe +
+              '<span style="font-size:12px;color:#60696C;">Prev period</span><span style="font-size:12px;color:#60696C;">' + fmtPct(d.prev) + '</span></div>' : '') +
+            '</div>'
+          );
+        }
         penetrationTooltipEl.style.display = 'block';
         var tw = penetrationTooltipEl.offsetWidth, th = penetrationTooltipEl.offsetHeight;
         var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);

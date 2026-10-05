@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Definitions — PAR Guest360 Beta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="../assets/bento.css">
+  <link rel="stylesheet" href="beta.css">
+  <script src="lifecycle-definitions.js"></script>
+  <style>
+    /* ── Definitions page layout (ported from the CDP prototype's
+          settings-definitions.html; production DefinitionsView) ── */
+    .defs-sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #ffffff;
+      flex-shrink: 0;
+    }
+    .defs-title-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 64px 48px 32px;
+    }
+    .defs-title-bar h1 {
+      margin: 0;
+      font-family: 'Manrope', sans-serif;
+      font-size: 28px;
+      font-weight: 400;
+      line-height: 1.44;
+      color: #000000;
+    }
+    .defs-tabs-strip {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 0 48px;
+      border-bottom: 2px solid #dfe1e2;
+      background: #ffffff;
+    }
+    .defs-tabs-strip .tab__label {
+      margin-bottom: -2px;
+      border-bottom: 0.125rem solid transparent;
+    }
+    /* Bento's checked/hover state pulls the label -0.375rem, which with a
+       single tab drops the orange indicator below the strip's 2px line.
+       Keep the -2px overlap so the indicator sits on the line. */
+    .defs-tabs-strip .tab__input:checked + .tab__label,
+    .defs-tabs-strip .tab__label:hover {
+      margin-bottom: -2px;
+    }
+    /* The sticky page header (z-index 10) otherwise paints over the app
+       header's bottom shadow — lift the app header above it. */
+    .header {
+      z-index: 20;
+    }
+    .defs-body {
+      background: #f4f4f4;
+      padding: 0 48px 128px;
+      flex: 1;
+    }
+    .defs-body .form-label .form-label__label {
+      font-weight: 400;
+    }
+    .defs-divider {
+      border: none;
+      border-top: 2px solid #dfe1e2;
+      margin: 0;
+    }
+    .defs-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ── Lifecycle stages ── */
+    .lifecycle-intro {
+      padding: 32px 0 0;
+    }
+    .lifecycle-intro__text {
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      color: #3a3f41;
+      line-height: 1.5;
+      margin: 0;
+      max-width: 640px;
+    }
+    .lifecycle-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding: 32px 0;
+    }
+    .lifecycle-section__heading-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .lifecycle-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .lifecycle-section__name {
+      font-family: 'Manrope', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.6;
+      color: #000000;
+      margin: 0;
+    }
+    .lifecycle-name-input {
+      width: 272px;
+    }
+    .threshold-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .threshold-input__box {
+      width: 88px;
+      height: 40px;
+      padding: 0 12px;
+      box-shadow: 0px 0px 0px 1px #000000 inset;
+      border-radius: 8px;
+      background: #ffffff;
+      box-sizing: border-box;
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      color: #141414;
+      border: none;
+      outline: none;
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+    .threshold-input__box::-webkit-outer-spin-button,
+    .threshold-input__box::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .threshold-input__box:focus {
+      box-shadow: 0px 0px 0px 2px #1d5eff inset;
+    }
+    .threshold-input__box--invalid,
+    .threshold-input__box--invalid:focus {
+      box-shadow: 0px 0px 0px 2px #b1294a inset;
+    }
+    .threshold-unit {
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      color: #141414;
+      white-space: nowrap;
+    }
+    .threshold-hint {
+      font-family: 'Manrope', sans-serif;
+      font-size: 14px;
+      color: #60696c;
+      margin: 0;
+      line-height: 1.72;
+      max-width: 480px;
+    }
+    .threshold-hint--error {
+      color: #b1294a;
+    }
+
+    /* ── Save bar — Save / Cancel, Reset set apart on the right ── */
+    .defs-save-bar {
+      position: fixed;
+      bottom: 0;
+      left: 256px;
+      right: 0;
+      height: 80px;
+      background: #eeeefc;
+      box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.12);
+      z-index: 100;
+      padding: 0 48px;
+      display: none;
+      align-items: center;
+      gap: 24px;
+    }
+    .defs-save-bar__cancel {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid #dfe1e2;
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #141414;
+      cursor: pointer;
+      padding: 0 0 2px 0;
+    }
+    .defs-save-bar__reset {
+      margin-left: auto;
+    }
+
+    /* ── Toast ── */
+    .defs-toast {
+      display: none;
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 300;
+      min-width: 320px;
+    }
+
+    /* ── Reset confirmation modal ── */
+    .defs-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 500;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 80px;
+    }
+    .defs-modal-overlay.open { display: flex; }
+    .defs-modal {
+      background: #ffffff;
+      border-radius: 12px;
+      width: 552px;
+      max-width: 90vw;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+    .defs-modal__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 24px 24px 32px;
+      border-bottom: 1px solid #dfe1e2;
+    }
+    .defs-modal__title {
+      font-family: 'Manrope', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.6;
+      margin: 0;
+      color: #000000;
+    }
+    .defs-modal__close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #3a3f41;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .defs-modal__close:hover { background: #f4f4f4; }
+    .defs-modal__body {
+      padding: 32px;
+      text-align: center;
+    }
+    .defs-modal__desc {
+      color: #3a3f41;
+      margin: 0 0 16px;
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .defs-modal__actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-top: 16px;
+      padding-top: 32px;
+      border-top: 1px solid #dfe1e2;
+    }
+    .defs-modal__actions .button {
+      flex: 1;
+    }
+    .defs-modal__keep {
+      flex: 1;
+      background: transparent;
+      border: none;
+      font-family: 'Manrope', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #141414;
+      cursor: pointer;
+      padding: 0;
+      text-align: center;
+    }
+    .defs-modal__keep:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+          <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+        </a>
+        <span class="header-brand-divider" aria-hidden="true"></span>
+        <button class="header-brand-btn" aria-label="Select brand">
+          Cravewave
+          <i class="ph ph-caret-down"></i>
+        </button>
+      </div>
+      <div class="header-right">
+        <button class="header-btn">
+          <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
+          Ava
+        </button>
+        <button class="header-btn">
+          <span class="material-symbols-rounded">school</span>
+          PAR Academy
+        </button>
+        <button class="header-btn header-btn--icon" aria-label="Profile">
+          <span class="material-symbols-rounded">person</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="app-shell__body">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Main navigation">
+
+          <div class="nav-group" data-nav-group-id="top">
+            <a href="index.html" class="nav-item">
+              <i class="ph-duotone ph-chart-bar" aria-hidden="true"></i>
+              <span class="nav-item__label">Dashboard</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="guests">
+            <div class="nav-group-title">Guests</div>
+            <a href="guest-profiles.html" class="nav-item">
+              <i class="ph-duotone ph-user-circle" aria-hidden="true"></i>
+              <span class="nav-item__label">Guest profiles</span>
+            </a>
+            <a href="guest-segments.html" class="nav-item">
+              <i class="ph-duotone ph-users-three" aria-hidden="true"></i>
+              <span class="nav-item__label">Segments</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="bottom">
+            <button type="button" class="nav-item nav-item-expandable open" onclick="toggleNavExpand(this)" aria-expanded="true">
+              <i class="ph-duotone ph-gear" aria-hidden="true"></i>
+              <span class="nav-item__label">Settings</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group open">
+              <a href="settings-definitions.html" class="nav-sub-item active">Definitions</a>
+            </div>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
+              <span class="nav-item__label">Cockpit</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="cockpit-features.html" class="nav-sub-item">Features</a>
+              <a href="cockpit-admins.html" class="nav-sub-item">Admins</a>
+            </div>
+          </div>
+
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+
+        <!-- Sticky page header: title bar + tabs -->
+        <div class="defs-sticky-header">
+          <div class="defs-title-bar">
+            <h1>Definitions</h1>
+            <button class="button transparent">
+              <span class="material-symbols-rounded" style="font-size:24px;">help</span>
+              <span>Help</span>
+            </button>
+          </div>
+          <div class="defs-tabs-strip">
+            <div class="tab">
+              <input type="radio" name="defs-tabs" id="tab-lifecycle" class="tab__input" value="lifecycle" checked>
+              <label for="tab-lifecycle" class="tab__label"><span>Lifecycle stages</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab content area — sections are rendered from STAGE_FIELDS -->
+        <div class="defs-body">
+          <div class="lifecycle-intro">
+            <p class="lifecycle-intro__text">Lifecycle stages classify identified guests by visit behavior. Each guest belongs to exactly one stage at any given time. Rename stages and adjust the thresholds below to match your brand's definition of guest activity.</p>
+          </div>
+          <div id="lifecycle-sections"></div>
+        </div>
+
+      </main>
+    </div><!-- /app-shell__body -->
+
+    <!-- Save bar — only shown once something has changed -->
+    <div class="defs-save-bar" id="defs-save-bar">
+      <button class="button primary" id="defs-save-btn" onclick="saveChanges()">
+        <span>Save</span>
+      </button>
+      <button class="defs-save-bar__cancel" onclick="cancelChanges()">Cancel</button>
+      <!-- Set apart from Save/Cancel: this discards what was saved, not what was typed. -->
+      <button class="button outlined defs-save-bar__reset" onclick="openResetModal()">
+        <span>Reset</span>
+      </button>
+    </div>
+
+    <!-- Toast -->
+    <div class="defs-toast" id="defs-toast">
+      <div class="toast__body toast__body_success">
+        <span class="material-symbols-rounded" style="color:#fff; font-size:20px;">check_circle</span>
+        <div class="toast__body_content">
+          <span style="font-weight:600; font-size:14px;" id="defs-toast-text">Definitions saved</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reset confirmation modal — production settingsDefinitions.reset copy -->
+    <div class="defs-modal-overlay" id="defs-reset-modal" onclick="closeResetModal()">
+      <div class="defs-modal" role="dialog" aria-modal="true" aria-labelledby="defs-reset-title" onclick="event.stopPropagation()">
+        <div class="defs-modal__header">
+          <h2 class="defs-modal__title" id="defs-reset-title">Reset to default definitions?</h2>
+          <button class="defs-modal__close" onclick="closeResetModal()" aria-label="Close">
+            <span class="material-symbols-rounded" style="font-size:20px;">close</span>
+          </button>
+        </div>
+        <div class="defs-modal__body">
+          <p class="defs-modal__desc">Every stage name and threshold returns to the default definitions, replacing the ones you saved.</p>
+          <p class="defs-modal__desc">Guests are reclassified under the new definitions everywhere a stage appears, including reports you have already shared.</p>
+          <div class="defs-modal__actions">
+            <button class="button primary" onclick="executeReset()">
+              <span>Yes, reset</span>
+            </button>
+            <button class="defs-modal__keep" onclick="closeResetModal()">No, keep my definitions</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /app-shell -->
+
+  <script>
+    // ── Stage sections ────────────────────────────────────────────
+    // Order and copy from production (locales en.ts settingsDefinitions.lifecycle).
+    // First-time and Win-back are auto-assigned: renameable, no thresholds.
+    var STAGE_FIELDS = [
+      { key: 'firstTime', color: '#30ACEE',
+        autoAssigned: 'Automatically assigned on a guest’s first visit ever. No configurable thresholds.' },
+      { key: 'returning', color: '#5A55E3', thresholds: [
+        { key: 'returningWindowDays', label: 'Last visit within', unit: 'days', step: 1,
+          hint: 'Guests with 2 visits whose last visit falls within this window. Beyond it, they move to Churned.' },
+      ] },
+      { key: 'winBack', color: '#8C9FFF',
+        autoAssigned: 'Automatically assigned on a guest’s first visit after an At-Risk or Churned period. No configurable thresholds.' },
+      { key: 'loyal', color: '#0CC281', thresholds: [
+        { key: 'loyalMinVisits', label: 'Minimum visit count', unit: 'visits', step: 1,
+          hint: 'Guests who reach this visit count and remain active within their personal visit cadence are considered Loyal.' },
+      ] },
+      { key: 'atRisk', color: '#F8931C', thresholds: [
+        { key: 'atRiskMultiplier', label: 'Absence threshold', unit: '× average inter-visit gap', step: 0.1,
+          hint: 'A guest is At-Risk when they’ve been absent for longer than this multiple of their own average gap between visits.' },
+        { key: 'atRiskFloorDays', label: 'Low-visit floor', unit: 'days since last visit', step: 1,
+          hint: 'Applied to guests below the Loyal minimum visit count, who don’t yet have a personal visit cadence to calculate against.' },
+      ] },
+      { key: 'churned', color: '#E83162', thresholds: [
+        { key: 'churnedWindowDays', label: 'Inactivity window', unit: 'days since last visit', step: 1,
+          hint: 'Guests inactive beyond this window are considered Churned. Typically matches the Returning “last visit within” window.' },
+      ] },
+    ];
+
+    var savedDefs = null;
+
+    function escapeAttr(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    }
+
+    function renderSections(defs) {
+      var ranges = G360Lifecycle.RANGES;
+      document.getElementById('lifecycle-sections').innerHTML = STAGE_FIELDS.map(function(stage, i) {
+        var thresholdsHTML = (stage.thresholds || []).map(function(t) {
+          var range = ranges[t.key];
+          return (
+            '<div class="defs-field">' +
+              '<div class="form-label">' +
+                '<label class="form-label__label" for="th-' + t.key + '">' + t.label + '</label>' +
+              '</div>' +
+              '<div class="threshold-input-row">' +
+                '<input type="number" id="th-' + t.key + '" class="threshold-input__box" data-threshold="' + t.key + '" ' +
+                  'value="' + defs.thresholds[t.key] + '" min="' + range[0] + '" max="' + range[1] + '" step="' + t.step + '" oninput="onFieldChange()">' +
+                '<span class="threshold-unit">' + t.unit + '</span>' +
+              '</div>' +
+              '<p class="threshold-hint" data-hint-for="' + t.key + '">' + t.hint + '</p>' +
+            '</div>'
+          );
+        }).join('');
+        var autoHTML = stage.autoAssigned
+          ? '<div class="info-banner info-banner_informational" style="max-width:480px;">' +
+              '<span class="material-symbols-rounded" style="font-size:20px; color:#1d5eff; flex-shrink:0; font-variation-settings:\'FILL\' 1;">info</span>' +
+              '<div class="info-banner__text" style="font-family:\'Manrope\',sans-serif; font-size:14px; line-height:1.72; color:#141414;">' + stage.autoAssigned + '</div>' +
+            '</div>'
+          : '';
+        return (
+          (i > 0 ? '<hr class="defs-divider">' : '') +
+          '<div class="lifecycle-section" data-stage="' + stage.key + '">' +
+            '<div class="lifecycle-section__heading-row">' +
+              '<span class="lifecycle-dot" style="background:' + stage.color + '"></span>' +
+              '<h3 class="lifecycle-section__name" id="heading-' + stage.key + '">' + escapeAttr(defs.names[stage.key]) + '</h3>' +
+            '</div>' +
+            '<div class="defs-field">' +
+              '<div class="form-label">' +
+                '<label class="form-label__label" for="name-' + stage.key + '">' +
+                  '<span>Stage name<span class="form-label__label_required">*</span></span>' +
+                '</label>' +
+              '</div>' +
+              '<div class="text-input lifecycle-name-input">' +
+                '<div class="text-input__container">' +
+                  '<div class="text-input__container__box">' +
+                    '<input type="text" id="name-' + stage.key + '" class="text-input__container__box__input-field" data-stage-name="' + stage.key + '" ' +
+                      'value="' + escapeAttr(defs.names[stage.key]) + '" oninput="onNameInput(this)">' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            autoHTML +
+            thresholdsHTML +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    function readForm() {
+      var defs = { names: {}, thresholds: {} };
+      document.querySelectorAll('[data-stage-name]').forEach(function(inp) {
+        defs.names[inp.getAttribute('data-stage-name')] = inp.value.trim();
+      });
+      document.querySelectorAll('[data-threshold]').forEach(function(inp) {
+        defs.thresholds[inp.getAttribute('data-threshold')] = inp.value === '' ? NaN : Number(inp.value);
+      });
+      return defs;
+    }
+
+    // Every field is required and thresholds must sit inside the
+    // supported range (production LifecycleDefaults::RANGES).
+    function validate(defs) {
+      var valid = true;
+      Object.keys(defs.names).forEach(function(k) { if (!defs.names[k]) valid = false; });
+      Object.keys(defs.thresholds).forEach(function(k) {
+        var v = defs.thresholds[k], range = G360Lifecycle.RANGES[k];
+        var ok = !isNaN(v) && v >= range[0] && v <= range[1];
+        var input = document.getElementById('th-' + k);
+        input.classList.toggle('threshold-input__box--invalid', !ok);
+        var hint = document.querySelector('[data-hint-for="' + k + '"]');
+        var field = STAGE_FIELDS.reduce(function(found, s) {
+          return found || (s.thresholds || []).filter(function(t) { return t.key === k; })[0];
+        }, null);
+        hint.textContent = ok ? field.hint : 'Enter a value from ' + range[0] + ' to ' + range[1];
+        hint.classList.toggle('threshold-hint--error', !ok);
+        if (!ok) valid = false;
+      });
+      return valid;
+    }
+
+    function isDirty(defs) {
+      return JSON.stringify(defs) !== JSON.stringify(savedDefs);
+    }
+
+    function onNameInput(input) {
+      var key = input.getAttribute('data-stage-name');
+      document.getElementById('heading-' + key).textContent = input.value.trim() || 'Untitled stage';
+      onFieldChange();
+    }
+
+    function onFieldChange() {
+      var defs = readForm();
+      var valid = validate(defs);
+      document.getElementById('defs-save-bar').style.display = isDirty(defs) ? 'flex' : 'none';
+      document.getElementById('defs-save-btn').disabled = !valid;
+    }
+
+    function showToast(text) {
+      var toast = document.getElementById('defs-toast');
+      document.getElementById('defs-toast-text').textContent = text;
+      toast.style.display = 'block';
+      setTimeout(function() { toast.style.display = 'none'; }, 3500);
+    }
+
+    function saveChanges() {
+      var defs = readForm();
+      if (!validate(defs)) return;
+      G360Lifecycle.save(defs);
+      savedDefs = G360Lifecycle.load();
+      document.getElementById('defs-save-bar').style.display = 'none';
+      showToast('Definitions saved');
+    }
+
+    function cancelChanges() {
+      renderSections(savedDefs);
+      document.getElementById('defs-save-bar').style.display = 'none';
+    }
+
+    function openResetModal() {
+      document.getElementById('defs-reset-modal').classList.add('open');
+    }
+
+    function closeResetModal() {
+      document.getElementById('defs-reset-modal').classList.remove('open');
+    }
+
+    function executeReset() {
+      G360Lifecycle.reset();
+      savedDefs = G360Lifecycle.load();
+      renderSections(savedDefs);
+      closeResetModal();
+      document.getElementById('defs-save-bar').style.display = 'none';
+      showToast('Definitions reset to defaults');
+    }
+
+    // ── Sidebar nav expand/collapse ──────────────────────────────
+    function toggleNavExpand(btn) {
+      var isOpen = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      var sub = btn.nextElementSibling;
+      if (sub && sub.classList.contains('nav-sub-group')) sub.classList.toggle('open', isOpen);
+    }
+
+    // ── Init ─────────────────────────────────────────────────────
+    savedDefs = G360Lifecycle.load();
+    renderSections(savedDefs);
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeResetModal();
+    });
+  </script>
+</body>
+</html>

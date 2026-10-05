@@ -1,6 +1,6 @@
 # Frontend — Metric "About this metric" panel
 
-Every dashboard chart that shows a calculated metric must have three disclosure layers: an info tooltip on the title, an overflow menu entry, and an "About this metric" side panel. This card defines the content structure, copy rules, and implementation pattern.
+Every dashboard chart that shows a calculated metric must have three disclosure layers: an info tooltip on the title, an "About this metric" help (?) button next to the `⋮` overflow menu, and an "About this metric" side panel. (Production moved the entry out of the `⋮` menu into a standalone `AboutMetricButton` in G360-257; the dashboard also shows a dismissible tip — "Click the help icon on any chart to see how it’s calculated".) This card defines the content structure, copy rules, and implementation pattern.
 
 ---
 
@@ -9,8 +9,8 @@ Every dashboard chart that shows a calculated metric must have three disclosure 
 | Component | Where | What it contains |
 |---|---|---|
 | Info tooltip (`tooltip-content` on `BSubHeading`) | Next to chart title | One sentence — what the metric measures. No formula |
-| "About this metric" in overflow menu | `⋮` context menu | Icon: `info` (Material). Label: "About this metric". Opens the side panel |
-| Side panel (`MetricInfoPanel`) | Mounted via `v-if` | Four sections — see below |
+| "About this metric" help button (`AboutMetricButton`) | Chart header, left of `⋮` | Icon: `help` (Material), icon-only transparent button; hover tooltip "About this metric". Opens the side panel. The `⋮` menu only holds Export CSV and Download chart |
+| Side panel (`MetricInfoPanel`) | Mounted via `v-if` | Four sections (five for categorical metrics — Guest lifecycle adds "Stages") — see below |
 
 ---
 
@@ -310,15 +310,7 @@ For each dashboard HTML page:
 
 1. **Info tooltip** — add `title` attribute or a `.chart-card__metric-info-tooltip` element next to the chart heading with the info tooltip text
 
-2. **Overflow menu** — add the "About this metric" list item to `.chart-context-menu`:
-   ```html
-   <li>
-     <button class="chart-context-menu__item" onclick="openAboutPanel('<metric-id>')">
-       <span class="material-symbols-rounded">info</span>
-       <span>About this metric</span>
-     </button>
-   </li>
-   ```
+2. **Help button** — `metric-about.js` inserts it automatically before every `.chart-context-wrap` inside a `.chart-card[data-metric-id]` (dashboard cards use `aboutMetricButtonHTML(id, 'widget')`). Do not add an "About this metric" item to `.chart-context-menu`.
 
 3. **Side panel HTML** — add a `.about-panel` element (see `beta.css` for styles once added):
    ```html
