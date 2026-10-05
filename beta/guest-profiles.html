@@ -68,10 +68,14 @@
           </div>
 
           <div class="nav-group" data-nav-group-id="bottom">
-            <a href="settings.html" class="nav-item">
+            <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
               <span class="nav-item__label">Settings</span>
-            </a>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+            </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
               <span class="nav-item__label">Cockpit</span>
@@ -259,20 +263,8 @@
 
   <script>
     /* ── Mock data ── */
-    const BASE_GUESTS = [
-      { name: 'Emily Johnson',   email: 'emily.johnson@mail.com',    phone: '(367) 456-5674', loyalty: 'Member',     ltv: 120.45,  orders: 4,  sources: ['Punchh', 'POS', 'Web'] },
-      { name: 'Ava Rodriguez',   email: 'ava.r@mail.com',            phone: '(718) 990-6677', loyalty: 'Member',     ltv: 2341.00, orders: 89, sources: ['Punchh', 'POS'] },
-      { name: 'Emma Davis',      email: 'emma.davis@mail.com',       phone: '(617) 228-4561', loyalty: 'Member',     ltv: 892.10,  orders: 31, sources: ['Punchh', 'POS', 'Web'] },
-      { name: 'Michael Chen',    email: 'm.chen@email.com',          phone: '(512) 889-3421', loyalty: 'Non-member', ltv: 485.20,  orders: 18, sources: ['POS', 'Web'] },
-      { name: 'James Thompson',  email: 'j.thompson@email.com',      phone: '(214) 556-8902', loyalty: 'Member',     ltv: 156.75,  orders: 6,  sources: ['POS', 'Email'] },
-      { name: 'Olivia Brown',    email: 'olivia.b@mail.com',         phone: '(404) 332-1188', loyalty: 'Non-member', ltv: 134.20,  orders: 5,  sources: ['Web', 'Email'] },
-      { name: 'Noah Anderson',   email: 'noah.a@email.com',          phone: '(303) 445-1199', loyalty: 'Non-member', ltv: 89.15,   orders: 3,  sources: ['POS', 'Web'] },
-      { name: 'Sarah Williams',  email: 'sarah.w@mail.com',          phone: '(203) 771-0982', loyalty: 'Member',     ltv: 67.30,   orders: 2,  sources: ['Web'] },
-      { name: 'William Garcia',  email: 'w.garcia@email.com',        phone: '(480) 114-2233', loyalty: 'Member',     ltv: 44.90,   orders: 3,  sources: ['Punchh'] },
-      { name: 'David Martinez',  email: 'david.m@email.com',         phone: '(415) 334-7654', loyalty: 'Non-member', ltv: 23.50,   orders: 1,  sources: ['POS'] },
-    ];
-
-    /* Expand to 100 guests */
+    /* Source labels match production's IDR IdentifierSource display map
+       (Punchh, PAR Pay, Olo, POS, GIS, GPS). Members are Punchh-enrolled. */
     const ALL_GUESTS = [];
 
     /* Guests with built-out profile pages — pinned to the top of every
@@ -281,59 +273,135 @@
       id: 1,
       name: 'Marcus Thompson',
       email: 'marcus@gmail.com',
-      phone: '(555) 234-5678',
+      phone: '617-555-0142',
       loyalty: 'Member',
       ltv: 3428.50,
       orders: 68,
-      sources: ['Punchh', 'POS', 'Web', 'Email'],
-      sourceStr: 'Punchh, POS, Web, Email',
+      sources: ['Punchh', 'POS', 'Olo', 'PAR Pay'],
       profileUrl: 'guest-profile.html',
     });
     ALL_GUESTS.push({
       id: 2,
       name: 'Isabella Chen',
       email: 'isabela@gmail.com',
-      phone: '(555) 234-5678',
+      phone: '312-555-0187',
       loyalty: 'Non-member',
       ltv: 1240.50,
       orders: 32,
-      sources: ['POS', 'Web App'],
-      sourceStr: 'POS, Web App',
+      sources: ['POS', 'Olo'],
       profileUrl: 'guest-profile-isabella.html',
     });
 
-    const FIRST_NAMES = ['Liam','Sophia','Noah','Isabella','Oliver','Mia','Elijah','Charlotte','James','Amelia','Benjamin','Harper','Lucas','Evelyn','Henry','Luna','Alexander','Scarlett','Mason','Grace'];
-    const LAST_NAMES  = ['Smith','Brown','Taylor','Johnson','Williams','Jones','Davis','Garcia','Martinez','Anderson','Wilson','Thomas','Jackson','White','Harris','Martin','Thompson','Lee','Clark','Lewis'];
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 10; j++) {
-        const b = BASE_GUESTS[j];
-        if (i === 0) {
-          ALL_GUESTS.push({ id: ALL_GUESTS.length + 1, ...b, sourceStr: b.sources.join(', ') });
-        } else {
-          const fn = FIRST_NAMES[(i * 10 + j) % FIRST_NAMES.length];
-          const ln = LAST_NAMES[(i * 3 + j * 7) % LAST_NAMES.length];
-          /* Distribute Non-members across all LTV bands so the sorted
-             first page has a mix instead of clustering by status. */
-          const loyaltyRoll = (i * 7 + j * 3) % 10;
-          const loyalty = loyaltyRoll < 4 ? 'Non-member' : 'Member';
-          /* Deterministic variants — keeps the table stable across navigations
-             and keeps every Ava-based variant below Marcus's $3,428.50 LTV. */
-          const ltvMult       = 0.6 + ((i * 13 + j * 7) % 80) / 100;       /* 0.60 – 1.39 */
-          const ltvVariant    = parseFloat((b.ltv * ltvMult).toFixed(2));
-          const ordersVariant = Math.max(0, b.orders + ((i * 11 + j * 5) % 7) - 3);
-          ALL_GUESTS.push({
-            id: ALL_GUESTS.length + 1,
-            name: fn + ' ' + ln,
-            email: fn.toLowerCase() + '.' + ln.toLowerCase() + '@mail.com',
-            phone: b.phone,
-            loyalty,
-            ltv: ltvVariant,
-            orders: ordersVariant,
-            sources: b.sources,
-            sourceStr: b.sources.join(', '),
-          });
-        }
-      }
+    const OTHER_GUESTS = [
+      { name: 'Liam Walker',         email: 'liam.walker@gmail.com',           phone: '212-555-0100', loyalty: 'Member',     ltv: 1230.00,  orders: 44, sources: ['Punchh'] },
+      { name: 'Sophia Patel',        email: 'sophiapatel@icloud.com',          phone: '617-555-0101', loyalty: 'Non-member', ltv: 21.37,    orders: 1,  sources: ['POS'] },
+      { name: 'Noah Nguyen',         email: 'nnguyen@aol.com',                 phone: '919-555-0102', loyalty: 'Member',     ltv: 288.84,   orders: 13, sources: ['Punchh', 'POS'] },
+      { name: 'Olivia Okafor',       email: 'olivia.o31@comcast.net',          phone: '415-555-0103', loyalty: 'Non-member', ltv: 518.60,   orders: 15, sources: ['POS', 'GPS'] },
+      { name: 'Ethan Ramirez',       email: 'ethan_ramirez@outlook.com',       phone: '602-555-0104', loyalty: 'Non-member', ltv: 536.94,   orders: 20, sources: ['POS'] },
+      { name: 'Ava Kim',             email: 'kim.ava@hotmail.com',             phone: '646-555-0105', loyalty: 'Member',     ltv: 1146.79,  orders: 35, sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Mateo Sullivan',      email: 'mateo.sullivan@icloud.com',       phone: '312-555-0106', loyalty: 'Member',     ltv: 1455.77,  orders: 50, sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Priya Washington',    email: 'priyawashington@yahoo.com',       phone: '303-555-0107', loyalty: 'Member',     ltv: 3005.17,  orders: 86, sources: ['Punchh', 'POS'] },
+      { name: 'Jamal Hernandez',     email: 'jhernandez@gmail.com',            phone: '310-555-0108', loyalty: 'Member',     ltv: 1042.16,  orders: 46, sources: ['Punchh', 'POS', 'PAR Pay'] },
+      { name: 'Hannah Goldberg',     email: 'hannah.g73@gmail.com',            phone: '713-555-0109', loyalty: 'Member',     ltv: 1879.62,  orders: 74, sources: ['Punchh', 'Olo'] },
+      { name: 'Diego Brooks',        email: 'diego_brooks@gmail.com',          phone: '214-555-0110', loyalty: 'Member',     ltv: 389.17,   orders: 14, sources: ['Punchh', 'POS'] },
+      { name: 'Mei Tanaka',          email: 'tanaka.mei@icloud.com',           phone: '773-555-0111', loyalty: 'Non-member', ltv: 23.34,    orders: 1,  sources: ['POS'] },
+      { name: 'Tyrone Reyes',        email: 'tyrone.reyes@aol.com',            phone: '404-555-0112', loyalty: 'Non-member', ltv: 100.25,   orders: 3,  sources: ['POS', 'PAR Pay'] },
+      { name: 'Grace Murphy',        email: 'gracemurphy@comcast.net',         phone: '702-555-0113', loyalty: 'Member',     ltv: 908.73,   orders: 32, sources: ['Punchh'] },
+      { name: 'Wei Coleman',         email: 'wcoleman@outlook.com',            phone: '480-555-0114', loyalty: 'Non-member', ltv: 200.53,   orders: 7,  sources: ['POS', 'GPS'] },
+      { name: 'Camila Singh',        email: 'camila.s25@hotmail.com',          phone: '305-555-0115', loyalty: 'Member',     ltv: 2647.61,  orders: 87, sources: ['Punchh', 'POS'] },
+      { name: 'Kofi Alvarez',        email: 'kofi_alvarez@icloud.com',         phone: '503-555-0116', loyalty: 'Member',     ltv: 241.00,   orders: 11, sources: ['Punchh', 'Olo'] },
+      { name: 'Rachel Fischer',      email: 'fischer.rachel@yahoo.com',        phone: '704-555-0117', loyalty: 'Member',     ltv: 456.57,   orders: 14, sources: ['Punchh', 'POS', 'PAR Pay'] },
+      { name: 'Andre Jenkins',       email: 'andre.jenkins@gmail.com',         phone: '206-555-0118', loyalty: 'Non-member', ltv: 20.79,    orders: 1,  sources: ['POS'] },
+      { name: 'Fatima Haddad',       email: 'fatimahaddad@gmail.com',          phone: '615-555-0119', loyalty: 'Member',     ltv: 292.91,   orders: 14, sources: ['Punchh', 'POS'] },
+      { name: 'Connor Bennett',      email: 'cbennett@gmail.com',              phone: '212-555-0120', loyalty: 'Member',     ltv: 1064.11,  orders: 41, sources: ['Punchh'] },
+      { name: 'Lucia Morales',       email: 'lucia.m67@icloud.com',            phone: '617-555-0121', loyalty: 'Non-member', ltv: 20.16,    orders: 1,  sources: ['POS', 'Olo'] },
+      { name: 'Darnell Dawson',      email: 'darnell_dawson@aol.com',          phone: '919-555-0122', loyalty: 'Member',     ltv: 838.92,   orders: 35, sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Aisha Ibrahim',       email: 'ibrahim.aisha@comcast.net',       phone: '415-555-0123', loyalty: 'Member',     ltv: 2389.68,  orders: 69, sources: ['Punchh'] },
+      { name: 'Ryan Kowalski',       email: 'ryan.kowalski@outlook.com',       phone: '602-555-0124', loyalty: 'Non-member', ltv: 75.67,    orders: 3,  sources: ['POS'] },
+      { name: 'Yuki Yamamoto',       email: 'yukiyamamoto@hotmail.com',        phone: '646-555-0125', loyalty: 'Member',     ltv: 223.21,   orders: 7,  sources: ['Punchh', 'Olo'] },
+      { name: 'Javier Ortiz',        email: 'jortiz@icloud.com',               phone: '312-555-0126', loyalty: 'Member',     ltv: 1095.53,  orders: 33, sources: ['Punchh', 'POS', 'PAR Pay'] },
+      { name: 'Emily Price',         email: 'emily.p19@yahoo.com',             phone: '303-555-0127', loyalty: 'Member',     ltv: 1796.27,  orders: 67, sources: ['Punchh', 'POS'] },
+      { name: 'Malik Robinson',      email: 'malik_robinson@gmail.com',        phone: '310-555-0128', loyalty: 'Member',     ltv: 1953.78,  orders: 94, sources: ['Punchh', 'POS', 'Olo', 'GIS'] },
+      { name: 'Sofia Castillo',      email: 'castillo.sofia@gmail.com',        phone: '713-555-0129', loyalty: 'Non-member', ltv: 20.19,    orders: 1,  sources: ['POS'] },
+      { name: 'Brandon Hughes',      email: 'brandon.hughes@gmail.com',        phone: '214-555-0130', loyalty: 'Member',     ltv: 191.46,   orders: 6,  sources: ['Punchh', 'Olo'] },
+      { name: 'Nadia Petrov',        email: 'nadiapetrov@icloud.com',          phone: '773-555-0131', loyalty: 'Non-member', ltv: 27.56,    orders: 1,  sources: ['POS', 'PAR Pay'] },
+      { name: 'Hiroshi Watanabe',    email: 'hwatanabe@aol.com',               phone: '404-555-0132', loyalty: 'Member',     ltv: 355.74,   orders: 11, sources: ['Punchh', 'POS'] },
+      { name: 'Brianna Mitchell',    email: 'brianna.m61@comcast.net',         phone: '702-555-0133', loyalty: 'Non-member', ltv: 521.42,   orders: 19, sources: ['POS', 'Olo'] },
+      { name: 'Carlos Delgado',      email: 'carlos_delgado@outlook.com',      phone: '480-555-0134', loyalty: 'Member',     ltv: 2432.85,  orders: 77, sources: ['Punchh', 'Olo'] },
+      { name: 'Leah Shapiro',        email: 'shapiro.leah@hotmail.com',        phone: '305-555-0135', loyalty: 'Non-member', ltv: 155.26,   orders: 5,  sources: ['POS'] },
+      { name: 'Dmitri Volkov',       email: 'dmitri.volkov@icloud.com',        phone: '503-555-0136', loyalty: 'Non-member', ltv: 40.25,    orders: 2,  sources: ['POS'] },
+      { name: 'Keisha Freeman',      email: 'keishafreeman@yahoo.com',         phone: '704-555-0137', loyalty: 'Non-member', ltv: 20.04,    orders: 1,  sources: ['POS', 'Olo'] },
+      { name: 'Owen Gallagher',      email: 'ogallagher@gmail.com',            phone: '206-555-0138', loyalty: 'Member',     ltv: 606.96,   orders: 23, sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Ana Santos',          email: 'ana.s13@gmail.com',               phone: '615-555-0139', loyalty: 'Member',     ltv: 1145.42,  orders: 36, sources: ['Punchh', 'POS'] },
+      { name: 'Marisol Vega',        email: 'marisol_vega@gmail.com',          phone: '212-555-0140', loyalty: 'Member',     ltv: 43.69,    orders: 2,  sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Trevor Reynolds',     email: 'reynolds.trevor@icloud.com',      phone: '617-555-0141', loyalty: 'Member',     ltv: 107.26,   orders: 4,  sources: ['Punchh', 'POS'] },
+      { name: 'Ngozi Adeyemi',       email: 'ngozi.adeyemi@aol.com',           phone: '919-555-0142', loyalty: 'Member',     ltv: 681.63,   orders: 20, sources: ['Punchh', 'POS'] },
+      { name: 'Kevin Park',          email: 'kevinpark@comcast.net',           phone: '415-555-0143', loyalty: 'Non-member', ltv: 282.26,   orders: 10, sources: ['POS'] },
+      { name: 'Rosa Romero',         email: 'rromero@outlook.com',             phone: '602-555-0144', loyalty: 'Member',     ltv: 267.29,   orders: 11, sources: ['Punchh', 'POS'] },
+      { name: 'Samuel Foster',       email: 'samuel.f55@hotmail.com',          phone: '646-555-0145', loyalty: 'Member',     ltv: 972.82,   orders: 41, sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Linh Tran',           email: 'linh_tran@icloud.com',            phone: '312-555-0146', loyalty: 'Non-member', ltv: 32.41,    orders: 1,  sources: ['POS'] },
+      { name: 'Derek Hoffman',       email: 'hoffman.derek@yahoo.com',         phone: '303-555-0147', loyalty: 'Non-member', ltv: 22.87,    orders: 1,  sources: ['POS', 'PAR Pay'] },
+      { name: 'Alejandra Navarro',   email: 'alejandra.navarro@gmail.com',     phone: '310-555-0148', loyalty: 'Member',     ltv: 183.99,   orders: 6,  sources: ['Punchh', 'Olo'] },
+      { name: 'Ravi Iyer',           email: 'raviiyer@gmail.com',              phone: '713-555-0149', loyalty: 'Non-member', ltv: 507.17,   orders: 16, sources: ['POS'] },
+      { name: 'Tamika Simmons',      email: 'tsimmons@gmail.com',              phone: '214-555-0150', loyalty: 'Non-member', ltv: 480.59,   orders: 17, sources: ['Olo'] },
+      { name: 'Patrick Doyle',       email: 'patrick.d97@icloud.com',          phone: '773-555-0151', loyalty: 'Member',     ltv: 1889.70,  orders: 86, sources: ['Punchh', 'POS'] },
+      { name: 'Elena Popescu',       email: 'elena_popescu@aol.com',           phone: '404-555-0152', loyalty: 'Member',     ltv: 589.42,   orders: 20, sources: ['Punchh', 'Olo'] },
+      { name: 'Jordan Hayes',        email: 'hayes.jordan@comcast.net',        phone: '702-555-0153', loyalty: 'Member',     ltv: 981.09,   orders: 29, sources: ['Punchh', 'POS'] },
+      { name: 'Imani Bailey',        email: 'imani.bailey@outlook.com',        phone: '480-555-0154', loyalty: 'Non-member', ltv: 30.16,    orders: 1,  sources: ['POS', 'GPS'] },
+      { name: 'Victor Mendoza',      email: 'victormendoza@hotmail.com',       phone: '305-555-0155', loyalty: 'Member',     ltv: 1351.30,  orders: 39, sources: ['Punchh', 'POS', 'PAR Pay'] },
+      { name: 'Chloe Chang',         email: 'cchang@icloud.com',               phone: '503-555-0156', loyalty: 'Non-member', ltv: 95.99,    orders: 4,  sources: ['POS'] },
+      { name: 'Hassan Mansour',      email: 'hassan.m49@yahoo.com',            phone: '704-555-0157', loyalty: 'Member',     ltv: 66.05,    orders: 2,  sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Megan Russell',       email: 'megan_russell@gmail.com',         phone: '206-555-0158', loyalty: 'Member',     ltv: 1039.02,  orders: 36, sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Rafael Cruz',         email: 'cruz.rafael@gmail.com',           phone: '615-555-0159', loyalty: 'Member',     ltv: 314.16,   orders: 12, sources: ['Punchh', 'POS'] },
+      { name: 'Jasmine Harrison',    email: 'jasmine.harrison@gmail.com',      phone: '212-555-0160', loyalty: 'Member',     ltv: 494.52,   orders: 19, sources: ['Punchh', 'POS', 'Olo', 'GIS'] },
+      { name: 'Tomas Silva',         email: 'tomassilva@icloud.com',           phone: '617-555-0161', loyalty: 'Member',     ltv: 428.00,   orders: 14, sources: ['Punchh'] },
+      { name: 'Abigail Carter',      email: 'acarter@aol.com',                 phone: '919-555-0162', loyalty: 'Non-member', ltv: 25.88,    orders: 1,  sources: ['POS', 'Olo'] },
+      { name: 'Kwame Mensah',        email: 'kwame.m91@comcast.net',           phone: '415-555-0163', loyalty: 'Non-member', ltv: 254.62,   orders: 8,  sources: ['POS'] },
+      { name: 'Lauren Peterson',     email: 'lauren_peterson@outlook.com',     phone: '602-555-0164', loyalty: 'Member',     ltv: 1377.20,  orders: 60, sources: ['Punchh', 'POS'] },
+      { name: 'Arjun Sharma',        email: 'sharma.arjun@hotmail.com',        phone: '646-555-0165', loyalty: 'Member',     ltv: 1058.31,  orders: 37, sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Destiny Grant',       email: 'destiny.grant@icloud.com',        phone: '312-555-0166', loyalty: 'Non-member', ltv: 23.19,    orders: 1,  sources: ['POS', 'PAR Pay'] },
+      { name: 'Sean Kelly',          email: 'seankelly@yahoo.com',             phone: '303-555-0167', loyalty: 'Non-member', ltv: 379.74,   orders: 17, sources: ['POS', 'PAR Pay'] },
+      { name: 'Paola Rios',          email: 'prios@gmail.com',                 phone: '310-555-0168', loyalty: 'Member',     ltv: 1945.14,  orders: 69, sources: ['Punchh', 'Olo'] },
+      { name: 'Elijah Bryant',       email: 'elijah.b43@gmail.com',            phone: '713-555-0169', loyalty: 'Member',     ltv: 286.98,   orders: 13, sources: ['Punchh', 'POS'] },
+      { name: 'Mariana Gutierrez',   email: 'mariana_gutierrez@gmail.com',     phone: '214-555-0170', loyalty: 'Non-member', ltv: 20.86,    orders: 1,  sources: ['POS'] },
+      { name: 'Gavin Lambert',       email: 'lambert.gavin@icloud.com',        phone: '773-555-0171', loyalty: 'Non-member', ltv: 23.54,    orders: 1,  sources: ['POS'] },
+      { name: 'Zainab Hussain',      email: 'zainab.hussain@aol.com',          phone: '404-555-0172', loyalty: 'Member',     ltv: 926.91,   orders: 30, sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Lucas Barnes',        email: 'lucasbarnes@comcast.net',         phone: '702-555-0173', loyalty: 'Member',     ltv: 435.51,   orders: 16, sources: ['Punchh', 'Olo'] },
+      { name: 'Tiffany Wong',        email: 'twong@outlook.com',               phone: '480-555-0174', loyalty: 'Non-member', ltv: 72.99,    orders: 3,  sources: ['POS'] },
+      { name: 'Omar Khalil',         email: 'omar.k85@hotmail.com',            phone: '305-555-0175', loyalty: 'Non-member', ltv: 24.78,    orders: 1,  sources: ['POS', 'Olo'] },
+      { name: 'Natalie Pierce',      email: 'natalie_pierce@icloud.com',       phone: '503-555-0176', loyalty: 'Member',     ltv: 2413.78,  orders: 70, sources: ['Punchh', 'POS'] },
+      { name: 'Isaac Abrams',        email: 'abrams.isaac@yahoo.com',          phone: '704-555-0177', loyalty: 'Member',     ltv: 1986.42,  orders: 88, sources: ['Punchh', 'POS'] },
+      { name: 'Gabriela Flores',     email: 'gabriela.flores@gmail.com',       phone: '206-555-0178', loyalty: 'Member',     ltv: 366.26,   orders: 13, sources: ['Punchh', 'POS'] },
+      { name: 'Dante Moreau',        email: 'dantemoreau@gmail.com',           phone: '615-555-0179', loyalty: 'Member',     ltv: 154.79,   orders: 6,  sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Harper Stewart',      email: 'hstewart@gmail.com',              phone: '212-555-0180', loyalty: 'Member',     ltv: 114.67,   orders: 4,  sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Raj Malhotra',        email: 'raj.m37@icloud.com',              phone: '617-555-0181', loyalty: 'Non-member', ltv: 217.69,   orders: 10, sources: ['POS'] },
+      { name: 'Monique Jefferson',   email: 'monique_jefferson@aol.com',       phone: '919-555-0182', loyalty: 'Member',     ltv: 186.17,   orders: 8,  sources: ['Punchh', 'POS'] },
+      { name: 'Caleb Hale',          email: 'hale.caleb@comcast.net',          phone: '415-555-0183', loyalty: 'Member',     ltv: 224.97,   orders: 11, sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Ximena Aguilar',      email: 'ximena.aguilar@outlook.com',      phone: '602-555-0184', loyalty: 'Non-member', ltv: 28.72,    orders: 1,  sources: ['POS', 'PAR Pay'] },
+      { name: 'Terrence Banks',      email: 'terrencebanks@hotmail.com',       phone: '646-555-0185', loyalty: 'Non-member', ltv: 22.43,    orders: 1,  sources: ['POS', 'Olo'] },
+      { name: 'Julia Novak',         email: 'jnovak@icloud.com',               phone: '312-555-0186', loyalty: 'Non-member', ltv: 28.08,    orders: 1,  sources: ['POS', 'PAR Pay'] },
+      { name: 'Anh Pham',            email: 'anh.p79@yahoo.com',               phone: '303-555-0187', loyalty: 'Non-member', ltv: 139.97,   orders: 4,  sources: ['POS'] },
+      { name: 'Desmond Ellis',       email: 'desmond_ellis@gmail.com',         phone: '310-555-0188', loyalty: 'Non-member', ltv: 32.38,    orders: 1,  sources: ['POS'] },
+      { name: 'Kayla Lowe',          email: 'lowe.kayla@gmail.com',            phone: '713-555-0189', loyalty: 'Non-member', ltv: 26.75,    orders: 1,  sources: ['POS', 'PAR Pay'] },
+      { name: 'Esteban Medina',      email: 'esteban.medina@gmail.com',        phone: '214-555-0190', loyalty: 'Member',     ltv: 401.34,   orders: 12, sources: ['Punchh', 'Olo'] },
+      { name: 'Simone Dubois',       email: 'simonedubois@icloud.com',         phone: '773-555-0191', loyalty: 'Non-member', ltv: 125.11,   orders: 6,  sources: ['POS'] },
+      { name: 'Gregory Fleming',     email: 'gfleming@aol.com',                phone: '404-555-0192', loyalty: 'Member',     ltv: 1089.91,  orders: 35, sources: ['Punchh', 'POS', 'PAR Pay'] },
+      { name: 'Valentina Rossi',     email: 'valentina.r31@comcast.net',       phone: '702-555-0193', loyalty: 'Member',     ltv: 2971.97,  orders: 95, sources: ['Punchh', 'POS'] },
+      { name: 'Xavier Rivera',       email: 'xavier_rivera@outlook.com',       phone: '480-555-0194', loyalty: 'Member',     ltv: 81.70,    orders: 4,  sources: ['Punchh', 'POS', 'Olo'] },
+      { name: 'Renee Lyons',         email: 'lyons.renee@hotmail.com',         phone: '305-555-0195', loyalty: 'Member',     ltv: 86.97,    orders: 3,  sources: ['Punchh', 'POS'] },
+      { name: 'Pedro Costa',         email: 'pedro.costa@icloud.com',          phone: '503-555-0196', loyalty: 'Member',     ltv: 556.82,   orders: 17, sources: ['Punchh'] },
+      { name: 'Yasmin Rahimi',       email: 'yasminrahimi@yahoo.com',          phone: '704-555-0197', loyalty: 'Non-member', ltv: 28.14,    orders: 1,  sources: ['Olo'] },
+      { name: 'Colin Mercer',        email: 'cmercer@gmail.com',               phone: '206-555-0198', loyalty: 'Member',     ltv: 196.89,   orders: 7,  sources: ['Punchh', 'POS', 'PAR Pay'] },
+      { name: 'Bianca Quinn',        email: 'bianca.q73@gmail.com',            phone: '615-555-0199', loyalty: 'Member',     ltv: 309.24,   orders: 14, sources: ['Punchh', 'Olo'] },
+    ];
+    OTHER_GUESTS.forEach(g => ALL_GUESTS.push({ id: ALL_GUESTS.length + 1, ...g }));
+
+    /* Mirrors production's Source cell: none → "—", up to two → joined,
+       more than two → first two + ", +N" (e.g. "Punchh, POS, +1"). */
+    function formatSources(sources) {
+      if (!sources || sources.length === 0) return '—';
+      if (sources.length <= 2) return sources.join(', ');
+      return sources.slice(0, 2).join(', ') + ', +' + (sources.length - 2);
     }
 
     const LOYALTY_TAG = {
@@ -401,7 +469,7 @@
       tbody.innerHTML = page.map(g => {
         const ltvStr    = g.ltv === 0 ? '—' : '$' + g.ltv.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         const tagHtml   = g.loyalty ? LOYALTY_TAG[g.loyalty] || '' : '';
-        const src       = g.sourceStr;
+        const src       = formatSources(g.sources);
         const isChecked = selectedIds.has(g.id);
         const iconName  = isChecked ? 'check_box' : 'check_box_outline_blank';
         const iconCls   = isChecked ? 'guests-check-icon guests-check-icon--checked' : 'guests-check-icon';
@@ -418,7 +486,7 @@
           <td>${tagHtml}</td>
           <td style="text-align:right;">${ltvStr}</td>
           <td style="text-align:right;">${g.orders}</td>
-          <td class="guests-source-col"><span class="guests-source-cell" title="${src}">${src}</span></td>
+          <td class="guests-source-col"><span class="guests-source-cell" title="${g.sources.join(', ')}">${src}</span></td>
           <td class="table__actions-column">
             <button class="guest-kebab-btn" onclick="openRowMenu(event, ${g.id})" aria-label="Actions for ${g.name}">
               <span class="material-symbols-rounded">more_vert</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loyalty spend lift — PAR Guest360 Beta</title>
+  <title>Enrollment spend lift — PAR Guest360 Beta</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
@@ -69,11 +69,14 @@
           </div>
 
           <div class="nav-group" data-nav-group-id="bottom">
-            <a href="settings.html" class="nav-item">
+            <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
               <span class="nav-item__label">Settings</span>
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
-            </a>
+            </button>
+            <div class="nav-sub-group">
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+            </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
               <span class="nav-item__label">Cockpit</span>
@@ -98,13 +101,13 @@
             <span class="chart-breadcrumbs__separator" aria-hidden="true">
               <span class="material-symbols-rounded">chevron_right</span>
             </span>
-            <span class="chart-breadcrumbs__current">Loyalty spend lift</span>
+            <span class="chart-breadcrumbs__current">Enrollment spend lift</span>
           </nav>
 
           <!-- Title bar -->
           <div class="chart-detail-title-bar">
             <div class="chart-detail-title-bar__top">
-              <h1 class="chart-detail-title-bar__title">Loyalty spend lift</h1>
+              <h1 class="chart-detail-title-bar__title">Enrollment spend lift</h1>
               <div class="chart-detail-title-bar__actions">
                 <button class="button transparent dashboard-btn">
                   <span class="material-symbols-rounded dashboard-btn__icon">help</span>
@@ -209,25 +212,19 @@
             <div class="dropdown" id="dd-compare">
               <div class="dropdown__wrapper">
                 <button class="dropdown__button" onclick="toggleDropdown('dd-compare')">
-                  <span>Previous period</span>
+                  <span>Prev period</span>
                   <i class="material-symbols-rounded">expand_more</i>
                 </button>
               </div>
               <div class="dropdown__options">
                 <ul>
-                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous period</span></button></li>
-                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous year</span></button></li>
-                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>No comparison</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Prev period</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Prior year</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>None</span></button></li>
                 </ul>
               </div>
             </div>
 
-            <div class="dashboard-filter-spacer"></div>
-
-            <button class="button outlined dashboard-btn">
-              <span class="material-symbols-rounded dashboard-btn__icon">filter_alt</span>
-              <span class="dashboard-btn__label">More filters</span>
-            </button>
           </div>
           <!-- /filter bar -->
 
@@ -235,8 +232,8 @@
           <div class="chart-card" data-metric-id="loyalty-spend-lift" data-metric-context="detail">
             <div class="chart-card__header chart-card__header--detail">
               <div class="chart-card__header-text">
-                <p class="chart-card__title">Loyalty spend lift</p>
-                <p class="chart-card__subtitle">Avg transaction value lift after enrollment</p>
+                <p class="chart-card__title">Enrollment spend lift</p>
+                <p class="chart-card__subtitle">Average spend before and after loyalty enrollment, for the same guests</p>
               </div>
               <div class="chart-card__header-controls">
                 <div class="chart-context-wrap">
@@ -350,7 +347,7 @@
               <li>
                 <button type="button" class="chart-point-menu__item" onclick="onPointMenuAction('ask-ava')">
                   <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
-                  <span>Ask Ava</span>
+                  <span>Ask Ava about this</span>
                 </button>
               </li>
             </ul>
@@ -578,6 +575,15 @@
       return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
     function fmtDollar(v) { return '$' + (+v).toFixed(2); }
+    function fmtCompactCurrency(v) {
+      if (v === null || v === undefined || isNaN(v)) return '—';
+      var abs = Math.abs(v), sign = v < 0 ? '-' : '';
+      var scaled = function(x) { return x >= 10 ? String(Math.round(x)) : x.toFixed(1).replace(/\.0$/, ''); };
+      if (abs >= 1e9) return sign + '$' + scaled(abs / 1e9) + 'B';
+      if (abs >= 1e6) return sign + '$' + scaled(abs / 1e6) + 'M';
+      if (abs >= 1e3) return sign + '$' + scaled(abs / 1e3) + 'K';
+      return sign + '$' + abs.toFixed(2);
+    }
     function fmtSignedDollar(v) {
       if (v === null || v === undefined) return '—';
       return (v >= 0 ? '+$' : '-$') + Math.abs(v).toFixed(2);
@@ -588,7 +594,7 @@
       if (!el) return;
       el.innerHTML = [
         { key: 'current', label: 'This period',     dashed: false },
-        { key: 'prev',    label: 'Previous period', dashed: true  },
+        { key: 'prev',    label: 'Prev period', dashed: true  },
       ].map(function(s) {
         var markerClass = s.dashed ? 'chart-card__legend-marker--striped' : 'chart-card__legend-marker--solid';
         var markerStyle = s.dashed
@@ -691,6 +697,13 @@
         var prevVal    = prevVisible    ? row.prev    : null;
         var primaryVal = currentVal !== null ? currentVal : prevVal;
         if (primaryVal === null) { hide(); return; }
+        // Comparison period = the window right before the plotted range, so shift back by the number of days plotted.
+        var prevDate = new Date(row.date.getFullYear(), row.date.getMonth(), row.date.getDate() - SPEND_LIFT_TREND_DATA.length);
+        var prevLabel = 'Prev period (' + fmtChartDate(prevDate) + ')';
+        var primaryIsCurrent = currentVal !== null;
+        var primaryLabel = primaryIsCurrent ? 'Cohort ' + fmtChartDate(row.date) : prevLabel;
+        var solidSwatch  = 'width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background:' + SPEND_LIFT_COLOR + ';';
+        var dashedSwatch = 'width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + SPEND_LIFT_COLOR + ' 0,' + SPEND_LIFT_COLOR + ' 1.5px,transparent 1.5px,transparent 3px);';
 
         var deltaPill = '';
         if (currentVisible && prevVisible && currentVal !== null && prevVal !== null && prevVal !== 0) {
@@ -703,7 +716,7 @@
               '<span style="display:inline-flex;align-items:center;padding:2px 4px;border-radius:4px;background:' + bg + ';color:' + fg + ';font-size:12px;font-weight:400;">' +
                 sign + deltaPct.toFixed(2) + '%' +
               '</span>' +
-              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. previous period</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. comparison period</span>' +
             '</div>'
           );
         }
@@ -713,10 +726,10 @@
           prevRow = (
             '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
               '<div style="display:flex;align-items:center;gap:4px;">' +
-                '<span style="width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + SPEND_LIFT_COLOR + ' 0,' + SPEND_LIFT_COLOR + ' 1.5px,transparent 1.5px,transparent 3px);" aria-hidden="true"></span>' +
-                '<span style="font-size:12px;font-weight:400;color:#60696C;">Previous period</span>' +
+                '<span aria-hidden="true" style="' + dashedSwatch + '"></span>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + prevLabel + '</span>' +
               '</div>' +
-              '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtSignedDollar(prevVal) + '</span>' +
+              '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtCompactCurrency(prevVal) + '</span>' +
             '</div>'
           );
         }
@@ -727,10 +740,10 @@
             '<div style="display:flex;flex-direction:column;gap:8px;">' +
               '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
                 '<div style="display:flex;align-items:center;gap:4px;">' +
-                  '<span style="width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background:' + SPEND_LIFT_COLOR + ';" aria-hidden="true"></span>' +
-                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(row.date) + '</span>' +
+                  '<span aria-hidden="true" style="' + (primaryIsCurrent ? solidSwatch : dashedSwatch) + '"></span>' +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + primaryLabel + '</span>' +
                 '</div>' +
-                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtSignedDollar(primaryVal) + '</span>' +
+                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtCompactCurrency(primaryVal) + '</span>' +
               '</div>' +
               deltaPill +
             '</div>' +
@@ -775,7 +788,7 @@
         legend: { enabled: false },
         series: [
           {
-            type: 'line', xKey: 'date', yKey: 'prev', yName: 'Previous period',
+            type: 'line', xKey: 'date', yKey: 'prev', yName: 'Prev period',
             stroke: SPEND_LIFT_COLOR, strokeWidth: 2, lineDash: [2, 2],
             marker: {
               enabled: true, size: 0,

@@ -69,11 +69,14 @@
           </div>
 
           <div class="nav-group" data-nav-group-id="bottom">
-            <a href="settings.html" class="nav-item">
+            <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
               <span class="nav-item__label">Settings</span>
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
-            </a>
+            </button>
+            <div class="nav-sub-group">
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+            </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
               <span class="nav-item__label">Cockpit</span>
@@ -209,25 +212,19 @@
             <div class="dropdown" id="dd-compare">
               <div class="dropdown__wrapper">
                 <button class="dropdown__button" onclick="toggleDropdown('dd-compare')">
-                  <span>Previous period</span>
+                  <span>Prev period</span>
                   <i class="material-symbols-rounded">expand_more</i>
                 </button>
               </div>
               <div class="dropdown__options">
                 <ul>
-                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous period</span></button></li>
-                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous year</span></button></li>
-                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>No comparison</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Prev period</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Prior year</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>None</span></button></li>
                 </ul>
               </div>
             </div>
 
-            <div class="dashboard-filter-spacer"></div>
-
-            <button class="button outlined dashboard-btn">
-              <span class="material-symbols-rounded dashboard-btn__icon">filter_alt</span>
-              <span class="dashboard-btn__label">More filters</span>
-            </button>
           </div>
           <!-- /filter bar -->
 
@@ -236,7 +233,7 @@
             <div class="chart-card__header chart-card__header--detail">
               <div class="chart-card__header-text">
                 <p class="chart-card__title">New guest acquisition</p>
-                <p class="chart-card__subtitle">New guest profiles created over time</p>
+                <p class="chart-card__subtitle">Newly acquired guests over time</p>
               </div>
               <div class="chart-card__header-controls">
                 <div class="dropdown" id="dd-breakdown">
@@ -260,7 +257,7 @@
                   <div class="chart-context-menu" id="chart-menu-detail">
                     <ul>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
-                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
+                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">image</span><span>Download chart</span></button></li>
                     </ul>
                   </div>
                 </div>
@@ -293,7 +290,7 @@
                       <span class="chart-th-inner">This period <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
                     </th>
                     <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Previous period <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                      <span class="chart-th-inner">Prev period <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
                     </th>
                     <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
                       <span class="chart-th-inner">Δ <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
@@ -374,7 +371,7 @@
               <li>
                 <button type="button" class="chart-point-menu__item" onclick="onPointMenuAction('ask-ava')">
                   <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
-                  <span>Ask Ava</span>
+                  <span>Ask Ava about this</span>
                 </button>
               </li>
             </ul>
@@ -606,7 +603,7 @@
         legend: { enabled: false },
         series: [
           {
-            type: 'line', xKey: 'date', yKey: 'prev', yName: 'Previous period',
+            type: 'line', xKey: 'date', yKey: 'prev', yName: 'Prev period',
             stroke: '#5A55E3', strokeWidth: 2, lineDash: [2, 2],
             marker: {
               enabled: true, size: 0,
@@ -914,7 +911,7 @@
     var BREAKDOWN_CONFIG = {
       total: {
         series: [
-          { yKey: 'prev',    yName: 'Previous period', stroke: PALETTE[0], lineDash: [2, 2] },
+          { yKey: 'prev',    yName: 'Prev period', stroke: PALETTE[0], lineDash: [2, 2] },
           { yKey: 'current', yName: 'This period',     stroke: PALETTE[0], lineDash: undefined },
         ],
         data: NEW_GUEST_ACQ_DATA,
@@ -1036,28 +1033,69 @@
           return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
         });
 
-        var rows = cfg.series.map(function(s) {
-          var v = d[s.yKey];
-          var markerStyle = s.lineDash
-            ? 'background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + s.stroke + ' 0,' + s.stroke + ' 1.5px,transparent 1.5px,transparent 3px);'
-            : 'background:' + s.stroke + ';';
-          return (
-            '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
-              '<div style="display:flex;align-items:center;gap:4px;">' +
-                '<div style="width:12px;height:12px;border-radius:2px;flex-shrink:0;' + markerStyle + '"></div>' +
-                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + s.yName + '</span>' +
+        if (mode === 'total') {
+          // Total mode — matches production renderTotalModeTooltip: metric
+          // heading, this-period value, delta pill, optional prev-period row.
+          if (!newGuestAcqVisibility.current) { newGuestAcqTooltipEl.style.display = 'none'; return; }
+
+          var pctRaw   = (d.current - d.prev) / d.prev * 100;
+          var pct      = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
+          var pctColor = pctRaw >= 0 ? '#257469' : '#b1294a';
+          var pctBg    = pctRaw >= 0 ? '#effaf9' : '#fdecef';
+          // Comparison window is the span immediately before the plotted range, so shift back by its day count (data length).
+          var prevDate = new Date(d.date.getFullYear(), d.date.getMonth(), d.date.getDate() - cfg.data.length);
+          var stripe   = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
+
+          newGuestAcqTooltipEl.innerHTML = (
+            '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">New guest acquisition</p>' +
+            '<div style="display:flex;flex-direction:column;gap:8px;">' +
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' +
+                  '<div style="width:12px;height:12px;background:#5A55E3;border-radius:2px;flex-shrink:0;"></div>' +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtChartDate(d.date) + '</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtK(d.current) + '</span>' +
               '</div>' +
-              '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtK(v) + '</span>' +
+              '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+                '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 4px;border-radius:4px;font-size:12px;font-weight:400;">' + pct + '</span>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. comparison period</span>' +
+              '</div>' +
+            '</div>' +
+            (newGuestAcqVisibility.prev
+              ? '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                  '<div style="display:flex;align-items:center;gap:4px;">' + stripe +
+                    '<span style="font-size:12px;font-weight:400;color:#60696C;">Prev period (' + fmtChartDate(prevDate) + ')</span>' +
+                  '</div>' +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtK(d.prev) + '</span>' +
+                '</div>'
+              : '') +
             '</div>'
           );
-        }).join('');
+        } else {
+          var rows = cfg.series.map(function(s) {
+            var v = d[s.yKey];
+            var markerStyle = s.lineDash
+              ? 'background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + s.stroke + ' 0,' + s.stroke + ' 1.5px,transparent 1.5px,transparent 3px);'
+              : 'background:' + s.stroke + ';';
+            return (
+              '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                '<div style="display:flex;align-items:center;gap:4px;">' +
+                  '<div style="width:12px;height:12px;border-radius:2px;flex-shrink:0;' + markerStyle + '"></div>' +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + s.yName + '</span>' +
+                '</div>' +
+                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtK(v) + '</span>' +
+              '</div>'
+            );
+          }).join('');
 
-        newGuestAcqTooltipEl.innerHTML = (
-          '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
-            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 12px;line-height:1.5;white-space:nowrap;">' + fmtChartDate(d.date) + '</p>' +
-            '<div style="display:flex;flex-direction:column;gap:8px;">' + rows + '</div>' +
-          '</div>'
-        );
+          newGuestAcqTooltipEl.innerHTML = (
+            '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
+              '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 12px;line-height:1.5;white-space:nowrap;">' + fmtChartDate(d.date) + '</p>' +
+              '<div style="display:flex;flex-direction:column;gap:8px;">' + rows + '</div>' +
+            '</div>'
+          );
+        }
         newGuestAcqTooltipEl.style.display = 'block';
         var tw = newGuestAcqTooltipEl.offsetWidth, th = newGuestAcqTooltipEl.offsetHeight;
         var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);

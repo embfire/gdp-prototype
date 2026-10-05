@@ -97,10 +97,14 @@
           </div>
 
           <div class="nav-group" data-nav-group-id="bottom">
-            <a href="settings.html" class="nav-item">
+            <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
               <span class="nav-item__label">Settings</span>
-            </a>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+            </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
               <span class="nav-item__label">Cockpit</span>
@@ -144,6 +148,14 @@
                       <span>Create segment</span>
                     </a>
                   </div>
+                </div>
+              </div>
+
+              <!-- Segmentation service note (G360-346) -->
+              <div class="info-banner info-banner_informational">
+                <span class="material-symbols-rounded" style="font-size:20px; color:#000000; flex-shrink:0; margin-top:2px;">info</span>
+                <div class="info-banner__text">
+                  <span class="body2">Segmentation in Guest360 uses the same segmentation service as Punchh. The segment builder, filter types, operators, and logic look and behave as they do in Punchh today, there have been some front end enhancements to Segmentation which are live in Punchh &amp; G360 as seen here. And within this page lists examples of what future G360 driven filters could look like. Additional Guest360-specific filters and use cases, including segmentation on non-loyalty guests, are planned for Q4 2026 and Q1 2027.</span>
                 </div>
               </div>
             </div>

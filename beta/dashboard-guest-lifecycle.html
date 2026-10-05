@@ -11,6 +11,7 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <link rel="stylesheet" href="../assets/bento.css">
   <link rel="stylesheet" href="beta.css">
+  <script src="lifecycle-definitions.js"></script>
   <script src="metric-about.js" defer></script>
 </head>
 <body>
@@ -69,11 +70,14 @@
           </div>
 
           <div class="nav-group" data-nav-group-id="bottom">
-            <a href="settings.html" class="nav-item">
+            <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
               <span class="nav-item__label">Settings</span>
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
-            </a>
+            </button>
+            <div class="nav-sub-group">
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+            </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
               <span class="nav-item__label">Cockpit</span>
@@ -209,25 +213,19 @@
             <div class="dropdown" id="dd-compare">
               <div class="dropdown__wrapper">
                 <button class="dropdown__button" onclick="toggleDropdown('dd-compare')">
-                  <span>Previous period</span>
+                  <span>Prev period</span>
                   <i class="material-symbols-rounded">expand_more</i>
                 </button>
               </div>
               <div class="dropdown__options">
                 <ul>
-                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous period</span></button></li>
-                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Previous year</span></button></li>
-                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>No comparison</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Prev period</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>Prior year</span></button></li>
+                  <li><button class="button transparent" style="width:100%; justify-content:flex-start;" onclick="selectDropdownOption(this)"><span>None</span></button></li>
                 </ul>
               </div>
             </div>
 
-            <div class="dashboard-filter-spacer"></div>
-
-            <button class="button outlined dashboard-btn">
-              <span class="material-symbols-rounded dashboard-btn__icon">filter_alt</span>
-              <span class="dashboard-btn__label">More filters</span>
-            </button>
           </div>
           <!-- /filter bar -->
 
@@ -246,7 +244,7 @@
                   <div class="chart-context-menu" id="chart-menu-detail">
                     <ul>
                       <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Export CSV</span></button></li>
-                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">file_save</span><span>Download chart</span></button></li>
+                      <li><button class="chart-context-menu__item"><span class="material-symbols-rounded">image</span><span>Download chart</span></button></li>
                     </ul>
                   </div>
                 </div>
@@ -258,10 +256,11 @@
                   <p class="chart-card__metric-value">142.8K</p>
                   <span class="chart-card__metric-pill chart-card__metric-pill--up chart-card__metric-pill--inverse">+3.4%</span>
                 </div>
-                <p class="chart-card__metric-period">At-Risk · 138.1K prev period</p>
+                <p class="chart-card__metric-period" id="lifecycle-hero-label">At-Risk · 138.1K prev period</p>
               </div>
               <div class="chart-card__legend" id="lifecycle-legend"></div>
-              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-guest-lifecycle-breakdown"></div>
+              <!-- 6-bar snapshot: fixed height (inline so it wins over the dashboard flex-fill rule) -->
+              <div class="chart-card__placeholder chart-card__placeholder--detail" id="chart-area-guest-lifecycle-breakdown" style="flex:none; height:300px;"></div>
             </div>
           </div>
           <!-- /chart card -->
@@ -273,28 +272,13 @@
                 <thead>
                   <tr style="background-color: #dfe1e2; border-bottom: none;">
                     <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner chart-th-inner--start">Date <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                      <span class="chart-th-inner chart-th-inner--start">Lifecycle stage <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
                     </th>
                     <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">First-time <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                      <span class="chart-th-inner">Guests <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
                     </th>
                     <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Returning <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Win-back <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Loyal <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">At-Risk <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Churned <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
-                    </th>
-                    <th style="text-transform: none; font-size: 1rem; font-weight: 800; color: #000; height: 3.5rem; padding: 8px 16px;">
-                      <span class="chart-th-inner">Δ At-Risk <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
+                      <span class="chart-th-inner">Share <span class="material-symbols-rounded chart-sort-icon">sort</span></span>
                     </th>
                   </tr>
                 </thead>
@@ -302,43 +286,6 @@
               </table>
             </div>
 
-            <!-- Pagination -->
-            <div class="pagination" id="pagination-bar">
-              <div class="pagination__items-per-page">
-                <label>Items per page</label>
-                <div class="pagination-dropdown">
-                  <div class="dropdown__wrapper" style="min-width:80px;">
-                    <button class="dropdown__button">
-                      <span>10</span>
-                      <i class="ph ph-caret-down" style="font-size:14px; flex-shrink:0;"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div class="pagination__navigation">
-                <div class="pagination-dropdown">
-                  <div class="dropdown__wrapper" style="min-width:80px;">
-                    <button class="dropdown__button" id="page-dropdown-btn" onclick="togglePageDropdown()">
-                      <span id="page-dropdown-label">1</span>
-                      <i class="ph ph-caret-down" style="font-size:14px; flex-shrink:0;"></i>
-                    </button>
-                  </div>
-                  <div class="dropdown__options" id="page-options" style="bottom:calc(100% + 8px); top:auto;">
-                    <ul id="page-options-list"></ul>
-                  </div>
-                </div>
-                <label id="total-pages-text">of 4 pages</label>
-                <div class="pagination__navigation__arrows">
-                  <button class="pagination__nav-arrow" id="prev-btn" onclick="prevPage()" disabled>
-                    <i class="ph ph-caret-left"></i>
-                  </button>
-                  <button class="pagination__nav-arrow" id="next-btn" onclick="nextPage()">
-                    <i class="ph ph-caret-right"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <!-- /pagination -->
           </div>
           <!-- /data table -->
 
@@ -369,7 +316,7 @@
               <li>
                 <button type="button" class="chart-point-menu__item" onclick="onPointMenuAction('ask-ava')">
                   <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
-                  <span>Ask Ava</span>
+                  <span>Ask Ava about this</span>
                 </button>
               </li>
             </ul>
@@ -546,17 +493,32 @@
     }
 
     /* ═══════════════════════════════════════════════════
-       AG Charts — Guest Lifecycle Breakdown (stacked area, mirrors beta/index.html)
+       AG Charts — Guest Lifecycle Breakdown (snapshot bars + share strip)
+       Mirrors beta/index.html and production GuestLifecycleDetailCard:
+       one horizontal bar per stage (count direct-labelled at the bar end)
+       and a thin share strip above the bars. This is an as-of snapshot —
+       the date-range filter doesn't drive it. Hidden stages drop out of
+       both; the strip re-normalises over visible stages, while every
+       tooltip keeps the stage's share of the whole base.
     ═══════════════════════════════════════════════════ */
-    // Bento palette assigned by health: emerald=loyal, indigo=returning, sky=first-time, periwinkle=win-back, amber=at-risk, crimson=churned.
+    // Lifecycle stages — health-coded: emerald=loyal, indigo=returning, sky=first-time, periwinkle=win-back, amber=at-risk, crimson=churned.
     var LIFECYCLE_STAGES = [
-      { key: 'firstTime',    label: 'First-time',   color: '#30ACEE' },
-      { key: 'returning',    label: 'Returning',    color: '#5A55E3' },
-      { key: 'winBack',      label: 'Win-back',     color: '#8C9FFF' },
-      { key: 'loyal',        label: 'Loyal',        color: '#0CC281' },
-      { key: 'atRisk',       label: 'At-Risk',      color: '#F8931C' },
-      { key: 'churned',      label: 'Churned',      color: '#E83162' },
+      { key: 'firstTime',    label: 'First-time',   color: '#30ACEE' },  // sky-900
+      { key: 'returning',    label: 'Returning',    color: '#5A55E3' },  // indigo-900
+      { key: 'winBack',      label: 'Win-back',     color: '#8C9FFF' },  // periwinkle-900
+      { key: 'loyal',        label: 'Loyal',        color: '#0CC281' },  // emerald-900
+      { key: 'atRisk',       label: 'At-Risk',      color: '#F8931C' },  // amber-900
+      { key: 'churned',      label: 'Churned',      color: '#E83162' },  // crimson-900
     ];
+    // Labels are PAR defaults; a brand's renames from Settings → Definitions
+    // (lifecycle-definitions.js) replace them so every surface agrees.
+    if (window.G360Lifecycle) {
+      LIFECYCLE_STAGES.forEach(function(stage) { stage.label = window.G360Lifecycle.stageLabel(stage.key); });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      var hero = document.getElementById('lifecycle-hero-label');
+      if (hero && window.G360Lifecycle) hero.textContent = window.G360Lifecycle.stageLabel('atRisk') + ' · 138.1K prev period';
+    });
 
     var lifecycleChart = null;
     var lifecycleChartOptions = null;
@@ -565,40 +527,71 @@
       loyal: true, atRisk: true, churned: true,
     };
     var lifecycleTooltipEl = null;
-    var lifecycleLineEl = null;
     var lifecycleMouseMove = null;
     var lifecycleMouseLeave = null;
+    var lifecycleClick = null;
 
     /* ── Chart-point context menu state ── */
-    var pointMenuAnchor = null;   // data row at the snapped X
-    var pointMenuStage  = null;   // stage object {key,label,color} that was clicked
-    var pointMenuOpts   = null;
+    var pointMenuRow = null;   // lifecycle row {key,label,color,guests,sharePct} that was clicked
 
-    // 39 days (Mar 19 – Apr 26, 2026), values in K guests.
-    // At-Risk drifts upward over the window to match the +3.4% hero pill.
-    var LIFECYCLE_DATA = (function() {
-      var baseDate = new Date(2026, 2, 19);
-      var rows = [];
-      var days = 39;
-      var seeded = function(seed, i) { return Math.sin(seed * 1.7 + i * 0.41) * 0.5 + 0.5; };
-      for (var i = 0; i < days; i++) {
-        var d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() + i);
-        var t = i / (days - 1);
-        rows.push({
-          date: d,
-          firstTime:    Math.round((110 + seeded(1, i) * 8)            * 10) / 10,
-          returning:    Math.round((132 + seeded(2, i) * 10)           * 10) / 10,
-          winBack: Math.round((32  + seeded(3, i) * 5)            * 10) / 10,
-          loyal:        Math.round((451 - t * 12 + seeded(4, i) * 14)  * 10) / 10,
-          atRisk:       Math.round((138 + t * 6  + seeded(5, i) * 6)   * 10) / 10,
-          churned:      Math.round((285 + seeded(6, i) * 12)           * 10) / 10,
+    // As-of snapshot counts (identified guests per stage) — same as the
+    // dashboard card. At-Risk matches the 142.8K hero.
+    var LIFECYCLE_SNAPSHOT = {
+      firstTime: 113600,
+      returning: 137200,
+      winBack:   34100,
+      loyal:     446900,
+      atRisk:    142800,
+      churned:   290400,
+    };
+
+    // Category-axis band spacing — production LIFECYCLE_DISTRIBUTION_BAND.
+    // The manual tooltip and point menu reproduce this geometry to snap to a bar.
+    var LIFECYCLE_BAND    = { paddingInner: 0.34, paddingOuter: 0.18 };
+    var LIFECYCLE_PADDING = { top: 8, right: 56, bottom: 8, left: 0 };
+
+    function fmtGuestNum(v) {
+      if (v >= 1000000) return (v / 1000000).toFixed(2).replace(/\.?0+$/, '') + 'M';
+      if (v >= 1000)    return (v / 1000).toFixed(1).replace(/\.?0+$/, '') + 'K';
+      return String(v);
+    }
+
+    function lifecycleTotal() {
+      return LIFECYCLE_STAGES.reduce(function(sum, s) { return sum + LIFECYCLE_SNAPSHOT[s.key]; }, 0);
+    }
+
+    // allStages=true ignores legend visibility (used by the data table).
+    function lifecycleRows(allStages) {
+      var total = lifecycleTotal();
+      return LIFECYCLE_STAGES
+        .filter(function(s) { return (allStages || lifecycleVisibility[s.key] !== false) && LIFECYCLE_SNAPSHOT[s.key] > 0; })
+        .map(function(s) {
+          var guests = LIFECYCLE_SNAPSHOT[s.key];
+          return { key: s.key, label: s.label, color: s.color, guests: guests, sharePct: guests / total * 100 };
         });
-      }
-      return rows;
-    }());
+    }
 
-    function fmtChartDate(d) {
-      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    function lifecycleCaption(row) {
+      return row.label + ' ' + fmtGuestNum(row.guests) + ' • ' + row.sharePct.toFixed(1) + '%';
+    }
+
+    function renderLifecycleStrip(container, rows) {
+      var strip = container.previousElementSibling;
+      if (!strip || !strip.classList.contains('lifecycle-strip')) {
+        strip = document.createElement('div');
+        strip.className = 'lifecycle-strip';
+        strip.setAttribute('role', 'img');
+        strip.setAttribute('aria-label', 'Guest lifecycle breakdown share');
+        container.parentNode.insertBefore(strip, container);
+      }
+      var visibleTotal = rows.reduce(function(sum, r) { return sum + r.guests; }, 0);
+      strip.innerHTML = rows.map(function(r) {
+        return (
+          '<div class="lifecycle-strip__segment" style="width:' + (r.guests / visibleTotal * 100) + '%;background:' + r.color + ';">' +
+            '<span class="lifecycle-strip__tooltip">' + lifecycleCaption(r) + '</span>' +
+          '</div>'
+        );
+      }).join('');
     }
 
     function buildLifecycleLegend() {
@@ -625,175 +618,138 @@
       lifecycleVisibility[seriesKey] = nextValue;
       btn.setAttribute('aria-pressed', String(nextValue));
 
-      var newSeries = lifecycleChartOptions.series.map(function(s) {
-        return Object.assign({}, s, { visible: lifecycleVisibility[s.yKey] !== false });
-      });
-      var updateOpts = Object.assign({}, lifecycleChartOptions, { series: newSeries });
+      var rows = lifecycleRows();
+      renderLifecycleStrip(document.getElementById('chart-area-guest-lifecycle-breakdown'), rows);
+      // New options object so AG Charts detects the data change.
+      var updateOpts = Object.assign({}, lifecycleChartOptions, { data: rows });
       lifecycleChartOptions = updateOpts;
       lifecycleChart.update(updateOpts);
+    }
+
+    // Snap a viewport Y to the nearest category band; returns the row or null
+    // when the cursor is outside the plot area. Band scale geometry, centred
+    // align (matches AG Charts category axis).
+    function lifecycleRowAt(container, clientY) {
+      var data = lifecycleChartOptions.data;
+      var n = data.length;
+      var rect = container.getBoundingClientRect();
+      var plotHeight = rect.height - LIFECYCLE_PADDING.top - LIFECYCLE_PADDING.bottom;
+      var cursorY = clientY - rect.top - LIFECYCLE_PADDING.top;
+      if (n === 0 || cursorY < 0 || cursorY > plotHeight) return null;
+
+      var step        = plotHeight / Math.max(1, n - LIFECYCLE_BAND.paddingInner + LIFECYCLE_BAND.paddingOuter * 2);
+      var bandwidth   = step * (1 - LIFECYCLE_BAND.paddingInner);
+      var firstStart  = (plotHeight - step * (n - LIFECYCLE_BAND.paddingInner)) * 0.5;
+      var firstCentre = firstStart + bandwidth / 2;
+      var idx = Math.max(0, Math.min(n - 1, Math.round((cursorY - firstCentre) / step)));
+      return data[idx];
     }
 
     function initLifecycleChart() {
       var container = document.getElementById('chart-area-guest-lifecycle-breakdown');
       if (!container) return;
       if (lifecycleChart) { lifecycleChart.destroy(); lifecycleChart = null; }
+
       lifecycleVisibility = {
         firstTime: true, returning: true, winBack: true,
         loyal: true, atRisk: true, churned: true,
       };
 
+      var rows = lifecycleRows();
+      renderLifecycleStrip(container, rows);
+
       lifecycleChartOptions = {
         container: container,
         theme: { params: { fontFamily: 'Manrope, sans-serif' } },
         background: { fill: '#ffffff' },
-        padding: { top: 8, right: 0, bottom: 0, left: 0 },
-        data: LIFECYCLE_DATA,
+        padding: LIFECYCLE_PADDING,
+        data: rows,
         legend: { enabled: false },
-        series: LIFECYCLE_STAGES.map(function(stage) {
-          return {
-            type: 'area',
-            xKey: 'date',
-            yKey: stage.key,
-            yName: stage.label,
-            stacked: true,
-            stackGroup: 'lifecycle',
-            fill: stage.color,
-            fillOpacity: 0.9,
-            stroke: '#ffffff',
-            strokeWidth: 1,
-            marker: { enabled: false },
+        series: [
+          {
+            type: 'bar',
+            direction: 'horizontal',
+            xKey: 'label',
+            yKey: 'guests',
+            cornerRadius: 4,
+            // One series over six categories — colour comes off the datum.
+            itemStyler: function(params) { return { fill: params.datum.color }; },
             tooltip: { enabled: false },
-          };
-        }),
+            label: {
+              placement: 'outside-end',
+              fontSize: 12,
+              fontWeight: 700,
+              color: '#000000',
+              formatter: function(params) { return fmtGuestNum(+params.value); },
+            },
+          },
+        ],
         axes: {
           x: {
-            type: 'time', position: 'bottom', nice: false,
-            min: new Date(2026, 2, 19),
-            max: new Date(2026, 3, 26),
-            gridLine: { enabled: false },
-            line: { enabled: false },
-            tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
-            label: { fontSize: 12, color: '#000000', format: '%b %-d', padding: 8, avoidCollisions: true },
-            interval: {
-              values: (function() {
-                var ticks = [];
-                var d = new Date(2026, 2, 22);
-                var end = new Date(2026, 3, 25);
-                while (d <= end) {
-                  ticks.push(new Date(d));
-                  d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 3);
-                }
-                return ticks;
-              }()),
-            },
+            type: 'number',
+            position: 'bottom',
+            min: 0,
+            gridLine:  { enabled: false },
+            line:      { enabled: false },
+            tick:      { enabled: false },
             crosshair: { enabled: false },
+            label:     { enabled: false },
           },
           y: {
-            type: 'number', position: 'left',
-            min: 0, max: 1200, nice: false,
-            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
-            line: { enabled: false },
-            tick: { enabled: false },
-            label: {
-              fontSize: 12, color: '#000000', padding: 8,
-              formatter: function(params) { return (+params.value).toFixed(0) + 'K'; },
-            },
-            interval: { values: [0, 300, 600, 900, 1200] },
+            type: 'category',
+            position: 'left',
+            paddingInner: LIFECYCLE_BAND.paddingInner,
+            paddingOuter: LIFECYCLE_BAND.paddingOuter,
+            gridLine:  { enabled: false },
+            line:      { enabled: false },
+            tick:      { enabled: false },
+            crosshair: { enabled: false },
+            label: { fontSize: 12, fontWeight: 500, color: '#60696C', padding: 8 },
           },
         },
       };
 
       lifecycleChart = agCharts.AgCharts.create(lifecycleChartOptions);
 
-      // ── Manual tooltip + dashed vertical line ───────────────────────────
-      // AG Charts native crosshair only fires on series hover; with a stacked
-      // area the line should follow the cursor anywhere in the plot area.
-      // Both elements float on document.body to avoid AG Charts repaints.
-
+      // ── Manual tooltip ──────────────────────────────────────────────────
+      // Production attachAgChartLifecycleDistributionTooltip: snap the
+      // cursor's Y to the nearest category band; heading + stage row +
+      // share line.
       if (lifecycleTooltipEl && lifecycleTooltipEl.parentNode) {
         lifecycleTooltipEl.parentNode.removeChild(lifecycleTooltipEl);
-      }
-      if (lifecycleLineEl && lifecycleLineEl.parentNode) {
-        lifecycleLineEl.parentNode.removeChild(lifecycleLineEl);
       }
       if (lifecycleMouseMove) {
         container.removeEventListener('mousemove',  lifecycleMouseMove);
         container.removeEventListener('mouseleave', lifecycleMouseLeave);
+        container.removeEventListener('click',      lifecycleClick);
       }
 
       lifecycleTooltipEl = document.createElement('div');
       lifecycleTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
+      lifecycleTooltipEl.setAttribute('role', 'tooltip');
       document.body.appendChild(lifecycleTooltipEl);
 
-      lifecycleLineEl = document.createElement('div');
-      lifecycleLineEl.style.cssText = (
-        'position:fixed;pointer-events:none;display:none;z-index:9998;width:1px;' +
-        'background-image:linear-gradient(to bottom,#c6c6c6 50%,transparent 50%);' +
-        'background-size:1px 8px;background-repeat:repeat-y;'
-      );
-      document.body.appendChild(lifecycleLineEl);
-
-      var L_PLOT_LEFT      = 46;
-      var L_PLOT_RIGHT_PAD = 0;
-      var L_PLOT_TOP       = 8;   // matches chart padding.top
-      var L_X_AXIS_H       = 28;  // approx X-axis label area
-      var L_AXIS_MIN_TIME  = new Date(2026, 2, 19).getTime();
-      var L_AXIS_MAX_TIME  = new Date(2026, 3, 26).getTime();
-      var fmtK = function(v) { return (+v).toFixed(1) + 'K'; };
-
       lifecycleMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - L_PLOT_RIGHT_PAD;
-
-        if (mx < L_PLOT_LEFT || mx > plotRight) {
+        var row = lifecycleRowAt(container, e.clientY);
+        if (!row || document.getElementById('chart-point-menu').classList.contains('chart-point-menu--open')) {
           lifecycleTooltipEl.style.display = 'none';
-          lifecycleLineEl.style.display = 'none';
-          return;
-        }
-
-        var relX = (mx - L_PLOT_LEFT) / (plotRight - L_PLOT_LEFT);
-        var targetTime = L_AXIS_MIN_TIME + relX * (L_AXIS_MAX_TIME - L_AXIS_MIN_TIME);
-        var d = LIFECYCLE_DATA.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-
-        var rowsHTML = LIFECYCLE_STAGES
-          .filter(function(s) { return lifecycleVisibility[s.key] !== false; })
-          .map(function(s) {
-            return (
-              '<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;white-space:nowrap;">' +
-                '<div style="display:flex;align-items:center;gap:6px;">' +
-                  '<div style="width:12px;height:12px;background:' + s.color + ';border-radius:2px;flex-shrink:0;"></div>' +
-                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + s.label + '</span>' +
-                '</div>' +
-                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtK(d[s.key]) + '</span>' +
-              '</div>'
-            );
-          })
-          .join('');
-
-        if (!rowsHTML) {
-          lifecycleTooltipEl.style.display = 'none';
-          lifecycleLineEl.style.display = 'none';
           return;
         }
 
         lifecycleTooltipEl.innerHTML = (
           '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
-            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 4px;line-height:1.5;white-space:nowrap;">Guest lifecycle</p>' +
-            '<p style="font-size:12px;font-weight:400;color:#60696C;margin:0 0 12px;line-height:1.5;white-space:nowrap;">' + fmtChartDate(d.date) + '</p>' +
-            '<div style="display:flex;flex-direction:column;gap:8px;">' + rowsHTML + '</div>' +
+            '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 12px;line-height:1.5;white-space:nowrap;">Guest lifecycle breakdown</p>' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;white-space:nowrap;">' +
+              '<div style="display:flex;align-items:center;gap:6px;">' +
+                '<span aria-hidden="true" style="width:12px;height:12px;display:inline-block;border-radius:2px;flex:0 0 12px;background:' + row.color + ';"></span>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + row.label + '</span>' +
+              '</div>' +
+              '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtGuestNum(row.guests) + '</span>' +
+            '</div>' +
+            '<p style="font-size:12px;font-weight:400;color:#60696C;margin:8px 0 0;line-height:1.5;white-space:nowrap;">' + row.sharePct.toFixed(1) + '%</p>' +
           '</div>'
         );
         lifecycleTooltipEl.style.display = 'block';
-
-        var dataRelX = (d.date.getTime() - L_AXIS_MIN_TIME) / (L_AXIS_MAX_TIME - L_AXIS_MIN_TIME);
-        var dataX    = L_PLOT_LEFT + dataRelX * (plotRight - L_PLOT_LEFT);
-        lifecycleLineEl.style.left    = (rect.left + dataX) + 'px';
-        lifecycleLineEl.style.top     = (rect.top + L_PLOT_TOP) + 'px';
-        lifecycleLineEl.style.height  = (rect.height - L_PLOT_TOP - L_X_AXIS_H) + 'px';
-        lifecycleLineEl.style.display = 'block';
 
         var tw = lifecycleTooltipEl.offsetWidth, th = lifecycleTooltipEl.offsetHeight;
         var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
@@ -806,95 +762,48 @@
 
       lifecycleMouseLeave = function() {
         lifecycleTooltipEl.style.display = 'none';
-        lifecycleLineEl.style.display = 'none';
       };
 
-      container.addEventListener('mousemove',  lifecycleMouseMove);
-      container.addEventListener('mouseleave', lifecycleMouseLeave);
-
-      attachChartPointMenu(container, {
-        plotLeft:     L_PLOT_LEFT,
-        plotRightPad: L_PLOT_RIGHT_PAD,
-        plotTop:      L_PLOT_TOP,
-        xAxisHeight:  L_X_AXIS_H,
-        axisMinTime:  L_AXIS_MIN_TIME,
-        axisMaxTime:  L_AXIS_MAX_TIME,
-        axisMinValue: 0,
-        axisMaxValue: 1200,
-        data:         LIFECYCLE_DATA,
-      });
-    }
-
-    /* ── Chart-point context menu ──
-       Click inside a stage's stacked band → menu opens next to the cursor
-       with that stage as the metric (date + K value + matching color dot).
-       Clicks outside any visible stage band do nothing. */
-    function attachChartPointMenu(container, opts) {
-      pointMenuOpts = opts;
-      container.style.cursor = 'pointer';
-      container.addEventListener('click', function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var my = e.clientY - rect.top;
-        var plotRight = rect.width - opts.plotRightPad;
-        if (mx < opts.plotLeft || mx > plotRight) return;
-
+      // ── Chart-point context menu ──
+      // Click a stage's band → menu opens next to the cursor with that stage
+      // (label + count + matching colour dot). Clicks outside the plot do nothing.
+      lifecycleClick = function(e) {
+        var row = lifecycleRowAt(container, e.clientY);
+        if (!row) return;
         // Don't let this click bubble to the outside-listener that a
         // previously-open menu installed — it would close the new menu.
         e.stopPropagation();
-
-        // Snap to nearest data point on X.
-        var relX = (mx - opts.plotLeft) / (plotRight - opts.plotLeft);
-        var targetTime = opts.axisMinTime + relX * (opts.axisMaxTime - opts.axisMinTime);
-        var d = opts.data.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-
-        // Walk the stacked bands bottom→top using only visible stages.
-        // Each band spans [bottomY, topY] in pixels; topY < bottomY because
-        // higher Y values are lower on the screen.
-        var plotH = rect.height - opts.plotTop - opts.xAxisHeight;
-        var range = opts.axisMaxValue - opts.axisMinValue;
-        var hitStage = null;
-        var cum = 0;
-        for (var i = 0; i < LIFECYCLE_STAGES.length; i++) {
-          var s = LIFECYCLE_STAGES[i];
-          if (lifecycleVisibility[s.key] === false) continue;
-          var bottomY = opts.plotTop + (1 - cum / range) * plotH;
-          cum += +d[s.key];
-          var topY    = opts.plotTop + (1 - cum / range) * plotH;
-          if (my >= topY && my <= bottomY) { hitStage = s; break; }
-        }
-        if (!hitStage) return; // outside any visible band → no menu
-
-        pointMenuAnchor = d;
-        pointMenuStage  = hitStage;
+        pointMenuRow = row;
         openPointMenu(e.clientX, e.clientY);
-      });
+      };
+
+      container.style.cursor = 'pointer';
+      container.addEventListener('mousemove',  lifecycleMouseMove);
+      container.addEventListener('mouseleave', lifecycleMouseLeave);
+      container.addEventListener('click',      lifecycleClick);
     }
 
     function openPointMenu(clientX, clientY) {
       var menu = document.getElementById('chart-point-menu');
       document.removeEventListener('click', closePointMenuOnOutside);
 
-      if (pointMenuAnchor && pointMenuStage) {
-        var dateEl  = document.getElementById('chart-point-menu-date');
+      if (pointMenuRow) {
+        var labelEl = document.getElementById('chart-point-menu-date');
         var valueEl = document.getElementById('chart-point-menu-value');
         var dotEl   = menu.querySelector('.chart-point-menu__color-dot');
-        if (dateEl)  dateEl.textContent  = fmtChartDate(pointMenuAnchor.date) + ', ' + pointMenuAnchor.date.getFullYear();
-        if (valueEl) valueEl.textContent = (+pointMenuAnchor[pointMenuStage.key]).toFixed(1) + 'K';
+        if (labelEl) labelEl.textContent = pointMenuRow.label;
+        if (valueEl) valueEl.textContent = fmtGuestNum(pointMenuRow.guests);
         if (dotEl) {
           dotEl.classList.remove('chart-point-menu__color-dot--striped');
-          dotEl.style.backgroundColor = pointMenuStage.color;
+          dotEl.style.backgroundColor = pointMenuRow.color;
         }
       }
 
       menu.classList.add('chart-point-menu--open');
       menu.setAttribute('aria-hidden', 'false');
 
-      // Hide tooltip + dashed line while the menu is open.
+      // Hide the tooltip while the menu is open.
       if (lifecycleTooltipEl) lifecycleTooltipEl.style.display = 'none';
-      if (lifecycleLineEl)    lifecycleLineEl.style.display    = 'none';
 
       var mw = menu.offsetWidth, mh = menu.offsetHeight;
       var x = clientX + 12, y = clientY + 12;
@@ -925,121 +834,26 @@
     }
 
     function onPointMenuAction(action) {
-      // Stub — wire up real behavior later. pointMenuAnchor + pointMenuStage
-      // hold the clicked data row and the stage that was selected.
-      console.log('chart-point-menu action:', action, pointMenuAnchor, pointMenuStage);
+      // Stub — wire up real behavior later. pointMenuRow holds the clicked stage.
+      console.log('chart-point-menu action:', action, pointMenuRow);
       closePointMenu();
     }
 
-    /* ── Full-precision numbers ──
-       Source data is at M-scale (e.g. 1.156). Multiply to integers and add
-       a deterministic 0–999 offset derived from the date so the trailing
-       digits look real and stay stable across renders. */
-    function seedFromDate(d) {
-      var s = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
-      return ((s * 9301 + 49297) % 233280);
-    }
-    function fullNumber(mValue, d, salt) {
-      var base = Math.round(mValue * 1000) * 1000; // e.g. 1.156 → 1,156,000
-      var seed = (seedFromDate(d) + salt * 7919) % 1000;
-      return base + seed;
-    }
-    function fmtFull(n) {
-      var sign = n < 0 ? '-' : '';
-      var abs = Math.abs(Math.round(n));
-      return sign + abs.toLocaleString('en-US');
-    }
-    function fmtFullSigned(n) {
-      var sign = n >= 0 ? '+' : '-';
-      return sign + Math.abs(Math.round(n)).toLocaleString('en-US');
-    }
-
-    /* ── Pagination state ── */
-    var PER_PAGE = 10;
-    var currentPage = 1;
-
-    function totalPages() {
-      return Math.max(1, Math.ceil(LIFECYCLE_DATA.length / PER_PAGE));
-    }
-
-    // Convert a K-scale value (e.g. 142.8) to a deterministic full integer count
-    // (e.g. 142,847) — adds a stable trailing-three-digit offset derived from
-    // (date, salt) so rendered cells look real and stay consistent across renders.
-    function fullCountFromK(kValue, d, salt) {
-      var base = Math.round(kValue * 1000);                 // 142.8 → 142800
-      var seed = (seedFromDate(d) + salt * 7919) % 1000;    // deterministic 0–999 offset
-      return base + seed - 500;                             // recenter around base
-    }
-
+    /* ── Data table ──
+       Production snapshot table: Lifecycle stage | Guests | Share. Always
+       lists every stage (legend toggles only affect the chart). */
     function renderTable() {
       var tbody = document.getElementById('lifecycle-table-body');
-      var tp = totalPages();
-      if (currentPage > tp) currentPage = tp;
-      var start = (currentPage - 1) * PER_PAGE;
-      var pageRows = LIFECYCLE_DATA.slice(start, start + PER_PAGE);
-
-      tbody.innerHTML = pageRows.map(function(d, idx) {
-        var ft   = fullCountFromK(d.firstTime,    d.date, 1);
-        var rt   = fullCountFromK(d.returning,    d.date, 2);
-        var ro   = fullCountFromK(d.winBack, d.date, 3);
-        var ly   = fullCountFromK(d.loyal,        d.date, 4);
-        var ar   = fullCountFromK(d.atRisk,       d.date, 5);
-        var ch   = fullCountFromK(d.churned,      d.date, 6);
-
-        // Δ At-Risk = today vs. previous row in the dataset (or 0 for the first row).
-        var globalIdx = start + idx;
-        var prevAr = globalIdx > 0
-          ? fullCountFromK(LIFECYCLE_DATA[globalIdx - 1].atRisk, LIFECYCLE_DATA[globalIdx - 1].date, 5)
-          : ar;
-        var delta = ar - prevAr;
-        // Inverse semantics on Δ At-Risk: growth = bad (red), shrinkage = good (green).
-        var pctColor = delta <= 0 ? '#257469' : '#b1294a';
-        var pctBg    = delta <= 0 ? '#effaf9' : '#fdecef';
-
+      tbody.innerHTML = lifecycleRows(true).map(function(r) {
         return (
           '<tr>' +
-            '<td>' + fmtChartDate(d.date) + ', 2026</td>' +
-            '<td class="chart-data-col">' + fmtFull(ft) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(rt) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(ro) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(ly) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(ar) + '</td>' +
-            '<td class="chart-data-col">' + fmtFull(ch) + '</td>' +
-            '<td class="chart-data-col">' +
-              '<span style="background:' + pctBg + ';color:' + pctColor + ';padding:2px 6px;border-radius:4px;font-size:0.875rem;font-weight:500;">' +
-                fmtFullSigned(delta) +
-              '</span>' +
-            '</td>' +
+            '<td>' + r.label + '</td>' +
+            '<td class="chart-data-col">' + r.guests.toLocaleString('en-US') + '</td>' +
+            '<td class="chart-data-col">' + r.sharePct.toFixed(1) + '%</td>' +
           '</tr>'
         );
       }).join('');
-
-      document.getElementById('page-dropdown-label').textContent = currentPage;
-      document.getElementById('total-pages-text').textContent = 'of ' + tp + ' page' + (tp !== 1 ? 's' : '');
-      document.getElementById('prev-btn').disabled = currentPage <= 1;
-      document.getElementById('next-btn').disabled = currentPage >= tp;
-      document.getElementById('page-options-list').innerHTML = Array.from({ length: tp }, function(_, i) { return i + 1; })
-        .map(function(p) {
-          return '<li><button onclick="goToPage(' + p + ')" style="background:none;border:none;width:100%;text-align:left;padding:8px 12px;cursor:pointer;font-family:\'Manrope\',sans-serif;font-size:16px;font-weight:' + (p === currentPage ? 700 : 400) + ';">' + p + '</button></li>';
-        }).join('');
     }
-
-    function prevPage() { if (currentPage > 1) { currentPage--; renderTable(); } }
-    function nextPage() { if (currentPage < totalPages()) { currentPage++; renderTable(); } }
-    function goToPage(p) {
-      currentPage = p;
-      document.getElementById('page-options').classList.remove('dropdown__options_open');
-      renderTable();
-    }
-    function togglePageDropdown() {
-      document.getElementById('page-options').classList.toggle('dropdown__options_open');
-    }
-
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('#page-dropdown-btn') && !e.target.closest('#page-options')) {
-        document.getElementById('page-options').classList.remove('dropdown__options_open');
-      }
-    });
 
     /* ── Boot ── */
     document.addEventListener('DOMContentLoaded', function() {

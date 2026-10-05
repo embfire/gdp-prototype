@@ -68,10 +68,14 @@
           </div>
 
           <div class="nav-group" data-nav-group-id="bottom">
-            <a href="settings.html" class="nav-item">
+            <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
               <span class="nav-item__label">Settings</span>
-            </a>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+            </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
               <span class="nav-item__label">Cockpit</span>
@@ -157,14 +161,15 @@
             <div class="profile-info__cell">
               <div class="profile-info__label">Phone</div>
               <div class="profile-info__values">
-                <div class="profile-info__value">(555) 234-5678</div>
+                <div class="profile-info__value">312-555-0187</div>
               </div>
             </div>
 
+            <!-- Address list is always empty in production (Punchh address data is PII-masked upstream) -->
             <div class="profile-info__cell">
               <div class="profile-info__label">Address</div>
               <div class="profile-info__values">
-                <div class="profile-info__value">-</div>
+                <div class="profile-info__value" style="color:#60696c;font-weight:400;font-style:italic;">No address</div>
               </div>
             </div>
           </section>
@@ -207,7 +212,7 @@
                 </div>
                 <div class="profile-card__row">
                   <span class="profile-card__row-label">Sources</span>
-                  <span class="profile-card__row-value">POS, Web App</span>
+                  <span class="profile-card__row-value">POS, Olo</span>
                 </div>
                 <div class="profile-card__row">
                   <span class="profile-card__row-label">Stores</span>
@@ -273,7 +278,7 @@
                 </div>
                 <div class="profile-card__row">
                   <span class="profile-card__row-label">Profiles merged</span>
-                  <span class="profile-card__row-value">2 (POS, Web)</span>
+                  <span class="profile-card__row-value">2 (POS, Olo)</span>
                 </div>
               </div>
             </div>

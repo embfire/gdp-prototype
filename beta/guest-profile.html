@@ -68,10 +68,14 @@
           </div>
 
           <div class="nav-group" data-nav-group-id="bottom">
-            <a href="settings.html" class="nav-item">
+            <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
               <span class="nav-item__label">Settings</span>
-            </a>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+            </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
               <span class="nav-item__label">Cockpit</span>
@@ -158,20 +162,16 @@
             <div class="profile-info__cell">
               <div class="profile-info__label">Phone</div>
               <div class="profile-info__values">
-                <div class="profile-info__value">(555) 234-5678</div>
+                <div class="profile-info__value">617-555-0142</div>
               </div>
             </div>
 
-            <div class="profile-info__cell" data-expanded="false">
+            <!-- Address list is always empty in production (Punchh address data is PII-masked upstream) -->
+            <div class="profile-info__cell">
               <div class="profile-info__label">Address</div>
               <div class="profile-info__values">
-                <div class="profile-info__value" title="456 Oak Ave, Suite 12, 08015 Barcelona">456 Oak Ave, Suite 12, 08015 Ba&hellip;</div>
-                <div class="profile-info__value profile-info__value--extra">221B Baker St, London NW1 6XE</div>
+                <div class="profile-info__value" style="color:#60696c;font-weight:400;font-style:italic;">No address</div>
               </div>
-              <button type="button" class="link-button profile-info__toggle" onclick="toggleInfoCell(this)">
-                <span class="profile-info__toggle-collapsed">+1 more</span>
-                <span class="profile-info__toggle-expanded">Show less</span>
-              </button>
             </div>
           </section>
 
@@ -279,7 +279,7 @@
                 </div>
                 <div class="profile-card__row">
                   <span class="profile-card__row-label">Profiles merged</span>
-                  <span class="profile-card__row-value">4 (POS, Web, +2)</span>
+                  <span class="profile-card__row-value">4 (Punchh, POS, +2)</span>
                 </div>
               </div>
             </div>
