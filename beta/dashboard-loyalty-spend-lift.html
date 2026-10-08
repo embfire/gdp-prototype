@@ -19,9 +19,12 @@
     <!-- Header -->
     <header class="header">
       <div class="header-left">
-        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
-          <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
-        </a>
+        <div class="header-brand-lockup">
+          <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+            <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+          </a>
+          <span class="header-beta-tag">Beta</span>
+        </div>
         <span class="header-brand-divider" aria-hidden="true"></span>
         <button class="header-brand-btn" aria-label="Select brand">
           Cravewave
@@ -30,12 +33,12 @@
       </div>
       <div class="header-right">
         <button class="header-btn">
-          <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
-          Ava
+          <span class="material-symbols-rounded">magic_button</span>
+          Intelligence
         </button>
         <button class="header-btn">
-          <span class="material-symbols-rounded">school</span>
-          PAR Academy
+          <span class="material-symbols-rounded">feedback</span>
+          Share feedback
         </button>
         <button class="header-btn header-btn--icon" aria-label="Profile">
           <span class="material-symbols-rounded">person</span>
@@ -68,6 +71,14 @@
             </a>
           </div>
 
+          <div class="nav-group" data-nav-group-id="platform">
+            <div class="nav-group-title">Platform</div>
+            <a href="profile-stitching.html" class="nav-item">
+              <i class="ph-duotone ph-fingerprint-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Profile stitching</span>
+            </a>
+          </div>
+
           <div class="nav-group" data-nav-group-id="bottom">
             <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
@@ -75,7 +86,10 @@
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
             </button>
             <div class="nav-sub-group">
+              <a href="settings-business-profile.html" class="nav-sub-item">Business profile</a>
+              <a href="settings-users-roles.html" class="nav-sub-item">Users and roles</a>
               <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+              <a href="settings-stores.html" class="nav-sub-item">Stores and store groups</a>
             </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
@@ -361,6 +375,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/ag-charts-community@13.2.1/dist/umd/ag-charts-community.min.js"></script>
+  <script src="chart-hover.js"></script>
   <script>
     /* ── Sidebar / dropdowns / date range picker / filter bar ── */
     function toggleCockpit(btn) {
@@ -526,9 +541,6 @@
     var spendLiftTrendOptions = null;
     var trendVisibility = { current: true, prev: true };
     var spendLiftTooltipEl = null;
-    var spendLiftCrossLinePending = null;
-    var spendLiftCrossLineFrame  = null;
-    var spendLiftLastCrossLine   = null;
 
     // Mock data: one row per enrollment-cohort date, current and previous period $ lift.
     var SPEND_LIFT_TREND_DATA = (function() {
@@ -637,138 +649,86 @@
       return { min: lo - range * 0.1, max: hi + range * 0.1 };
     }
 
-    function scheduleCrossLine(date) {
-      spendLiftCrossLinePending = date ? date.getTime() : null;
-      if (spendLiftCrossLineFrame !== null) return;
-      spendLiftCrossLineFrame = requestAnimationFrame(function() {
-        spendLiftCrossLineFrame = null;
-        if (!spendLiftTrendChart) return;
-        if (spendLiftCrossLinePending === spendLiftLastCrossLine) return;
-        spendLiftLastCrossLine = spendLiftCrossLinePending;
-        var crossLines = spendLiftCrossLinePending === null ? [] : [{
-          type: 'line',
-          value: new Date(spendLiftCrossLinePending),
-          stroke: '#c6c6c6',
-          strokeWidth: 1,
-          lineDash: [4, 4],
-          label: { enabled: false },
-        }];
-        Promise.resolve(spendLiftTrendChart.updateDelta({ axes: { x: { crossLines: crossLines } } })).catch(function() {});
-      });
-    }
-
+    // Snapped tooltip + hairline + hover dot — shared chart-hover.js (port of production agChartHoverOverlay).
     function attachSpendLiftTooltip(container) {
-      if (spendLiftTooltipEl && spendLiftTooltipEl.parentNode) {
-        spendLiftTooltipEl.parentNode.removeChild(spendLiftTooltipEl);
-      }
-      spendLiftTooltipEl = document.createElement('div');
-      spendLiftTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(spendLiftTooltipEl);
+      var hover = ChartHover.attach(container, {
+        data: SPEND_LIFT_TREND_DATA,
+        series: function() {
+          return spendLiftTrendOptions.series
+            .filter(function(s) { return trendVisibility[s.yKey] !== false; })
+            .map(function(s) { return { yKey: s.yKey, stroke: s.stroke }; });
+        },
+        yDomain: function() {
+          var y = spendLiftTrendOptions.axes && spendLiftTrendOptions.axes.y;
+          return y && typeof y.min === 'number' && typeof y.max === 'number' ? { min: y.min, max: y.max } : null;
+        },
+        xDomain: function() {
+          var x = spendLiftTrendOptions.axes && spendLiftTrendOptions.axes.x;
+          return x && x.min && x.max ? { min: +x.min, max: +x.max } : null;
+        },
+        renderTooltip: function(row) {
+          var currentVisible = trendVisibility.current;
+          var prevVisible    = trendVisibility.prev;
+          var currentVal = currentVisible ? row.current : null;
+          var prevVal    = prevVisible    ? row.prev    : null;
+          var primaryVal = currentVal !== null ? currentVal : prevVal;
+          if (primaryVal === null) return null;
+          // Comparison period = the window right before the plotted range, so shift back by the number of days plotted.
+          var prevDate = new Date(row.date.getFullYear(), row.date.getMonth(), row.date.getDate() - SPEND_LIFT_TREND_DATA.length);
+          var prevLabel = 'Prev period (' + fmtChartDate(prevDate) + ')';
+          var primaryIsCurrent = currentVal !== null;
+          var primaryLabel = primaryIsCurrent ? 'Cohort ' + fmtChartDate(row.date) : prevLabel;
+          var solidSwatch  = 'width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background:' + SPEND_LIFT_COLOR + ';';
+          var dashedSwatch = 'width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + SPEND_LIFT_COLOR + ' 0,' + SPEND_LIFT_COLOR + ' 1.5px,transparent 1.5px,transparent 3px);';
 
-      var PLOT_LEFT      = 46;
-      var PLOT_RIGHT_PAD = 0;
-      var SLOP_PX        = 8;
+          var deltaPill = '';
+          if (currentVisible && prevVisible && currentVal !== null && prevVal !== null && prevVal !== 0) {
+            var deltaPct = ((currentVal - prevVal) / Math.abs(prevVal)) * 100;
+            var sign     = deltaPct >= 0 ? '+' : '';
+            var bg       = deltaPct >= 0 ? '#effaf9' : '#fdecef';
+            var fg       = deltaPct >= 0 ? '#257469' : '#b1294a';
+            deltaPill = (
+              '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
+                '<span style="display:inline-flex;align-items:center;padding:2px 4px;border-radius:4px;background:' + bg + ';color:' + fg + ';font-size:12px;font-weight:400;">' +
+                  sign + deltaPct.toFixed(2) + '%' +
+                '</span>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. comparison period</span>' +
+              '</div>'
+            );
+          }
 
-      function hide() {
-        spendLiftTooltipEl.style.display = 'none';
-        scheduleCrossLine(null);
-      }
-
-      function onMove(e) {
-        if (!SPEND_LIFT_TREND_DATA.length) { hide(); return; }
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - PLOT_RIGHT_PAD;
-        if (mx < PLOT_LEFT - SLOP_PX || mx > plotRight + SLOP_PX) { hide(); return; }
-        var cx = Math.max(PLOT_LEFT, Math.min(plotRight, mx));
-        var usable = plotRight - PLOT_LEFT;
-        if (usable <= 0) { hide(); return; }
-        var relX = (cx - PLOT_LEFT) / usable;
-        var firstTime = SPEND_LIFT_TREND_DATA[0].date.getTime();
-        var lastTime  = SPEND_LIFT_TREND_DATA[SPEND_LIFT_TREND_DATA.length - 1].date.getTime();
-        var targetTime = firstTime === lastTime ? firstTime : firstTime + (lastTime - firstTime) * relX;
-        var row = SPEND_LIFT_TREND_DATA.reduce(function(best, r) {
-          return Math.abs(r.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? r : best;
-        });
-
-        var currentVisible = trendVisibility.current;
-        var prevVisible    = trendVisibility.prev;
-        var currentVal = currentVisible ? row.current : null;
-        var prevVal    = prevVisible    ? row.prev    : null;
-        var primaryVal = currentVal !== null ? currentVal : prevVal;
-        if (primaryVal === null) { hide(); return; }
-        // Comparison period = the window right before the plotted range, so shift back by the number of days plotted.
-        var prevDate = new Date(row.date.getFullYear(), row.date.getMonth(), row.date.getDate() - SPEND_LIFT_TREND_DATA.length);
-        var prevLabel = 'Prev period (' + fmtChartDate(prevDate) + ')';
-        var primaryIsCurrent = currentVal !== null;
-        var primaryLabel = primaryIsCurrent ? 'Cohort ' + fmtChartDate(row.date) : prevLabel;
-        var solidSwatch  = 'width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background:' + SPEND_LIFT_COLOR + ';';
-        var dashedSwatch = 'width:14px;height:14px;display:inline-block;border-radius:3px;flex:0 0 14px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,' + SPEND_LIFT_COLOR + ' 0,' + SPEND_LIFT_COLOR + ' 1.5px,transparent 1.5px,transparent 3px);';
-
-        var deltaPill = '';
-        if (currentVisible && prevVisible && currentVal !== null && prevVal !== null && prevVal !== 0) {
-          var deltaPct = ((currentVal - prevVal) / Math.abs(prevVal)) * 100;
-          var sign     = deltaPct >= 0 ? '+' : '';
-          var bg       = deltaPct >= 0 ? '#effaf9' : '#fdecef';
-          var fg       = deltaPct >= 0 ? '#257469' : '#b1294a';
-          deltaPill = (
-            '<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">' +
-              '<span style="display:inline-flex;align-items:center;padding:2px 4px;border-radius:4px;background:' + bg + ';color:' + fg + ';font-size:12px;font-weight:400;">' +
-                sign + deltaPct.toFixed(2) + '%' +
-              '</span>' +
-              '<span style="font-size:12px;font-weight:400;color:#60696C;">vs. comparison period</span>' +
-            '</div>'
-          );
-        }
-
-        var prevRow = '';
-        if (currentVisible && prevVisible && prevVal !== null) {
-          prevRow = (
-            '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
-              '<div style="display:flex;align-items:center;gap:4px;">' +
-                '<span aria-hidden="true" style="' + dashedSwatch + '"></span>' +
-                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + prevLabel + '</span>' +
-              '</div>' +
-              '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtCompactCurrency(prevVal) + '</span>' +
-            '</div>'
-          );
-        }
-
-        spendLiftTooltipEl.innerHTML = (
-          '<div style="background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);padding:16px;font-family:Manrope,sans-serif;">' +
-            '<p style="font-weight:800;font-size:16px;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Daily cohort lift</p>' +
-            '<div style="display:flex;flex-direction:column;gap:8px;">' +
-              '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+          var prevRow = '';
+          if (currentVisible && prevVisible && prevVal !== null) {
+            prevRow = (
+              '<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
                 '<div style="display:flex;align-items:center;gap:4px;">' +
-                  '<span aria-hidden="true" style="' + (primaryIsCurrent ? solidSwatch : dashedSwatch) + '"></span>' +
-                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + primaryLabel + '</span>' +
+                  '<span aria-hidden="true" style="' + dashedSwatch + '"></span>' +
+                  '<span style="font-size:12px;font-weight:400;color:#60696C;">' + prevLabel + '</span>' +
                 '</div>' +
-                '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtCompactCurrency(primaryVal) + '</span>' +
+                '<span style="font-size:12px;font-weight:400;color:#60696C;">' + fmtCompactCurrency(prevVal) + '</span>' +
+              '</div>'
+            );
+          }
+
+          return (
+            '<div style="background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);padding:16px;font-family:Manrope,sans-serif;">' +
+              '<p style="font-weight:800;font-size:16px;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Daily cohort lift</p>' +
+              '<div style="display:flex;flex-direction:column;gap:8px;">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
+                  '<div style="display:flex;align-items:center;gap:4px;">' +
+                    '<span aria-hidden="true" style="' + (primaryIsCurrent ? solidSwatch : dashedSwatch) + '"></span>' +
+                    '<span style="font-size:12px;font-weight:400;color:#60696C;">' + primaryLabel + '</span>' +
+                  '</div>' +
+                  '<span style="font-size:12px;font-weight:700;color:#000;">' + fmtCompactCurrency(primaryVal) + '</span>' +
+                '</div>' +
+                deltaPill +
               '</div>' +
-              deltaPill +
-            '</div>' +
-            prevRow +
-          '</div>'
-        );
-
-        spendLiftTooltipEl.style.display = 'block';
-        scheduleCrossLine(row.date);
-
-        var tw = spendLiftTooltipEl.offsetWidth;
-        var th = spendLiftTooltipEl.offsetHeight;
-        var tx = e.clientX + 16;
-        var ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
-        if (ty < 8) ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        spendLiftTooltipEl.style.left = tx + 'px';
-        spendLiftTooltipEl.style.top  = ty + 'px';
-      }
-
-      container.addEventListener('mousemove',  onMove);
-      container.addEventListener('mouseleave', hide);
-      window.addEventListener('scroll', hide, true);
-      window.addEventListener('resize', hide);
+              prevRow +
+            '</div>'
+          );
+        },
+      });
+      spendLiftTooltipEl = hover.tooltipEl;
     }
 
     function initSpendLiftTrendChart() {
@@ -790,29 +750,13 @@
           {
             type: 'line', xKey: 'date', yKey: 'prev', yName: 'Prev period',
             stroke: SPEND_LIFT_COLOR, strokeWidth: 2, lineDash: [2, 2],
-            marker: {
-              enabled: true, size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: SPEND_LIFT_COLOR, stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
-            },
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
           {
             type: 'line', xKey: 'date', yKey: 'current', yName: 'This period',
             stroke: SPEND_LIFT_COLOR, strokeWidth: 2,
-            marker: {
-              enabled: true, size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: SPEND_LIFT_COLOR, stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
-            },
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
         ],

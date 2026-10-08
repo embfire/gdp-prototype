@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Settings — PAR Guest360 Beta</title>
+  <title>Business profile — PAR Guest360 Beta</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
@@ -11,6 +11,13 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <link rel="stylesheet" href="../assets/bento.css">
   <link rel="stylesheet" href="beta.css">
+  <style>
+    .bp-content { gap: 32px; padding: 48px; }
+    .bp-intro { display: flex; flex-direction: column; gap: 16px; }
+    .bp-fields { display: flex; flex-direction: column; gap: 24px; }
+    .bp-field { display: flex; flex-direction: column; gap: 4px; width: 300px; }
+    .bp-field--wide { width: 480px; }
+  </style>
 </head>
 <body>
   <div class="app-shell">
@@ -79,23 +86,23 @@
           </div>
 
           <div class="nav-group" data-nav-group-id="bottom">
-            <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
+            <button type="button" class="nav-item nav-item-expandable open" onclick="toggleNavExpand(this)" aria-expanded="true">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
               <span class="nav-item__label">Settings</span>
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
             </button>
-            <div class="nav-sub-group">
-              <a href="settings-business-profile.html" class="nav-sub-item">Business profile</a>
+            <div class="nav-sub-group open">
+              <a href="settings-business-profile.html" class="nav-sub-item active">Business profile</a>
               <a href="settings-users-roles.html" class="nav-sub-item">Users and roles</a>
               <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
               <a href="settings-stores.html" class="nav-sub-item">Stores and store groups</a>
             </div>
-            <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
               <span class="nav-item__label">Cockpit</span>
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
             </button>
-            <div class="nav-sub-group" id="cockpit-sub">
+            <div class="nav-sub-group">
               <a href="cockpit-features.html" class="nav-sub-item">Features</a>
               <a href="cockpit-admins.html" class="nav-sub-item">Admins</a>
             </div>
@@ -106,21 +113,75 @@
 
       <!-- Main content -->
       <main class="main-content">
-        <div class="placeholder-page">
-          <span class="material-symbols-rounded placeholder-page__icon">settings</span>
-          <p class="placeholder-page__title">Settings</p>
-          <p class="placeholder-page__desc">This area is not built yet — mock navigation only.</p>
+        <div class="content-area bp-content">
+
+          <div class="bp-intro">
+            <div class="title-bar">
+              <div class="title-bar__page-title">
+                <h1 class="heading1" style="flex:1; font-weight:400;">Business profile</h1>
+                <div class="title-bar__actions">
+                  <button class="button transparent">
+                    <span class="material-symbols-rounded">help</span>
+                    <span>Help</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-banner info-banner_informational">
+              <span class="material-symbols-rounded">info</span>
+              <div class="info-banner__text" style="display:flex; flex-direction:column;">
+                <span class="subtitle">Business profile is read-only in Guest360</span>
+                <span class="body2">To update your business information, edit it directly in Punchh</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bp-fields">
+          <div class="bp-field bp-field--wide">
+            <div class="form-label"><label class="form-label__label">Business name<span class="form-label__label_required">*</span></label></div>
+            <div class="text-input text-input__disabled">
+              <div class="text-input__container">
+                <div class="text-input__container__box" style="width:100%;">
+                  <input type="text" class="text-input__container__box__input-field" value="Cravewave" disabled>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bp-field">
+            <div class="form-label"><label class="form-label__label">Punchh business ID<span class="form-label__label_required">*</span></label></div>
+            <div class="text-input text-input__disabled">
+              <div class="text-input__container">
+                <div class="text-input__container__box" style="width:100%;">
+                  <input type="text" class="text-input__container__box__input-field" value="469" disabled>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bp-field">
+            <div class="form-label"><label class="form-label__label">Business slug<span class="form-label__label_required">*</span></label></div>
+            <div class="text-input text-input__disabled">
+              <div class="text-input__container">
+                <div class="text-input__container__box" style="width:100%;">
+                  <input type="text" class="text-input__container__box__input-field" value="cravewave" disabled>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+
         </div>
       </main>
-
     </div>
-  </div>
+
+  </div><!-- /app-shell -->
 
   <script>
-    function toggleCockpit(btn) {
-      const isOpen = btn.classList.toggle('open');
+    function toggleNavExpand(btn) {
+      var isOpen = btn.classList.toggle('open');
       btn.setAttribute('aria-expanded', isOpen);
-      document.getElementById('cockpit-sub').classList.toggle('open', isOpen);
+      var sub = btn.nextElementSibling;
+      if (sub && sub.classList.contains('nav-sub-group')) sub.classList.toggle('open', isOpen);
     }
   </script>
 </body>

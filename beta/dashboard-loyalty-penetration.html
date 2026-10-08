@@ -19,9 +19,12 @@
     <!-- Header -->
     <header class="header">
       <div class="header-left">
-        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
-          <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
-        </a>
+        <div class="header-brand-lockup">
+          <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+            <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+          </a>
+          <span class="header-beta-tag">Beta</span>
+        </div>
         <span class="header-brand-divider" aria-hidden="true"></span>
         <button class="header-brand-btn" aria-label="Select brand">
           Cravewave
@@ -30,12 +33,12 @@
       </div>
       <div class="header-right">
         <button class="header-btn">
-          <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
-          Ava
+          <span class="material-symbols-rounded">magic_button</span>
+          Intelligence
         </button>
         <button class="header-btn">
-          <span class="material-symbols-rounded">school</span>
-          PAR Academy
+          <span class="material-symbols-rounded">feedback</span>
+          Share feedback
         </button>
         <button class="header-btn header-btn--icon" aria-label="Profile">
           <span class="material-symbols-rounded">person</span>
@@ -68,6 +71,14 @@
             </a>
           </div>
 
+          <div class="nav-group" data-nav-group-id="platform">
+            <div class="nav-group-title">Platform</div>
+            <a href="profile-stitching.html" class="nav-item">
+              <i class="ph-duotone ph-fingerprint-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Profile stitching</span>
+            </a>
+          </div>
+
           <div class="nav-group" data-nav-group-id="bottom">
             <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
@@ -75,7 +86,10 @@
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
             </button>
             <div class="nav-sub-group">
+              <a href="settings-business-profile.html" class="nav-sub-item">Business profile</a>
+              <a href="settings-users-roles.html" class="nav-sub-item">Users and roles</a>
               <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+              <a href="settings-stores.html" class="nav-sub-item">Stores and store groups</a>
             </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
@@ -382,6 +396,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/ag-charts-community@13.2.1/dist/umd/ag-charts-community.min.js"></script>
+  <script src="chart-hover.js"></script>
   <script>
     /* ── Sidebar / dropdowns / date range picker / filter bar ── */
     function toggleCockpit(btn) {
@@ -735,15 +750,7 @@
           return {
             type: 'line', xKey: 'date', yKey: s.key, yName: s.name,
             stroke: s.color, strokeWidth: 2,
-            marker: {
-              enabled: true, size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: s.color, stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
-            },
+            marker: { enabled: false },
             tooltip: { enabled: false },
           };
         });
@@ -752,29 +759,13 @@
         {
           type: 'line', xKey: 'date', yKey: 'prev', yName: 'Prev period',
           stroke: '#5A55E3', strokeWidth: 2, lineDash: [2, 2],
-          marker: {
-            enabled: true, size: 0,
-            itemStyler: function(params) {
-              if (params.highlightState === 'highlighted-item') {
-                return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-              }
-              return { size: 0 };
-            },
-          },
+          marker: { enabled: false },
           tooltip: { enabled: false },
         },
         {
           type: 'line', xKey: 'date', yKey: 'current', yName: 'This period',
           stroke: '#5A55E3', strokeWidth: 2,
-          marker: {
-            enabled: true, size: 0,
-            itemStyler: function(params) {
-              if (params.highlightState === 'highlighted-item') {
-                return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-              }
-              return { size: 0 };
-            },
-          },
+          marker: { enabled: false },
           tooltip: { enabled: false },
         },
       ];
@@ -812,7 +803,7 @@
                 new Date(2025, 9, 1), new Date(2026, 0, 1),
               ],
             },
-            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+            crosshair: { enabled: false },
           },
           y: {
             type: 'number', position: 'left',
@@ -846,37 +837,32 @@
     }
 
     function wireTrendTooltip(container, data) {
-      if (penetrationTooltipEl && penetrationTooltipEl.parentNode) {
-        penetrationTooltipEl.parentNode.removeChild(penetrationTooltipEl);
-      }
-      if (penetrationMouseMove) {
-        container.removeEventListener('mousemove', penetrationMouseMove);
-        container.removeEventListener('mouseleave', penetrationMouseLeave);
-      }
-      penetrationTooltipEl = document.createElement('div');
-      penetrationTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(penetrationTooltipEl);
-
-      var PLOT_LEFT = 46, PLOT_RIGHT_PAD = 16;
-      penetrationMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - PLOT_RIGHT_PAD;
-        if (mx < PLOT_LEFT || mx > plotRight) { penetrationTooltipEl.style.display = 'none'; return; }
-        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
-        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
-        var d = data.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-        if (currentTrendBreakdown === 'total') {
-          penetrationTooltipEl.innerHTML = renderPenetrationTotalTooltip(d, data);
+      // Snapped tooltip + hairline + hover dot — shared chart-hover.js (port of production agChartHoverOverlay).
+      var penetrationHover = ChartHover.attach(container, {
+        data: data,
+        series: function() {
+          return penetrationTrendOptions.series
+            .filter(function(s) { return !penetrationVisibility || penetrationVisibility[s.yKey] !== false; })
+            .map(function(s) { return { yKey: s.yKey, stroke: s.stroke }; });
+        },
+        yDomain: function() {
+          var y = penetrationTrendOptions.axes && penetrationTrendOptions.axes.y;
+          return y && typeof y.min === 'number' && typeof y.max === 'number' ? { min: y.min, max: y.max } : null;
+        },
+        xDomain: function() {
+          var x = penetrationTrendOptions.axes && penetrationTrendOptions.axes.x;
+          return x && x.min && x.max ? { min: +x.min, max: +x.max } : null;
+        },
+        renderTooltip: function(d) {
+                if (currentTrendBreakdown === 'total') {
+           return renderPenetrationTotalTooltip(d, data);
         } else {
-          if (!penetrationVisibility.current) { penetrationTooltipEl.style.display = 'none'; return; }
+          if (!penetrationVisibility.current) { return null; }
           var ptsDelta = d.current - d.prev;
           var ptsColor = ptsDelta >= 0 ? '#257469' : '#b1294a';
           var ptsBg = ptsDelta >= 0 ? '#effaf9' : '#fdecef';
           var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
-          penetrationTooltipEl.innerHTML = (
+           return (
             '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
             '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;">Loyalty penetration</p>' +
             '<div style="display:flex;flex-direction:column;gap:8px;">' +
@@ -892,18 +878,9 @@
             '</div>'
           );
         }
-        penetrationTooltipEl.style.display = 'block';
-        var tw = penetrationTooltipEl.offsetWidth, th = penetrationTooltipEl.offsetHeight;
-        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth - 8) tx = e.clientX - tw - 16;
-        if (ty < 8) ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        penetrationTooltipEl.style.left = tx + 'px';
-        penetrationTooltipEl.style.top = ty + 'px';
-      };
-      penetrationMouseLeave = function() { penetrationTooltipEl.style.display = 'none'; };
-      container.addEventListener('mousemove', penetrationMouseMove);
-      container.addEventListener('mouseleave', penetrationMouseLeave);
+        },
+      });
+      penetrationTooltipEl = penetrationHover.tooltipEl;
     }
 
     function selectTrendBreakdown(btn, mode) {
@@ -923,30 +900,32 @@
       pointMenuOpts = opts;
       container.style.cursor = 'pointer';
       container.addEventListener('click', function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var my = e.clientY - rect.top;
-        var plotRight = rect.width - opts.plotRightPad;
-        if (mx < opts.plotLeft || mx > plotRight) return;
+        // Same plot rect + snap as the hover tooltip (chart-hover.js), so a click lands on the point the tooltip showed.
+        var plot = ChartHover.readPlotRect(container);
+        if (!plot) return;
+        var timestamps = opts.data.map(function(row) { return row.date.getTime(); });
+        var index = ChartHover.snapIndex(e.clientX, plot, timestamps, function() { return { min: opts.axisMinTime, max: opts.axisMaxTime }; });
+        if (index === null) return;
+
+        // Don't let this click bubble to the document outside-listener that
+        // a previously-open menu installed — otherwise the new menu we're
+        // about to open would be closed in the same event.
         e.stopPropagation();
-        var relX = (mx - opts.plotLeft) / (plotRight - opts.plotLeft);
-        var targetTime = opts.axisMinTime + relX * (opts.axisMaxTime - opts.axisMinTime);
-        var d = opts.data.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
+        var d = opts.data[index];
+
+        // Pick the series whose projected Y is closer to the cursor — so
+        // clicking near the dashed prev-period line opens the menu for it.
         var seriesKey = 'current';
         if (opts.axisMinValue != null && opts.axisMaxValue != null && opts.seriesValueKeys) {
-          var plotH = rect.height - (opts.plotTop || 0) - (opts.xAxisHeight || 0);
-          var range = opts.axisMaxValue - opts.axisMinValue;
-          var bestDist = Infinity;
+          var candidates = [];
           Object.keys(opts.seriesValueKeys).forEach(function(key) {
-            if (penetrationVisibility[key] === false) return;
-            var v = d[opts.seriesValueKeys[key]];
-            var y = (opts.plotTop || 0) + (1 - (v - opts.axisMinValue) / range) * plotH;
-            var dist = Math.abs(my - y);
-            if (dist < bestDist) { bestDist = dist; seriesKey = key; }
+            // (no legend visibility to honour)
+            candidates.push({ yKey: opts.seriesValueKeys[key], key: key });
           });
+          var nearest = ChartHover.pickNearestSeries(d, candidates, e.clientY - plot.top, { min: opts.axisMinValue, max: opts.axisMaxValue }, plot);
+          if (nearest) seriesKey = nearest.spec.key;
         }
+
         pointMenuAnchor = d;
         pointMenuSeries = seriesKey;
         openPointMenu(e.clientX, e.clientY);
@@ -967,7 +946,7 @@
       }
       menu.classList.add('chart-point-menu--open');
       menu.setAttribute('aria-hidden', 'false');
-      if (penetrationTooltipEl) penetrationTooltipEl.style.display = 'none';
+      document.querySelectorAll('[data-chart-overlay]').forEach(function(el) { el.style.display = 'none'; });
       var mw = menu.offsetWidth, mh = menu.offsetHeight;
       var x = clientX + 12, y = clientY + 12;
       if (x + mw > window.innerWidth - 8) x = clientX - mw - 12;

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Settings — PAR Guest360 Beta</title>
+  <title>Users and roles — PAR Guest360 Beta</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
@@ -79,23 +79,23 @@
           </div>
 
           <div class="nav-group" data-nav-group-id="bottom">
-            <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
+            <button type="button" class="nav-item nav-item-expandable open" onclick="toggleNavExpand(this)" aria-expanded="true">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
               <span class="nav-item__label">Settings</span>
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
             </button>
-            <div class="nav-sub-group">
+            <div class="nav-sub-group open">
               <a href="settings-business-profile.html" class="nav-sub-item">Business profile</a>
-              <a href="settings-users-roles.html" class="nav-sub-item">Users and roles</a>
+              <a href="settings-users-roles.html" class="nav-sub-item active">Users and roles</a>
               <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
               <a href="settings-stores.html" class="nav-sub-item">Stores and store groups</a>
             </div>
-            <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
               <span class="nav-item__label">Cockpit</span>
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
             </button>
-            <div class="nav-sub-group" id="cockpit-sub">
+            <div class="nav-sub-group">
               <a href="cockpit-features.html" class="nav-sub-item">Features</a>
               <a href="cockpit-admins.html" class="nav-sub-item">Admins</a>
             </div>
@@ -106,21 +106,27 @@
 
       <!-- Main content -->
       <main class="main-content">
-        <div class="placeholder-page">
-          <span class="material-symbols-rounded placeholder-page__icon">settings</span>
-          <p class="placeholder-page__title">Settings</p>
-          <p class="placeholder-page__desc">This area is not built yet — mock navigation only.</p>
+        <div class="content-area">
+
+          <!-- Title Bar -->
+          <div class="title-bar">
+            <div class="title-bar__page-title">
+              <h1 class="heading1">Users and roles</h1>
+            </div>
+          </div>
+
         </div>
       </main>
-
     </div>
-  </div>
+
+  </div><!-- /app-shell -->
 
   <script>
-    function toggleCockpit(btn) {
-      const isOpen = btn.classList.toggle('open');
+    function toggleNavExpand(btn) {
+      var isOpen = btn.classList.toggle('open');
       btn.setAttribute('aria-expanded', isOpen);
-      document.getElementById('cockpit-sub').classList.toggle('open', isOpen);
+      var sub = btn.nextElementSibling;
+      if (sub && sub.classList.contains('nav-sub-group')) sub.classList.toggle('open', isOpen);
     }
   </script>
 </body>

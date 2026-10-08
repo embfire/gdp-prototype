@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Store group — PAR Guest360 Beta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="../assets/bento.css">
+  <link rel="stylesheet" href="beta.css">
+  <link rel="stylesheet" href="settings-stores.css">
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="header-brand-lockup">
+          <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+            <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+          </a>
+          <span class="header-beta-tag">Beta</span>
+        </div>
+        <span class="header-brand-divider" aria-hidden="true"></span>
+        <button class="header-brand-btn" aria-label="Select brand">
+          Cravewave
+          <i class="ph ph-caret-down"></i>
+        </button>
+      </div>
+      <div class="header-right">
+        <button class="header-btn">
+          <span class="material-symbols-rounded">magic_button</span>
+          Intelligence
+        </button>
+        <button class="header-btn">
+          <span class="material-symbols-rounded">feedback</span>
+          Share feedback
+        </button>
+        <button class="header-btn header-btn--icon" aria-label="Profile">
+          <span class="material-symbols-rounded">person</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="app-shell__body">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav" aria-label="Main navigation">
+
+          <div class="nav-group" data-nav-group-id="top">
+            <a href="index.html" class="nav-item">
+              <i class="ph-duotone ph-chart-bar" aria-hidden="true"></i>
+              <span class="nav-item__label">Dashboard</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="guests">
+            <div class="nav-group-title">Guests</div>
+            <a href="guest-profiles.html" class="nav-item">
+              <i class="ph-duotone ph-user-circle" aria-hidden="true"></i>
+              <span class="nav-item__label">Guest profiles</span>
+            </a>
+            <a href="guest-segments.html" class="nav-item">
+              <i class="ph-duotone ph-users-three" aria-hidden="true"></i>
+              <span class="nav-item__label">Segments</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="platform">
+            <div class="nav-group-title">Platform</div>
+            <a href="profile-stitching.html" class="nav-item">
+              <i class="ph-duotone ph-fingerprint-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Profile stitching</span>
+            </a>
+          </div>
+
+          <div class="nav-group" data-nav-group-id="bottom">
+            <button type="button" class="nav-item nav-item-expandable open" onclick="toggleNavExpand(this)" aria-expanded="true">
+              <i class="ph-duotone ph-gear" aria-hidden="true"></i>
+              <span class="nav-item__label">Settings</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group open">
+              <a href="settings-business-profile.html" class="nav-sub-item">Business profile</a>
+              <a href="settings-users-roles.html" class="nav-sub-item">Users and roles</a>
+              <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+              <a href="settings-stores.html" class="nav-sub-item active">Stores and store groups</a>
+            </div>
+            <button type="button" class="nav-item nav-item-expandable" onclick="toggleNavExpand(this)" aria-expanded="false">
+              <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
+              <span class="nav-item__label">Cockpit</span>
+              <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
+            </button>
+            <div class="nav-sub-group">
+              <a href="cockpit-features.html" class="nav-sub-item">Features</a>
+              <a href="cockpit-admins.html" class="nav-sub-item">Admins</a>
+            </div>
+          </div>
+
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main-content">
+        <div class="content-area sd-content">
+
+          <div class="sd-top">
+            <nav class="chart-breadcrumbs" aria-label="Stores and store groups">
+              <a href="settings-stores.html" class="chart-breadcrumbs__link">Stores and store groups</a>
+              <span class="chart-breadcrumbs__separator" aria-hidden="true">
+                <span class="material-symbols-rounded">chevron_right</span>
+              </span>
+              <span class="chart-breadcrumbs__current" id="sd-crumb"></span>
+            </nav>
+
+            <div class="sd-title-row">
+              <h1 class="sd-title" id="sd-title"></h1>
+              <div class="sd-actions">
+                <button class="button transparent">
+                  <span class="material-symbols-rounded">help</span>
+                  <span>Help</span>
+                </button>
+                <button class="button primary" onclick="openAddStores()">
+                  <span class="material-symbols-rounded">add</span>
+                  <span>Add stores</span>
+                </button>
+                <button class="button outlined no-content" id="sd-overflow" onclick="toggleOverflow(event)" aria-label="More actions" aria-haspopup="menu">
+                  <span class="material-symbols-rounded">more_vert</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="info-banner info-banner_informational">
+              <span class="material-symbols-rounded">info</span>
+              <div class="info-banner__text">
+                <span class="subtitle">Store groups are managed separately in Guest360</span>
+                <span class="body2">Changes you make here will not affect your store groups in Punchh</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sd-stores">
+
+            <div class="st-empty" id="sd-none" hidden>
+              <span class="material-symbols-rounded empty-state__icon">storefront</span>
+              <span class="st-empty__title">No stores yet</span>
+              <span class="st-empty__desc">Add stores to this group</span>
+              <button class="button primary" onclick="openAddStores()">
+                <span class="material-symbols-rounded">add</span>
+                <span>Add stores</span>
+              </button>
+            </div>
+
+            <div id="sd-list" class="st-panel" style="gap:32px;">
+              <div class="st-controls">
+                <div class="st-controls__search">
+                  <div class="text-input__container">
+                    <div class="text-input__container__box" style="width:100%;">
+                      <span class="material-symbols-rounded text-input__container__box_icon-left" style="font-size:24px; color:#60696c;">search</span>
+                      <input type="text" class="text-input__container__box__input-field text-input__container__box_icon-left-padding"
+                             placeholder="Filter by number, name, address" oninput="Detail.setQuery(this.value)">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guests-table-header">
+                <span class="guests-table-header__count" id="sd-count"></span>
+                <div class="guests-table-header__sort">
+                  <span class="guests-table-header__sort-label">Sort by:</span>
+                  <div class="sort-dropdown" style="position:relative;">
+                    <div class="dropdown__wrapper">
+                      <button class="dropdown__button" style="min-width:250px;" onclick="Detail.toggleSort()">
+                        <span id="sd-sort-label">Name: A to Z</span>
+                        <i class="ph ph-caret-down" style="font-size:16px; flex-shrink:0;"></i>
+                      </button>
+                    </div>
+                    <div class="dropdown__options" id="sd-sort-options"><ul></ul></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="st-table-wrap">
+                <div class="table-container">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th class="st-check-cell" onclick="Detail.toggleAll()"><span id="sd-all" class="material-symbols-rounded guests-check-icon">check_box_outline_blank</span></th>
+                        <th>No.</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th class="st-num">Zip code</th>
+                        <th>State</th>
+                        <th class="table__actions-column"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="sd-tbody"></tbody>
+                  </table>
+                  <div class="st-empty" id="sd-empty" hidden>
+                    <span class="material-symbols-rounded empty-state__icon">search_off</span>
+                    <span class="st-empty__title">No stores found</span>
+                    <span class="st-empty__desc">Try adjusting your search.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pagination" id="sd-pagination"></div>
+
+              <div class="st-bulk" id="sd-bulk" hidden>
+                <div class="bulk-action">
+                  <div class="bulk-action__selected_wrapper">
+                    <span class="subtitle bulk-action__selected_count" id="sd-bulk-count">0</span>
+                    <span class="body1">selected</span>
+                  </div>
+                  <div class="bulk-action__actions-group">
+                    <button class="button primary" onclick="openRemove(Detail.selectedIds())"><span class="body1">Remove</span></button>
+                  </div>
+                  <button class="st-bulk__clear" onclick="Detail.clearSelection()">Clear selection</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Row + overflow menus -->
+    <div class="guest-row-menu" id="row-menu"></div>
+    <div class="guest-row-menu" id="overflow-menu">
+      <button class="guest-row-menu__item" onclick="closeDropdowns(); openEditGroup()"><span class="material-symbols-rounded">edit_note</span>Edit</button>
+      <button class="guest-row-menu__item" onclick="closeDropdowns(); openDeleteGroup()"><span class="material-symbols-rounded">delete</span>Delete</button>
+    </div>
+
+    <!-- Toast -->
+    <div class="st-toast" id="st-toast">
+      <div class="toast__body toast__body_success" id="st-toast-body">
+        <span class="material-symbols-rounded" style="color:#fff; font-size:20px;" id="st-toast-icon">check_circle</span>
+        <div class="toast__body_content">
+          <span style="font-weight:600; font-size:14px;" id="st-toast-text"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add stores modal -->
+    <div class="modal modal__wrapper" id="modal-add" hidden>
+      <div class="modal__content">
+        <div class="modal__content_header">
+          <h3>Add stores</h3>
+          <div class="modal__content_header_actions"><button class="button transparent no-content" onclick="closeModals()" aria-label="Close"><span class="material-symbols-rounded">close</span></button></div>
+        </div>
+        <div class="modal__content_body">
+          <div class="st-modal__top" style="padding-bottom:0;">
+            <p class="st-modal__choose" id="add-desc" hidden></p>
+          </div>
+          <div class="st-modal__search-menu">
+            <div class="text-input__container">
+              <div class="text-input__container__box" style="width:100%;">
+                <span class="material-symbols-rounded text-input__container__box_icon-left" style="font-size:24px; color:#60696c;">search</span>
+                <input type="text" class="text-input__container__box__input-field text-input__container__box_icon-left-padding" id="add-search"
+                       placeholder="Search stores" oninput="renderAddList()">
+              </div>
+            </div>
+            <div class="st-modal__list" id="add-list"></div>
+          </div>
+        </div>
+        <div class="modal__content_footer">
+          <div class="st-modal__footer">
+            <button class="button primary" id="add-save" onclick="saveAddStores()" disabled><span class="body1">Save</span></button>
+            <button class="button outlined" onclick="closeModals()"><span class="body1">Cancel</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Remove store(s) modal -->
+    <div class="modal modal__wrapper" id="modal-remove" hidden>
+      <div class="modal__content">
+        <div class="modal__content_header">
+          <h3 id="remove-title">Remove store?</h3>
+          <div class="modal__content_header_actions"><button class="button transparent no-content" onclick="closeModals()" aria-label="Close"><span class="material-symbols-rounded">close</span></button></div>
+        </div>
+        <div class="modal__content_body">
+          <p class="st-modal__text" id="remove-text"></p>
+        </div>
+        <div class="modal__content_footer">
+          <div class="st-modal__footer">
+            <button class="button primary" onclick="confirmRemove()"><span class="body1">Yes, remove</span></button>
+            <button class="button outlined" onclick="closeModals()"><span class="body1">No, keep it</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit store group modal -->
+    <div class="modal modal__wrapper" id="modal-group" hidden>
+      <div class="modal__content">
+        <div class="modal__content_header">
+          <h3>Edit store group</h3>
+          <div class="modal__content_header_actions"><button class="button transparent no-content" onclick="closeModals()" aria-label="Close"><span class="material-symbols-rounded">close</span></button></div>
+        </div>
+        <div class="modal__content_body">
+          <div class="st-modal__body">
+            <div class="info-banner info-banner_informational">
+              <span class="material-symbols-rounded">info</span>
+              <div class="info-banner__text">
+                <span class="subtitle">Store groups are managed separately in Guest360</span>
+                <span class="body2">Changes you make here will not affect your store groups in Punchh</span>
+              </div>
+            </div>
+            <div class="st-modal__field">
+              <div class="form-label"><label class="form-label__label">Store group name<span class="form-label__label_required">*</span></label></div>
+              <div class="text-input__container">
+                <div class="text-input__container__box" style="width:100%;" id="group-name-box">
+                  <input type="text" class="text-input__container__box__input-field" id="group-name" placeholder="Enter store group name"
+                         onkeydown="if(event.key==='Enter') submitGroup()">
+                </div>
+              </div>
+              <p class="st-modal__error" id="group-name-error" hidden></p>
+            </div>
+          </div>
+        </div>
+        <div class="modal__content_footer">
+          <div class="st-modal__footer">
+            <button class="button primary" onclick="submitGroup()"><span class="body1">Save</span></button>
+            <button class="button outlined" onclick="closeModals()"><span class="body1">Cancel</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete store group modal -->
+    <div class="modal modal__wrapper" id="modal-delete" hidden>
+      <div class="modal__content">
+        <div class="modal__content_header">
+          <h3>Delete store group?</h3>
+          <div class="modal__content_header_actions"><button class="button transparent no-content" onclick="closeModals()" aria-label="Close"><span class="material-symbols-rounded">close</span></button></div>
+        </div>
+        <div class="modal__content_body">
+          <p class="st-modal__text" id="delete-text"></p>
+        </div>
+        <div class="modal__content_footer">
+          <div class="st-modal__footer">
+            <button class="button primary" onclick="confirmDelete()"><span class="body1">Yes, delete</span></button>
+            <button class="button outlined" onclick="closeModals()"><span class="body1">No, keep it</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /app-shell -->
+
+  <script src="stores-shared.js"></script>
+  <script>
+    var groupId = Number(new URLSearchParams(location.search).get('id'));
+    var group = GROUPS.filter(function (g) { return g.id === groupId; })[0];
+    if (!group) location.replace('settings-stores.html');
+
+    function renderHeader() {
+      document.getElementById('sd-title').textContent = group.name;
+      document.getElementById('sd-crumb').textContent = group.name;
+      document.title = group.name + ' — PAR Guest360 Beta';
+    }
+
+    /* ───────── Stores in this group ───────── */
+    var Detail = makeTable({
+      prefix: 'sd', name: 'Detail',
+      data: function () { return STORES.filter(function (s) { return group.stores.indexOf(s.id) !== -1; }); },
+      sorts: [
+        { value: 'name', title: 'Name: A to Z', cmp: byStr(function (r) { return r.name; }, 1) },
+        { value: '-name', title: 'Name: Z to A', cmp: byStr(function (r) { return r.name; }, -1) }
+      ],
+      match: function (r, q) {
+        q = q.trim().toLowerCase();
+        return !q || String(r.number).indexOf(q) !== -1 || r.name.toLowerCase().indexOf(q) !== -1 || r.address.toLowerCase().indexOf(q) !== -1;
+      },
+      cells: function (r) {
+        return '<td>' + r.number + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.address) + '</td><td>' + esc(r.city) + '</td>' +
+          '<td class="st-num">' + r.zip + '</td><td>' + r.state + '</td>';
+      },
+      menu: function (id) {
+        return '<button class="guest-row-menu__item" onclick="closeDropdowns(); openRemove([' + id + '])"><span class="material-symbols-rounded">remove_circle_outline</span>Remove</button>';
+      }
+    });
+    var origDetailRender = Detail.render;
+    Detail.render = function () {
+      var none = group.stores.length === 0 && !Detail.query;
+      document.getElementById('sd-none').hidden = !none;
+      document.getElementById('sd-list').hidden = none;
+      if (!none) origDetailRender();
+    };
+
+    /* ───────── Remove stores ───────── */
+    var removeIds = [];
+    function openRemove(ids) {
+      removeIds = ids.slice();
+      if (ids.length === 1) {
+        var st = STORES.filter(function (s) { return s.id === ids[0]; })[0];
+        document.getElementById('remove-title').textContent = 'Remove store?';
+        document.getElementById('remove-text').innerHTML = 'Are you sure you want to remove <strong>' + esc(st.name) + '</strong>? This will not affect your store groups in Punchh.';
+      } else {
+        document.getElementById('remove-title').textContent = 'Remove stores?';
+        document.getElementById('remove-text').textContent = 'Are you sure you want to remove multiple stores? This will not affect your store groups in Punchh.';
+      }
+      showModal('modal-remove');
+    }
+    function confirmRemove() {
+      group.stores = group.stores.filter(function (id) { return removeIds.indexOf(id) === -1; });
+      group.updated = new Date();
+      removeIds.forEach(function (id) { Detail.selected.delete(id); });
+      saveGroups();
+      closeModals();
+      showToast('Store(s) removed successfully');
+      Detail.render();
+    }
+
+    /* ───────── Add stores ───────── */
+    var ADD_LIMIT = 20, addSelected = new Set();
+    function candidates() {
+      var q = document.getElementById('add-search').value.trim().toLowerCase();
+      return STORES.filter(function (s) { return group.stores.indexOf(s.id) === -1 && (!q || s.name.toLowerCase().indexOf(q) !== -1); })
+        .sort(function (a, b) { return a.name.localeCompare(b.name); });
+    }
+    function openAddStores() {
+      addSelected = new Set();
+      document.getElementById('add-search').value = '';
+      renderAddList();
+      showModal('modal-add');
+    }
+    function renderAddList() {
+      var all = candidates(), shown = all.slice(0, ADD_LIMIT);
+      var desc = document.getElementById('add-desc');
+      desc.hidden = all.length <= shown.length;
+      desc.textContent = 'Showing ' + shown.length + ' of ' + all.length + ' stores. Search to find more.';
+      document.getElementById('add-list').innerHTML = shown.length ? shown.map(function (s) {
+        var on = addSelected.has(s.id), g = groupsOfStore(s.id);
+        return '<div class="st-pick"><div class="st-check' + (on ? ' st-check--on' : '') + '" role="checkbox" aria-checked="' + on + '" tabindex="0" onclick="toggleAdd(' + s.id + ')" onkeydown="if(event.key===\' \'||event.key===\'Enter\'){event.preventDefault();toggleAdd(' + s.id + ')}">' +
+          '<span class="material-symbols-rounded">' + (on ? 'check_box' : 'check_box_outline_blank') + '</span><span>' + esc(s.name) + '</span></div>' +
+          (g.length ? '<p class="st-pick__hint">in ' + esc(g.join(', ')) + '</p>' : '') + '</div>';
+      }).join('') : '<div class="st-modal__noresults"><span class="material-symbols-rounded">search_off</span>No results found</div>';
+      document.getElementById('add-save').disabled = addSelected.size === 0;
+    }
+    function toggleAdd(id) { if (addSelected.has(id)) addSelected.delete(id); else addSelected.add(id); renderAddList(); }
+    function saveAddStores() {
+      addSelected.forEach(function (id) { if (group.stores.indexOf(id) === -1) group.stores.push(id); });
+      group.updated = new Date();
+      saveGroups();
+      closeModals();
+      showToast('Store(s) added successfully');
+      Detail.render();
+    }
+
+    /* ───────── Edit / delete the group ───────── */
+    function toggleOverflow(e) {
+      e.stopPropagation();
+      var menu = document.getElementById('overflow-menu');
+      var open = menu.classList.contains('guest-row-menu--open');
+      closeDropdowns();
+      if (open) return;
+      var r = e.currentTarget.getBoundingClientRect();
+      menu.style.left = Math.max(8, r.right - 180) + 'px';
+      menu.style.top = (r.bottom + 4) + 'px';
+      menu.classList.add('guest-row-menu--open');
+    }
+    function setNameError(msg) {
+      var e = document.getElementById('group-name-error');
+      e.textContent = msg; e.hidden = !msg;
+      document.getElementById('group-name-box').style.boxShadow = msg ? '0 0 0 2px #c0392b' : '';
+    }
+    function openEditGroup() {
+      document.getElementById('group-name').value = group.name;
+      setNameError('');
+      showModal('modal-group');
+      document.getElementById('group-name').focus();
+    }
+    function submitGroup() {
+      var name = document.getElementById('group-name').value.trim();
+      if (!name) { setNameError('The name field is required.'); return; }
+      if (GROUPS.some(function (g) { return g.id !== group.id && g.name.toLowerCase() === name.toLowerCase(); })) { setNameError('The name has already been taken.'); return; }
+      group.name = name;
+      group.updated = new Date();
+      saveGroups();
+      closeModals();
+      renderHeader();
+      showToast('Store group updated successfully');
+    }
+    function openDeleteGroup() {
+      document.getElementById('delete-text').innerHTML = 'Are you sure you want to delete <strong>' + esc(group.name) + '</strong>? This is permanent and can\u2019t be undone. This will not affect your store groups in Punchh.';
+      showModal('modal-delete');
+    }
+    function confirmDelete() {
+      GROUPS = GROUPS.filter(function (g) { return g.id !== group.id; });
+      saveGroups();
+      flashToast('Store group deleted successfully');
+      location.href = 'settings-stores.html';
+    }
+
+    /* ───────── Modals / misc ───────── */
+    function showModal(id) { closeDropdowns(); document.getElementById(id).hidden = false; }
+    function closeModals() { document.querySelectorAll('.modal').forEach(function (m) { m.hidden = true; }); }
+    function toggleNavExpand(btn) {
+      var isOpen = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      var sub = btn.nextElementSibling;
+      if (sub && sub.classList.contains('nav-sub-group')) sub.classList.toggle('open', isOpen);
+    }
+    var origCloseDropdowns = closeDropdowns;
+    closeDropdowns = function () { origCloseDropdowns(); document.getElementById('overflow-menu').classList.remove('guest-row-menu--open'); };
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.sort-dropdown') && !e.target.closest('.pagination-dropdown') && !e.target.closest('.guest-kebab-btn') && !e.target.closest('.guest-row-menu')) closeDropdowns();
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeModals(); closeDropdowns(); } });
+
+    if (group) { renderHeader(); Detail.render(); }
+  </script>
+</body>
+</html>

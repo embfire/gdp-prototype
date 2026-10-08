@@ -20,9 +20,12 @@
     <!-- Header -->
     <header class="header">
       <div class="header-left">
-        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
-          <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
-        </a>
+        <div class="header-brand-lockup">
+          <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+            <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+          </a>
+          <span class="header-beta-tag">Beta</span>
+        </div>
         <span class="header-brand-divider" aria-hidden="true"></span>
         <button class="header-brand-btn" aria-label="Select brand">
           Cravewave
@@ -31,12 +34,12 @@
       </div>
       <div class="header-right">
         <button class="header-btn">
-          <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
-          Ava
+          <span class="material-symbols-rounded">magic_button</span>
+          Intelligence
         </button>
         <button class="header-btn">
-          <span class="material-symbols-rounded">school</span>
-          PAR Academy
+          <span class="material-symbols-rounded">feedback</span>
+          Share feedback
         </button>
         <button class="header-btn header-btn--icon" aria-label="Profile">
           <span class="material-symbols-rounded">person</span>
@@ -69,6 +72,14 @@
             </a>
           </div>
 
+          <div class="nav-group" data-nav-group-id="platform">
+            <div class="nav-group-title">Platform</div>
+            <a href="profile-stitching.html" class="nav-item">
+              <i class="ph-duotone ph-fingerprint-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Profile stitching</span>
+            </a>
+          </div>
+
           <div class="nav-group" data-nav-group-id="bottom">
             <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
@@ -76,7 +87,10 @@
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
             </button>
             <div class="nav-sub-group">
+              <a href="settings-business-profile.html" class="nav-sub-item">Business profile</a>
+              <a href="settings-users-roles.html" class="nav-sub-item">Users and roles</a>
               <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+              <a href="settings-stores.html" class="nav-sub-item">Stores and store groups</a>
             </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
