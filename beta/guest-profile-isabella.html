@@ -18,9 +18,12 @@
     <!-- Header -->
     <header class="header">
       <div class="header-left">
-        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
-          <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
-        </a>
+        <div class="header-brand-lockup">
+          <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+            <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+          </a>
+          <span class="header-beta-tag">Beta</span>
+        </div>
         <span class="header-brand-divider" aria-hidden="true"></span>
         <button class="header-brand-btn" aria-label="Select brand">
           Cravewave
@@ -29,12 +32,12 @@
       </div>
       <div class="header-right">
         <button class="header-btn">
-          <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
-          Ava
+          <span class="material-symbols-rounded">magic_button</span>
+          Intelligence
         </button>
         <button class="header-btn">
-          <span class="material-symbols-rounded">school</span>
-          PAR Academy
+          <span class="material-symbols-rounded">feedback</span>
+          Share feedback
         </button>
         <button class="header-btn header-btn--icon" aria-label="Profile">
           <span class="material-symbols-rounded">person</span>
@@ -67,6 +70,14 @@
             </a>
           </div>
 
+          <div class="nav-group" data-nav-group-id="platform">
+            <div class="nav-group-title">Platform</div>
+            <a href="profile-stitching.html" class="nav-item">
+              <i class="ph-duotone ph-fingerprint-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Profile stitching</span>
+            </a>
+          </div>
+
           <div class="nav-group" data-nav-group-id="bottom">
             <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
@@ -74,7 +85,10 @@
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
             </button>
             <div class="nav-sub-group">
+              <a href="settings-business-profile.html" class="nav-sub-item">Business profile</a>
+              <a href="settings-users-roles.html" class="nav-sub-item">Users and roles</a>
               <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+              <a href="settings-stores.html" class="nav-sub-item">Stores and store groups</a>
             </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
@@ -114,19 +128,12 @@
                   <span class="material-symbols-rounded">help</span>
                   <span>Help</span>
                 </button>
-                <button class="button primary">
-                  <span class="material-symbols-rounded">add</span>
-                  <span>Create segment from profile</span>
-                </button>
               </div>
             </div>
 
             <!-- Tags row -->
             <div class="profile-header__tags">
               <span class="tag tag--lifecycle tag--loyal"><span>Loyal</span></span>
-              <span class="profile-header__tag-divider" aria-hidden="true"></span>
-              <span class="tag tag--segment"><span>Dinner Enthusiast</span></span>
-              <span class="tag tag--segment"><span>Monthly Regular</span></span>
             </div>
 
           </section>
@@ -192,10 +199,6 @@
                   <span class="profile-card__row-label">Lifecycle stage</span>
                   <span class="tag tag--lifecycle tag--loyal"><span>Loyal</span></span>
                 </div>
-                <div class="profile-card__row">
-                  <span class="profile-card__row-label">Order frequency</span>
-                  <span class="profile-card__row-value">Monthly</span>
-                </div>
               </div>
             </div>
 
@@ -209,10 +212,6 @@
                 <div class="profile-card__row">
                   <span class="profile-card__row-label">Last ordered</span>
                   <span class="profile-card__row-value">12 days ago</span>
-                </div>
-                <div class="profile-card__row">
-                  <span class="profile-card__row-label">Sources</span>
-                  <span class="profile-card__row-value">POS, Olo</span>
                 </div>
                 <div class="profile-card__row">
                   <span class="profile-card__row-label">Stores</span>
@@ -236,10 +235,6 @@
                   <span class="profile-card__row-label">Avg order size</span>
                   <span class="profile-card__row-value">2.8 items</span>
                 </div>
-                <div class="profile-card__row">
-                  <span class="profile-card__row-label">Favorite daypart</span>
-                  <span class="profile-card__row-value">Dinner</span>
-                </div>
               </div>
             </div>
 
@@ -251,7 +246,7 @@
               </div>
               <div class="profile-card__rows">
                 <div class="profile-card__row">
-                  <span class="profile-card__row-label">Tier status</span>
+                  <span class="profile-card__row-label">Membership level</span>
                   <span class="profile-card__row-value">-</span>
                 </div>
                 <div class="profile-card__row">
@@ -265,20 +260,15 @@
               </div>
             </div>
 
-            <!-- Identity resolution -->
+            <!-- Profile stitching -->
             <div class="profile-card">
               <div class="profile-card__header">
-                <div class="profile-card__label">Identity resolution</div>
-                <div class="profile-card__hero">Matched</div>
+                <div class="profile-card__label">Profile stitching</div>
               </div>
               <div class="profile-card__rows">
                 <div class="profile-card__row">
-                  <span class="profile-card__row-label">Confidence</span>
-                  <span class="profile-card__row-value">94.0%</span>
-                </div>
-                <div class="profile-card__row">
                   <span class="profile-card__row-label">Profiles merged</span>
-                  <span class="profile-card__row-value">2 (POS, Olo)</span>
+                  <span class="profile-card__row-value">2</span>
                 </div>
               </div>
             </div>
@@ -316,175 +306,11 @@
 
           </section>
 
-          <!-- Events timeline (identical to Marcus) -->
+          <!-- Events timeline -->
           <section class="timeline-section">
             <h2 class="timeline-section__heading">Guest activity</h2>
 
-            <div class="timeline">
-
-              <!-- Event 1 -->
-              <div class="timeline__event">
-                <span class="timeline__date">Apr 14, 2026, 10:02 AM</span>
-                <div class="timeline__rail">
-                  <div class="rail__icon">
-                    <span class="material-symbols-rounded">mail</span>
-                  </div>
-                  <div class="rail__below">
-                    <div class="rail__spacer"></div>
-                    <div class="rail__line rail__line--flex"></div>
-                    <div class="rail__label">10d</div>
-                    <div class="rail__line rail__line--fixed"></div>
-                    <div class="rail__spacer"></div>
-                  </div>
-                </div>
-                <div class="timeline__content">
-                  <p class="timeline__title">Email delivered: &ldquo;New Year Rewards: Check your Gold member balance&rdquo;</p>
-                </div>
-              </div>
-
-              <!-- Event 2 -->
-              <div class="timeline__event">
-                <span class="timeline__date">Apr 4, 2026, 8:47 PM</span>
-                <div class="timeline__rail">
-                  <div class="rail__icon">
-                    <span class="material-symbols-rounded">do_not_disturb_on</span>
-                  </div>
-                  <div class="rail__below">
-                    <div class="rail__spacer"></div>
-                    <div class="rail__line rail__line--flex"></div>
-                    <div class="rail__label">23d</div>
-                    <div class="rail__line rail__line--fixed"></div>
-                    <div class="rail__spacer"></div>
-                  </div>
-                </div>
-                <div class="timeline__content">
-                  <p class="timeline__title">SMS opt-out: Guest replied STOP to marketing messages</p>
-                </div>
-              </div>
-
-              <!-- Event 3 -->
-              <div class="timeline__event">
-                <span class="timeline__date">Mar 12, 2026, 12:00 AM</span>
-                <div class="timeline__rail">
-                  <div class="rail__icon">
-                    <span class="material-symbols-rounded">warning</span>
-                  </div>
-                  <div class="rail__below">
-                    <div class="rail__spacer"></div>
-                    <div class="rail__line rail__line--flex"></div>
-                    <div class="rail__label">33d</div>
-                    <div class="rail__line rail__line--fixed"></div>
-                    <div class="rail__spacer"></div>
-                  </div>
-                </div>
-                <div class="timeline__content">
-                  <p class="timeline__title">Guest status changed to At-risk</p>
-                  <p class="timeline__subtitle">33 days since last order</p>
-                </div>
-              </div>
-
-              <!-- Event 4 -->
-              <div class="timeline__event">
-                <span class="timeline__date">Feb 7, 2026, 7:23 PM</span>
-                <div class="timeline__rail">
-                  <div class="rail__icon">
-                    <span class="material-symbols-rounded">attach_money</span>
-                  </div>
-                  <div class="rail__below">
-                    <div class="rail__spacer"></div>
-                    <div class="rail__line rail__line--flex"></div>
-                    <div class="rail__label">8d</div>
-                    <div class="rail__line rail__line--fixed"></div>
-                    <div class="rail__spacer"></div>
-                  </div>
-                </div>
-                <div class="timeline__content">
-                  <p class="timeline__title">Placed <strong>delivery</strong> order #67 via <strong>PAR Ordering Web App</strong> - 194 Middle St (Lowell) store</p>
-                  <div class="timeline__order">
-                    <p>2 x Holiday Prime Rib Platter $110.00</p>
-                    <p>1 x Large Seasonal Side Medley $35.00</p>
-                    <p>4 x Premium Craft Beer $36.00</p>
-                    <p>2 x Winter Spice Dessert Sampler $24.00</p>
-                    <p>Tax, Tip &amp; Fees $40.50</p>
-                    <p class="timeline__order-total">Total $245.50</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Event 5 -->
-              <div class="timeline__event">
-                <span class="timeline__date">Jan 30, 2026, 1:15 PM</span>
-                <div class="timeline__rail">
-                  <div class="rail__icon">
-                    <span class="material-symbols-rounded">attach_money</span>
-                  </div>
-                  <div class="rail__below">
-                    <div class="rail__spacer"></div>
-                    <div class="rail__line rail__line--flex"></div>
-                    <div class="rail__label">4d</div>
-                    <div class="rail__line rail__line--fixed"></div>
-                    <div class="rail__spacer"></div>
-                  </div>
-                </div>
-                <div class="timeline__content">
-                  <p class="timeline__title">Placed <strong>takeout</strong> order #66 <strong>In store</strong> - 194 Middle St (Lowell) store</p>
-                  <div class="timeline__order">
-                    <p>2 x Holiday Prime Rib Platter $110.00</p>
-                    <p>1 x Large Seasonal Side Medley $35.00</p>
-                    <p>4 x Premium Craft Beer $36.00</p>
-                    <p>2 x Winter Spice Dessert Sampler $24.00</p>
-                    <p>Tax, Tip &amp; Fees $40.50</p>
-                    <p class="timeline__order-total">Total $245.50</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Event 6 -->
-              <div class="timeline__event">
-                <span class="timeline__date">Jan 26, 2026, 9:18 AM</span>
-                <div class="timeline__rail">
-                  <div class="rail__icon">
-                    <span class="material-symbols-rounded">star</span>
-                  </div>
-                  <div class="rail__below">
-                    <div class="rail__spacer"></div>
-                    <div class="rail__line rail__line--flex"></div>
-                    <div class="rail__label">2d</div>
-                    <div class="rail__line rail__line--fixed"></div>
-                    <div class="rail__spacer"></div>
-                  </div>
-                </div>
-                <div class="timeline__content">
-                  <p class="timeline__title">Earned 245 points</p>
-                </div>
-              </div>
-
-              <!-- Event 7 (last) -->
-              <div class="timeline__event timeline__event--last">
-                <span class="timeline__date">Jan 24, 2026, 12:42 PM</span>
-                <div class="timeline__rail">
-                  <div class="rail__icon">
-                    <span class="material-symbols-rounded">featured_seasonal_and_gifts</span>
-                  </div>
-                </div>
-                <div class="timeline__content">
-                  <p class="timeline__title">Redeemed offer: &ldquo;Free Side with Entree Purchase&rdquo;</p>
-                </div>
-              </div>
-
-              <!-- Load-more footer -->
-              <div class="timeline__footer">
-                <span class="timeline__date" aria-hidden="true"></span>
-                <div class="timeline__rail timeline__rail--footer">
-                  <div class="rail__spacer"></div>
-                  <div class="rail__line rail__line--fixed"></div>
-                  <div class="rail__spacer"></div>
-                  <button type="button" class="link-button">Load more</button>
-                </div>
-                <span aria-hidden="true"></span>
-              </div>
-
-            </div>
+            <div class="timeline" id="guest-timeline"></div>
           </section>
 
         </div>
@@ -505,6 +331,33 @@
       const expanded = cell.getAttribute('data-expanded') === 'true';
       cell.setAttribute('data-expanded', String(!expanded));
     }
+  </script>
+  <script src="guest-timeline.js"></script>
+  <script>
+    renderGuestTimeline('guest-timeline', [
+        { at: '2026-04-02 18:45', n: 32, type: 'delivery', via: 'via <strong>Olo</strong>', store: '194 Middle St (Lowell)',
+          items: [[1, 'Margherita Flatbread', 14], [1, 'Garden Salad', 9.5], [1, 'Sparkling Water', 3.5]], fees: 6.80 },
+        { at: '2026-03-05 19:10', n: 31, type: 'dine-in', via: '<strong>In store</strong>', store: '194 Middle St (Lowell)',
+          items: [[2, 'Pasta Primavera', 36], [1, 'Tiramisu', 9], [2, 'Glass of House Red', 22]], fees: 12.40 },
+        { at: '2026-02-12 18:20', n: 30, type: 'takeout', via: 'via <strong>Olo</strong>', store: '194 Middle St (Lowell)',
+          items: [[1, 'Chicken Parmesan', 19], [1, 'Garlic Bread', 6]], fees: 2.06 },
+        { at: '2026-01-16 19:35', n: 29, type: 'dine-in', via: '<strong>In store</strong>', store: '194 Middle St (Lowell)',
+          items: [[1, 'Seared Salmon Plate', 26], [1, 'Garden Salad', 9.5], [1, 'Glass of House White', 10]], fees: 9.10 },
+        { at: '2025-12-19 18:05', n: 28, type: 'delivery', via: 'via <strong>Olo</strong>', store: '194 Middle St (Lowell)',
+          items: [[2, 'Margherita Flatbread', 28], [1, 'Tiramisu', 9]], fees: 8.55 },
+        { at: '2025-11-21 19:25', n: 27, type: 'takeout', via: '<strong>In store</strong>', store: '194 Middle St (Lowell)',
+          items: [[1, 'Pasta Primavera', 18], [1, 'Sparkling Water', 3.5]], fees: 1.87 },
+        { at: '2025-10-24 18:50', n: 26, type: 'dine-in', via: '<strong>In store</strong>', store: '194 Middle St (Lowell)',
+          items: [[2, 'Chicken Parmesan', 38], [1, 'Garlic Bread', 6], [2, 'Glass of House Red', 22]], fees: 15.20 },
+        { at: '2025-09-26 19:00', n: 25, type: 'delivery', via: 'via <strong>Olo</strong>', store: '194 Middle St (Lowell)',
+          items: [[1, 'Seared Salmon Plate', 26], [1, 'Garden Salad', 9.5]], fees: 7.10 },
+        { at: '2025-08-29 18:30', n: 24, type: 'takeout', via: 'via <strong>Olo</strong>', store: '194 Middle St (Lowell)',
+          items: [[2, 'Margherita Flatbread', 28], [2, 'Sparkling Water', 7]], fees: 3.15 },
+        { at: '2025-08-01 19:15', n: 23, type: 'dine-in', via: '<strong>In store</strong>', store: '194 Middle St (Lowell)',
+          items: [[2, 'Pasta Primavera', 36], [2, 'Tiramisu', 18], [1, 'Glass of House White', 10]], fees: 11.80 },
+        { at: '2025-07-03 18:40', n: 22, type: 'delivery', via: 'via <strong>Olo</strong>', store: '194 Middle St (Lowell)',
+          items: [[1, 'Chicken Parmesan', 19], [1, 'Garden Salad', 9.5], [1, 'Garlic Bread', 6]], fees: 7.30 }
+    ]);
   </script>
 </body>
 </html>

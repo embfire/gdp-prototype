@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="beta.css">
   <script src="lifecycle-definitions.js"></script>
   <script src="metric-about.js" defer></script>
+  <script src="chart-hover.js"></script>
 </head>
 <body>
   <div class="app-shell">
@@ -21,9 +22,12 @@
     <!-- Header -->
     <header class="header">
       <div class="header-left">
-        <a href="index.html" class="header-brand" aria-label="Guest360 Home">
-          <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
-        </a>
+        <div class="header-brand-lockup">
+          <a href="index.html" class="header-brand" aria-label="Guest360 Home">
+            <img src="../assets/par-guest360.svg" alt="PAR Guest360 logo" width="124" height="40">
+          </a>
+          <span class="header-beta-tag">Beta</span>
+        </div>
         <span class="header-brand-divider" aria-hidden="true"></span>
         <button class="header-brand-btn" aria-label="Select brand">
           Cravewave
@@ -32,12 +36,12 @@
       </div>
       <div class="header-right">
         <button class="header-btn">
-          <img src="../assets/ava-assistant.svg" alt="" width="24" height="24">
-          Ava
+          <span class="material-symbols-rounded">magic_button</span>
+          Intelligence
         </button>
         <button class="header-btn">
-          <span class="material-symbols-rounded">school</span>
-          PAR Academy
+          <span class="material-symbols-rounded">feedback</span>
+          Share feedback
         </button>
         <button class="header-btn header-btn--icon" aria-label="Profile">
           <span class="material-symbols-rounded">person</span>
@@ -70,6 +74,14 @@
             </a>
           </div>
 
+          <div class="nav-group" data-nav-group-id="platform">
+            <div class="nav-group-title">Platform</div>
+            <a href="profile-stitching.html" class="nav-item">
+              <i class="ph-duotone ph-fingerprint-simple" aria-hidden="true"></i>
+              <span class="nav-item__label">Profile stitching</span>
+            </a>
+          </div>
+
           <div class="nav-group" data-nav-group-id="bottom">
             <button type="button" class="nav-item nav-item-expandable" onclick="var o=this.classList.toggle('open'); this.setAttribute('aria-expanded', o); this.nextElementSibling.classList.toggle('open', o);" aria-expanded="false">
               <i class="ph-duotone ph-gear" aria-hidden="true"></i>
@@ -77,7 +89,10 @@
               <i class="ph-bold ph-caret-right nav-item__chevron" aria-hidden="true"></i>
             </button>
             <div class="nav-sub-group">
+              <a href="settings-business-profile.html" class="nav-sub-item">Business profile</a>
+              <a href="settings-users-roles.html" class="nav-sub-item">Users and roles</a>
               <a href="settings-definitions.html" class="nav-sub-item">Definitions</a>
+              <a href="settings-stores.html" class="nav-sub-item">Stores and store groups</a>
             </div>
             <button type="button" class="nav-item nav-item-expandable" onclick="toggleCockpit(this)" aria-expanded="false">
               <i class="ph-duotone ph-wrench" aria-hidden="true"></i>
@@ -1410,6 +1425,7 @@
 
     // Manual tooltip state — bypasses AG Charts per-series tooltip so a single
     // tooltip fires anywhere in the chart area (both lines trigger it).
+    var totalGuestsHover = null;
     var totalGuestsTooltipEl   = null;
     var totalGuestsMouseMove   = null;
     var totalGuestsMouseLeave  = null;
@@ -1520,16 +1536,7 @@
             stroke: '#5A55E3',
             strokeWidth: 2,
             lineDash: [2, 2],
-            marker: {
-              enabled: true,
-              size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
-            },
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
           {
@@ -1539,16 +1546,7 @@
             yName: 'This period',
             stroke: '#5A55E3',
             strokeWidth: 2,
-            marker: {
-              enabled: true,
-              size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
-            },
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
         ],
@@ -1580,7 +1578,7 @@
                 new Date(2026, 3, 19),  // Apr 19
               ],
             },
-            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+            crosshair: { enabled: false },
           },
           y: {
             type: 'number',
@@ -1614,44 +1612,25 @@
       // it works anywhere in the chart area (both lines trigger it).
 
       // Clean up any leftover tooltip from a previous init.
-      if (totalGuestsTooltipEl && totalGuestsTooltipEl.parentNode) {
-        totalGuestsTooltipEl.parentNode.removeChild(totalGuestsTooltipEl);
-      }
-      if (totalGuestsMouseMove) {
-        container.removeEventListener('mousemove',  totalGuestsMouseMove);
-        container.removeEventListener('mouseleave', totalGuestsMouseLeave);
-      }
-
-      totalGuestsTooltipEl = document.createElement('div');
-      totalGuestsTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(totalGuestsTooltipEl);
-
-      // Approximate left boundary of the plot area (Y-axis label width + padding).
-      // Y-axis labels are "1.10M"–"1.25M" (5 chars × ~7px) + 8px label.padding ≈ 43px.
-      var PLOT_LEFT        = 46;
-      var PLOT_RIGHT_PAD   = 0;   // matches chart padding.right
-      var AXIS_MIN_TIME    = new Date(2026, 2, 19).getTime();
-      var AXIS_MAX_TIME    = new Date(2026, 3, 26).getTime();
-
-      totalGuestsMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - PLOT_RIGHT_PAD;
-
-        if (mx < PLOT_LEFT || mx > plotRight) {
-          totalGuestsTooltipEl.style.display = 'none';
-          return;
-        }
-
-        // Map cursor X → date → nearest data point.
-        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
-        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
-        var d = TOTAL_GUESTS_DATA.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-
+      // Snapped tooltip + hairline + hover dot — shared chart-hover.js (port of production agChartHoverOverlay).
+      totalGuestsHover = ChartHover.attach(container, {
+        data: TOTAL_GUESTS_DATA,
+        series: function() {
+          return totalGuestsChartOptions.series
+            .filter(function(s) { return !totalGuestsVisibility || totalGuestsVisibility[s.yKey] !== false; })
+            .map(function(s) { return { yKey: s.yKey, stroke: s.stroke }; });
+        },
+        yDomain: function() {
+          var y = totalGuestsChartOptions.axes && totalGuestsChartOptions.axes.y;
+          return y && typeof y.min === 'number' && typeof y.max === 'number' ? { min: y.min, max: y.max } : null;
+        },
+        xDomain: function() {
+          var x = totalGuestsChartOptions.axes && totalGuestsChartOptions.axes.x;
+          return x && x.min && x.max ? { min: +x.min, max: +x.max } : null;
+        },
+        renderTooltip: function(d) {
         // Only show tooltip for visible series — if current hidden, suppress.
-        if (!totalGuestsVisibility.current) { totalGuestsTooltipEl.style.display = 'none'; return; }
+        if (!totalGuestsVisibility.current) { return null; }
 
         var pctRaw   = (d.current - d.prev) / d.prev * 100;
         var pct      = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
@@ -1659,7 +1638,7 @@
         var pctBg    = pctRaw >= 0 ? '#effaf9' : '#fdecef';
         var stripe   = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
 
-        totalGuestsTooltipEl.innerHTML = (
+        return (
           '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
           '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Total guests</p>' +
           '<div style="display:flex;flex-direction:column;gap:8px;">' +
@@ -1685,27 +1664,9 @@
             : '') +
           '</div>'
         );
-
-        totalGuestsTooltipEl.style.display = 'block';
-
-        // Position: right of cursor, flip left if near the right viewport edge.
-        var tw = totalGuestsTooltipEl.offsetWidth;
-        var th = totalGuestsTooltipEl.offsetHeight;
-        var tx = e.clientX + 16;
-        var ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
-        if (ty < 8)                           ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        totalGuestsTooltipEl.style.left = tx + 'px';
-        totalGuestsTooltipEl.style.top  = ty + 'px';
-      };
-
-      totalGuestsMouseLeave = function() {
-        totalGuestsTooltipEl.style.display = 'none';
-      };
-
-      container.addEventListener('mousemove',  totalGuestsMouseMove);
-      container.addEventListener('mouseleave', totalGuestsMouseLeave);
+        },
+      });
+      totalGuestsTooltipEl = totalGuestsHover.tooltipEl;
     }
 
     /* ═══════════════════════════════════════════════════
@@ -1940,6 +1901,7 @@
     var retentionCohortChart = null;
     var retentionCohortChartOptions = null;
     var retentionCohortVisibility = { current: true, prev: true };
+    var retentionCohortHover = null;
     var retentionCohortTooltipEl = null;
     var retentionCohortMouseMove = null;
     var retentionCohortMouseLeave = null;
@@ -2012,16 +1974,7 @@
             stroke: '#5A55E3',
             strokeWidth: 2,
             lineDash: [2, 2],
-            marker: {
-              enabled: true,
-              size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
-            },
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
           {
@@ -2031,16 +1984,7 @@
             yName: 'This period',
             stroke: '#5A55E3',
             strokeWidth: 2,
-            marker: {
-              enabled: true,
-              size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
-            },
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
         ],
@@ -2069,7 +2013,7 @@
                 new Date(2026, 0, 1),  // Jan '26
               ],
             },
-            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+            crosshair: { enabled: false },
           },
           y: {
             type: 'number',
@@ -2096,41 +2040,24 @@
       retentionCohortChart = agCharts.AgCharts.create(retentionCohortChartOptions);
 
       // ── Manual tooltip (mirror of total-guests pattern) ─────────────────
-      if (retentionCohortTooltipEl && retentionCohortTooltipEl.parentNode) {
-        retentionCohortTooltipEl.parentNode.removeChild(retentionCohortTooltipEl);
-      }
-      if (retentionCohortMouseMove) {
-        container.removeEventListener('mousemove',  retentionCohortMouseMove);
-        container.removeEventListener('mouseleave', retentionCohortMouseLeave);
-      }
-
-      retentionCohortTooltipEl = document.createElement('div');
-      retentionCohortTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(retentionCohortTooltipEl);
-
-      // Y-axis labels are "26%"–"36%" (3 chars) + 8px label.padding ≈ 36px.
-      var PLOT_LEFT      = 38;
-      var PLOT_RIGHT_PAD = 0;
-      var AXIS_MIN_TIME  = new Date(2025, 3, 1).getTime();
-      var AXIS_MAX_TIME  = new Date(2026, 2, 1).getTime();
-
-      retentionCohortMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - PLOT_RIGHT_PAD;
-
-        if (mx < PLOT_LEFT || mx > plotRight) {
-          retentionCohortTooltipEl.style.display = 'none';
-          return;
-        }
-
-        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
-        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
-        var d = RETENTION_COHORT_DATA.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-
-        if (!retentionCohortVisibility.current) { retentionCohortTooltipEl.style.display = 'none'; return; }
+      // Snapped tooltip + hairline + hover dot — shared chart-hover.js (port of production agChartHoverOverlay).
+      retentionCohortHover = ChartHover.attach(container, {
+        data: RETENTION_COHORT_DATA,
+        series: function() {
+          return retentionCohortChartOptions.series
+            .filter(function(s) { return !retentionCohortVisibility || retentionCohortVisibility[s.yKey] !== false; })
+            .map(function(s) { return { yKey: s.yKey, stroke: s.stroke }; });
+        },
+        yDomain: function() {
+          var y = retentionCohortChartOptions.axes && retentionCohortChartOptions.axes.y;
+          return y && typeof y.min === 'number' && typeof y.max === 'number' ? { min: y.min, max: y.max } : null;
+        },
+        xDomain: function() {
+          var x = retentionCohortChartOptions.axes && retentionCohortChartOptions.axes.x;
+          return x && x.min && x.max ? { min: +x.min, max: +x.max } : null;
+        },
+        renderTooltip: function(d) {
+        if (!retentionCohortVisibility.current) { return null; }
 
         var pctRaw   = (d.current - d.prev) / d.prev * 100;
         var pct      = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
@@ -2138,7 +2065,7 @@
         var pctBg    = pctRaw >= 0 ? '#effaf9' : '#fdecef';
         var stripe   = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
 
-        retentionCohortTooltipEl.innerHTML = (
+        return (
           '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
           '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">M+1 retention</p>' +
           '<div style="display:flex;flex-direction:column;gap:8px;">' +
@@ -2164,26 +2091,9 @@
             : '') +
           '</div>'
         );
-
-        retentionCohortTooltipEl.style.display = 'block';
-
-        var tw = retentionCohortTooltipEl.offsetWidth;
-        var th = retentionCohortTooltipEl.offsetHeight;
-        var tx = e.clientX + 16;
-        var ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
-        if (ty < 8)                           ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        retentionCohortTooltipEl.style.left = tx + 'px';
-        retentionCohortTooltipEl.style.top  = ty + 'px';
-      };
-
-      retentionCohortMouseLeave = function() {
-        retentionCohortTooltipEl.style.display = 'none';
-      };
-
-      container.addEventListener('mousemove',  retentionCohortMouseMove);
-      container.addEventListener('mouseleave', retentionCohortMouseLeave);
+        },
+      });
+      retentionCohortTooltipEl = retentionCohortHover.tooltipEl;
     }
 
     /* ═══════════════════════════════════════════════════
@@ -2444,6 +2354,7 @@
     var activeGuestsChart        = null;
     var activeGuestsChartOptions = null;
     var activeGuestsVisibility   = { current: true, prev: true };
+    var activeGuestsHover = null;
     var activeGuestsTooltipEl    = null;
     var activeGuestsMouseMove    = null;
     var activeGuestsMouseLeave   = null;
@@ -2509,19 +2420,13 @@
           {
             type: 'line', xKey: 'date', yKey: 'prev', yName: 'Prev period',
             stroke: '#5A55E3', strokeWidth: 2, lineDash: [2, 2],
-            marker: { enabled: true, size: 0, itemStyler: function(params) {
-              if (params.highlightState === 'highlighted-item') return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-              return { size: 0 };
-            }},
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
           {
             type: 'line', xKey: 'date', yKey: 'current', yName: 'This period',
             stroke: '#5A55E3', strokeWidth: 2,
-            marker: { enabled: true, size: 0, itemStyler: function(params) {
-              if (params.highlightState === 'highlighted-item') return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-              return { size: 0 };
-            }},
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
         ],
@@ -2533,7 +2438,7 @@
             tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
             label: { fontSize: 12, color: '#000000', format: '%b %-d', padding: 8, avoidCollisions: true },
             interval: { values: [new Date(2026, 2, 29), new Date(2026, 3, 5), new Date(2026, 3, 12), new Date(2026, 3, 19)] },
-            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+            crosshair: { enabled: false },
           },
           y: {
             type: 'number', position: 'left', min: 330, max: 352,
@@ -2549,39 +2454,30 @@
 
       activeGuestsChart = agCharts.AgCharts.create(activeGuestsChartOptions);
 
-      if (activeGuestsTooltipEl && activeGuestsTooltipEl.parentNode) {
-        activeGuestsTooltipEl.parentNode.removeChild(activeGuestsTooltipEl);
-      }
-      if (activeGuestsMouseMove) {
-        container.removeEventListener('mousemove', activeGuestsMouseMove);
-        container.removeEventListener('mouseleave', activeGuestsMouseLeave);
-      }
-
-      activeGuestsTooltipEl = document.createElement('div');
-      activeGuestsTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(activeGuestsTooltipEl);
-
-      var PLOT_LEFT = 46, PLOT_RIGHT_PAD = 0;
-      var AXIS_MIN_TIME = new Date(2026, 2, 19).getTime();
-      var AXIS_MAX_TIME = new Date(2026, 3, 26).getTime();
-
-      activeGuestsMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - PLOT_RIGHT_PAD;
-        if (mx < PLOT_LEFT || mx > plotRight) { activeGuestsTooltipEl.style.display = 'none'; return; }
-        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
-        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
-        var d = ACTIVE_GUESTS_DATA.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-        if (!activeGuestsVisibility.current) { activeGuestsTooltipEl.style.display = 'none'; return; }
+      // Snapped tooltip + hairline + hover dot — shared chart-hover.js (port of production agChartHoverOverlay).
+      activeGuestsHover = ChartHover.attach(container, {
+        data: ACTIVE_GUESTS_DATA,
+        series: function() {
+          return activeGuestsChartOptions.series
+            .filter(function(s) { return !activeGuestsVisibility || activeGuestsVisibility[s.yKey] !== false; })
+            .map(function(s) { return { yKey: s.yKey, stroke: s.stroke }; });
+        },
+        yDomain: function() {
+          var y = activeGuestsChartOptions.axes && activeGuestsChartOptions.axes.y;
+          return y && typeof y.min === 'number' && typeof y.max === 'number' ? { min: y.min, max: y.max } : null;
+        },
+        xDomain: function() {
+          var x = activeGuestsChartOptions.axes && activeGuestsChartOptions.axes.x;
+          return x && x.min && x.max ? { min: +x.min, max: +x.max } : null;
+        },
+        renderTooltip: function(d) {
+        if (!activeGuestsVisibility.current) { return null; }
         var pctRaw = (d.current - d.prev) / d.prev * 100;
         var pct = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
         var pctColor = pctRaw >= 0 ? '#257469' : '#b1294a';
         var pctBg = pctRaw >= 0 ? '#effaf9' : '#fdecef';
         var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
-        activeGuestsTooltipEl.innerHTML = (
+        return (
           '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
           '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Active guests</p>' +
           '<div style="display:flex;flex-direction:column;gap:8px;">' +
@@ -2607,18 +2503,9 @@
             : '') +
           '</div>'
         );
-        activeGuestsTooltipEl.style.display = 'block';
-        var tw = activeGuestsTooltipEl.offsetWidth, th = activeGuestsTooltipEl.offsetHeight;
-        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth - 8) tx = e.clientX - tw - 16;
-        if (ty < 8) ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        activeGuestsTooltipEl.style.left = tx + 'px';
-        activeGuestsTooltipEl.style.top = ty + 'px';
-      };
-      activeGuestsMouseLeave = function() { activeGuestsTooltipEl.style.display = 'none'; };
-      container.addEventListener('mousemove', activeGuestsMouseMove);
-      container.addEventListener('mouseleave', activeGuestsMouseLeave);
+        },
+      });
+      activeGuestsTooltipEl = activeGuestsHover.tooltipEl;
     }
 
     /* ═══════════════════════════════════════════════════
@@ -2629,6 +2516,7 @@
     var avgOrderValueChart        = null;
     var avgOrderValueChartOptions = null;
     var avgOrderValueVisibility   = { current: true, prev: true };
+    var avgOrderValueHover = null;
     var avgOrderValueTooltipEl    = null;
     var avgOrderValueMouseMove    = null;
     var avgOrderValueMouseLeave   = null;
@@ -2692,19 +2580,13 @@
           {
             type: 'line', xKey: 'date', yKey: 'prev', yName: 'Prev period',
             stroke: '#5A55E3', strokeWidth: 2, lineDash: [2, 2],
-            marker: { enabled: true, size: 0, itemStyler: function(params) {
-              if (params.highlightState === 'highlighted-item') return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-              return { size: 0 };
-            }},
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
           {
             type: 'line', xKey: 'date', yKey: 'current', yName: 'This period',
             stroke: '#5A55E3', strokeWidth: 2,
-            marker: { enabled: true, size: 0, itemStyler: function(params) {
-              if (params.highlightState === 'highlighted-item') return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-              return { size: 0 };
-            }},
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
         ],
@@ -2716,7 +2598,7 @@
             tick: { enabled: true, size: 4, width: 1, stroke: '#DFE1E2' },
             label: { fontSize: 12, color: '#000000', format: '%b %-d', padding: 8, avoidCollisions: true },
             interval: { values: [new Date(2026, 2, 29), new Date(2026, 3, 5), new Date(2026, 3, 12), new Date(2026, 3, 19)] },
-            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+            crosshair: { enabled: false },
           },
           y: {
             type: 'number', position: 'left', min: 22, max: 26,
@@ -2732,40 +2614,30 @@
 
       avgOrderValueChart = agCharts.AgCharts.create(avgOrderValueChartOptions);
 
-      if (avgOrderValueTooltipEl && avgOrderValueTooltipEl.parentNode) {
-        avgOrderValueTooltipEl.parentNode.removeChild(avgOrderValueTooltipEl);
-      }
-      if (avgOrderValueMouseMove) {
-        container.removeEventListener('mousemove', avgOrderValueMouseMove);
-        container.removeEventListener('mouseleave', avgOrderValueMouseLeave);
-      }
-
-      avgOrderValueTooltipEl = document.createElement('div');
-      avgOrderValueTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(avgOrderValueTooltipEl);
-
-      // Y-axis labels are "$22.00"–"$26.00" (6 chars) + 8px label.padding ≈ 52px.
-      var PLOT_LEFT = 52, PLOT_RIGHT_PAD = 0;
-      var AXIS_MIN_TIME = new Date(2026, 2, 19).getTime();
-      var AXIS_MAX_TIME = new Date(2026, 3, 26).getTime();
-
-      avgOrderValueMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - PLOT_RIGHT_PAD;
-        if (mx < PLOT_LEFT || mx > plotRight) { avgOrderValueTooltipEl.style.display = 'none'; return; }
-        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
-        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
-        var d = AVG_ORDER_VALUE_DATA.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-        if (!avgOrderValueVisibility.current) { avgOrderValueTooltipEl.style.display = 'none'; return; }
+      // Snapped tooltip + hairline + hover dot — shared chart-hover.js (port of production agChartHoverOverlay).
+      avgOrderValueHover = ChartHover.attach(container, {
+        data: AVG_ORDER_VALUE_DATA,
+        series: function() {
+          return avgOrderValueChartOptions.series
+            .filter(function(s) { return !avgOrderValueVisibility || avgOrderValueVisibility[s.yKey] !== false; })
+            .map(function(s) { return { yKey: s.yKey, stroke: s.stroke }; });
+        },
+        yDomain: function() {
+          var y = avgOrderValueChartOptions.axes && avgOrderValueChartOptions.axes.y;
+          return y && typeof y.min === 'number' && typeof y.max === 'number' ? { min: y.min, max: y.max } : null;
+        },
+        xDomain: function() {
+          var x = avgOrderValueChartOptions.axes && avgOrderValueChartOptions.axes.x;
+          return x && x.min && x.max ? { min: +x.min, max: +x.max } : null;
+        },
+        renderTooltip: function(d) {
+        if (!avgOrderValueVisibility.current) { return null; }
         var pctRaw = (d.current - d.prev) / d.prev * 100;
         var pct = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
         var pctColor = pctRaw >= 0 ? '#257469' : '#b1294a';
         var pctBg = pctRaw >= 0 ? '#effaf9' : '#fdecef';
         var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
-        avgOrderValueTooltipEl.innerHTML = (
+        return (
           '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
           '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Average order value</p>' +
           '<div style="display:flex;flex-direction:column;gap:8px;">' +
@@ -2791,18 +2663,9 @@
             : '') +
           '</div>'
         );
-        avgOrderValueTooltipEl.style.display = 'block';
-        var tw = avgOrderValueTooltipEl.offsetWidth, th = avgOrderValueTooltipEl.offsetHeight;
-        var tx = e.clientX + 16, ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth - 8) tx = e.clientX - tw - 16;
-        if (ty < 8) ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        avgOrderValueTooltipEl.style.left = tx + 'px';
-        avgOrderValueTooltipEl.style.top = ty + 'px';
-      };
-      avgOrderValueMouseLeave = function() { avgOrderValueTooltipEl.style.display = 'none'; };
-      container.addEventListener('mousemove', avgOrderValueMouseMove);
-      container.addEventListener('mouseleave', avgOrderValueMouseLeave);
+        },
+      });
+      avgOrderValueTooltipEl = avgOrderValueHover.tooltipEl;
     }
 
     /* (loyalty + non-loyalty via IDR). Same single-series Indigo
@@ -2811,6 +2674,7 @@
     var newGuestAcqChart        = null;
     var newGuestAcqChartOptions = null;
     var newGuestAcqVisibility   = { current: true, prev: true };
+    var newGuestAcqHover = null;
     var newGuestAcqTooltipEl    = null;
     var newGuestAcqMouseMove    = null;
     var newGuestAcqMouseLeave   = null;
@@ -2895,16 +2759,7 @@
             stroke: '#5A55E3',
             strokeWidth: 2,
             lineDash: [2, 2],
-            marker: {
-              enabled: true,
-              size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
-            },
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
           {
@@ -2914,16 +2769,7 @@
             yName: 'This period',
             stroke: '#5A55E3',
             strokeWidth: 2,
-            marker: {
-              enabled: true,
-              size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
-            },
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
         ],
@@ -2952,7 +2798,7 @@
                 new Date(2026, 3, 19),
               ],
             },
-            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+            crosshair: { enabled: false },
           },
           y: {
             type: 'number',
@@ -2981,41 +2827,24 @@
       newGuestAcqChart = agCharts.AgCharts.create(newGuestAcqChartOptions);
 
       // ── Manual tooltip (mirrors Total Guests; fires anywhere in plot area) ──
-      if (newGuestAcqTooltipEl && newGuestAcqTooltipEl.parentNode) {
-        newGuestAcqTooltipEl.parentNode.removeChild(newGuestAcqTooltipEl);
-      }
-      if (newGuestAcqMouseMove) {
-        container.removeEventListener('mousemove',  newGuestAcqMouseMove);
-        container.removeEventListener('mouseleave', newGuestAcqMouseLeave);
-      }
-
-      newGuestAcqTooltipEl = document.createElement('div');
-      newGuestAcqTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(newGuestAcqTooltipEl);
-
-      // Y-axis labels "1.40K"–"2.00K" (~5 chars × 7px) + 8px padding ≈ 43px.
-      var PLOT_LEFT      = 46;
-      var PLOT_RIGHT_PAD = 0;
-      var AXIS_MIN_TIME  = new Date(2026, 2, 19).getTime();
-      var AXIS_MAX_TIME  = new Date(2026, 3, 26).getTime();
-
-      newGuestAcqMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - PLOT_RIGHT_PAD;
-
-        if (mx < PLOT_LEFT || mx > plotRight) {
-          newGuestAcqTooltipEl.style.display = 'none';
-          return;
-        }
-
-        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
-        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
-        var d = NEW_GUEST_ACQ_DATA.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-
-        if (!newGuestAcqVisibility.current) { newGuestAcqTooltipEl.style.display = 'none'; return; }
+      // Snapped tooltip + hairline + hover dot — shared chart-hover.js (port of production agChartHoverOverlay).
+      newGuestAcqHover = ChartHover.attach(container, {
+        data: NEW_GUEST_ACQ_DATA,
+        series: function() {
+          return newGuestAcqChartOptions.series
+            .filter(function(s) { return !newGuestAcqVisibility || newGuestAcqVisibility[s.yKey] !== false; })
+            .map(function(s) { return { yKey: s.yKey, stroke: s.stroke }; });
+        },
+        yDomain: function() {
+          var y = newGuestAcqChartOptions.axes && newGuestAcqChartOptions.axes.y;
+          return y && typeof y.min === 'number' && typeof y.max === 'number' ? { min: y.min, max: y.max } : null;
+        },
+        xDomain: function() {
+          var x = newGuestAcqChartOptions.axes && newGuestAcqChartOptions.axes.x;
+          return x && x.min && x.max ? { min: +x.min, max: +x.max } : null;
+        },
+        renderTooltip: function(d) {
+        if (!newGuestAcqVisibility.current) { return null; }
 
         var pctRaw   = (d.current - d.prev) / d.prev * 100;
         var pct      = (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(2) + '%';
@@ -3023,7 +2852,7 @@
         var pctBg    = pctRaw >= 0 ? '#effaf9' : '#fdecef';
         var stripe   = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
 
-        newGuestAcqTooltipEl.innerHTML = (
+        return (
           '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
           '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">New guest acquisition</p>' +
           '<div style="display:flex;flex-direction:column;gap:8px;">' +
@@ -3049,26 +2878,9 @@
             : '') +
           '</div>'
         );
-
-        newGuestAcqTooltipEl.style.display = 'block';
-
-        var tw = newGuestAcqTooltipEl.offsetWidth;
-        var th = newGuestAcqTooltipEl.offsetHeight;
-        var tx = e.clientX + 16;
-        var ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
-        if (ty < 8)                           ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        newGuestAcqTooltipEl.style.left = tx + 'px';
-        newGuestAcqTooltipEl.style.top  = ty + 'px';
-      };
-
-      newGuestAcqMouseLeave = function() {
-        newGuestAcqTooltipEl.style.display = 'none';
-      };
-
-      container.addEventListener('mousemove',  newGuestAcqMouseMove);
-      container.addEventListener('mouseleave', newGuestAcqMouseLeave);
+        },
+      });
+      newGuestAcqTooltipEl = newGuestAcqHover.tooltipEl;
     }
 
     /* ═══════════════════════════════════════════════════
@@ -3394,6 +3206,7 @@
     ═══════════════════════════════════════════════════ */
     var guestRepeatRateChart         = null;
     var guestRepeatRateChartOptions  = null;
+    var guestRepeatRateHover = null;
     var guestRepeatRateTooltipEl     = null;
     var guestRepeatRateMouseMove     = null;
     var guestRepeatRateMouseLeave    = null;
@@ -3468,16 +3281,7 @@
             stroke: '#5A55E3',
             strokeWidth: 2,
             lineDash: [2, 2],
-            marker: {
-              enabled: true,
-              size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
-            },
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
           {
@@ -3487,16 +3291,7 @@
             yName: 'This period',
             stroke: '#5A55E3',
             strokeWidth: 2,
-            marker: {
-              enabled: true,
-              size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
-            },
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
         ],
@@ -3525,7 +3320,7 @@
                 new Date(2026, 0, 1),
               ],
             },
-            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+            crosshair: { enabled: false },
           },
           y: {
             type: 'number',
@@ -3551,40 +3346,24 @@
 
       guestRepeatRateChart = agCharts.AgCharts.create(guestRepeatRateChartOptions);
 
-      if (guestRepeatRateTooltipEl && guestRepeatRateTooltipEl.parentNode) {
-        guestRepeatRateTooltipEl.parentNode.removeChild(guestRepeatRateTooltipEl);
-      }
-      if (guestRepeatRateMouseMove) {
-        container.removeEventListener('mousemove',  guestRepeatRateMouseMove);
-        container.removeEventListener('mouseleave', guestRepeatRateMouseLeave);
-      }
-
-      guestRepeatRateTooltipEl = document.createElement('div');
-      guestRepeatRateTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(guestRepeatRateTooltipEl);
-
-      var PLOT_LEFT      = 38;
-      var PLOT_RIGHT_PAD = 0;
-      var AXIS_MIN_TIME  = new Date(2025, 3, 1).getTime();
-      var AXIS_MAX_TIME  = new Date(2026, 2, 1).getTime();
-
-      guestRepeatRateMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - PLOT_RIGHT_PAD;
-
-        if (mx < PLOT_LEFT || mx > plotRight) {
-          guestRepeatRateTooltipEl.style.display = 'none';
-          return;
-        }
-
-        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
-        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
-        var d = GUEST_REPEAT_RATE_DATA.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
-
-        if (!guestRepeatRateVisibility.current) { guestRepeatRateTooltipEl.style.display = 'none'; return; }
+      // Snapped tooltip + hairline + hover dot — shared chart-hover.js (port of production agChartHoverOverlay).
+      guestRepeatRateHover = ChartHover.attach(container, {
+        data: GUEST_REPEAT_RATE_DATA,
+        series: function() {
+          return guestRepeatRateChartOptions.series
+            .filter(function(s) { return !guestRepeatRateVisibility || guestRepeatRateVisibility[s.yKey] !== false; })
+            .map(function(s) { return { yKey: s.yKey, stroke: s.stroke }; });
+        },
+        yDomain: function() {
+          var y = guestRepeatRateChartOptions.axes && guestRepeatRateChartOptions.axes.y;
+          return y && typeof y.min === 'number' && typeof y.max === 'number' ? { min: y.min, max: y.max } : null;
+        },
+        xDomain: function() {
+          var x = guestRepeatRateChartOptions.axes && guestRepeatRateChartOptions.axes.x;
+          return x && x.min && x.max ? { min: +x.min, max: +x.max } : null;
+        },
+        renderTooltip: function(d) {
+        if (!guestRepeatRateVisibility.current) { return null; }
 
         // Production attachGuestRepeatRateTooltip: relative % pill, base /
         // repeated guest rows, prev row labelled with month + year.
@@ -3606,7 +3385,7 @@
           );
         };
 
-        guestRepeatRateTooltipEl.innerHTML = (
+        return (
           '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
           '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Guest repeat rate</p>' +
           '<div style="display:flex;flex-direction:column;gap:8px;">' +
@@ -3634,26 +3413,9 @@
             : '') +
           '</div>'
         );
-
-        guestRepeatRateTooltipEl.style.display = 'block';
-
-        var tw = guestRepeatRateTooltipEl.offsetWidth;
-        var th = guestRepeatRateTooltipEl.offsetHeight;
-        var tx = e.clientX + 16;
-        var ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth  - 8) tx = e.clientX - tw - 16;
-        if (ty < 8)                           ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        guestRepeatRateTooltipEl.style.left = tx + 'px';
-        guestRepeatRateTooltipEl.style.top  = ty + 'px';
-      };
-
-      guestRepeatRateMouseLeave = function() {
-        guestRepeatRateTooltipEl.style.display = 'none';
-      };
-
-      container.addEventListener('mousemove',  guestRepeatRateMouseMove);
-      container.addEventListener('mouseleave', guestRepeatRateMouseLeave);
+        },
+      });
+      guestRepeatRateTooltipEl = guestRepeatRateHover.tooltipEl;
     }
 
     /* ═══════════════════════════════════════════════════
@@ -3661,6 +3423,7 @@
     ═══════════════════════════════════════════════════ */
     var loyaltyPenetrationChart         = null;
     var loyaltyPenetrationChartOptions  = null;
+    var loyaltyPenetrationHover = null;
     var loyaltyPenetrationTooltipEl     = null;
     var loyaltyPenetrationMouseMove     = null;
     var loyaltyPenetrationMouseLeave    = null;
@@ -3723,29 +3486,13 @@
           {
             type: 'line', xKey: 'date', yKey: 'prev', yName: 'Prev period',
             stroke: '#5A55E3', strokeWidth: 2, lineDash: [2, 2],
-            marker: {
-              enabled: true, size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
-            },
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
           {
             type: 'line', xKey: 'date', yKey: 'current', yName: 'This period',
             stroke: '#5A55E3', strokeWidth: 2,
-            marker: {
-              enabled: true, size: 0,
-              itemStyler: function(params) {
-                if (params.highlightState === 'highlighted-item') {
-                  return { size: 10, fill: '#5A55E3', stroke: '#ffffff', strokeWidth: 2 };
-                }
-                return { size: 0 };
-              },
-            },
+            marker: { enabled: false },
             tooltip: { enabled: false },
           },
         ],
@@ -3765,7 +3512,7 @@
                 new Date(2025, 9, 1), new Date(2026, 0, 1),
               ],
             },
-            crosshair: { enabled: true, stroke: '#c6c6c6', lineDash: [4, 4] },
+            crosshair: { enabled: false },
           },
           y: {
             type: 'number', position: 'left',
@@ -3783,45 +3530,32 @@
 
       loyaltyPenetrationChart = agCharts.AgCharts.create(loyaltyPenetrationChartOptions);
 
-      if (loyaltyPenetrationTooltipEl && loyaltyPenetrationTooltipEl.parentNode) {
-        loyaltyPenetrationTooltipEl.parentNode.removeChild(loyaltyPenetrationTooltipEl);
-      }
-      if (loyaltyPenetrationMouseMove) {
-        container.removeEventListener('mousemove', loyaltyPenetrationMouseMove);
-        container.removeEventListener('mouseleave', loyaltyPenetrationMouseLeave);
-      }
-
-      loyaltyPenetrationTooltipEl = document.createElement('div');
-      loyaltyPenetrationTooltipEl.style.cssText = 'position:fixed;pointer-events:none;display:none;z-index:9999;';
-      document.body.appendChild(loyaltyPenetrationTooltipEl);
-
-      var PLOT_LEFT = 38, PLOT_RIGHT_PAD = 0;
-      var AXIS_MIN_TIME = new Date(2025, 3, 1).getTime();
-      var AXIS_MAX_TIME = new Date(2026, 2, 1).getTime();
-
-      loyaltyPenetrationMouseMove = function(e) {
-        var rect = container.getBoundingClientRect();
-        var mx = e.clientX - rect.left;
-        var plotRight = rect.width - PLOT_RIGHT_PAD;
-        if (mx < PLOT_LEFT || mx > plotRight) {
-          loyaltyPenetrationTooltipEl.style.display = 'none';
-          return;
-        }
-        var relX = (mx - PLOT_LEFT) / (plotRight - PLOT_LEFT);
-        var targetTime = AXIS_MIN_TIME + relX * (AXIS_MAX_TIME - AXIS_MIN_TIME);
-        var d = LOYALTY_PENETRATION_DATA.reduce(function(best, row) {
-          return Math.abs(row.date.getTime() - targetTime) < Math.abs(best.date.getTime() - targetTime) ? row : best;
-        });
+      // Snapped tooltip + hairline + hover dot — shared chart-hover.js (port of production agChartHoverOverlay).
+      loyaltyPenetrationHover = ChartHover.attach(container, {
+        data: LOYALTY_PENETRATION_DATA,
+        series: function() {
+          return loyaltyPenetrationChartOptions.series
+            .filter(function(s) { return !loyaltyPenetrationVisibility || loyaltyPenetrationVisibility[s.yKey] !== false; })
+            .map(function(s) { return { yKey: s.yKey, stroke: s.stroke }; });
+        },
+        yDomain: function() {
+          var y = loyaltyPenetrationChartOptions.axes && loyaltyPenetrationChartOptions.axes.y;
+          return y && typeof y.min === 'number' && typeof y.max === 'number' ? { min: y.min, max: y.max } : null;
+        },
+        xDomain: function() {
+          var x = loyaltyPenetrationChartOptions.axes && loyaltyPenetrationChartOptions.axes.x;
+          return x && x.min && x.max ? { min: +x.min, max: +x.max } : null;
+        },
+        renderTooltip: function(d) {
         if (!loyaltyPenetrationVisibility.current) {
-          loyaltyPenetrationTooltipEl.style.display = 'none';
-          return;
+          return null;
         }
         var ptsDelta = (d.current - d.prev) * 100;
         var pts = (ptsDelta >= 0 ? '+' : '') + ptsDelta.toFixed(1) + 'pts';
         var ptsColor = ptsDelta >= 0 ? '#257469' : '#b1294a';
         var ptsBg = ptsDelta >= 0 ? '#effaf9' : '#fdecef';
         var stripe = '<div style="width:12px;height:12px;background-color:#fff;background-image:repeating-linear-gradient(-45deg,#5A55E3 0,#5A55E3 1.5px,transparent 1.5px,transparent 3px);border-radius:2px;flex-shrink:0;"></div>';
-        loyaltyPenetrationTooltipEl.innerHTML = (
+        return (
           '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
           '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Loyalty penetration</p>' +
           '<div style="display:flex;flex-direction:column;gap:8px;">' +
@@ -3847,24 +3581,9 @@
             : '') +
           '</div>'
         );
-        loyaltyPenetrationTooltipEl.style.display = 'block';
-        var tw = loyaltyPenetrationTooltipEl.offsetWidth;
-        var th = loyaltyPenetrationTooltipEl.offsetHeight;
-        var tx = e.clientX + 16;
-        var ty = e.clientY - Math.round(th / 2);
-        if (tx + tw > window.innerWidth - 8) tx = e.clientX - tw - 16;
-        if (ty < 8) ty = 8;
-        if (ty + th > window.innerHeight - 8) ty = window.innerHeight - th - 8;
-        loyaltyPenetrationTooltipEl.style.left = tx + 'px';
-        loyaltyPenetrationTooltipEl.style.top = ty + 'px';
-      };
-
-      loyaltyPenetrationMouseLeave = function() {
-        loyaltyPenetrationTooltipEl.style.display = 'none';
-      };
-
-      container.addEventListener('mousemove', loyaltyPenetrationMouseMove);
-      container.addEventListener('mouseleave', loyaltyPenetrationMouseLeave);
+        },
+      });
+      loyaltyPenetrationTooltipEl = loyaltyPenetrationHover.tooltipEl;
     }
 
     /* ═══════════════════════════════════════════════════

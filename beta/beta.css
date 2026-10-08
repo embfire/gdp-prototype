@@ -3081,6 +3081,19 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   left: 50%;
   transform: translateX(-50%);
 }
+/* Customize sits flush with the page's right edge; a centred bubble would
+   overflow it (even while hidden) and add a horizontal scrollbar. Right-align
+   the bubble and slide its arrow back under the middle of the button. */
+.dashboard-meta-bar .chart-help-wrap .chart-tooltip {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+.dashboard-meta-bar .chart-help-wrap .chart-tooltip::after {
+  left: auto;
+  right: calc(55px - 0.25rem);
+  transform: none;
+}
 .chart-card__help-btn .material-symbols-rounded {
   font-size: 20px;
 }
@@ -3164,3 +3177,94 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   visibility: visible;
   opacity: 1;
 }
+
+/* ── Header beta tag ── */
+.header-brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 16px;
+}
+.header-brand-lockup .header-brand { padding-right: 0; }
+.header-beta-tag {
+  padding: 4px 6px;
+  border-radius: 10px;
+  background: #ff5719;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 7px;
+  letter-spacing: 0.208px;
+  text-transform: uppercase;
+}
+
+/* ── Profile stitching page ── */
+.content-area--profile-stitching {
+  padding: 64px 48px;
+  gap: 32px;
+}
+.stitching-cards {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+/* Info tooltips sit inside the card, so it must not clip the bubble. */
+.stitching-card {
+  width: 100%;
+  max-width: 480px;
+  overflow: visible;
+}
+.profile-card__label-row,
+.profile-card__row-label-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #60696c;
+}
+.profile-card__row-label-group { flex-shrink: 0; min-width: 0; }
+.stitching-card__footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #60696c;
+}
+.stitching-card__footer .material-symbols-rounded {
+  font-size: 16px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+}
+.stitching-card__footer-text {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.36;
+}
+.stitching-audit-log {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.stitching-audit-log__body {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+}
+.stitching-audit-log__empty { max-width: 370px; }
+.stitching-audit-log__empty .empty-state__icon {
+  font-size: 64px;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 48;
+}
+.stitching-audit-log__empty .empty-state__title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.4;
+  color: #000000;
+}
+.stitching-audit-log__empty .empty-state__description {
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+/* Rows are nowrap; let the info bubbles wrap like the card-title one. */
+.stitching-card .tooltip__container { white-space: normal; }
