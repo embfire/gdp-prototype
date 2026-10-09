@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0..1,0">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@10.3.1/dist/gridstack.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@12.6.0/dist/gridstack.min.css">
   <link rel="stylesheet" href="../assets/bento.css">
   <link rel="stylesheet" href="beta.css">
   <script src="lifecycle-definitions.js"></script>
@@ -112,7 +112,8 @@
       <aside class="sidebar-customize">
         <div class="sidebar-customize__inner">
           <div class="sidebar-customize__label">Metrics</div>
-          <div class="sidebar-customize__list" id="sidebar-list"></div>
+          <p class="sidebar-customize__empty" id="sidebar-empty" hidden>All metrics are on your dashboard</p>
+          <div class="sidebar-customize__list" id="sidebar-list" aria-label="Available metrics"></div>
         </div>
       </aside>
 
@@ -243,8 +244,14 @@
             </button>
           </div>
 
-          <!-- Chart grid (GridStack) -->
-          <div class="grid-stack grid-stack-animate" id="dashboard-grid"></div>
+          <!-- View mode: plain CSS grid (production DashboardView). Rows
+               auto-size, so cards keep their natural, per-chart heights. -->
+          <div class="dashboard-chart-grid" id="dashboard-chart-grid"></div>
+
+          <!-- Customize mode: GridStack owns positioning. Built on Customize
+               and torn down on Save/Cancel; its fixed cell height only
+               applies while editing. -->
+          <div class="grid-stack dashboard-grid" id="dashboard-grid"></div>
 
         </div>
         <!-- /content-area--dashboard -->
@@ -262,7 +269,7 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/gridstack@10.3.1/dist/gridstack-all.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gridstack@12.6.0/dist/gridstack-all.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/ag-charts-community@13.2.1/dist/umd/ag-charts-community.min.js"></script>
   <script>
     /* ═══════════════════════════════════════════════════
@@ -280,9 +287,9 @@
       { id: 'reachability',               title: 'Reachability' },
       { id: 'retention-cohort',           title: 'Retention cohort' },
       { id: 'visit-frequency',            title: 'Visit frequency' },
-      { id: 'avg-order-value',            title: 'Average order value' },
-      { id: 'loyalty-spend-lift',         title: 'Enrollment spend lift' },
       { id: 'guest-repeat-rate',          title: 'Guest repeat rate' },
+      { id: 'loyalty-spend-lift',         title: 'Enrollment spend lift' },
+      { id: 'avg-order-value',            title: 'Average order value' },
     ];
 
     var DEFAULT_LAYOUT = [
@@ -303,84 +310,94 @@
     var LS_KEY = 'g360-dashboard-layout-v9';
 
     /* ═══════════════════════════════════════════════════
-       GridStack
+       Layout + cards
+       Mirrors production DashboardView: `layout` is the source of truth
+       in view mode, which renders a plain CSS grid so every card keeps
+       its natural height. GridStack exists only while customizing and
+       owns live positions for that duration — snapshot from `layout` on
+       Customize, read back from the grid on Save.
     ═══════════════════════════════════════════════════ */
-    var dashGrid;
-    var originalItems = null; // snapshot when entering customize
+    // Production dashboardCatalog.ts constants.
+    var GRID_COLUMNS = 12;
+    var CARD_WIDTH = 6;
+    var CARD_HEIGHT = 1;
+    // Customize-mode row height only: fits the tallest card's natural content
+    // (256px chart + chrome ≈ 503px) plus the 32px vertical margins.
+    var CELL_HEIGHT = 548;
+    var MARGIN_Y = 16;
+    var MARGIN_X = 8;
+    // At/below this viewport width both grids collapse to one column — keep
+    // in sync with the @media rules on .dashboard-chart-grid in beta.css.
+    var ONE_COLUMN_MAX_WIDTH = 1100;
 
-    // cellHeight: card content (435px) + marginBottom (32px) = 467
-    // margin: 16px all sides → 32px row-gap, 32px col-gap
-    var CELL_HEIGHT = 467;
+    var layout = [];          // [{ id, x: 0|6, y }]
+    var originalLayout = [];  // captured on Customize, restored on Cancel
+    var cardEls = {};         // metric id → .chart-card, moved between grids
+    var dashGrid = null;
 
-    function initGrid() {
-      dashGrid = GridStack.init({
-        column: 12,               // 12-col system; cards use w:6 (50%)
-        cellHeight: CELL_HEIGHT,
-        marginTop: 16,            // 32px row gap between cards
-        marginBottom: 16,
-        marginLeft: 8,            // 16px column gap between cards
-        marginRight: 8,
-        animate: true,
-        // Not staticGrid — staticGrid:true tears down the accept-widget drop
-        // target, and setStatic(false) doesn't always rebuild it reliably in
-        // v10. Instead start with disable() and enable() in customize mode.
-        disableResize: true,      // grid-level resize off (resizable:false isn't a valid DDResizeOpt)
-        draggable: {
-          handle: '.chart-card',
-          cancel: 'button, .dropdown, .chart-context-wrap, .chart-remove-wrap',
-          scroll: false,
-        },
-        // acceptWidgets removed — sidebar drops are handled manually via
-        // startSidebarDrag/onSidebarDragEnd; GridStack only manages internal
-        // reorder of existing cards.
-        disableOneColumnMode: true,
-        float: false,
-      }, '#dashboard-grid');
+    function cloneLayout(items) {
+      return items.map(function(item) { return { id: item.id, x: item.x, y: item.y }; });
+    }
 
-      // Lock interactions in normal mode (sidebar is hidden so no source for
-      // sidebar drops anyway); enable() flips on internal move in customize.
-      dashGrid.disable();
+    function byPosition(a, b) { return (a.y - b.y) || (a.x - b.x); }
 
-      // Track drag state on body for hover-state suppression (#7).
-      // 'dragstart'/'dragstop' fire only for in-grid reorders.
-      dashGrid.on('dragstart', function() {
-        document.body.classList.add('is-dragging-card');
+    // Drops unknown metrics, de-duplicates (keeps the first occurrence), and
+    // coerces columns to 0 / 6 — production sanitizeLayout.
+    function sanitizeLayout(items) {
+      var seen = {};
+      var result = [];
+      (Array.isArray(items) ? items : []).forEach(function(item) {
+        if (!item || !metricById(item.id) || seen[item.id]) return;
+        seen[item.id] = true;
+        result.push({
+          id: item.id,
+          x: item.x === 6 ? 6 : 0,
+          y: isFinite(item.y) && item.y >= 0 ? Math.floor(item.y) : 0,
+        });
       });
-      dashGrid.on('dragstop', function() {
-        document.body.classList.remove('is-dragging-card');
-      });
-
-      loadLayout();
+      return result;
     }
 
     function loadLayout() {
-      var saved = localStorage.getItem(LS_KEY);
-      var items = saved ? JSON.parse(saved) : DEFAULT_LAYOUT;
-      dashGrid.removeAll();
-      items.forEach(function(item) {
-        var metric = metricById(item.id);
-        if (metric) addCardToGrid(metric.id, metric.title, item.x, item.y, false);
+      var saved = null;
+      try { saved = JSON.parse(localStorage.getItem(LS_KEY)); } catch (e) { saved = null; }
+      layout = sanitizeLayout(saved || DEFAULT_LAYOUT);
+      renderViewGrid();
+    }
+
+    // View-mode cells in reading order, with a sequential row per column.
+    // Every card is half-width, so GridStack's gravity compacts each column
+    // independently — re-deriving rows per column mirrors that arrangement
+    // and avoids empty CSS-grid rows if a saved layout contains y gaps.
+    function renderViewGrid() {
+      var gridEl = document.getElementById('dashboard-chart-grid');
+      var nextRow = { 0: 0, 6: 0 };
+      while (gridEl.firstChild) gridEl.removeChild(gridEl.firstChild);
+      layout.slice().sort(byPosition).forEach(function(item) {
+        var cell = document.createElement('div');
+        cell.className = 'dashboard-chart-cell' + (item.x === 6 ? ' dashboard-chart-cell--right' : '');
+        cell.style.gridRow = String(nextRow[item.x]++ + 1);
+        cell.appendChild(getCard(item.id));
+        gridEl.appendChild(cell);
       });
       applyFilterCompatibility(currentDateRange);
     }
 
-    function addCardToGrid(id, title, x, y, flash) {
-      var widget = dashGrid.addWidget({
-        id: id,
-        x: x,
-        y: y,
-        w: 6,
-        h: 1,
-        noResize: true,
-        content: createCardHTML(id, title),
-      });
-      if (flash) {
-        var card = widget.querySelector('.chart-card');
-        if (card) {
-          card.classList.add('chart-card--added');
-          setTimeout(function() { card.classList.remove('chart-card--added'); }, 1000);
-        }
-      }
+    // Each card is built once and then moved between the view grid and the
+    // customize grid, so its chart survives mode switches.
+    function getCard(id) {
+      if (cardEls[id]) return cardEls[id];
+      var metric = metricById(id);
+      var wrap = document.createElement('div');
+      wrap.innerHTML = createCardHTML(metric.id, metric.title);
+      cardEls[id] = wrap.firstElementChild;
+      initCardChart(id);
+      return cardEls[id];
+    }
+
+    // Charts render on the next frame after fonts load — by then the caller
+    // has inserted the card into the page.
+    function initCardChart(id) {
       if (id === 'total-guests') {
         Promise.all([
           document.fonts.load('400 12px Manrope'),
@@ -463,151 +480,11 @@
           });
         });
       }
-      // Sync the new card's filter notice with the current date range.
-      applyFilterCompatibility(currentDateRange);
     }
 
-    /* ═══════════════════════════════════════════════════
-       Manual sidebar → grid drag-drop.
-       GridStack v10.3.1's acceptWidgets drop pipeline doesn't
-       reliably register the grid as a drop target in our setup, so we
-       handle sidebar drops ourselves. Internal reorders still go through
-       GridStack's own drag-drop and are unaffected.
-    ═══════════════════════════════════════════════════ */
-    var sidebarDragState = null;
-    var SIDEBAR_DRAG_THRESHOLD = 4; // px before we treat mousedown as drag
-
-    function startSidebarDrag(e) {
-      if (e.button !== 0) return;
-      e.preventDefault();   // stop browser from starting a text selection
-      var item = e.currentTarget;
-      sidebarDragState = {
-        metricId: item.getAttribute('data-metric-id'),
-        metricTitle: item.getAttribute('data-metric-title'),
-        sourceItem: item,
-        startX: e.clientX,
-        startY: e.clientY,
-        offsetX: 0,
-        offsetY: 0,
-        helper: null,
-        moved: false,
-        rect: item.getBoundingClientRect(),
-      };
-      sidebarDragState.offsetX = e.clientX - sidebarDragState.rect.left;
-      sidebarDragState.offsetY = e.clientY - sidebarDragState.rect.top;
-
-      document.addEventListener('mousemove', onSidebarDragMove);
-      document.addEventListener('mouseup', onSidebarDragEnd);
-    }
-
-    // Compute the target grid coords (x:0|6, y:row) from a mouse event,
-    // or null if the cursor is outside the grid.
-    function targetCoordsFromEvent(e) {
-      var gridEl = document.getElementById('dashboard-grid');
-      if (!gridEl) return null;
-      var r = gridEl.getBoundingClientRect();
-      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return null;
-      return {
-        x: (e.clientX - r.left) < r.width / 2 ? 0 : 6,
-        y: Math.max(0, Math.floor((e.clientY - r.top) / CELL_HEIGHT)),
-        gridEl: gridEl,
-      };
-    }
-
-    function showDropPlaceholder(target) {
-      var ph = document.getElementById('drop-placeholder');
-      if (!ph) {
-        ph = document.createElement('div');
-        ph.id = 'drop-placeholder';
-        ph.className = 'drop-placeholder';
-        target.gridEl.appendChild(ph);
-      }
-      // Match the visual box of a grid cell at (x,y), w:6 h:1, accounting for the
-      // 8px h / 16px v inner margin that grid items use.
-      var leftPct = (target.x / 12) * 100;
-      ph.style.left   = 'calc(' + leftPct + '% + 8px)';
-      ph.style.top    = (target.y * CELL_HEIGHT + 16) + 'px';
-      ph.style.width  = 'calc(50% - 16px)';
-      ph.style.height = (CELL_HEIGHT - 32) + 'px';
-    }
-
-    function hideDropPlaceholder() {
-      var ph = document.getElementById('drop-placeholder');
-      if (ph) ph.remove();
-    }
-
-    function onSidebarDragMove(e) {
-      if (!sidebarDragState) return;
-      var s = sidebarDragState;
-      e.preventDefault();
-
-      if (!s.moved) {
-        var dx = e.clientX - s.startX;
-        var dy = e.clientY - s.startY;
-        if (Math.abs(dx) < SIDEBAR_DRAG_THRESHOLD && Math.abs(dy) < SIDEBAR_DRAG_THRESHOLD) return;
-        s.moved = true;
-
-        // Build helper (clone of sidebar item) on first real move
-        var helper = s.sourceItem.cloneNode(true);
-        helper.style.position = 'fixed';
-        helper.style.zIndex = '10000';
-        helper.style.width = s.rect.width + 'px';
-        helper.style.pointerEvents = 'none';
-        helper.style.opacity = '0.95';
-        helper.style.boxShadow = '0px 5px 20px rgba(0,0,0,0.18)';
-        document.body.appendChild(helper);
-        s.helper = helper;
-        document.body.classList.add('is-dragging-card');
-        s.sourceItem.style.opacity = '0.4';
-      }
-
-      s.helper.style.left = (e.clientX - s.offsetX) + 'px';
-      s.helper.style.top = (e.clientY - s.offsetY) + 'px';
-
-      var target = targetCoordsFromEvent(e);
-      if (target) showDropPlaceholder(target);
-      else hideDropPlaceholder();
-    }
-
-    function onSidebarDragEnd(e) {
-      if (!sidebarDragState) return;
-      var s = sidebarDragState;
-      sidebarDragState = null;
-
-      document.removeEventListener('mousemove', onSidebarDragMove);
-      document.removeEventListener('mouseup', onSidebarDragEnd);
-
-      if (s.helper) s.helper.remove();
-      hideDropPlaceholder();
-      document.body.classList.remove('is-dragging-card');
-      if (s.sourceItem) s.sourceItem.style.opacity = '';
-
-      if (!s.moved) return; // treat as click — nothing to do
-
-      var target = targetCoordsFromEvent(e);
-      if (!target) return;
-
-      var metric = metricById(s.metricId);
-      if (!metric) return;
-
-      // Insert at the requested row by first shifting any item at row >= y
-      // down by one. With float:false GridStack will then compact, but the
-      // newly-added item at (x, y) holds its row, so neighbours below stay
-      // displaced (and the other column compacts up if it has a gap).
-      dashGrid.batchUpdate();
-      var nodes = dashGrid.engine.nodes.slice().sort(function(a, b) { return b.y - a.y; });
-      nodes.forEach(function(n) {
-        if (n.y >= target.y) {
-          dashGrid.update(n.el, { y: n.y + 1 });
-        }
-      });
-      addCardToGrid(metric.id, metric.title, target.x, target.y, true);
-      dashGrid.commit();
-
-      if (s.sourceItem && s.sourceItem.parentNode) s.sourceItem.parentNode.removeChild(s.sourceItem);
-    }
-
-    function removeCard(id) {
+    // Frees a card that left the dashboard once a customize session ends:
+    // Save drops the removed cards, Cancel drops the added ones.
+    function destroyCard(id) {
       if (id === 'total-guests' && totalGuestsChart) {
         totalGuestsChart.destroy();
         totalGuestsChart = null;
@@ -676,25 +553,15 @@
           loyaltyPenetrationTooltipEl = null;
         }
       }
-      var el = document.querySelector('.grid-stack-item[gs-id="' + id + '"]');
-      if (el) dashGrid.removeWidget(el);
-      updateSidebar();
+      var card = cardEls[id];
+      if (card && card.parentNode) card.parentNode.removeChild(card);
+      delete cardEls[id];
     }
 
-    function getLayoutSnapshot() {
-      return dashGrid.getGridItems().map(function(el) {
-        return {
-          id:  el.getAttribute('gs-id') || '',
-          x:   parseInt(el.getAttribute('gs-x')  || '0', 10),
-          y:   parseInt(el.getAttribute('gs-y')  || '0', 10),
-        };
-      }).filter(function(i) { return i.id; });
-    }
-
-    function getOnDashboardIds() {
-      return dashGrid.getGridItems().map(function(el) {
-        return el.getAttribute('gs-id');
-      }).filter(Boolean);
+    function releaseCardsNotIn(items) {
+      Object.keys(cardEls).forEach(function(id) {
+        if (!items.some(function(item) { return item.id === id; })) destroyCard(id);
+      });
     }
 
     function metricById(id) {
@@ -702,65 +569,197 @@
     }
 
     /* ═══════════════════════════════════════════════════
-       Sidebar (customize mode)
+       GridStack — customize mode only
+    ═══════════════════════════════════════════════════ */
+    function gridItemEl(id) {
+      return document.querySelector('#dashboard-grid .grid-stack-item[gs-id="' + id + '"]');
+    }
+
+    // The card sits in an inert wrapper so keyboard users can't tab into its
+    // header and navigate away mid-edit. The Remove control overlays the
+    // header's top-right, where the hidden About / overflow controls sit.
+    function buildGridItem(item) {
+      var el = document.createElement('div');
+      el.className = 'grid-stack-item';
+      el.setAttribute('gs-id', item.id);
+      el.setAttribute('gs-x', item.x);
+      el.setAttribute('gs-y', item.y);
+      el.setAttribute('gs-w', CARD_WIDTH);
+      el.setAttribute('gs-h', CARD_HEIGHT);
+      el.innerHTML =
+        '<div class="grid-stack-item-content dashboard-grid__cell dashboard-grid__cell--customize">' +
+          '<div class="dashboard-grid__widget" inert></div>' +
+          '<div class="chart-remove-wrap dashboard-card-remove">' +
+            '<button class="button transparent no-content" aria-label="Remove" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); removeCard(\'' + item.id + '\')">' +
+              '<span class="material-symbols-rounded">do_not_disturb_on</span>' +
+            '</button>' +
+            '<div class="chart-tooltip">Remove</div>' +
+          '</div>' +
+        '</div>';
+      el.querySelector('.dashboard-grid__widget').appendChild(getCard(item.id));
+      return el;
+    }
+
+    function initGrid() {
+      var gridEl = document.getElementById('dashboard-grid');
+      layout.forEach(function(item) { gridEl.appendChild(buildGridItem(item)); });
+
+      dashGrid = GridStack.init({
+        column: GRID_COLUMNS,
+        // Keep one row of height when empty so the grid stays a valid drop
+        // target (otherwise removing every card collapses it and adds fail).
+        minRow: 1,
+        // Collapse to one column at/below 1100px, matching the view grid.
+        // GridStack caches the 12-column layout and restores it on widen.
+        columnOpts: {
+          breakpointForWindow: true,
+          breakpoints: [{ w: ONE_COLUMN_MAX_WIDTH, c: 1, layout: 'list' }],
+        },
+        cellHeight: CELL_HEIGHT,
+        marginTop: MARGIN_Y,
+        marginBottom: MARGIN_Y,
+        marginLeft: MARGIN_X,
+        marginRight: MARGIN_X,
+        animate: true,
+        float: false,
+        disableResize: true,
+        // Accept library items as external drops. `acceptWidgets: true` would
+        // hardcode the selector to `.grid-stack-item` and reject them.
+        acceptWidgets: '.sidebar-customize__item',
+        draggable: {
+          handle: '.dashboard-grid__cell',
+          cancel: '.dashboard-card-remove',
+          scroll: true,
+        },
+      }, gridEl);
+
+      // GridStack only adds `grid-stack-animate` lazily on the first add/drop,
+      // so reorders and the first drop wouldn't slide. The delayed form runs
+      // after GridStack's own init so the class isn't cleared again.
+      dashGrid.setAnimation(true, true);
+      dashGrid.on('dropped', onExternalDrop);
+      dashGrid.enable();
+
+      // Hidden until GridStack has positioned items, to avoid an overlap flash.
+      gridEl.classList.add('dashboard-grid--ready');
+    }
+
+    // Tear GridStack down and swap in a fresh container for the next session,
+    // like production unmounting the grid when customize ends.
+    function destroyGrid() {
+      if (dashGrid) dashGrid.destroy(false);
+      dashGrid = null;
+      var old = document.getElementById('dashboard-grid');
+      var fresh = document.createElement('div');
+      fresh.id = 'dashboard-grid';
+      fresh.className = 'grid-stack dashboard-grid';
+      old.parentNode.replaceChild(fresh, old);
+    }
+
+    // Native drop from the library. GridStack inserts its own element carrying
+    // the dragged item's gs-* attributes; read its resolved position, discard
+    // it, and put the real card in its place.
+    function onExternalDrop(event, previousNode, newNode) {
+      if (!dashGrid || !newNode || newNode.id == null) return;
+      var id = String(newNode.id);
+      var x = newNode.x === 6 ? 6 : 0;
+      var y = newNode.y || 0;
+      if (newNode.el) dashGrid.removeWidget(newNode.el, true, false);
+      if (!metricById(id)) return;
+      addCardAt(id, x, y);
+    }
+
+    function addCardAt(id, x, y) {
+      if (layout.some(function(item) { return item.id === id; })) return;
+      layout.push({ id: id, x: x, y: y });
+      var el = buildGridItem({ id: id, x: x, y: y });
+      document.getElementById('dashboard-grid').appendChild(el);
+      // Pass `id` so the engine node keeps the metric id; without it GridStack
+      // creates the node with id undefined, which corrupts later compaction.
+      dashGrid.makeWidget(el, { id: id, x: x, y: y, w: CARD_WIDTH, h: CARD_HEIGHT });
+      el.classList.add('dashboard-grid__cell--added');
+      setTimeout(function() { el.classList.remove('dashboard-grid__cell--added'); }, 1000);
+      applyFilterCompatibility(currentDateRange);
+      updateSidebar();
+    }
+
+    function removeCard(id) {
+      var el = gridItemEl(id);
+      if (el && dashGrid) dashGrid.removeWidget(el, true, false);
+      layout = layout.filter(function(item) { return item.id !== id; });
+      if (dashGrid) dashGrid.compact();
+      updateSidebar();
+    }
+
+    // `save()` returns the canonical 12-column layout whatever the current
+    // breakpoint, so a Save made while collapsed keeps the two-column layout.
+    function readLayoutFromGrid() {
+      if (!dashGrid) return cloneLayout(layout);
+      return dashGrid.save(false)
+        .filter(function(w) { return typeof w.id === 'string' && metricById(w.id); })
+        .map(function(w) { return { id: w.id, x: w.x === 6 ? 6 : 0, y: w.y || 0 }; })
+        .sort(byPosition);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Metrics library (customize sidebar)
     ═══════════════════════════════════════════════════ */
     function updateSidebar() {
-      var onDash = getOnDashboardIds();
+      var onDash = layout.map(function(item) { return item.id; });
+      var available = ALL_METRICS.filter(function(metric) { return onDash.indexOf(metric.id) === -1; });
       var list = document.getElementById('sidebar-list');
       list.innerHTML = '';
-      ALL_METRICS.forEach(function(metric) {
-        if (onDash.indexOf(metric.id) !== -1) return;
+      document.getElementById('sidebar-empty').hidden = available.length > 0;
+      available.forEach(function(metric) {
         var item = document.createElement('div');
         item.className = 'sidebar-customize__item';
-        item.setAttribute('data-metric-id', metric.id);
-        item.setAttribute('data-metric-title', metric.title);
-        item.setAttribute('gs-id', metric.id);   // surfaces as newWidget.id on drop
-        item.setAttribute('gs-w', '6');
-        item.setAttribute('gs-h', '1');
-        item.setAttribute('gs-no-resize', 'true');
+        item.setAttribute('gs-id', metric.id);   // surfaces as newNode.id on drop
+        item.setAttribute('gs-w', CARD_WIDTH);
+        item.setAttribute('gs-h', CARD_HEIGHT);
         item.innerHTML =
           '<span class="material-symbols-rounded sidebar-customize__drag-icon">drag_indicator</span>' +
           '<span class="sidebar-customize__item-label">' + metric.title + '</span>';
         list.appendChild(item);
       });
-      // Manual drag handlers for sidebar items (see startSidebarDrag).
-      list.querySelectorAll('.sidebar-customize__item').forEach(function(el) {
-        el.addEventListener('mousedown', startSidebarDrag);
-      });
+      // Newly listed items must become drag sources.
+      if (dashGrid) GridStack.setupDragIn('.sidebar-customize__item', { appendTo: 'body', helper: 'clone' });
     }
 
     /* ═══════════════════════════════════════════════════
        Customize mode enter / exit
     ═══════════════════════════════════════════════════ */
     function enterCustomizeMode() {
-      originalItems = getLayoutSnapshot();
+      originalLayout = cloneLayout(layout);
       document.querySelector('.app-shell').classList.add('app-shell--customize');
       document.getElementById('dashboard-action-bar').style.display = 'flex';
-      dashGrid.enable();
+      // The customize grid is only displayed with the mode class; GridStack
+      // can only measure and initialise once it is.
+      initGrid();
       updateSidebar();
     }
 
     function exitCustomizeMode() {
-      dashGrid.disable();
+      destroyGrid();
       document.querySelector('.app-shell').classList.remove('app-shell--customize');
       document.getElementById('dashboard-action-bar').style.display = 'none';
-      originalItems = null;
+      renderViewGrid();
     }
 
     function saveCustomize() {
-      var layout = getLayoutSnapshot();
-      localStorage.setItem(LS_KEY, JSON.stringify(layout));
+      var next = readLayoutFromGrid();
+      releaseCardsNotIn(next);
+      layout = next;
       exitCustomizeMode();
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify(next));
+      } catch (err) {
+        console.error('[dashboard] Failed to save layout:', err);
+      }
     }
 
     function cancelCustomize() {
-      if (originalItems) {
-        dashGrid.removeAll();
-        originalItems.forEach(function(item) {
-          var metric = metricById(item.id);
-          if (metric) addCardToGrid(metric.id, metric.title, item.x, item.y, false);
-        });
-      }
+      layout = cloneLayout(originalLayout);
+      releaseCardsNotIn(layout);
       exitCustomizeMode();
     }
 
@@ -1172,12 +1171,6 @@
                     '<li><button class="chart-context-menu__item" onmousedown="event.stopPropagation()" onclick="event.stopPropagation()"><span class="material-symbols-rounded">image</span><span>Download chart</span></button></li>' +
                   '</ul>' +
                 '</div>' +
-              '</div>' +
-              '<div class="chart-remove-wrap">' +
-                '<button class="button transparent no-content" onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); removeCard(\'' + id + '\')" aria-label="Remove chart">' +
-                  '<span class="material-symbols-rounded">do_not_disturb_on</span>' +
-                '</button>' +
-                '<div class="chart-tooltip">Remove</div>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -3589,7 +3582,7 @@
     /* ═══════════════════════════════════════════════════
        Boot
     ═══════════════════════════════════════════════════ */
-    document.addEventListener('DOMContentLoaded', initGrid);
+    document.addEventListener('DOMContentLoaded', loadLayout);
   </script>
 </body>
 </html>
