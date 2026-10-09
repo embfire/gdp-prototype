@@ -741,80 +741,152 @@ body { margin: 0; font-family: 'Manrope', sans-serif; }
   color: #000000;
 }
 
-/* ── Chart grid (GridStack) ── */
-.grid-stack {
+/* ── View-mode chart grid ──
+   Plain CSS grid, as in production DashboardView. Implicit rows auto-size to
+   the taller card of each pair; the shorter card stretches to match. */
+.dashboard-chart-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 16px;
+  row-gap: 32px;
+  align-items: stretch;
+}
+
+/* Cells are placed explicitly (column from the saved x, row inline) so a
+   column with fewer cards never pulls cards sideways. */
+.dashboard-chart-cell {
+  grid-column: 1;
+  min-width: 0;
+}
+
+.dashboard-chart-cell--right {
+  grid-column: 2;
+}
+
+/* Keep in sync with ONE_COLUMN_MAX_WIDTH (index.html) — the customize grid
+   collapses at the same width. DOM order is already reading order, so the
+   explicit placement is cancelled (!important beats the inline grid-row). */
+@media (max-width: 1100px) {
+  .dashboard-chart-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dashboard-chart-cell {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+}
+
+/* ── Customize-mode grid (GridStack) ── */
+.dashboard-grid {
+  display: none;
   width: calc(100% + 16px);
   margin-left: -8px;            /* compensate item marginLeft  */
   margin-right: -8px;           /* compensate item marginRight */
   margin-top: -16px;            /* compensate item marginTop on first row */
+  visibility: hidden;
 }
 
-.grid-stack-item-content {
-  overflow: visible !important;
+.app-shell--customize .dashboard-grid { display: block; }
+.app-shell--customize .dashboard-chart-grid { display: none; }
+.dashboard-grid--ready { visibility: visible; }
+
+/* Relax GridStack's default overflow so card tooltips aren't clipped
+   (matches the specificity of GridStack's own overflow rule). */
+.dashboard-grid > .grid-stack-item > .grid-stack-item-content {
+  overflow: visible;
 }
 
-.grid-stack-placeholder > .placeholder-content {
-  background: #f4f4f4 !important;
-  border-radius: 8px !important;
-  border: 1px dashed #dfe1e2 !important;
-}
-
-/* Sidebar-drop preview rectangle (shown while dragging from the metrics list) */
-.drop-placeholder {
-  position: absolute;
-  background: #f4f4f4;
+.dashboard-grid__cell {
+  position: relative;
   border-radius: 8px;
-  pointer-events: none;
-  z-index: 5;
+}
+
+.dashboard-grid__widget {
+  height: 100%;
+}
+
+.dashboard-grid__widget > .chart-card {
   box-sizing: border-box;
-  transition: left 0.12s ease, top 0.12s ease;
 }
 
-/* Block text-selection on sidebar items themselves so click-and-hold doesn't
-   start a selection before our drag threshold kicks in. */
-.sidebar-customize__item,
-.sidebar-customize__item * {
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-/* Kill any resize handles GridStack might emit (#2) */
-.grid-stack-item .ui-resizable-handle,
-.grid-stack-item .ui-resizable-se,
-.grid-stack-item .ui-resizable-sw,
-.grid-stack-item .ui-resizable-ne,
-.grid-stack-item .ui-resizable-nw,
-.grid-stack-item .ui-resizable-n,
-.grid-stack-item .ui-resizable-e,
-.grid-stack-item .ui-resizable-s,
-.grid-stack-item .ui-resizable-w,
-.grid-stack-item > .gs-resize-handle,
-.grid-stack-item > .grid-stack-resize-handle {
+/* Resizing is disabled — hide the resize handle GridStack still emits. */
+.dashboard-grid .ui-resizable-handle {
   display: none !important;
 }
 
-/* Lift shadow + blue inset outline on the card being dragged (#6) */
-.grid-stack-item.ui-draggable-dragging .chart-card,
-.grid-stack-item.gs-dragging .chart-card {
-  box-shadow:
-    inset 0 0 0 2px #1d5eff,
-    0px 0px 0px 1px rgba(0,0,0,0.05),
-    0px 5px 20px 0px rgba(0,0,0,0.1) !important;
+/* Empty drop position (placeholder for the cell being dragged to/from). */
+.dashboard-grid .grid-stack-placeholder > .placeholder-content {
+  background: #f4f4f4;
+  border-radius: 8px;
 }
 
-/* Suppress hover blue outline on other cards while a drag is in flight (#7) */
-body.is-dragging-card .app-shell--customize .chart-card:hover {
-  box-shadow: none;
+.dashboard-grid__cell--customize {
+  cursor: grab;
 }
 
-@keyframes card-add-flash {
+/* Card content is inert while editing — drag starts on the cell. */
+.dashboard-grid__cell--customize .dashboard-grid__widget {
+  pointer-events: none;
+}
+
+/* Bento focus ring, drawn on an overlay so it paints above the card. */
+.dashboard-grid__cell--customize::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 2px #1d5eff;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  z-index: 2;
+}
+
+.dashboard-grid__cell--customize:hover::after {
+  opacity: 1;
+}
+
+/* The dragged card keeps the focus ring and gains Elevation/below. */
+.dashboard-grid .grid-stack-item.ui-draggable-dragging .dashboard-grid__cell::after,
+.dashboard-grid .grid-stack-item.gs-dragging .dashboard-grid__cell::after {
+  opacity: 1;
+}
+
+.dashboard-grid .grid-stack-item.ui-draggable-dragging .dashboard-grid__cell,
+.dashboard-grid .grid-stack-item.gs-dragging .dashboard-grid__cell {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Remove control — overlays the card header's top-right. */
+.dashboard-grid__cell .dashboard-card-remove {
+  position: absolute;
+  top: 20px;
+  right: 12px;
+  z-index: 3;
+  color: #141414;
+}
+
+/* Centre the Remove bubble (and its arrow) over the button. */
+.dashboard-card-remove .chart-tooltip {
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Brief blue flash when a card is dropped from the library. */
+@keyframes dashboard-card-add-flash {
   0%   { box-shadow: inset 0 0 0 2px #1d5eff; }
   60%  { box-shadow: inset 0 0 0 2px #1d5eff; }
   100% { box-shadow: none; }
 }
 
-.chart-card--added {
-  animation: card-add-flash 1s ease-out forwards;
+.grid-stack-item.dashboard-grid__cell--added .dashboard-grid__cell {
+  animation: dashboard-card-add-flash 1s ease-out forwards;
+}
+
+/* Leave room for the fixed Save/Cancel action bar. */
+.app-shell--customize .content-area--dashboard {
+  padding-bottom: 112px;
 }
 
 /* ── Chart card ── */
@@ -1201,6 +1273,31 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
   flex: 1;
   height: auto;
   min-height: 0;
+}
+
+/* Dashboard cards: fixed-height plots like the production widgets, so the
+   view-mode grid sizes each card to its content instead of collapsing the
+   flex-fill charts above (those stay for the detail pages). */
+.dashboard-chart-grid .chart-card[data-metric-id] .chart-card__placeholder,
+.dashboard-grid .chart-card[data-metric-id] .chart-card__placeholder {
+  flex: none;
+  height: 256px;
+}
+
+/* Lifecycle gives the share strip's height back so its card matches the rest. */
+.dashboard-chart-grid .chart-card[data-metric-id="guest-lifecycle-breakdown"] .chart-card__placeholder,
+.dashboard-grid .chart-card[data-metric-id="guest-lifecycle-breakdown"] .chart-card__placeholder {
+  height: 226px;
+}
+
+/* Visit frequency and spend lift grow with a stretched card (min 256px). */
+.dashboard-chart-grid .chart-card[data-metric-id="visit-frequency"] .chart-card__placeholder,
+.dashboard-grid .chart-card[data-metric-id="visit-frequency"] .chart-card__placeholder,
+.dashboard-chart-grid .chart-card[data-metric-id="loyalty-spend-lift"] .chart-card__placeholder,
+.dashboard-grid .chart-card[data-metric-id="loyalty-spend-lift"] .chart-card__placeholder {
+  flex: 1;
+  height: auto;
+  min-height: 256px;
 }
 
 /* Strip the placeholder background once a real chart has rendered */
@@ -1768,10 +1865,19 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 }
 
 .sidebar-customize__label {
+  margin: 0 0 8px;
   font-family: 'Manrope', sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1.5;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #ffffff;
+}
+
+.sidebar-customize__empty {
+  margin: 0;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  line-height: 1.72;
   color: #ffffff;
 }
 
@@ -1782,21 +1888,32 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 }
 
 .sidebar-customize__item {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px;
+  padding: 16px;
   background: #ffffff;
   border: 1px solid #dfe1e2;
   border-radius: 8px;
   cursor: grab;
-  min-height: 40px;
+}
+
+.sidebar-customize__item,
+.sidebar-customize__item * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* The dragged helper clone (appended to <body>) gets Elevation/below. */
+.sidebar-customize__item.ui-draggable-dragging {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .sidebar-customize__drag-icon {
   flex-shrink: 0;
-  font-size: 20px;
-  color: #60696c;
+  font-size: 24px;
+  color: #000000;
   font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
@@ -1816,8 +1933,9 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 .chart-card .chart-card__drag-icon {
   display: none;
   flex-shrink: 0;
-  font-size: 20px;
-  color: #60696c;
+  margin-right: 8px;
+  font-size: 24px;
+  color: #000000;
   font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
@@ -1831,13 +1949,10 @@ body.is-dragging-card .app-shell--customize .chart-card:hover {
 .app-shell--customize .dashboard-title-bar__actions { display: none; }
 .app-shell--customize .dashboard-filter-bar { display: none; }
 .app-shell--customize .dashboard-meta-bar { display: none; }
-.app-shell--customize .chart-context-wrap { display: none; }
-.app-shell--customize .chart-card__breakdown { display: none; }
-.app-shell--customize .chart-card__header { cursor: default; }
+/* The card's own About / overflow controls give way to the Remove overlay. */
+.app-shell--customize .chart-card__header-controls { display: none; }
 .app-shell--customize .chart-card__header:hover { background: transparent; }
 .app-shell--customize .chart-card__drag-icon { display: inline-block; }
-.app-shell--customize .chart-card { cursor: grab; }
-.app-shell--customize .chart-card:hover { box-shadow: inset 0 0 0 2px #1d5eff; }
 .app-shell--customize .chart-remove-wrap button { cursor: pointer; }
 
 /* ── Chart remove button & tooltip ── */
