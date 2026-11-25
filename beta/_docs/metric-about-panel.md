@@ -16,6 +16,8 @@ Every dashboard chart that shows a calculated metric must have three disclosure 
 
 ## Side panel section structure
 
+> **Current layout (G360-424, G360-428 – G360-436).** The dashboard cards and the Retention cohort, Reachability and Loyalty penetration detail pages now use **What it shows / How it’s calculated / How to read it / Formula** (a stacked fraction, or an equation line), with no "Why it matters". Guest lifecycle adds a "Stages" section in rule order. The detail pages of Total guests, Active guests, New guest acquisition, Average order value, Visit frequency and Guest repeat rate keep the older four-section layout described below. The live copy is in `beta/metric-about.js`, lifted from production `en.ts`; the per-chart copy in this card predates it.
+
 Every panel has exactly these four sections in this order. Only the formula section uses a code block; the rest are plain text paragraphs.
 
 ### 1 — What it shows
@@ -68,27 +70,6 @@ Keep **Formula** and **Why it matters** identical — they describe the metric, 
 ## Chart inventory
 
 All copy follows `ux-copy.md`. No trailing punctuation on single sentences. Periods between sentences in multi-sentence paragraphs only.
-
----
-
-### Loyalty spend lift
-**Info tooltip:** Shows how much more — or less — enrolled guests spend per visit compared to before they joined
-
-**What it shows (widget):** How loyalty enrollment changes what guests spend per visit — using the same guests as their own baseline, not comparing different people
-
-**What it shows (detail):** How lift per enrollment cohort has changed over time — each point is the lift for guests who enrolled on that date
-
-**Formula:**
-```
-Lift = avg post-enrollment spend − avg pre-enrollment spend
-Delta % = lift ÷ avg pre-enrollment spend × 100
-```
-
-**Why it matters:** Loyalty members often spend more — but high spenders also tend to join more. This metric removes that bias by using the same guest as their own baseline
-
-**How to read it (widget):** Positive lift means members spend more per visit after joining. Negative lift is worth investigating — could be redemption behavior or a sampling issue. The cohort window (shown in the notice) is the enrollment period the date range selects
-
-**How to read it (detail):** An upward trend means newer cohorts are showing stronger lift. A spike on a specific date could reflect a promotion or campaign driving higher post-enrollment spend. The dashed line is the previous period — use it to judge whether the current trend is better or worse than normal
 
 ---
 
