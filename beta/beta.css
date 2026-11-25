@@ -1075,9 +1075,11 @@ body { margin: 0; font-family: 'Manrope', sans-serif; }
   opacity: 1;
 }
 
+/* Wrap whole items (marker + label) to the next row; never break a label. */
 .chart-card__legend {
   display: flex;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 8px 16px;
   align-items: center;
 }
 
@@ -1085,6 +1087,7 @@ body { margin: 0; font-family: 'Manrope', sans-serif; }
   display: flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
   padding: 0;
   background: none;
   border: 0;
@@ -1186,15 +1189,6 @@ body { margin: 0; font-family: 'Manrope', sans-serif; }
   flex: 1;
   height: auto;
   min-height: 0;
-}
-
-/* Lifecycle legend has six stages — wrap rather than overflow the card. */
-.chart-card[data-metric-id="guest-lifecycle-breakdown"] .chart-card__legend {
-  flex-wrap: wrap;
-  row-gap: 8px;
-}
-.chart-card[data-metric-id="guest-lifecycle-breakdown"] .chart-card__legend-item {
-  white-space: nowrap;
 }
 
 /* Retention cohort: same flex-fill treatment */
@@ -3156,21 +3150,15 @@ body { margin: 0; font-family: 'Manrope', sans-serif; }
    `.button.primary` (bento). Only the hook class is kept in case
    future tweaks are needed. */
 
-/* "Stages" section (categorical metrics only) — informational notice
+/* "Stages" section (categorical metrics only) — Bento informational banner
    above a term/body definitions list with a color swatch per term. */
 .about-panel__notice {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 12px 16px;
   margin-bottom: 8px;
-  background: #f4f4f4;
-  border-left: 4px solid #1d5eff;
-  border-radius: 4px;
 }
 .about-panel__notice-icon {
-  font-size: 20px;
-  color: #1d5eff;
+  font-size: 24px;
+  line-height: 24px;
+  color: #000000;
   flex-shrink: 0;
 }
 .about-panel__notice-text {

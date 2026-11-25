@@ -390,9 +390,9 @@
       } else if (s.definitions) {
         inner =
           (s.notice
-            ? '<div class="about-panel__notice">' +
+            ? '<div class="info-banner info-banner_informational about-panel__notice">' +
                 '<span class="material-symbols-rounded about-panel__notice-icon" aria-hidden="true">info</span>' +
-                '<p class="about-panel__notice-text">' + escapeHTML(s.notice) + '</p>' +
+                '<div class="info-banner__text"><p class="about-panel__notice-text">' + escapeHTML(s.notice) + '</p></div>' +
               '</div>'
             : '') +
           renderDefinitions(s.definitions);
