@@ -288,7 +288,6 @@
       { id: 'retention-cohort',           title: 'Retention cohort' },
       { id: 'visit-frequency',            title: 'Visit frequency' },
       { id: 'guest-repeat-rate',          title: 'Guest repeat rate' },
-      { id: 'loyalty-spend-lift',         title: 'Enrollment spend lift' },
       { id: 'avg-order-value',            title: 'Average order value' },
     ];
 
@@ -300,14 +299,13 @@
       { id: 'visit-frequency',            x: 0, y: 2 },
       { id: 'new-guest-acquisition',      x: 6, y: 2 },
       { id: 'guest-lifecycle-breakdown',  x: 0, y: 3 },
-      { id: 'loyalty-spend-lift',         x: 6, y: 3 },
-      { id: 'avg-order-value',            x: 0, y: 4 },
-      { id: 'loyalty-penetration',        x: 6, y: 4 },
-      { id: 'guest-repeat-rate',          x: 0, y: 5 },
+      { id: 'avg-order-value',            x: 6, y: 3 },
+      { id: 'loyalty-penetration',        x: 0, y: 4 },
+      { id: 'guest-repeat-rate',          x: 6, y: 4 },
     ];
 
-    // v9: all eleven production metrics on the default layout
-    var LS_KEY = 'g360-dashboard-layout-v9';
+    // v10: enrollment spend lift removed from the default layout
+    var LS_KEY = 'g360-dashboard-layout-v10';
 
     /* ═══════════════════════════════════════════════════
        Layout + cards
@@ -454,13 +452,6 @@
           document.fonts.load('800 12px Manrope'),
         ]).then(function() { requestAnimationFrame(initVisitFrequencyChart); });
       }
-      if (id === 'loyalty-spend-lift') {
-        Promise.all([
-          document.fonts.load('400 12px Manrope'),
-          document.fonts.load('700 12px Manrope'),
-          document.fonts.load('800 12px Manrope'),
-        ]).then(function() { requestAnimationFrame(initLoyaltySpendLiftChart); });
-      }
       if (id === 'guest-repeat-rate') {
         Promise.all([
           document.fonts.load('400 12px Manrope'),
@@ -538,11 +529,6 @@
           newGuestAcqTooltipEl.parentNode.removeChild(newGuestAcqTooltipEl);
           newGuestAcqTooltipEl = null;
         }
-      }
-      if (id === 'loyalty-spend-lift' && loyaltySpendLiftChart) {
-        loyaltySpendLiftChart.destroy();
-        loyaltySpendLiftChart = null;
-        loyaltySpendLiftChartOptions = null;
       }
       if (id === 'loyalty-penetration' && loyaltyPenetrationChart) {
         loyaltyPenetrationChart.destroy();
@@ -823,7 +809,7 @@
             '<span class="chart-card__metric-pill chart-card__metric-pill--up">+10.3%</span>' +
           '</div>' +
           '<div class="chart-card__metric-period-row">' +
-            '<span class="chart-card__metric-period">31.0% prev period</span>' +
+            '<span class="chart-card__metric-period">Latest next-month retention · 31.0% prev period</span>' +
             '<div class="chart-card__metric-info-wrap">' +
               '<span class="material-symbols-rounded chart-card__metric-info-icon">info</span>' +
               '<span class="chart-card__metric-info-text">Showing 90D minimum</span>' +
@@ -836,7 +822,7 @@
         return (
           '<div class="chart-card__metric-row">' +
             '<p class="chart-card__metric-value">37%</p>' +
-            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+2.1%</span>' +
+            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+2.1 pts</span>' +
           '</div>' +
           '<div class="chart-card__metric-period-row">' +
             '<span class="chart-card__metric-period">312K reachable · 535K not reachable</span>' +
@@ -857,22 +843,6 @@
             '<span class="chart-card__metric-pill chart-card__metric-pill--up">+14.3%</span>' +
           '</div>' +
           '<p class="chart-card__metric-period">2.1 visits prev period</p>'
-        );
-      }
-      if (id === 'loyalty-spend-lift') {
-        return (
-          '<div class="chart-card__metric-row">' +
-            '<p class="chart-card__metric-value">+$4.39</p>' +
-            '<span class="chart-card__metric-pill chart-card__metric-pill--up">+109.05%</span>' +
-          '</div>' +
-          '<div class="chart-card__metric-period-row">' +
-            '<span class="chart-card__metric-period">$2.10 previous period avg</span>' +
-            '<div class="chart-card__metric-info-wrap">' +
-              '<span class="material-symbols-rounded chart-card__metric-info-icon">info</span>' +
-              '<span class="chart-card__metric-info-text">Included cohorts: May 17, 2024 to May 17, 2025</span>' +
-              '<div class="chart-card__metric-info-tooltip">This chart uses guests who enrolled during this cohort window. We shift the cohort back so every guest has a complete post-enrollment window for the selected date range.</div>' +
-            '</div>' +
-          '</div>'
         );
       }
       if (id === 'guest-repeat-rate') {
@@ -1023,9 +993,6 @@
           '</div>'
         );
       }
-      if (id === 'loyalty-spend-lift') {
-        return '';
-      }
       if (id === 'guest-repeat-rate') {
         return (
           '<div class="chart-card__legend">' +
@@ -1075,16 +1042,15 @@
 
 
     function getChartSubtitle(id) {
-      if (id === 'total-guests') return 'Identified guest base over time';
-      if (id === 'active-guests') return 'Guests with ≥1 transaction in the selected period';
-      if (id === 'new-guest-acquisition') return 'Newly acquired guests over time';
-      if (id === 'guest-lifecycle-breakdown') return 'Distribution of identified guests across lifecycle stages';
-      if (id === 'retention-cohort') return 'M+1 retention rate by acquisition cohort';
-      if (id === 'reachability') return 'Reachable loyalty guests by channel (beta)';
-      if (id === 'visit-frequency') return 'Guest distribution across visit-count buckets';
-      if (id === 'avg-order-value') return 'Average spend per identified guest visit';
-      if (id === 'loyalty-spend-lift') return 'Average spend before and after loyalty enrollment, for the same guests';
-      if (id === 'guest-repeat-rate') return 'Guests who came back in the next period';
+      if (id === 'total-guests') return 'Known guests over time';
+      if (id === 'active-guests') return 'Known guests who bought in the selected period';
+      if (id === 'new-guest-acquisition') return 'Guests seen for the first time, by day';
+      if (id === 'guest-lifecycle-breakdown') return 'Known guests by lifecycle stage';
+      if (id === 'retention-cohort') return 'Next-month retention for each month’s new guests';
+      if (id === 'reachability') return 'Guests you can market to, by channel (beta)';
+      if (id === 'visit-frequency') return 'Guests grouped by number of visits';
+      if (id === 'avg-order-value') return 'Average spend per transaction from known guests';
+      if (id === 'guest-repeat-rate') return 'Guests who bought again the next month';
       if (id === 'loyalty-penetration') return 'Share of transactions tied to a loyalty member';
       return 'Chart explanation';
     }
@@ -1201,7 +1167,6 @@
         'retention-cohort': 'dashboard-retention-cohort.html',
         'reachability':      'dashboard-reachability.html',
         'visit-frequency':      'dashboard-visit-frequency.html',
-        'loyalty-spend-lift':   'dashboard-loyalty-spend-lift.html',
         'guest-repeat-rate':    'dashboard-guest-repeat-rate.html',
         'loyalty-penetration':  'dashboard-loyalty-penetration.html',
         'avg-order-value':      'dashboard-average-order-value.html'
@@ -2060,7 +2025,7 @@
 
         return (
           '<div style="font-family:Manrope,sans-serif;padding:16px;display:inline-block;background:#fff;border:2px solid #DFE1E2;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);">' +
-          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">M+1 retention</p>' +
+          '<p style="font-size:16px;font-weight:800;color:#000;margin:0 0 16px;line-height:1.5;white-space:nowrap;">Next-month retention</p>' +
           '<div style="display:flex;flex-direction:column;gap:8px;">' +
             '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;white-space:nowrap;">' +
               '<div style="display:flex;align-items:center;gap:4px;">' +
@@ -2109,9 +2074,9 @@
 
     // Exclusive channel segments — each guest counted once, sum = REACHABILITY_REACH.
     var REACHABILITY_CHANNELS = [
-      { key: 'email',   label: 'Email',         color: '#5A55E3', val: 156 },
-      { key: 'sms',     label: 'SMS',           color: '#FF6600', val: 62  },
-      { key: 'push',    label: 'Push',          color: '#8C9FFF', val: 34  },
+      { key: 'email',   label: 'Email only',    color: '#5A55E3', val: 156 },
+      { key: 'sms',     label: 'SMS only',      color: '#FF6600', val: 62  },
+      { key: 'push',    label: 'Push only',     color: '#8C9FFF', val: 34  },
       { key: 'instore', label: 'In-store',      color: '#F8931C', val: 18  },
       { key: 'multi',   label: 'Multi-channel', color: '#E83162', val: 42  },
     ];
@@ -3099,97 +3064,6 @@
 
       container.addEventListener('mousemove',  visitFreqMouseMove);
       container.addEventListener('mouseleave', visitFreqMouseLeave);
-    }
-
-    /* ═══════════════════════════════════════════════════
-       AG Charts — Loyalty Spend Lift
-       Vertical paired bar card: pre-enrollment avg spend vs post-enrollment avg spend.
-       No tooltip on card — bar labels carry the values.
-    ═══════════════════════════════════════════════════ */
-    var loyaltySpendLiftChart        = null;
-    var loyaltySpendLiftChartOptions = null;
-
-    var SPEND_LIFT_SUMMARY = {
-      avgPreSpend:       3.07,
-      avgPostSpend:      7.46,
-      lift:              4.39,
-      liftPrev:          2.10,
-      deltaPct:         109.05,
-      effectiveDateFrom: '2024-05-17',
-      effectiveDateTo:   '2025-05-17',
-    };
-
-    var SPEND_LIFT_CARD_DATA = [
-      { stage: 'Pre-enrollment\navg spend',  value: SPEND_LIFT_SUMMARY.avgPreSpend,  tone: 'pre' },
-      { stage: 'Post-enrollment\navg spend', value: SPEND_LIFT_SUMMARY.avgPostSpend, tone: 'post' },
-    ];
-
-    function initLoyaltySpendLiftChart() {
-      var container = document.getElementById('chart-area-loyalty-spend-lift');
-      if (!container) return;
-      if (loyaltySpendLiftChart) { loyaltySpendLiftChart.destroy(); loyaltySpendLiftChart = null; }
-
-      var maxValue = Math.max(SPEND_LIFT_SUMMARY.avgPreSpend, SPEND_LIFT_SUMMARY.avgPostSpend);
-
-      loyaltySpendLiftChartOptions = {
-        container: container,
-        theme: { params: { fontFamily: 'Manrope, sans-serif' } },
-        background: { fill: '#ffffff' },
-        padding: { top: 8, right: 8, bottom: 0, left: 0 },
-        data: SPEND_LIFT_CARD_DATA,
-        legend: { enabled: false },
-        series: [
-          {
-            type: 'bar',
-            xKey: 'stage',
-            yKey: 'value',
-            cornerRadius: 6,
-            strokeWidth: 0,
-            tooltip: { enabled: false },
-            label: {
-              enabled: true,
-              color: '#000000',
-              fontSize: 11,
-              formatter: function(params) {
-                return '$' + (+params.value).toFixed(2);
-              },
-            },
-            itemStyler: function(params) {
-              return { fill: params.datum && params.datum.tone === 'pre' ? '#A9A6FF' : '#5A55E3' };
-            },
-          },
-        ],
-        axes: {
-          x: {
-            type: 'category',
-            position: 'bottom',
-            gridLine: { enabled: false },
-            line:     { enabled: false },
-            tick:     { enabled: false },
-            crosshair: { enabled: false },
-            label: { fontSize: 12, color: '#000000', padding: 8 },
-          },
-          y: {
-            type: 'number',
-            position: 'left',
-            min: 0,
-            max: maxValue * 1.2,
-            nice: false,
-            gridLine: { enabled: true, style: [{ stroke: '#DFE1E2', lineDash: [] }] },
-            line:     { enabled: false },
-            tick:     { enabled: false },
-            crosshair: { enabled: false },
-            label: {
-              fontSize: 12,
-              color: '#000000',
-              padding: 8,
-              formatter: function(params) { return '$' + (+params.value).toFixed(0); },
-            },
-          },
-        },
-      };
-
-      loyaltySpendLiftChart = agCharts.AgCharts.create(loyaltySpendLiftChartOptions);
     }
 
     /* ═══════════════════════════════════════════════════

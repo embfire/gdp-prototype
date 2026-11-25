@@ -6,9 +6,13 @@
      1. Info tooltip next to the chart title (one-sentence definition)
      2. "About this metric" help (?) button next to the ⋮ overflow menu
         — production moved it out of the menu in G360-257
-     3. A side panel with four sections (What it shows / Formula /
-        Why it matters / How to read it), plus a fifth "Stages"
-        section for categorical metrics (Guest lifecycle)
+     3. A side panel. Production's layout is What it shows / How it's
+        calculated / How to read it / Formula (a stacked fraction or an
+        equation), plus a "Stages" section for Guest lifecycle. The
+        detail pages of the simple metrics (total guests, active
+        guests, new guests, AOV, visit frequency, repeat rate) still
+        use the older What it shows / Formula / Why it matters /
+        How to read it layout.
 
    Spec: beta/_docs/metric-about-panel.md
 ═══════════════════════════════════════════════════════════════════ */
@@ -17,8 +21,10 @@
 
   // ──────────────────────────────────────────────────────────────────
   // Metric content. Two contexts per metric: widget (dashboard card)
-  // and detail (chart-detail page). Formula and "why it matters" are
-  // shared — they describe the metric, not the chart.
+  // and detail (chart-detail page). A context with a `sections` array
+  // uses the current production layout; a context with whatItShows /
+  // howToRead uses the older layout, with the metric-level formula and
+  // whyItMatters shared.
   // ──────────────────────────────────────────────────────────────────
   // Copy is lifted verbatim from production
   // (G360 frontend/apps/360/src/locales/en.ts → dashboard.<metric>).
@@ -27,15 +33,19 @@
   var METRIC_INFO = {
     'total-guests': {
       title: 'About total guests',
-      infoTooltip: 'Cumulative identified guest base as of the end of the selected period — every guest resolved to a single identity across channels, from their first visit onward',
+      infoTooltip: 'All known guests as of the last day of the selected period, including guests from before the period started',
       formula:
         'Total guests = count of distinct identified guests acquired on or before the period end\n' +
         'Delta % = (base at this period’s end − base at previous period’s end) ÷ base at previous period’s end × 100',
       whyItMatters:
         'Identified guests are the audience you can segment, message, and measure. Growth in this number tells you whether your marketing, loyalty, and channel programs are expanding the addressable base',
       widget: {
-        whatItShows: 'The size of your brand’s whole identified guest base and how it grows over the selected period — cumulative, so it only rises and is always at least as large as Active guests',
-        howToRead:   'The solid line is this period; the striped line is the previous period. An upward trend means profile stitching is keeping pace with traffic. A flat or falling line while transactions grow points to identity capture gaps — for example, fewer guests checking in at the POS',
+        sections: [
+          { heading: 'What it shows', body: 'The number of known guests your brand has, counted up to the last day of the selected period' },
+          { heading: 'How it’s calculated', body: 'Every known guest first seen on or before the last day of the period. It includes guests from before the period started. The number next to the total is the % change from the comparison period.' },
+          { heading: 'How to read it', body: 'The line is the guest count on each day. A steeper line means you are adding known guests faster. The solid line is this period, and the striped line is the comparison period.' },
+          { heading: 'Formula', equation: { label: 'Total guests', expression: 'known guests first seen on or before the period end' } },
+        ],
       },
       detail: {
         whatItShows: 'How identified guests trend over the selected period, with an optional breakdown by acquisition channel using the dropdown above the chart',
@@ -45,15 +55,19 @@
 
     'active-guests': {
       title: 'About active guests',
-      infoTooltip: 'Distinct identified guests with at least one verified transaction in the selected period — your transacting base, not the cumulative identified base',
+      infoTooltip: 'Known guests with at least 1 transaction in the selected period. Each guest counts once.',
       formula:
         'Active guests = count of distinct identified guests with ≥1 verified transaction in the selected period\n' +
         'Delta % = (this period − previous period) ÷ previous period × 100',
       whyItMatters:
         'Active guests is your working audience for retention and per-guest metrics. It can rise or fall as guests engage and lapse independently of how fast you identify new ones — so a flat or declining active line while total guests grows means you are identifying faster than you re-engage',
       widget: {
-        whatItShows: 'How many identified guests are active — guests with at least one verified transaction in the selected period',
-        howToRead:   'The solid line is this period; the striped line is the previous period — compare them to judge whether your active base is growing or shrinking. The hero number is the distinct active guests across the whole selected period, not an average of the daily counts',
+        sections: [
+          { heading: 'What it shows', body: 'The number of known guests who bought at least once in the selected period' },
+          { heading: 'How it’s calculated', body: 'Each guest counts once, no matter how many times they bought. The number next to the total is the % change from the comparison period.' },
+          { heading: 'How to read it', body: 'The line is how many guests bought on each day. The total is not the sum of the days, because a guest who bought on 3 days counts once. The solid line is this period, and the striped line is the comparison period.' },
+          { heading: 'Formula', equation: { label: 'Active guests', expression: 'known guests with at least 1 transaction in the period' } },
+        ],
       },
       detail: {
         whatItShows: 'How many distinct identified guests transacted on each day of the selected period, with optional segmentation by channel using the dropdown above the chart',
@@ -63,15 +77,19 @@
 
     'new-guest-acquisition': {
       title: 'About new guest acquisition',
-      infoTooltip: 'New identified guests acquired in the selected period — each guest counts on the day of their first visit',
+      infoTooltip: 'Guests whose first known transaction falls in the selected period. Each guest counts once.',
       formula:
         'New guests = count of identified guests whose first visit falls in the period\n' +
         'Delta % = (this period − previous period) ÷ previous period × 100',
       whyItMatters:
         'Acquisition is the input to every downstream guest metric — repeat rate, lifetime value, and retention. Watching the trend tells you whether your marketing and channel mix is growing the addressable base, or whether you are just churning through the same customers',
       widget: {
-        whatItShows: 'How many new identified guests are being acquired each day — each guest counts once, on the day of their first visit',
-        howToRead:   'Each point is one day of new identified guests. The solid line is this period; the striped line is the previous period. An upward trend means acquisition is accelerating. Sharp spikes usually map to a campaign or channel launch; sustained dips warrant investigating loyalty signups, POS capture, and channel performance',
+        sections: [
+          { heading: 'What it shows', body: 'The number of guests seen for the first time in the selected period' },
+          { heading: 'How it’s calculated', body: 'Each guest counts once, on the date of their first known transaction. If no date is on file, they count on the day their profile was created. The number next to the total is the % change from the comparison period.' },
+          { heading: 'How to read it', body: 'The line is new guests per day, and the total adds up every day. A spike often lines up with a campaign or a launch. The solid line is this period, and the striped line is the comparison period.' },
+          { heading: 'Formula', equation: { label: 'New guests', expression: 'known guests whose first transaction falls in the period' } },
+        ],
       },
       detail: {
         whatItShows: 'How many new identified guests are added each day in the selected period, with an optional breakdown by acquisition channel using the dropdown above the chart',
@@ -81,15 +99,19 @@
 
     'avg-order-value': {
       title: 'About average order value',
-      infoTooltip: 'Average spend per identified guest visit in the selected period, based on the gross check amount (before discounts)',
+      infoTooltip: 'Average spend per transaction from known guests in the selected period, based on the check total before discounts',
       formula:
         'AOV = total gross check revenue ÷ total transaction count\n' +
         'Delta % = (this period − previous period) ÷ previous period × 100',
       whyItMatters:
         'Tracks spend efficiency per visit. Comparing AOV across segments — loyalty vs non-loyalty, frequent vs occasional — reveals upsell and offer-optimization opportunities',
       widget: {
-        whatItShows: 'Average spend per identified guest visit across the selected period, based on the gross check amount (before discounts) — a measure of how much each transaction is worth on average',
-        howToRead:   'Each point is the weighted AOV for that day. A rising trend means guests are spending more per visit, whether through upsell, larger party sizes, or premium item mix. The dashed line is the previous period — use it to judge whether the current trend is better or worse than normal',
+        sections: [
+          { heading: 'What it shows', body: 'The average amount a known guest spends per transaction in the selected period' },
+          { heading: 'How it’s calculated', body: 'Total spend ÷ number of transactions, across the whole period. Spend is the check total before discounts. Transactions with no known guest are left out. The number next to the average is the % change from the comparison period.' },
+          { heading: 'How to read it', body: 'The line is the average for each day. The average at the top is not the average of the daily values, because busy days count for more. The solid line is this period, and the striped line is the comparison period.' },
+          { heading: 'Formula', fraction: { label: 'AOV', numerator: 'Total spend', denominator: 'Transactions' } },
+        ],
       },
       detail: {
         whatItShows: 'How average spend per visit is trending day by day, with an optional breakdown by channel using the dropdown above the chart',
@@ -99,33 +121,40 @@
 
     'reachability': {
       title: 'About reachability',
-      infoTooltip: 'Reachability (Beta) currently reflects loyalty guests only — marketing consent (email/SMS/push) is available for loyalty members today. Broader coverage for non-loyalty guests is coming',
-      formula:
-        'Reachable % = guests reachable on at least one channel ÷ identified guests × 100\n' +
-        'Delta % = current reachable % − previous reachable %',
-      whyItMatters:
-        'Reachable guests are the audience you can actually market to. Tracking reachable share tells you whether identity capture, opt-in capture, and channel consent are keeping pace with acquisition — if reachable share falls while identified grows, you are losing marketing access faster than you are gaining audience',
+      infoTooltip: 'Share of guests who bought in the selected period and are opted in to email, SMS, or push marketing',
       widget: {
-        whatItShows: 'How loyalty guests split across reachable channels — email, SMS, push, and multi-channel — plus the share with no reachable channel. Beta note: marketing consent exists for loyalty members only today, so non-loyalty guests are not yet included',
-        howToRead:   'The stacked bar splits identified guests into mutually exclusive buckets — each guest counts toward exactly one channel. A guest reachable on more than one channel falls into multi-channel. The not-reachable bucket is identified guests with no contactable channel — useful for analysis, but you cannot message them. The ⓘ snapshot note marks that this is a point-in-time view with no daily trend',
+        sections: [
+          { heading: 'What it shows', body: 'Of the guests who bought in the selected period, the share you can reach with email, SMS, or push marketing' },
+          { heading: 'How it’s calculated', body: 'Reachable guests ÷ identified guests. Identified guests are known guests who bought in the selected period. A guest is reachable when they are currently opted in to marketing on at least 1 channel. Only loyalty members have an opt-in today, so no other guest counts as reachable. The change is this period’s rate minus the previous period’s rate, in percentage points. For example, going from 60% to 64% shows as +4 pts.' },
+          { heading: 'How to read it', body: 'Each guest is in only 1 group. Email only, SMS only, and Push only hold guests opted in to that 1 channel. Multi-channel holds guests opted in to 2 or more. Not reachable holds guests with no opt-in.' },
+          { heading: 'Formula', fraction: { label: 'Reachable', numerator: 'Guests opted in on at least 1 channel', denominator: 'Identified guests', multiplier: '× 100' }, equation: { label: 'Change', expression: 'this period − previous period', note: 'Shown in percentage points (pts)' } },
+        ],
       },
       detail: {
-        whatItShows: 'The reachable channel mix for the guests active in the selected period — reachable %, per-channel counts, and the share with no reachable channel. It reflects each guest’s current channel consent, so it’s a point-in-time view with no trend line',
-        howToRead:   'The snapshot table breaks identified guests into mutually exclusive buckets — each guest counts toward exactly one channel, with multi-channel for guests reachable on more than one, and a not-reachable bucket you can analyze but not message. The note above the table marks the snapshot date; this is a point-in-time view with no daily trend to plot',
+        sections: [
+          { heading: 'What it shows', body: 'Of the guests who bought in the selected period, the share you can reach with email, SMS, or push marketing' },
+          { heading: 'How it’s calculated', body: 'Reachable guests ÷ identified guests. Identified guests are known guests who bought in the selected period. A guest is reachable when they are currently opted in to marketing on at least 1 channel. Only loyalty members have an opt-in today, so no other guest counts as reachable. The change is this period’s rate minus the previous period’s rate, in percentage points. For example, going from 60% to 64% shows as +4 pts.' },
+          { heading: 'How to read it', body: 'Each guest is in only 1 group. Email only, SMS only, and Push only hold guests opted in to that 1 channel. Multi-channel holds guests opted in to 2 or more. Not reachable holds guests with no opt-in.' },
+          { heading: 'Formula', fraction: { label: 'Reachable', numerator: 'Guests opted in on at least 1 channel', denominator: 'Identified guests', multiplier: '× 100' }, equation: { label: 'Change', expression: 'this period − previous period', note: 'Shown in percentage points (pts)' } },
+        ],
       },
     },
 
     'guest-repeat-rate': {
       title: 'About guest repeat rate',
-      infoTooltip: 'Share of base-period guests who came back for at least one more transaction in the next complete period',
+      infoTooltip: 'Of the guests who bought in a month, the share who bought again the next month',
       formula:
         'Repeat rate = base-period guests who returned in the next period ÷ base-period guests × 100\n' +
         'Delta % = (this period − previous period) ÷ previous period × 100',
       whyItMatters:
         'Repeat rate is a fast, leading indicator of guest stickiness — far quicker to read than full retention curves. A rising rate means guests are coming back; a falling one means acquisition is outpacing retention and downstream lifetime value will follow',
       widget: {
-        whatItShows: 'How the share of guests returning in the following period has trended — for each base period, the percentage who came back at least once in the next complete period',
-        howToRead:   'Each point is one base period and the share of those guests who came back the next period. The solid line is this period; the striped line is the previous period. An upward trend means retention is improving; a dip on a single period points to that month — campaign, channel, or operational change. The ⓘ notice flags short ranges that fall back to the 90-day minimum window',
+        sections: [
+          { heading: 'What it shows', body: 'Of the guests who bought in a month, the share who bought again the next month' },
+          { heading: 'How it’s calculated', body: 'For each full month in the range, guests who bought that month and again the next month ÷ guests who bought that month. The rate at the top uses all of those months together. A month counts only after the next month has ended. Ranges under 90 days use 90 days. The number next to the rate is the % change from the comparison period.' },
+          { heading: 'How to read it', body: 'The line is the rate for each month. The solid line is this period, and the striped line is the comparison period.' },
+          { heading: 'Formula', fraction: { label: 'Repeat rate', numerator: 'Guests who bought again the next month', denominator: 'Guests who bought that month', multiplier: '× 100' } },
+        ],
       },
       detail: {
         whatItShows: 'How the repeat rate has trended over base periods, with an optional breakdown by channel using the dropdown above the chart',
@@ -135,25 +164,28 @@
 
     'retention-cohort': {
       title: 'About retention cohort',
-      infoTooltip: 'Share of new guests who come back the month after their first visit, tracked across recent acquisition cohorts',
-      formula:
-        'M+1 retention = guests in cohort who returned the next month ÷ guests in cohort × 100\n' +
-        'Delta % = (this period − previous period) ÷ previous period × 100',
-      whyItMatters:
-        'M+1 retention is the earliest signal of new-guest stickiness — improving it lifts downstream lifetime value. Watching the trend across cohorts tells you whether acquisition and onboarding changes are paying off month after month',
+      infoTooltip: 'The share of new guests who came back the month after their first visit',
       widget: {
-        whatItShows: 'How M+1 retention has trended cohort by cohort — for each acquisition month, the share of new guests who came back the following month',
-        howToRead:   'Each point is one acquisition cohort and its M+1 retention rate. The solid line is this period; the striped line is the previous period. An upward trend means newer cohorts are sticking better than older ones. A sharp dip on a single cohort points to that month — campaign mix, channel changes, or a one-off event',
+        sections: [
+          { heading: 'What it shows', body: 'Of the guests whose first visit was in a month, the share who came back the next month' },
+          { heading: 'How it’s calculated', body: 'Each month’s new guests form a group. Retention = guests in the group who bought in the next calendar month ÷ guests in the group. Unlike Guest repeat rate, this counts only guests in their first month. The rate at the top is the newest group with a full next month. Ranges under 90 days use 90 days. The number next to the rate is the % change from the comparison period.' },
+          { heading: 'How to read it', body: 'The line is the rate for each month’s new guests. A rising line means newer guests are coming back more. The solid line is this period, and the striped line is the comparison period.' },
+          { heading: 'Formula', fraction: { label: 'Retention', numerator: 'New guests who bought the next month', denominator: 'New guests that month', multiplier: '× 100' } },
+        ],
       },
       detail: {
-        whatItShows: 'How each acquisition cohort retains over time — every row is one cohort, every column is months since acquisition (M+1, M+2, and so on), and the cell color shows the retention rate',
-        howToRead:   'Read across a row to see one cohort’s retention curve over time. Read down a column to compare cohorts at the same age. Stronger color means higher retention. The 90-day minimum guards against short windows that do not have enough cohort age to be reliable',
+        sections: [
+          { heading: 'What it shows', body: 'How each month’s new guests come back over time. Each row is 1 month’s new guests, and each column is a later month.' },
+          { heading: 'How it’s calculated', body: 'Each month’s new guests form a group. Each cell = guests in the group who bought in that later month ÷ guests in the group. Month 1 is the month after the first visit, Month 2 is the month after that, and so on. A guest counts in every later month they bought in. A month shows only after it has ended. The rate at the top is the newest group’s Month 1 rate, the same as next-month retention on the dashboard card. Ranges under 90 days use 90 days. The number next to the rate is the % change from the comparison period.' },
+          { heading: 'How to read it', body: 'Read across a row to follow 1 group over time. Read down a column to compare groups at the same point. A darker cell means a higher rate. Hover a cell to see the rate and the group size.' },
+          { heading: 'Formula', fraction: { label: 'Retention in a month', numerator: 'New guests who bought in that month', denominator: 'New guests in the group', multiplier: '× 100' } },
+        ],
       },
     },
 
     'guest-lifecycle-breakdown': {
       title: 'About guest lifecycle',
-      infoTooltip: 'How identified guests split across lifecycle stages — from first-time through loyal to churned — as of the latest snapshot',
+      infoTooltip: 'How your known guests split across 6 stages, from first-time to churned, on the snapshot date',
       formula:
         'A visit = one distinct guest + business day (multiple same-day transactions count once)\n' +
         'Each stage = count of distinct identified guests classified in that stage as of the snapshot date\n' +
@@ -162,8 +194,12 @@
       whyItMatters:
         'The lifecycle mix tells you whether you are growing loyal guests faster than you are losing them. Watching the at-risk and churned stages early gives you time to act before revenue follows them out',
       widget: {
-        whatItShows: 'How identified guests split across the 6 lifecycle stages — first-time, returning, win-back, loyal, at-risk, and churned — as of the latest snapshot, so you can read the overall mix at a glance',
-        howToRead:   'Each bar is one lifecycle stage, and the thin strip above shows each stage as a share of the whole. A large loyal share is a healthy base, while a large at-risk or churned share is worth acting on. Toggle stages in the legend to focus on one, and check the ⓘ snapshot note for the date these counts reflect',
+        sections: [
+          { heading: 'What it shows', body: 'How your known guests split across 6 stages, from first-time to churned, on the snapshot date' },
+          { heading: 'How it’s calculated', body: 'Each guest goes in 1 stage, based on their visits up to the snapshot date. Stages are checked in the order below, and the first match wins.' },
+          { heading: 'How to read it', body: 'Each bar is the number of guests in a stage. The strip above the bars shows each stage as a share of all guests. The number at the top is the count of At-Risk guests.' },
+          { heading: 'Formula', equation: { label: 'Each stage', expression: 'guests in that stage on the snapshot date' } },
+        ],
       },
       detail: {
         whatItShows: 'How identified guests split across the 6 lifecycle stages as of the latest snapshot — one bar per stage, with a share strip above the bars',
@@ -176,19 +212,19 @@
       stages: {
         notice: 'Stage names and thresholds start from PAR’s defaults. Each brand can rename stages and adjust thresholds in Settings → Definitions.',
         definitions: [
-          { term: 'First-time', color: '#30ACEE', body: 'First and only visit so far' },
-          { term: 'Returning',  color: '#5A55E3', body: 'Second visit ever, latest in the last 180 days' },
-          { term: 'Win-back',   color: '#8C9FFF', body: 'First visit after an At-Risk or Churned period' },
-          { term: 'Loyal',      color: '#0CC281', body: '3 or more lifetime visits, still active within their typical visit cadence' },
-          { term: 'At-Risk',    color: '#F8931C', body: 'Time since last visit is more than 1.5× their typical gap between visits — or more than 90 days for guests with fewer than 3 visits' },
-          { term: 'Churned',    color: '#E83162', body: 'No visit in more than 180 days' },
+          { term: 'Churned',    color: '#E83162', body: 'No visit for more than 180 days' },
+          { term: 'First-time', color: '#30ACEE', body: 'Only 1 visit' },
+          { term: 'At-Risk',    color: '#F8931C', body: 'No visit for more than 1.5× their usual gap between visits. With fewer than 3 visits, the gap is set to 90 days' },
+          { term: 'Win-back',   color: '#8C9FFF', body: 'Came back after being At-Risk or Churned' },
+          { term: 'Loyal',      color: '#0CC281', body: '3 or more visits' },
+          { term: 'Returning',  color: '#5A55E3', body: 'Everyone else' },
         ],
       },
     },
 
     'visit-frequency': {
       title: 'About visit frequency',
-      infoTooltip: 'Average number of visits per identified guest in the selected period, alongside the distribution across visit-count buckets',
+      infoTooltip: 'Average visits per known guest in the selected period, with guests grouped by number of visits. A visit is 1 day with at least 1 transaction.',
       formula:
         'A visit = one distinct guest + business day (multiple same-day transactions count once)\n' +
         'Average visits = total visits in the period ÷ identified guests in the period\n' +
@@ -197,8 +233,12 @@
       whyItMatters:
         'The shape of the distribution tells you more than the average alone. A tall single-visit bar with a thin tail says you have an acquisition machine that does not retain; a fatter middle says habitual customers. Watching how the curve shifts period over period reveals whether your loyalty, frequency, and reactivation programs are pushing guests up the frequency ladder',
       widget: {
-        whatItShows: 'How identified guests are distributed across visit-count buckets — each bar is one bucket showing how many guests visited that many times — alongside the average visits per guest in the hero',
-        howToRead:   'Each bar is one visit-count bucket — its height is how many identified guests fall into that bucket. Solid bars are this period; striped bars are the previous period overlay. Look at the overall shape, not just the bars individually — a shift to the right means guests are coming back more often, a shift to the left means frequency is dropping. The hero shows the period average for a single-number summary',
+        sections: [
+          { heading: 'What it shows', body: 'How many times guests visited in the selected period, and the average visits per guest' },
+          { heading: 'How it’s calculated', body: 'A visit is 1 day with at least 1 transaction, so 2 transactions on the same day count as 1 visit. Each guest goes in 1 group: 1 visit, 2 visits, 3-5, 6-10, or 11+. The number next to the average is the % change from the comparison period.' },
+          { heading: 'How to read it', body: 'Each bar is the number of guests in that group. Solid bars are this period, and striped bars are the comparison period. Taller bars on the right mean guests are coming back more often.' },
+          { heading: 'Formula', fraction: { label: 'Average visits', numerator: 'Total visits', denominator: 'Guests with at least 1 visit' } },
+        ],
       },
       detail: {
         whatItShows: 'How identified guests are distributed across visit-count buckets for the selected period, alongside per-bucket counts in the table below',
@@ -206,39 +246,24 @@
       },
     },
 
-    'loyalty-spend-lift': {
-      title: 'About enrollment spend lift',
-      infoTooltip: 'Shows how much more — or less — enrolled guests spend per visit compared to before they joined. New metric — not the same as the QBR “Spend Lift” (which compares loyalty vs anonymous guests)',
-      formula:
-        'Lift = avg post-enrollment spend − avg pre-enrollment spend (gross check amount)\n' +
-        'Delta % = lift ÷ avg pre-enrollment spend × 100',
-      whyItMatters:
-        'Loyalty members often spend more — but high spenders also tend to join more. This metric removes that bias by using the same guest as their own baseline',
-      widget: {
-        whatItShows: 'How loyalty enrollment changes what guests spend per visit — using the same guests as their own baseline, not comparing different people. This is a new metric, distinct from the QBR “Spend Lift” (loyalty vs anonymous guests with outlier trimming)',
-        howToRead:   'Positive lift means members spend more per visit after joining. Negative lift is worth investigating — could be redemption behavior or a sampling issue. The cohort window (shown in the notice) is the enrollment period the date range selects',
-      },
-      detail: {
-        whatItShows: 'How lift per enrollment cohort has changed over time — each point is the lift for guests who enrolled on that date',
-        howToRead:   'An upward trend means newer cohorts are showing stronger lift. A spike on a specific date could reflect a promotion or campaign driving higher post-enrollment spend. The dashed line is the previous period — use it to judge whether the current trend is better or worse than normal',
-      },
-    },
-
     'loyalty-penetration': {
       title: 'About loyalty penetration',
       infoTooltip: 'Share of identified transactions tied to a loyalty member in the selected period',
-      formula:
-        'Loyalty penetration = loyalty transactions ÷ identified transactions × 100\n' +
-        'Delta = this period − previous period (additive points, not relative %)',
-      whyItMatters:
-        'Loyalty members are typically your most valuable guests. A rising penetration means more of your identified business is being captured by the program — better data, better personalization, and a stronger lever for retention campaigns',
       widget: {
-        whatItShows: 'The share of identified transactions tied to a loyalty member over the selected period — how much of your identified business runs through the loyalty program. Beta note: the denominator currently covers POS transactions; online ordering and payment channels will be included as their data lands',
-        howToRead:   'Each point is one month and the share of identified transactions tied to a loyalty member. The solid line is this period; the striped line is the previous period. The pill shows the additive points change vs the prior comparison window — “+4pts” means penetration is four percentage points higher than before',
+        sections: [
+          { heading: 'What it shows', body: 'The share of transactions tied to a known guest that belong to a loyalty member. The percentage of transactions tied to a loyalty guest compared to your entire guest base' },
+          { heading: 'How it’s calculated', body: 'Loyalty transactions ÷ identified transactions. The change is this period’s rate minus the previous period’s rate, in percentage points. For example, going from 24% to 28% shows as +4 pts.' },
+          { heading: 'How to read it', body: 'The line is the loyalty share across the selected period, read left to right. Where it rises, a larger share of transactions belonged to loyalty members. The solid line is this period, and the striped line is the previous period.' },
+          { heading: 'Formula', fraction: { label: 'Penetration', numerator: 'Loyalty transactions', denominator: 'Identified transactions', multiplier: '× 100' }, equation: { label: 'Change', expression: 'this period − previous period', note: 'Shown in percentage points (pts)' } },
+        ],
       },
       detail: {
-        whatItShows: 'How loyalty penetration has trended month over month, with an optional breakdown by channel (in-store, online, delivery) using the dropdown above the chart',
-        howToRead:   'In Total mode, the solid line is this period and the striped line is the previous period — compare them to judge whether penetration is improving. In By channel mode, each line is one channel; watch for shifts in which channel is driving penetration. A coming-soon message means the channel breakdown is not yet computed',
+        sections: [
+          { heading: 'What it shows', body: 'The share of transactions tied to a known guest that belong to a loyalty member. The percentage of transactions tied to a loyalty guest compared to your entire guest base' },
+          { heading: 'How it’s calculated', body: 'Loyalty transactions ÷ identified transactions. The change is this period’s rate minus the previous period’s rate, in percentage points. For example, going from 24% to 28% shows as +4 pts.' },
+          { heading: 'How to read it', body: 'The line is the loyalty share across the selected period, read left to right. Where it rises, a larger share of transactions belonged to loyalty members. The solid line is this period, and the striped line is the previous period.' },
+          { heading: 'Formula', fraction: { label: 'Penetration', numerator: 'Loyalty transactions', denominator: 'Identified transactions', multiplier: '× 100' }, equation: { label: 'Change', expression: 'this period − previous period', note: 'Shown in percentage points (pts)' } },
+        ],
       },
     },
   };
@@ -317,20 +342,50 @@
     );
   }
 
+  // Structured formula: `label = numerator / denominator multiplier`
+  // drawn as a stacked fraction, with an optional equation line under a
+  // divider (mirrors production's MetricInfoPanel).
+  function renderStructuredFormula(s) {
+    var html = '';
+    if (s.fraction) {
+      var f = s.fraction;
+      html +=
+        '<div class="about-panel__fraction-row">' +
+          '<span class="about-panel__formula-label">' + escapeHTML(f.label) + ' =</span>' +
+          '<span class="about-panel__fraction">' +
+            '<span class="about-panel__fraction-numerator">' + escapeHTML(f.numerator) + '</span>' +
+            '<span class="about-panel__fraction-denominator">' + escapeHTML(f.denominator) + '</span>' +
+          '</span>' +
+          (f.multiplier ? '<span class="about-panel__fraction-multiplier">' + escapeHTML(f.multiplier) + '</span>' : '') +
+        '</div>';
+    }
+    if (s.equation) {
+      var e = s.equation;
+      html +=
+        '<div class="about-panel__equation">' +
+          '<p class="about-panel__equation-line"><span class="about-panel__formula-label">' + escapeHTML(e.label) + '</span> = ' + escapeHTML(e.expression) + '</p>' +
+          (e.note ? '<p class="about-panel__equation-note">' + escapeHTML(e.note) + '</p>' : '') +
+        '</div>';
+    }
+    return '<div class="about-panel__formula about-panel__formula--structured">' + html + '</div>';
+  }
+
   function renderSections(info, context) {
     var ctx = info[context] || info.widget;
-    var sections = [
-      { heading: 'What it shows',  text: ctx.whatItShows },
+    var sections = ctx.sections ? ctx.sections.slice() : [
+      { heading: 'What it shows',  body: ctx.whatItShows },
       { heading: 'Formula',        formula: info.formula },
-      { heading: 'Why it matters', text: info.whyItMatters },
-      { heading: 'How to read it', text: ctx.howToRead },
+      { heading: 'Why it matters', body: info.whyItMatters },
+      { heading: 'How to read it', body: ctx.howToRead },
     ];
     if (info.stages) {
       sections.push({ heading: 'Stages', notice: info.stages.notice, definitions: info.stages.definitions });
     }
     return sections.map(function(s) {
       var inner;
-      if (s.formula) {
+      if (s.fraction || s.equation) {
+        inner = renderStructuredFormula(s);
+      } else if (s.formula) {
         inner = '<pre class="about-panel__formula">' + escapeHTML(s.formula) + '</pre>';
       } else if (s.definitions) {
         inner =
@@ -342,7 +397,7 @@
             : '') +
           renderDefinitions(s.definitions);
       } else {
-        inner = '<p class="about-panel__text">' + escapeHTML(s.text) + '</p>';
+        inner = '<p class="about-panel__text">' + escapeHTML(s.body) + '</p>';
       }
       return (
         '<section class="about-panel__section">' +
@@ -373,20 +428,22 @@
       'At-Risk threshold = ' + t.atRiskMultiplier + ' × per-guest average gap between visits (' + t.atRiskFloorDays + '-day floor if fewer than ' + t.loyalMinVisits + ' visits)\n' +
       'Churned threshold = more than ' + t.churnedWindowDays + ' days since last visit';
     var bodies = {
-      firstTime: 'First and only visit so far',
-      returning: 'Second visit ever, latest in the last ' + t.returningWindowDays + ' days',
-      // Production copy names the PAR stages; once renamed, avoid the
-      // "an <name>" article so any brand label reads correctly.
+      firstTime: 'Only 1 visit',
+      returning: 'Everyone else',
+      // Production copy names the PAR stages; once renamed, name the
+      // brand's own labels so the sentence still reads correctly.
       winBack:   (n.atRisk === 'At-Risk' && n.churned === 'Churned')
-        ? 'First visit after an At-Risk or Churned period'
-        : 'First visit after a period in ' + n.atRisk + ' or ' + n.churned,
-      loyal:     t.loyalMinVisits + ' or more lifetime visits, still active within their typical visit cadence',
-      atRisk:    'Time since last visit is more than ' + t.atRiskMultiplier + '× their typical gap between visits — or more than ' + t.atRiskFloorDays + ' days for guests with fewer than ' + t.loyalMinVisits + ' visits',
-      churned:   'No visit in more than ' + t.churnedWindowDays + ' days',
+        ? 'Came back after being At-Risk or Churned'
+        : 'Came back after being ' + n.atRisk + ' or ' + n.churned,
+      loyal:     t.loyalMinVisits + ' or more visits',
+      atRisk:    'No visit for more than ' + t.atRiskMultiplier + '× their usual gap between visits. With fewer than ' + t.loyalMinVisits + ' visits, the gap is set to ' + t.atRiskFloorDays + ' days',
+      churned:   'No visit for more than ' + t.churnedWindowDays + ' days',
     };
+    // Rule order: the first matching stage wins.
+    var RULE_ORDER = ['churned', 'firstTime', 'atRisk', 'winBack', 'loyal', 'returning'];
     info.stages = {
       notice: base.stages.notice,
-      definitions: window.G360Lifecycle.STAGE_KEYS.map(function(k) {
+      definitions: RULE_ORDER.map(function(k) {
         return { term: n[k], color: LIFECYCLE_COLORS[k], body: bodies[k] };
       }),
     };

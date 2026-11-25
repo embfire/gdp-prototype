@@ -1253,17 +1253,6 @@ body { margin: 0; font-family: 'Manrope', sans-serif; }
   min-height: 0;
 }
 
-/* Loyalty spend lift: flex-fill so the paired bar chart fills the card height. */
-.chart-card[data-metric-id="loyalty-spend-lift"] .chart-card__body {
-  flex: 1;
-  min-height: 0;
-}
-.chart-card[data-metric-id="loyalty-spend-lift"] .chart-card__placeholder {
-  flex: 1;
-  height: auto;
-  min-height: 200px;
-}
-
 /* Average order value: same flex-fill treatment as active guests */
 .chart-card[data-metric-id="avg-order-value"] .chart-card__body {
   flex: 1;
@@ -1290,11 +1279,9 @@ body { margin: 0; font-family: 'Manrope', sans-serif; }
   height: 226px;
 }
 
-/* Visit frequency and spend lift grow with a stretched card (min 256px). */
+/* Visit frequency grows with a stretched card (min 256px). */
 .dashboard-chart-grid .chart-card[data-metric-id="visit-frequency"] .chart-card__placeholder,
-.dashboard-grid .chart-card[data-metric-id="visit-frequency"] .chart-card__placeholder,
-.dashboard-chart-grid .chart-card[data-metric-id="loyalty-spend-lift"] .chart-card__placeholder,
-.dashboard-grid .chart-card[data-metric-id="loyalty-spend-lift"] .chart-card__placeholder {
+.dashboard-grid .chart-card[data-metric-id="visit-frequency"] .chart-card__placeholder {
   flex: 1;
   height: auto;
   min-height: 256px;
@@ -1389,9 +1376,6 @@ body { margin: 0; font-family: 'Manrope', sans-serif; }
   background: transparent;
 }
 
-#chart-area-loyalty-spend-lift,
-#chart-area-spend-lift-trend,
-#chart-area-spend-lift-breakdown,
 #chart-area-guest-repeat-rate-trend,
 #chart-area-guest-repeat-rate-breakdown,
 #chart-area-loyalty-penetration-trend,
@@ -3106,6 +3090,60 @@ body { margin: 0; font-family: 'Manrope', sans-serif; }
   white-space: pre-wrap;
   word-break: break-word;
   overflow-x: auto;
+}
+
+/* Structured formula: stacked fraction plus an optional equation line.
+   Mirrors production's MetricInfoPanel. */
+.about-panel__formula--structured {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+  white-space: normal;
+  overflow-x: visible;
+}
+.about-panel__formula-label {
+  font-weight: 600;
+}
+.about-panel__fraction-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 8px;
+}
+.about-panel__fraction {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.about-panel__fraction-numerator {
+  padding: 0 4px 2px;
+  border-bottom: 1px solid #000000;
+}
+.about-panel__fraction-denominator {
+  padding: 2px 4px 0;
+}
+.about-panel__equation {
+  padding-top: 16px;
+  border-top: 1px solid #dfe1e2;
+}
+.about-panel__fraction-row + .about-panel__equation {
+  margin-top: 0;
+}
+.about-panel__formula--structured > .about-panel__equation:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.about-panel__equation-line,
+.about-panel__equation-note {
+  margin: 0;
+}
+.about-panel__equation-note {
+  color: #60696c;
 }
 
 .about-panel__footer {

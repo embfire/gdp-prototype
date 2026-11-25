@@ -252,7 +252,7 @@
               <div class="chart-card__metric">
                 <div class="chart-card__metric-row">
                   <p class="chart-card__metric-value">37%</p>
-                  <span class="chart-card__metric-pill chart-card__metric-pill--up">+2.1%</span>
+                  <span class="chart-card__metric-pill chart-card__metric-pill--up">+2.1 pts</span>
                 </div>
                 <p class="chart-card__metric-period">312K reachable · 535K not reachable</p>
               </div>
@@ -496,9 +496,9 @@
     var PREV_REACHABLE    = 304000;
 
     var DETAIL_CHANNELS = [
-      { channel: 'Email',         key: 'email',   count: 156000, prev: 153000, color: '#5A55E3' },
-      { channel: 'SMS',           key: 'sms',     count:  62000, prev:  60000, color: '#FF6600' },
-      { channel: 'Push',          key: 'push',    count:  34000, prev:  33000, color: '#8C9FFF' },
+      { channel: 'Email only',    key: 'email',   count: 156000, prev: 153000, color: '#5A55E3' },
+      { channel: 'SMS only',      key: 'sms',     count:  62000, prev:  60000, color: '#FF6600' },
+      { channel: 'Push only',     key: 'push',    count:  34000, prev:  33000, color: '#8C9FFF' },
       { channel: 'In-store',      key: 'instore', count:  18000, prev:  17000, color: '#F8931C' },
       { channel: 'Multi-channel', key: 'multi',   count:  42000, prev:  41000, color: '#E83162' },
     ];
@@ -508,9 +508,9 @@
        Values are exclusive per channel; rows sum to total.
     ═══════════════════════════════════════════════════ */
     var AREA_CHANNELS = [
-      { key: 'email',   label: 'Email',         color: '#5A55E3' },
-      { key: 'sms',     label: 'SMS',           color: '#FF6600' },
-      { key: 'push',    label: 'Push',          color: '#8C9FFF' },
+      { key: 'email',   label: 'Email only',    color: '#5A55E3' },
+      { key: 'sms',     label: 'SMS only',      color: '#FF6600' },
+      { key: 'push',    label: 'Push only',     color: '#8C9FFF' },
       { key: 'instore', label: 'In-store',      color: '#F8931C' },
       { key: 'multi',   label: 'Multi-channel', color: '#E83162' },
     ];
